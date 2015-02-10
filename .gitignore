@@ -1,0 +1,14 @@
+*.a
+*.exe
+*.lib
+*.cmake
+ext_build
+resources.*
+build
+CMakeCache.txt
+CMakeFiles
+Makefile
+bin2c
+example
+icons
+*~

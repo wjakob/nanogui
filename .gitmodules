@@ -1,0 +1,12 @@
+[submodule "nanovg"]
+	path = ext/nanovg
+	url = https://github.com/memononen/nanovg
+[submodule "glfw"]
+	path = ext/glfw
+	url = https://github.com/glfw/glfw
+[submodule "glew"]
+	path = ext/glew
+	url = https://github.com/nigels-com/glew
+[submodule "eigen"]
+	path = ext/eigen
+	url = https://github.com/RLovelett/eigen
