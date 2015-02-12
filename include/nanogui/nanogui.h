@@ -38,17 +38,17 @@ typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
 /// Stores an RGBA color value
 class Color : public Eigen::Vector4f {
 public:
-	Color() { }
-	Color(int intensity, int alpha) {
-		const float scale = 1.f / 255.f;
-		x() = y() = z() = intensity * scale; w() = alpha * scale;
-	}
-	Color(int r, int g, int b, int a) {
-		const float scale = 1.f / 255.f;
-		x() = r * scale; y() = g * scale;
-		z() = b * scale; w() = a * scale;
-	}
-	inline operator const NVGcolor &() const;
+    Color() { }
+    Color(int intensity, int alpha) {
+        const float scale = 1.f / 255.f;
+        x() = y() = z() = intensity * scale; w() = alpha * scale;
+    }
+    Color(int r, int g, int b, int a) {
+        const float scale = 1.f / 255.f;
+        x() = r * scale; y() = g * scale;
+        z() = b * scale; w() = a * scale;
+    }
+    inline operator const NVGcolor &() const;
 };
 
 /* Forward declarations */
@@ -116,7 +116,7 @@ extern std::array<char, 8> utf8(int c);
 
 /// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
 extern std::vector<std::pair<int, std::string>>
-	loadImageDirectory(NVGcontext *ctx, const std::string &path);
+    loadImageDirectory(NVGcontext *ctx, const std::string &path);
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) __nanogui_get_image(ctx, #name, name##_png, name##_png_size)

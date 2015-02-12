@@ -4,12 +4,12 @@
 #include <nanogui/nanogui.h>
 
 #if defined(__APPLE__)
-	#define GLFW_INCLUDE_GLCOREARB
+    #define GLFW_INCLUDE_GLCOREARB
 #elif defined(WIN32)
-	#define GLEW_STATIC
-	#include <GL/glew.h>
+    #define GLEW_STATIC
+    #include <GL/glew.h>
 #else
-	#define GL_GLEXT_PROTOTYPES
+    #define GL_GLEXT_PROTOTYPES
 #endif
 
 #include <GLFW/glfw3.h>
@@ -18,7 +18,7 @@
 NANOGUI_NAMESPACE_BEGIN
 
 inline Color::operator const NVGcolor &() const {
-	return reinterpret_cast<const NVGcolor &>(*this->data());
+    return reinterpret_cast<const NVGcolor &>(*this->data());
 }
 
 /// Determine whether an icon ID is a texture loaded via nvgImageIcon
