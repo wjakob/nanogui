@@ -110,8 +110,7 @@ public:
         imgPanel->setCallback([&, imagePanelBtn](int i) {
             cout << "Selected item " << i << endl;
         });
-        popup->setFixedWidth(245);
-        popup->setFixedHeight(150);
+        popup->setFixedSize(Vector2i(245, 150));
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
@@ -151,10 +150,9 @@ public:
         slider->setFixedWidth(80);
 
         TextBox *textBox = new TextBox(panel);
-        textBox->setFixedSize(Vector2i(90, 25));
+        textBox->setFixedSize(Vector2i(60, 25));
         textBox->setValue("50");
         textBox->setUnits("%");
-        textBox->setFixedWidth(60);
         slider->setCallback([textBox](float value) {
             textBox->setValue(std::to_string((int) (value * 100)));
         });

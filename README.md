@@ -44,10 +44,9 @@ slider->setFixedWidth(80);
 
 /* Add a textbox and set defaults */
 TextBox *textBox = new TextBox(panel);
-textBox->setFixedSize(Vector2i(90, 25));
+textBox->setFixedSize(Vector2i(60, 25));
 textBox->setValue("50");
 textBox->setUnits("%");
-textBox->setFixedWidth(60);
 
 /* Propagate slider changes to the text box */
 slider->setCallback([textBox](float value) {
