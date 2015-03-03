@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 2.8.3)
 
 project("NanoGUI")
 
+option(NANOGUI_INSTALL "Generate installation target for NanoGUI" ON)
+
+
 # Parse arguments for nested build process
 if(NOT CMAKE_EXTERNAL_ARGUMENTS)
   set(CMAKE_EXTERNAL_ARGUMENTS_LIST "")
@@ -27,19 +30,38 @@ add_custom_command(
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
 
+
+if(NANOGUI_INSTALL)
 ExternalProject_Add(glfw_p
   URL             "${CMAKE_SOURCE_DIR}/ext/glfw"
   PREFIX          "ext_build"
-  CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST} -DGLFW_BUILD_TESTS=0 -DGLFW_BUILD_EXAMPLES=0 -DGLFW_BUILD_DOCS=0 
+  CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST} -DGLFW_BUILD_TESTS=0 -DGLFW_BUILD_EXAMPLES=0 -DGLFW_BUILD_DOCS=0
 )
+else()
+ExternalProject_Add(glfw_p
+  URL             "${CMAKE_SOURCE_DIR}/ext/glfw"
+  PREFIX          "ext_build"
+  CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST} -DGLFW_BUILD_TESTS=0 -DGLFW_BUILD_EXAMPLES=0 -DGLFW_BUILD_DOCS=0 -DGLFW_INSTALL=0
+  INSTALL_COMMAND ""
+)
+endif()
 
 set(extra_source "")
 if(WIN32)
-  ExternalProject_Add(glew_p
-    URL             "${CMAKE_SOURCE_DIR}/ext/glew"
-    PREFIX          "ext_build"
-    CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST}
-  )
+  if(NANOGUI_INSTALL)
+    ExternalProject_Add(glew_p
+      URL             "${CMAKE_SOURCE_DIR}/ext/glew"
+      PREFIX          "ext_build"
+      CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST}
+    )
+  else()
+    ExternalProject_Add(glew_p
+      URL             "${CMAKE_SOURCE_DIR}/ext/glew"
+      PREFIX          "ext_build"
+      CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST}
+      INSTALL_COMMAND ""
+    )
+  endif()
   add_definitions (/D "_CRT_SECURE_NO_WARNINGS")
   include_directories(ext/glew/include)
   set(extra_libs opengl32
@@ -95,10 +117,13 @@ if(WIN32)
 endif()
 
 file(GLOB NANOVG_HEADERS ext/nanovg/src/*.h)
-install(TARGETS nanogui ARCHIVE DESTINATION lib)
-install(FILES ${NANOVG_HEADERS} DESTINATION include)
-install(DIRECTORY ext/eigen/Eigen DESTINATION include)
-install(DIRECTORY include/nanogui DESTINATION include)
+
+if(NANOGUI_INSTALL)
+  install(TARGETS nanogui ARCHIVE DESTINATION lib)
+  install(FILES ${NANOVG_HEADERS} DESTINATION include)
+  install(DIRECTORY ext/eigen/Eigen DESTINATION include)
+  install(DIRECTORY include/nanogui DESTINATION include)
+endif()
 
 link_directories(${CMAKE_BINARY_DIR}/ext_build/src/glfw_p-build/src)
 add_executable(example src/example.cpp)
