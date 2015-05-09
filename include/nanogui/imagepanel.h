@@ -7,9 +7,12 @@ NANOGUI_NAMESPACE_BEGIN
 
 class ImagePanel : public Widget {
 public:
+    typedef std::vector<std::pair<int, std::string>> Images;
+public:
     ImagePanel(Widget *parent);
 
     void setImageData(const std::vector<std::pair<int, std::string>> &data) { mImages = data; }
+    const Images& images() const { return mImages; }
 
     inline std::function<void(int)> callback() const { return mCallback; }
     inline void setCallback(std::function<void(int)> callback) { mCallback = callback; }
@@ -22,7 +25,7 @@ protected:
     Vector2i gridSize() const;
     int indexForPosition(const Vector2i &p) const;
 protected:
-    std::vector<std::pair<int, std::string>> mImages;
+    Images mImages;
     std::function<void(int)> mCallback;
     int mThumbSize;
     int mSpacing;

@@ -13,6 +13,7 @@
 #include <nanogui/textbox.h>
 #include <nanogui/slider.h>
 #include <nanogui/imagepanel.h>
+#include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
 #if defined(WIN32)
 #include <windows.h>
@@ -107,9 +108,6 @@ public:
         VScrollPanel *vscroll = new VScrollPanel(popup);
         ImagePanel *imgPanel = new ImagePanel(vscroll);
         imgPanel->setImageData(icons);
-        imgPanel->setCallback([&, imagePanelBtn](int i) {
-            cout << "Selected item " << i << endl;
-        });
         popup->setFixedSize(Vector2i(245, 150));
 
         new Label(window, "File dialog", "sans-bold");
@@ -124,6 +122,13 @@ public:
         b->setCallback([&] {
             cout << "File dialog result: " << file_dialog(
                     { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) << endl;
+        });
+
+        new Label(window, "Image view");
+        auto img = new ImageView(window);
+        img->setImage(icons[0].first);
+        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
+            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
         });
 
         new Label(window, "Combo box");
