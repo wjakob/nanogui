@@ -197,7 +197,7 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
     char buffer[FILE_DIALOG_MAX_BUFFER];
     std::string cmd = "/usr/bin/zenity --file-selection ";
     if (save)
-        cmd += "--save";
+        cmd += "--save ";
     cmd += "--file-filter=\"";
     for (auto pair: filetypes)
         cmd += "\"*." + pair.first +  "\" ";
