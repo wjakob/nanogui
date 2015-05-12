@@ -16,7 +16,7 @@ public:
     virtual void draw(NVGcontext* ctx);
 
 protected:
-    int mImage;
+    int mImage = 0;
 };
 
 NANOGUI_NAMESPACE_END

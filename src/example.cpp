@@ -109,6 +109,9 @@ public:
         ImagePanel *imgPanel = new ImagePanel(vscroll);
         imgPanel->setImageData(icons);
         popup->setFixedSize(Vector2i(245, 150));
+        new Label(window, "Selected image", "sans-bold");
+        auto img = new ImageView(window);
+        img->setFixedSize(Vector2i(40, 40));
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
@@ -124,16 +127,14 @@ public:
                     { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) << endl;
         });
 
-        new Label(window, "Image view");
-        auto img = new ImageView(window);
         img->setImage(icons[0].first);
         imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
             img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
         });
 
-        new Label(window, "Combo box");
+        new Label(window, "Combo box", "sans-bold");
         new ComboBox(window, { "Combo box item 1", "Combo box item 2", "Combo box item 3"});
-        new Label(window, "Check box");
+        new Label(window, "Check box", "sans-bold");
         CheckBox *cb = new CheckBox(window, "Flag 1",
             [](bool state) { cout << "Check box 1 state: " << state << endl; }
         );
@@ -141,7 +142,7 @@ public:
         new CheckBox(window, "Flag 2",
             [](bool state) { cout << "Check box 2 state: " << state << endl; }
         );
-        new Label(window, "Progress bar");
+        new Label(window, "Progress bar", "sans-bold");
         mProgress = new ProgressBar(window);
 
         new Label(window, "Slider and text box", "sans-bold");
