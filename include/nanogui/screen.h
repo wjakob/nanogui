@@ -31,6 +31,9 @@ public:
     /// Set the top-level window visibility (no effect on full-screen windows)
     void setVisible(bool visible);
 
+    /// Set window size
+    void setSize(const Vector2i& size);
+
     /// Draw the window contents -- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }
 
