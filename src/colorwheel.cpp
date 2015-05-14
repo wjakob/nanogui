@@ -216,7 +216,7 @@ ColorWheel::adjustPosition(const Vector2i &p)
         mHue /= 2*NVG_PI;
 
         if (mCallback)
-            mCallback();
+            mCallback(color());
 
         return;
     }
@@ -254,7 +254,7 @@ ColorWheel::adjustPosition(const Vector2i &p)
     }
 
     if (mCallback)
-        mCallback();
+        mCallback(color());
 }
 
 Vector3f

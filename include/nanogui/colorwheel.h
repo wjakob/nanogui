@@ -20,8 +20,8 @@ public:
     void         adjustPosition(const Vector2i& p);
 
     /// Set the push callback (for any type of button)
-    inline std::function<void()> callback() const           { return mCallback; }
-    inline void setCallback(std::function<void()> callback) { mCallback = callback; }
+    inline std::function<void(Vector3f)> callback() const           { return mCallback; }
+    inline void setCallback(std::function<void(Vector3f)> callback) { mCallback = callback; }
 
     Vector3f color() const;
 
@@ -33,7 +33,7 @@ protected:
     float       mHue;
     float       mWhite;
     float       mBlack;
-    std::function<void()> mCallback;
+    std::function<void(Vector3f)> mCallback;
 };
 
 NANOGUI_NAMESPACE_END
