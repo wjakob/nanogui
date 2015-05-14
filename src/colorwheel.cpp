@@ -48,7 +48,7 @@ ColorWheel::ColorWheel(Widget *parent, const Vector3f& rgb)
 }
 
 Vector2i ColorWheel::preferredSize(NVGcontext *ctx) const {
-    return { 250., 250. };
+    return { 100., 100. };
 }
 
 void ColorWheel::draw(NVGcontext *ctx) {
@@ -77,7 +77,7 @@ void ColorWheel::draw(NVGcontext *ctx) {
     cx = x + w*0.5f;
     cy = y + h*0.5f;
     r1 = (w < h ? w : h) * 0.5f - 5.0f;
-    r0 = r1 - 20.0f;
+    r0 = r1 * .85;
     aeps = 0.5f / r1;   // half a pixel arc length in radians (2pi cancels out).
 
     for (i = 0; i < 6; i++) {
@@ -109,12 +109,15 @@ void ColorWheel::draw(NVGcontext *ctx) {
     nvgRotate(vg, hue*NVG_PI*2);
 
     // Marker on
-    nvgStrokeWidth(vg, 2.0f);
+    float u = std::max(r1/50, 1.5f);
+          u = std::min(u, 4.f);
+    nvgStrokeWidth(vg, u);
     nvgBeginPath(vg);
-    nvgRect(vg, r0-1,-3,r1-r0+2,6);
+    nvgRect(vg, r0-1,-2*u,r1-r0+2,4*u);
     nvgStrokeColor(vg, nvgRGBA(255,255,255,192));
     nvgStroke(vg);
 
+#if 0
     paint = nvgBoxGradient(vg, r0-3,-5,r1-r0+6,10, 2,4, nvgRGBA(0,0,0,128), nvgRGBA(0,0,0,0));
     nvgBeginPath(vg);
     nvgRect(vg, r0-2-10,-4-10,r1-r0+4+20,8+20);
@@ -122,6 +125,7 @@ void ColorWheel::draw(NVGcontext *ctx) {
     nvgPathWinding(vg, NVG_HOLE);
     nvgFillPaint(vg, paint);
     nvgFill(vg);
+#endif
 
     // Center triangle
     r = r0 - 6;
@@ -147,19 +151,21 @@ void ColorWheel::draw(NVGcontext *ctx) {
     float sx = r*(1 - mWhite - mBlack) + ax*mWhite + bx*mBlack;
     float sy =                           ay*mWhite + by*mBlack;
 
-    nvgStrokeWidth(vg, 2.0f);
+    nvgStrokeWidth(vg, u);
     nvgBeginPath(vg);
-    nvgCircle(vg, sx,sy,5);
+    nvgCircle(vg, sx,sy, 2*u);
     nvgStrokeColor(vg, nvgRGBA(255,255,255,192));
     nvgStroke(vg);
 
+#if 0
     paint = nvgRadialGradient(vg, sx,sy, 7,9, nvgRGBA(0,0,0,64), nvgRGBA(0,0,0,0));
     nvgBeginPath(vg);
-    nvgRect(vg, sx-20,sy-20,40,40);
+    nvgRect(vg, sx-r1/10,sy-r1/10,r1/5,r1/5);
     nvgCircle(vg, sx,sy,7);
     nvgPathWinding(vg, NVG_HOLE);
     nvgFillPaint(vg, paint);
     nvgFill(vg);
+#endif
 
     nvgRestore(vg);
 
@@ -195,7 +201,7 @@ ColorWheel::adjustPosition(const Vector2i &p)
     float cx = w*0.5f;
     float cy = h*0.5f;
     float r1 = (w < h ? w : h) * 0.5f - 5.0f;
-    float r0 = r1 - 20.0f;
+    float r0 = r1 * .85;
 
     x -= cx;
     y -= cy;
