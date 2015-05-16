@@ -1,16 +1,14 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
-
-#include <Eigen/Dense>
+#include <Eigen/QR>
+#include <Eigen/Geometry>
 
 NANOGUI_NAMESPACE_BEGIN
 
 ColorWheel::ColorWheel(Widget *parent, const Vector3f& rgb)
-    : Widget(parent) {
-    float r = rgb[0],
-          g = rgb[1],
-          b = rgb[2];
+    : Widget(parent), mDragRegion(None) {
+    float r = rgb[0], g = rgb[1], b = rgb[2];
 
     float max = std::max({ r, g, b });
     float min = std::min({ r, g, b });
@@ -48,7 +46,7 @@ ColorWheel::ColorWheel(Widget *parent, const Vector3f& rgb)
 }
 
 Vector2i ColorWheel::preferredSize(NVGcontext *ctx) const {
-    return { 100., 100. };
+    return { 100, 100. };
 }
 
 void ColorWheel::draw(NVGcontext *ctx) {
@@ -69,15 +67,11 @@ void ColorWheel::draw(NVGcontext *ctx) {
 
     nvgSave(vg);
 
-/*  nvgBeginPath(vg);
-    nvgRect(vg, x,y,w,h);
-    nvgFillColor(vg, nvgRGBA(255,0,0,128));
-    nvgFill(vg);*/
-
     cx = x + w*0.5f;
     cy = y + h*0.5f;
     r1 = (w < h ? w : h) * 0.5f - 5.0f;
-    r0 = r1 * .85;
+    r0 = r1 * .75f;
+
     aeps = 0.5f / r1;   // half a pixel arc length in radians (2pi cancels out).
 
     for (i = 0; i < 6; i++) {
@@ -91,7 +85,9 @@ void ColorWheel::draw(NVGcontext *ctx) {
         ay = cy + sinf(a0) * (r0+r1)*0.5f;
         bx = cx + cosf(a1) * (r0+r1)*0.5f;
         by = cy + sinf(a1) * (r0+r1)*0.5f;
-        paint = nvgLinearGradient(vg, ax,ay, bx,by, nvgHSLA(a0/(NVG_PI*2),1.0f,0.55f,255), nvgHSLA(a1/(NVG_PI*2),1.0f,0.55f,255));
+        paint = nvgLinearGradient(vg, ax, ay, bx, by,
+                                  nvgHSLA(a0 / (NVG_PI * 2), 1.0f, 0.55f, 255),
+                                  nvgHSLA(a1 / (NVG_PI * 2), 1.0f, 0.55f, 255));
         nvgFillPaint(vg, paint);
         nvgFill(vg);
     }
@@ -117,7 +113,6 @@ void ColorWheel::draw(NVGcontext *ctx) {
     nvgStrokeColor(vg, nvgRGBA(255,255,255,192));
     nvgStroke(vg);
 
-#if 0
     paint = nvgBoxGradient(vg, r0-3,-5,r1-r0+6,10, 2,4, nvgRGBA(0,0,0,128), nvgRGBA(0,0,0,0));
     nvgBeginPath(vg);
     nvgRect(vg, r0-2-10,-4-10,r1-r0+4+20,8+20);
@@ -125,7 +120,6 @@ void ColorWheel::draw(NVGcontext *ctx) {
     nvgPathWinding(vg, NVG_HOLE);
     nvgFillPaint(vg, paint);
     nvgFill(vg);
-#endif
 
     // Center triangle
     r = r0 - 6;
@@ -135,16 +129,18 @@ void ColorWheel::draw(NVGcontext *ctx) {
     by = sinf(-120.0f/180.0f*NVG_PI) * r;
     nvgBeginPath(vg);
     nvgMoveTo(vg, r,0);
-    nvgLineTo(vg, ax,ay);
-    nvgLineTo(vg, bx,by);
+    nvgLineTo(vg, ax, ay);
+    nvgLineTo(vg, bx, by);
     nvgClosePath(vg);
-    paint = nvgLinearGradient(vg, r,0, ax,ay, nvgHSLA(hue,1.0f,0.5f,255), nvgRGBA(255,255,255,255));
+    paint = nvgLinearGradient(vg, r, 0, ax, ay, nvgHSLA(hue, 1.0f, 0.5f, 255),
+                              nvgRGBA(255, 255, 255, 255));
     nvgFillPaint(vg, paint);
     nvgFill(vg);
-    paint = nvgLinearGradient(vg, (r+ax)*0.5f,(0+ay)*0.5f, bx,by, nvgRGBA(0,0,0,0), nvgRGBA(0,0,0,255));
+    paint = nvgLinearGradient(vg, (r + ax) * 0.5f, (0 + ay) * 0.5f, bx, by,
+                              nvgRGBA(0, 0, 0, 0), nvgRGBA(0, 0, 0, 255));
     nvgFillPaint(vg, paint);
     nvgFill(vg);
-    nvgStrokeColor(vg, nvgRGBA(0,0,0,64));
+    nvgStrokeColor(vg, nvgRGBA(0, 0, 0, 64));
     nvgStroke(vg);
 
     // Select circle on triangle
@@ -153,46 +149,36 @@ void ColorWheel::draw(NVGcontext *ctx) {
 
     nvgStrokeWidth(vg, u);
     nvgBeginPath(vg);
-    nvgCircle(vg, sx,sy, 2*u);
+    nvgCircle(vg, sx,sy,2*u);
     nvgStrokeColor(vg, nvgRGBA(255,255,255,192));
     nvgStroke(vg);
 
-#if 0
-    paint = nvgRadialGradient(vg, sx,sy, 7,9, nvgRGBA(0,0,0,64), nvgRGBA(0,0,0,0));
-    nvgBeginPath(vg);
-    nvgRect(vg, sx-r1/10,sy-r1/10,r1/5,r1/5);
-    nvgCircle(vg, sx,sy,7);
-    nvgPathWinding(vg, NVG_HOLE);
-    nvgFillPaint(vg, paint);
-    nvgFill(vg);
-#endif
-
     nvgRestore(vg);
 
     nvgRestore(vg);
 }
 
-bool
-ColorWheel::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
-{
-    if (!mEnabled)
+bool ColorWheel::mouseButtonEvent(const Vector2i &p, int button, bool down,
+                                  int modifiers) {
+    Widget::mouseButtonEvent(p, button, down, modifiers);
+    if (!mEnabled || button != GLFW_MOUSE_BUTTON_1)
         return false;
 
-    adjustPosition(p);
-
-    return true;
+    if (down) {
+        mDragRegion = adjustPosition(p);
+        return mDragRegion != None;
+    } else {
+        mDragRegion = None;
+        return true;
+    }
 }
 
-bool
-ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
-{
-    adjustPosition(p);
-    return true;
+bool ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
+                                int button, int modifiers) {
+    return adjustPosition(p, mDragRegion);
 }
 
-void
-ColorWheel::adjustPosition(const Vector2i &p)
-{
+ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consideredRegions) {
     float x = p.x() - mPos.x(),
           y = p.y() - mPos.y(),
           w = mSize.x(),
@@ -201,15 +187,16 @@ ColorWheel::adjustPosition(const Vector2i &p)
     float cx = w*0.5f;
     float cy = h*0.5f;
     float r1 = (w < h ? w : h) * 0.5f - 5.0f;
-    float r0 = r1 * .85;
+    float r0 = r1 * .75f;
 
     x -= cx;
     y -= cy;
 
     float mr = std::sqrt(x*x + y*y);
 
-    if (mr >= r0 && mr <= r1)
-    {
+    if ((mr >= r0 && mr <= r1) || (consideredRegions == OuterCircle)) {
+        if (!(consideredRegions & OuterCircle))
+            return None;
         mHue = std::atan(y / x);
         if (x < 0)
             mHue += NVG_PI;
@@ -218,19 +205,19 @@ ColorWheel::adjustPosition(const Vector2i &p)
         if (mCallback)
             mCallback(color());
 
-        return;
+        return OuterCircle;
     }
 
     float r = r0 - 6;
 
-    float ax = cosf( 120.0f/180.0f*NVG_PI) * r;
-    float ay = sinf( 120.0f/180.0f*NVG_PI) * r;
-    float bx = cosf(-120.0f/180.0f*NVG_PI) * r;
-    float by = sinf(-120.0f/180.0f*NVG_PI) * r;
+    float ax = std::cos( 120.0f/180.0f*NVG_PI) * r;
+    float ay = std::sin( 120.0f/180.0f*NVG_PI) * r;
+    float bx = std::cos(-120.0f/180.0f*NVG_PI) * r;
+    float by = std::sin(-120.0f/180.0f*NVG_PI) * r;
 
-    typedef     Eigen::Matrix<float,2,2>        Matrix2f;
+    typedef Eigen::Matrix<float,2,2>        Matrix2f;
 
-    Eigen::Matrix<float, 2, 3>  triangle;
+    Eigen::Matrix<float, 2, 3> triangle;
     triangle << ax,bx,r,
                 ay,by,0;
     triangle = Eigen::Rotation2D<float>(mHue * 2 * NVG_PI).matrix() * triangle;
@@ -241,25 +228,22 @@ ColorWheel::adjustPosition(const Vector2i &p)
     Vector2f pos { x - triangle(0,2), y - triangle(1,2) };
 
     Vector2f bary = T.colPivHouseholderQr().solve(pos);
-    float l0 = bary[0],
-          l1 = bary[1];
-    float l2 = 1 - l0 - l1;
+    float l0 = bary[0], l1 = bary[1], l2 = 1 - l0 - l1;
 
-    if (l0 >= 0 && l0 <= 1. &&
-        l1 >= 0 && l1 <= 1. &&
-        l2 >= 0 && l2 <= 1.)
-    {
+    if (l0 >= 0 && l0 <= 1.f && l1 >= 0.f && l1 <= 1.f && l2 >= 0.f && l2 <= 1.f) {
+        if (!(consideredRegions & InnerTriangle))
+            return None;
         mWhite = l0;
         mBlack = l1;
+        if (mCallback)
+            mCallback(color());
+        return InnerTriangle;
     }
 
-    if (mCallback)
-        mCallback(color());
+    return None;
 }
 
-Vector3f
-ColorWheel::hue2rgb(float h) const
-{
+Vector3f ColorWheel::hue2rgb(float h) const {
     float s = 1., v = 1.;
     float r,g,b;
 
@@ -271,8 +255,7 @@ ColorWheel::hue2rgb(float h) const
     float q = v * (1 - f * s);
     float t = v * (1 - (1 - f) * s);
 
-    switch(i % 6)
-    {
+    switch (i % 6) {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
         case 2: r = p, g = v, b = t; break;
@@ -284,12 +267,10 @@ ColorWheel::hue2rgb(float h) const
     return { r, g, b };
 }
 
-Vector3f
-ColorWheel::color() const
-{
+Vector3f ColorWheel::color() const {
     Vector3f rgb    = hue2rgb(mHue);
-    Vector3f black  { 0., 0., 0. };
-    Vector3f white  { 1., 1., 1. };
+    Vector3f black  { 0.f, 0.f, 0.f };
+    Vector3f white  { 1.f, 1.f, 1.f };
     return rgb * (1 - mWhite - mBlack) + black * mBlack + white * mWhite;
 }
 

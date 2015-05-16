@@ -17,23 +17,30 @@ public:
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
 
-    void         adjustPosition(const Vector2i& p);
 
     /// Set the push callback (for any type of button)
-    inline std::function<void(Vector3f)> callback() const           { return mCallback; }
-    inline void setCallback(std::function<void(Vector3f)> callback) { mCallback = callback; }
+    inline std::function<void(const Vector3f &)> callback() const           { return mCallback; }
+    inline void setCallback(std::function<void(const Vector3f &)> callback) { mCallback = callback; }
 
     Vector3f color() const;
 
 private:
-    Vector3f hue2rgb(float h) const;
+    enum Region {
+        None = 0,
+        InnerTriangle = 1,
+        OuterCircle = 2,
+        Both = 3
+    };
 
+    Vector3f hue2rgb(float h) const;
+    Region adjustPosition(const Vector2i &p, Region consideredRegions = Both);
 
 protected:
-    float       mHue;
-    float       mWhite;
-    float       mBlack;
-    std::function<void(Vector3f)> mCallback;
+    float mHue;
+    float mWhite;
+    float mBlack;
+    Region mDragRegion;
+    std::function<void(const Vector3f &)> mCallback;
 };
 
 NANOGUI_NAMESPACE_END
