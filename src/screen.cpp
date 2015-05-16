@@ -246,6 +246,11 @@ void Screen::setVisible(bool visible) {
     }
 }
 
+void Screen::setSize(const Vector2i& size) {
+    Widget::setSize(size);
+    glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
+}
+
 void Screen::drawAll() {
     Vector2i oldFBSize(mFBSize);
     glfwMakeContextCurrent(mGLFWWindow);

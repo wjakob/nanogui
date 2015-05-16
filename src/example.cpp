@@ -15,6 +15,7 @@
 #include <nanogui/imagepanel.h>
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
+#include <nanogui/colorwheel.h>
 #if defined(WIN32)
 #include <windows.h>
 #endif
@@ -54,6 +55,8 @@ public:
         b->setButtonFlags(Button::RadioButton);
         b = new Button(window, "Radio button 2");
         b->setButtonFlags(Button::RadioButton);
+
+        new ColorWheel(window);
 
         new Label(window, "A tool palette", "sans-bold");
         Widget *tools = new Widget(window);
