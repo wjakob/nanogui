@@ -17,9 +17,13 @@ std::map<GLFWwindow *, Screen *> __nanogui_screens;
 static bool glewInitialized = false;
 #endif
 
+Screen::Screen()
+  : Widget(nullptr),mIsMainWindow(false),mCursor(nullptr),mCursorType(Cursor::None){
+}
+
 Screen::Screen(const Vector2i &size, const std::string &caption,
                bool resizable, bool fullscreen)
-    : Widget(nullptr) {
+               : Widget(nullptr),mIsMainWindow(true),mCursor(nullptr),mCursorType(Cursor::None){
 
     /* Request a forward compatible OpenGL 3.3 core profile context */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -57,7 +61,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         glewInitialized = true;
         if (glewInit() != GLEW_NO_ERROR)
             throw std::runtime_error("Could not initialize GLEW!");
-
+        glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
     }
 #endif
 
@@ -77,156 +81,91 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
     glfwPollEvents();
 #endif
 
+    /* Propagate GLFW events to the appropriate Screen instance */
+    glfwSetCursorPosCallback(mGLFWWindow,[](GLFWwindow *w,double x,double y) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->cursorPosCallbackEvent(w,x,y);
+    });
+      
+    glfwSetMouseButtonCallback(mGLFWWindow,[](GLFWwindow *w,int button,int action,int modifiers) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->mouseButtonCallbackEvent(w,button,action,modifiers);
+    });
+
+    glfwSetKeyCallback(mGLFWWindow,[](GLFWwindow *w,int key,int scancode,int action,int mods) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->keyCallbackEvent(w,key,scancode,action,mods);
+    });
+
+    glfwSetCharCallback(mGLFWWindow,[](GLFWwindow *w,unsigned int codepoint) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->charCallbackEvent(w,codepoint);
+    });
+
+    glfwSetDropCallback(mGLFWWindow,[](GLFWwindow *w,int count,const char **filenames) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->dropCallbackEvent(w,count,filenames);
+    });
+
+    glfwSetScrollCallback(mGLFWWindow,[](GLFWwindow *w,double x,double y) {
+      auto it = __nanogui_screens.find(w);
+      if(it == __nanogui_screens.end())
+        return;
+      Screen *s = it->second;
+      if(!s->mProcessEvents)
+        return;
+      s->scrollCallbackEvent(w,x,y);
+    });
+
+    initScreen(mGLFWWindow);
+}
+
+void Screen::initScreen(GLFWwindow* window)
+{
+  mGLFWWindow = window;
+  glfwGetWindowSize(mGLFWWindow,&mSize[0],&mSize[1]);
+  glfwGetFramebufferSize(mGLFWWindow,&mFBSize[0],&mFBSize[1]);
+
 #ifdef NDEBUG
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
+  mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
 #else
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
+  mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
 #endif
 
-    /* Propagate GLFW events to the appropriate Screen instance */
-    glfwSetCursorPosCallback(mGLFWWindow,
-        [](GLFWwindow *w, double x, double y) {
-            auto it = __nanogui_screens.find(w);
-            if (it == __nanogui_screens.end())
-                return;
-            Screen *s = it->second;
-            if (!s->mProcessEvents)
-                return;
-            Vector2i p((int) x, (int) y);
-            bool ret = false;
-            s->mLastInteraction = glfwGetTime();
-            try {
-                if (s->mDragActive)
-                    ret = s->mDragWidget->mouseDragEvent(
-                        p - s->mDragWidget->parent()->absolutePosition(), p - s->mMousePos,
-                        s->mMouseState, s->mModifiers);
-                else
-                    s->mouseMotionEvent(p, p - s->mMousePos, s->mMouseState, s->mModifiers);
-                s->mMousePos = p;
-            } catch (const std::exception &e) {
-                std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-                abort();
-            }
-        }
-    );
-
-    glfwSetMouseButtonCallback(mGLFWWindow,
-        [](GLFWwindow *w, int button, int action, int modifiers) {
-            auto it = __nanogui_screens.find(w);
-            if (it == __nanogui_screens.end())
-                return;
-            Screen *s = it->second;
-            if (!s->mProcessEvents)
-                return;
-            s->mModifiers = modifiers;
-            s->mLastInteraction = glfwGetTime();
-            try {
-                if (s->mFocusPath.size() > 1) {
-                    const Window *window = dynamic_cast<Window *>(s->mFocusPath[s->mFocusPath.size()-2]);
-                    if (window && window->modal()) {
-                        if (!window->contains(s->mMousePos))
-                            return;
-                    }
-                }
-
-                if (action == GLFW_PRESS)
-                    s->mMouseState |= 1 << button;
-                else
-                    s->mMouseState &= ~(1 << button);
-
-                if (s->mDragActive && action == GLFW_RELEASE &&
-                    s->findWidget(s->mMousePos) != s->mDragWidget)
-                    s->mDragWidget->mouseButtonEvent(
-                        s->mMousePos - s->mDragWidget->parent()->absolutePosition(),
-                        button, false, s->mModifiers);
-
-                if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
-                    s->mDragWidget = s->findWidget(s->mMousePos);
-                    if (s->mDragWidget == s)
-                        s->mDragWidget = nullptr;
-                    s->mDragActive = s->mDragWidget != nullptr;
-                    if (!s->mDragActive)
-                        s->updateFocus(nullptr);
-                } else {
-                    s->mDragActive = false;
-                    s->mDragWidget = nullptr;
-                }
-
-                s->mouseButtonEvent(s->mMousePos, button, action == GLFW_PRESS, s->mModifiers);
-            } catch (const std::exception &e) {
-                std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-                abort();
-            }
-        }
-    );
-
-    glfwSetKeyCallback(mGLFWWindow,
-        [](GLFWwindow *w, int key, int scancode, int action, int mods) {
-            auto it = __nanogui_screens.find(w);
-            if (it == __nanogui_screens.end())
-                return;
-            Screen *s = it->second;
-            if (!s->mProcessEvents)
-                return;
-            s->mLastInteraction = glfwGetTime();
-            try {
-                s->keyboardEvent(key, scancode, action == GLFW_PRESS, mods);
-            } catch (const std::exception &e) {
-                std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-                abort();
-            }
-        }
-    );
-
-    glfwSetDropCallback(mGLFWWindow,
-        [](GLFWwindow *w, int count, const char **filenames) {
-            auto it = __nanogui_screens.find(w);
-            if (it == __nanogui_screens.end() || count <= 0)
-                return;
-            Screen *s = it->second;
-            std::vector<std::string> arg(count);
-            for (int i=0; i<count; ++i)
-                arg[i] = filenames[i];
-            s->dropEvent(arg);
-        }
-    );
-
-    glfwSetScrollCallback(mGLFWWindow,
-        [](GLFWwindow *w, double x, double y) {
-            auto it = __nanogui_screens.find(w);
-            if (it == __nanogui_screens.end())
-                return;
-            Screen *s = it->second;
-            if (!s->mProcessEvents)
-                return;
-            s->mLastInteraction = glfwGetTime();
-            try {
-                if (s->mFocusPath.size() > 1) {
-                    const Window *window = dynamic_cast<Window *>(s->mFocusPath[s->mFocusPath.size()-2]);
-                    if (window && window->modal()) {
-                        if (!window->contains(s->mMousePos))
-                            return;
-                    }
-                }
-                s->scrollEvent(s->mMousePos, Vector2f(x, y));
-            } catch (const std::exception &e) {
-                std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-                abort();
-            }
-        }
-    );
-
-    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
-    mTheme = new Theme(mNVGContext);
-    mMousePos = Vector2i::Zero();
-    mMouseState = mModifiers = 0;
-    mDragActive = false;
-    mLastInteraction = glfwGetTime();
-    mProcessEvents = true;
-    mBackground = Vector3f(0.3f, 0.3f, 0.32f);
-    mVisible = false;
-    __nanogui_screens[mGLFWWindow] = this;
+  mVisible = !mIsMainWindow;
+  mTheme = new Theme(mNVGContext);
+  mMousePos = Vector2i::Zero();
+  mMouseState = mModifiers = 0;
+  mDragActive = false;
+  mLastInteraction = glfwGetTime();
+  mProcessEvents = true;
+  mBackground = Vector3f(0.3f,0.3f,0.32f);
+  __nanogui_screens[mGLFWWindow] = this;
 }
 
 Screen::~Screen() {
@@ -239,97 +178,264 @@ Screen::~Screen() {
 void Screen::setVisible(bool visible) {
     if (mVisible != visible) {
         mVisible = visible;
-        if (visible)
-            glfwShowWindow(mGLFWWindow);
-        else
-            glfwHideWindow(mGLFWWindow);
+        
+        if(mIsMainWindow) {
+          if(visible)
+              glfwShowWindow(mGLFWWindow);
+          else
+              glfwHideWindow(mGLFWWindow);
+        }
     }
 }
 
 void Screen::setSize(const Vector2i& size) {
     Widget::setSize(size);
-    glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
+    
+    if(mIsMainWindow)
+      glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
 }
 
 void Screen::drawAll() {
-    Vector2i oldFBSize(mFBSize);
-    glfwMakeContextCurrent(mGLFWWindow);
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
-    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
-    glViewport(0, 0, mFBSize[0], mFBSize[1]);
-    if (oldFBSize != mFBSize)
-        framebufferSizeChanged();
+    glClearColor(mBackground[0],mBackground[1],mBackground[2],1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glClearColor(mBackground[0], mBackground[1], mBackground[2], 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-            GL_STENCIL_BUFFER_BIT);
-    drawContents();
-
-    /* Calculate pixel ratio for hi-dpi devices. */
-    mPixelRatio = (float)mFBSize[0] / (float)mSize[0];
-    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
-
-    nvgTranslate(mNVGContext, -2, -2);
-    draw(mNVGContext);
-
-    double elapsed = glfwGetTime() - mLastInteraction;
-
-    if (elapsed > 0.5f) {
-        /* Draw tooltips */
-        const Widget *widget = findWidget(mMousePos);
-        if (widget && !widget->tooltip().empty()) {
-            int tooltipWidth = 150;
-
-            float bounds[4];
-            nvgFontFace(mNVGContext, "sans");
-            nvgFontSize(mNVGContext, 15.0f);
-            nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-            nvgTextLineHeight(mNVGContext, 1.1f);
-            Vector2i pos =
-                widget->absolutePosition() +
-                Vector2i(widget->width() / 2, widget->height() + 10);
-
-            nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
-                             widget->tooltip().c_str(), nullptr, bounds);
-
-            nvgGlobalAlpha(mNVGContext,
-                           std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
-
-            nvgBeginPath(mNVGContext);
-            nvgFillColor(mNVGContext, Color(0, 255));
-            int h = (bounds[2] - bounds[0]) / 2;
-            nvgRoundedRect(mNVGContext, bounds[0] - 4 - h, bounds[1] - 4,
-                           (int)(bounds[2] - bounds[0]) + 8,
-                           (int)(bounds[3] - bounds[1]) + 8, 3);
-
-            int px = (int)((bounds[2]+bounds[0])/2) - h;
-            nvgMoveTo(mNVGContext, px,bounds[1] - 10);
-            nvgLineTo(mNVGContext, px+7,bounds[1]+1);
-            nvgLineTo(mNVGContext, px-7,bounds[1]+1);
-            nvgFill(mNVGContext);
-
-            nvgFillColor(mNVGContext, Color(255, 255));
-            nvgFontBlur(mNVGContext, 0.0f);
-            nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
-                       widget->tooltip().c_str(), nullptr);
-        }
-    }
-
-    nvgEndFrame(mNVGContext);
+    drawWidgets();
 
     glfwSwapBuffers(mGLFWWindow);
 }
 
-bool Screen::keyboardEvent(int key, int scancode, bool press, int modifiers) {
-    if (Widget::keyboardEvent(key, scancode, press, modifiers))
-        return true;
+void Screen::drawWidgets()
+{
+  if(!mVisible)
+    return;
+  
+  Vector2i oldFBSize(mFBSize);
+  glfwMakeContextCurrent(mGLFWWindow);
+  glfwGetFramebufferSize(mGLFWWindow,&mFBSize[0],&mFBSize[1]);
+  glfwGetWindowSize(mGLFWWindow,&mSize[0],&mSize[1]);
+  glViewport(0,0,mFBSize[0],mFBSize[1]);
+  if(oldFBSize != mFBSize)
+    framebufferSizeChanged();
 
-    if (key == GLFW_KEY_ESCAPE && press) {
+  /* Calculate pixel ratio for hi-dpi devices. */
+  mPixelRatio = (float)mFBSize[0] / (float)mSize[0];
+  nvgBeginFrame(mNVGContext,mSize[0],mSize[1],mPixelRatio);
+
+  nvgTranslate(mNVGContext,-2,-2);
+  draw(mNVGContext);
+
+  double elapsed = glfwGetTime() - mLastInteraction;
+
+  if(elapsed > 0.5f) {
+    /* Draw tooltips */
+    const Widget *widget = findWidget(mMousePos);
+    if(widget && !widget->tooltip().empty()) {
+      int tooltipWidth = 150;
+
+      float bounds[4];
+      nvgFontFace(mNVGContext,"sans");
+      nvgFontSize(mNVGContext,15.0f);
+      nvgTextAlign(mNVGContext,NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+      nvgTextLineHeight(mNVGContext,1.1f);
+      Vector2i pos =
+        widget->absolutePosition() +
+        Vector2i(widget->width() / 2,widget->height() + 10);
+
+      nvgTextBoxBounds(mNVGContext,pos.x(),pos.y(),tooltipWidth,
+        widget->tooltip().c_str(),nullptr,bounds);
+
+      nvgGlobalAlpha(mNVGContext,
+        std::min(1.0,2 * (elapsed - 0.5f)) * 0.8);
+
+      nvgBeginPath(mNVGContext);
+      nvgFillColor(mNVGContext,Color(0,255));
+      int h = (bounds[2] - bounds[0]) / 2;
+      nvgRoundedRect(mNVGContext,bounds[0] - 4 - h,bounds[1] - 4,
+        (int)(bounds[2] - bounds[0]) + 8,
+        (int)(bounds[3] - bounds[1]) + 8,3);
+
+      int px = (int)((bounds[2]+bounds[0])/2) - h;
+      nvgMoveTo(mNVGContext,px,bounds[1] - 10);
+      nvgLineTo(mNVGContext,px+7,bounds[1]+1);
+      nvgLineTo(mNVGContext,px-7,bounds[1]+1);
+      nvgFill(mNVGContext);
+
+      nvgFillColor(mNVGContext,Color(255,255));
+      nvgFontBlur(mNVGContext,0.0f);
+      nvgTextBox(mNVGContext,pos.x() - h,pos.y(),tooltipWidth,
+        widget->tooltip().c_str(),nullptr);
+    }
+  }
+
+  nvgEndFrame(mNVGContext);
+}
+
+bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
+    bool handled = false;
+
+    if(mFocusPath.size() > 0) {
+      for(auto it = mFocusPath.rbegin()+1; it != mFocusPath.rend(); ++it) {
+        if((*it)->focused())
+          handled |= (*it)->keyboardEvent(key,scancode,action,modifiers);
+      }
+    }
+
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         setVisible(false);
         return true;
     }
 
-    return false;
+    return handled;
+}
+
+bool Screen::keyboardEvent(unsigned int codepoint) {
+  bool handled = false;
+  if(mFocusPath.size() > 0) {
+    for(auto it = mFocusPath.rbegin()+1; it != mFocusPath.rend(); ++it) {
+      if((*it)->focused())
+        handled |= (*it)->keyboardEvent(codepoint);
+    }
+  }
+
+  return handled;
+}
+
+bool Screen::cursorPosCallbackEvent(GLFWwindow *w,double x,double y)
+{
+  Vector2i p((int)x,(int)y);
+  bool ret = false;
+  mLastInteraction = glfwGetTime();
+  try {
+    if(mDragActive)
+      ret = mDragWidget->mouseDragEvent(
+      p - mDragWidget->parent()->absolutePosition(),p - mMousePos,
+      mMouseState,mModifiers);
+
+    if(ret == false)
+      ret = mouseMotionEvent(p,p - mMousePos,mMouseState,mModifiers);
+
+    mMousePos = p;
+
+    return ret;
+  }
+  catch(const std::exception &e) {
+    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    abort();
+  }
+
+  return false;
+}
+
+bool Screen::mouseButtonCallbackEvent(GLFWwindow *w,int button,int action,int modifiers)
+{
+  mModifiers = modifiers;
+  mLastInteraction = glfwGetTime();
+  try {
+    if(mFocusPath.size() > 1) {
+      const Window *window = dynamic_cast<Window *>(mFocusPath[mFocusPath.size()-2]);
+      if(window && window->modal()) {
+        if(!window->contains(mMousePos))
+          return false;
+      }
+    }
+
+    if(action == GLFW_PRESS)
+      mMouseState |= 1 << button;
+    else
+      mMouseState &= ~(1 << button);
+
+    auto dropWidget = findWidget(mMousePos);
+    if(mDragActive && action == GLFW_RELEASE && dropWidget != mDragWidget) {
+      mDragWidget->mouseButtonEvent(
+        mMousePos - mDragWidget->parent()->absolutePosition(),
+        button,false,mModifiers);
+      
+      mMouseFocusedWidgets.clear();
+      auto parent = dropWidget;
+      while(parent){
+        updateMouseFocus(parent);
+        parent = parent->parent();
+      }
+    }
+
+    if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
+      mDragWidget = findWidget(mMousePos);
+      if(mDragWidget == this)
+        mDragWidget = nullptr;
+      mDragActive = mDragWidget != nullptr;
+      if(!mDragActive)
+        updateFocus(nullptr);
+    }
+    else {
+      mDragActive = false;
+      mDragWidget = nullptr;
+    }
+
+    return mouseButtonEvent(mMousePos,button,action == GLFW_PRESS,mModifiers);
+  }
+  catch(const std::exception &e) {
+    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    abort();
+  }
+
+  return false;
+}
+
+bool Screen::keyCallbackEvent(GLFWwindow *w,int key,int scancode,int action,int mods)
+{
+  mLastInteraction = glfwGetTime();
+  try {
+    return keyboardEvent(key,scancode,action,mods);
+  }
+  catch(const std::exception &e) {
+    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    abort();
+  }
+
+  return false;
+}
+
+bool Screen::charCallbackEvent(GLFWwindow* w,unsigned int codepoint)
+{
+  mLastInteraction = glfwGetTime();
+  try {
+    return keyboardEvent(codepoint);
+  }
+  catch(const std::exception &e) {
+    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    abort();
+  }
+
+  return false;
+}
+
+bool Screen::dropCallbackEvent(GLFWwindow *w,int count,const char **filenames)
+{
+  std::vector<std::string> arg(count);
+  for(int i=0; i<count; ++i)
+    arg[i] = filenames[i];
+  return dropEvent(arg);
+}
+
+bool Screen::scrollCallbackEvent(GLFWwindow *w,double x,double y)
+{
+  mLastInteraction = glfwGetTime();
+  try {
+    if(mFocusPath.size() > 1) {
+      const Window *window = dynamic_cast<Window *>(mFocusPath[mFocusPath.size()-2]);
+      if(window && window->modal()) {
+        if(!window->contains(mMousePos))
+          return false;
+      }
+    }
+    return scrollEvent(mMousePos,Vector2f(x,y));
+  }
+  catch(const std::exception &e) {
+    std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
+    abort();
+  }
+
+  return false;
 }
 
 void Screen::updateFocus(Widget *widget) {
@@ -351,6 +457,38 @@ void Screen::updateFocus(Widget *widget) {
 
     if (window)
         moveWindowToFront((Window *) window);
+}
+
+void Screen::updateMouseFocus(Widget *widget) {
+  auto w = std::find(mMouseFocusedWidgets.begin(),mMouseFocusedWidgets.end(),widget);
+  if(w != mMouseFocusedWidgets.end()) {
+    if(widget->mouseFocuse() == false)
+      mMouseFocusedWidgets.erase(w);
+  }
+  else {
+    if(widget->mouseFocuse())
+      mMouseFocusedWidgets.push_back(widget);
+  }
+
+  Cursor cursor = Cursor::None;
+  if(mMouseFocusedWidgets.size() > 0)
+    cursor = mMouseFocusedWidgets.back()->cursor();
+  
+  if(cursor != mCursorType) {
+    if(mCursor != nullptr) {
+      glfwDestroyCursor(mCursor);
+      mCursor = nullptr;
+    }
+    
+    if(cursor == Cursor::None)
+      glfwSetCursor(mGLFWWindow,nullptr);
+    else {
+      mCursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + static_cast<int>(cursor));
+      glfwSetCursor(mGLFWWindow,mCursor);
+    }
+    
+    mCursorType = cursor;
+  }
 }
 
 void Screen::disposeWindow(Window *window) {

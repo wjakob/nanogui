@@ -13,7 +13,7 @@ Label::Label(Widget *parent, const std::string &caption, const std::string &font
 Vector2i Label::preferredSize(NVGcontext *ctx) const {
     if (mCaption == "")
         return Vector2i::Zero();
-    nvgFontSize(ctx, mFontSize);
+    nvgFontSize(ctx,fontSize());
     nvgFontFace(ctx, mFont.c_str());
     if (mFixedSize.x() > 0) {
         float bounds[4];
@@ -33,7 +33,7 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
 
 void Label::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
-    nvgFontSize(ctx, mFontSize);
+    nvgFontSize(ctx, fontSize());
     nvgFontFace(ctx, mFont.c_str());
     nvgFillColor(ctx, mColor);
     if (mFixedSize.x() > 0) {

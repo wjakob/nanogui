@@ -1,12 +1,11 @@
 #if !defined(__NANOGUI_THEME_H)
 #define __NANOGUI_THEME_H
 
-#include <nanogui/nanogui.h>
+#include <nanogui/common.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
 struct Theme {
-public:
     /* Fonts */
     int mFontNormal;
     int mFontBold;

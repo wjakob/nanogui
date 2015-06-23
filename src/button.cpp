@@ -1,6 +1,7 @@
 #include <nanogui/button.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <iostream>
 
 NANOGUI_NAMESPACE_BEGIN
 
@@ -8,7 +9,8 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
       mIconPosition(LeftCentered), mPushed(false),
       mButtonFlags(NormalButton), mBackgroundColor(Color(0, 0)),
-          mTextColor(Color(0, 0)), mFontSize(-1) {
+      mTextColor(Color(0, 0)), mFontSize(-1), mCallback(nullptr),
+      mChangeCallback(nullptr) {
 }
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
@@ -73,8 +75,10 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             if (mButtonFlags & NormalButton)
                 mPushed = false;
         }
-        if (pushedBackup != mPushed && mChangeCallback)
-            mChangeCallback(mPushed);
+        if(pushedBackup != mPushed && mChangeCallback)
+        {
+          mChangeCallback(mPushed);
+        }
 
         return true;
     }
@@ -101,10 +105,17 @@ void Button::draw(NVGcontext *ctx) {
                    mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
 
-    if (mBackgroundColor.w() != 0) {
+    if(mBackgroundColor.w() != 0) {
         nvgFillColor(ctx, mBackgroundColor);
         nvgFill(ctx);
-        gradTop.a = gradBot.a = mEnabled ? 0.90f : 0.95f;
+        if(mPushed) {
+          gradTop.a = gradBot.a = 0.8f;
+        }
+        else {
+          double v = 1-mBackgroundColor.w();
+          gradTop.a = gradBot.a = mEnabled ? v : 0.5f;
+          gradTop.a = gradBot.a = (mMouseFocus && mEnabled) ? gradTop.a+0.2 : gradTop.a;
+        }
     }
 
     NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
@@ -114,7 +125,6 @@ void Button::draw(NVGcontext *ctx) {
     nvgFill(ctx);
 
     nvgBeginPath(ctx);
-
     nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + (mPushed ? 0.5f : 1.5f), mSize.x() - 1,
                    mSize.y() - 1 - (mPushed ? 0.0f : 1.0f), mTheme->mButtonCornerRadius);
     nvgStrokeColor(ctx, mTheme->mBorderLight);
@@ -186,9 +196,9 @@ void Button::draw(NVGcontext *ctx) {
     nvgFontFace(ctx, "sans-bold");
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     nvgFillColor(ctx, mTheme->mTextColorShadow);
-    nvgText(ctx,  textPos.x(), textPos.y() -1, mCaption.c_str(), nullptr);
-    nvgFillColor(ctx, textColor);
     nvgText(ctx,  textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
+    nvgFillColor(ctx, textColor);
+    nvgText(ctx,  textPos.x(), textPos.y()+1, mCaption.c_str(), nullptr);
 }
 
 NANOGUI_NAMESPACE_END

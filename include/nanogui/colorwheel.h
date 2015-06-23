@@ -17,12 +17,15 @@ public:
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
 
-
     /// Set the push callback (for any type of button)
     inline std::function<void(const Vector3f &)> callback() const           { return mCallback; }
     inline void setCallback(std::function<void(const Vector3f &)> callback) { mCallback = callback; }
 
+    /// Get the current color
     Vector3f color() const;
+    /// Set the current color
+    void setColor(const Vector3f& rgb);
+
 
 private:
     enum Region {

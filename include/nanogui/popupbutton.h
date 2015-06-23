@@ -8,10 +8,13 @@ NANOGUI_NAMESPACE_BEGIN
 
 class PopupButton : public Button {
 public:
-    PopupButton(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    PopupButton(Widget *parent,const std::string &caption = "Untitled",int icon = 0,bool hideOverlay = false);
 
     inline Popup *popup() { return mPopup; }
-    inline const Popup *popup() const { return mPopup; }
+    inline void setPopup(Popup *popup) { mPopup = popup; }
+
+    inline void setHideOverlay(bool hideOverlay) { mHideOverlay = hideOverlay; }
+    inline const bool hideOverlay() const { return mHideOverlay; }
 
     virtual void draw(NVGcontext* ctx);
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
@@ -19,6 +22,7 @@ public:
 
 protected:
     Popup *mPopup;
+    bool mHideOverlay;
 };
 
 NANOGUI_NAMESPACE_END

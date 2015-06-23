@@ -28,7 +28,7 @@ using std::endl;
 
 class ExampleApplication : public nanogui::Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test") {
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "NanoGUI Test") {
         using namespace nanogui;
 
         Window *window = new Window(this, "Button demo");
@@ -42,7 +42,7 @@ public:
         Button *b = new Button(window, "Plain button");
         b->setCallback([] { cout << "pushed!" << endl; });
         b = new Button(window, "Styled", ENTYPO_ICON_ROCKET);
-        b->setBackgroundColor(Color(0, 0, 255, 255));
+        b->setBackgroundColor(Color(0, 0, 255, 60));
         b->setCallback([] { cout << "pushed!" << endl; });
 
         new Label(window, "Toggle buttons", "sans-bold");
@@ -58,7 +58,7 @@ public:
 
         new Label(window, "A tool palette", "sans-bold");
         Widget *tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,BoxLayout::Alignment::Middle,0,6));
 
         b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
         b = new ToolButton(tools, ENTYPO_ICON_FF);
@@ -82,7 +82,7 @@ public:
 
         new Label(window, "Message dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal, BoxLayout::Alignment::Middle, 0, 6));
         b = new Button(tools, "Info");
         b->setCallback([&] {
             auto dlg = new MessageDialog(this, MessageDialog::Information, "Title", "This is an information message");
@@ -116,7 +116,7 @@ public:
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,BoxLayout::Alignment::Middle,0,6));
         b = new Button(tools, "Open");
         b->setCallback([&] {
             cout << "File dialog result: " << file_dialog(
@@ -150,16 +150,17 @@ public:
 
         Widget *panel = new Widget(window);
         panel->setLayout(
-            new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 20));
+            new BoxLayout(BoxLayout::Orientation::Horizontal, BoxLayout::Alignment::Middle, 0, 20));
 
         Slider *slider = new Slider(panel);
         slider->setValue(0.5f);
         slider->setFixedWidth(80);
 
         TextBox *textBox = new TextBox(panel);
-        textBox->setFixedSize(Vector2i(60, 25));
+        textBox->setFixedSize(Vector2i(60,25));
         textBox->setValue("50");
         textBox->setUnits("%");
+        textBox->setFontSize(20);
         slider->setCallback([textBox](float value) {
             textBox->setValue(std::to_string((int) (value * 100)));
         });
@@ -167,12 +168,97 @@ public:
             cout << "Final slider value: " << (int) (value * 100) << endl;
         });
 
-        window = new Window(this, "Misc. widgets");
-        window->setPosition(Vector2i(425, 15));
+        window = new Window(this,"Misc. widgets");
+        window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
-        new Label(window, "Color wheel", "sans-bold");
+        new Label(window,"Color wheel","sans-bold");
         new ColorWheel(window);
 
+        window = new Window(this,"Minimalistic Widgets");
+        window->setPosition(Vector2i(600,15));
+        window->setLayout(new BoxLayout(BoxLayout::Orientation::Vertical,BoxLayout::Alignment::Minimum,5,10));
+        //window->setFixedWidth(250);
+
+        int numAttr = 10;
+        Widget* lab = new Label(window,"Pipeline Step 1","sans-bold");
+        lab->setFontSize(20);
+
+        Widget* gridPanel = new Widget(window);
+        GridLayout* layout = new GridLayout(GridLayout::Orientation::Horizontal,2,0,1);
+        layout->setColAlignment({GridLayout::Alignment::Middle,GridLayout::Alignment::Middle});
+        gridPanel->setLayout(layout);
+        
+        for(int i=0;i<10;i++)
+        {
+          new Label(gridPanel,"Attribute","sans-bold");
+          
+          textBox = new TextBox(gridPanel);
+          textBox->setEditable(true);
+          textBox->setFixedSize(Vector2i(100,20));
+          textBox->setValue("50");
+          textBox->setUnits("%");
+          textBox->setDefaultValue("0.0");
+          textBox->setFontSize(16);
+          textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
+        }
+
+        for(int i=0;i<3;i++)
+        {
+          new Label(gridPanel,"Checkboxes","sans-bold");
+
+          cb = new CheckBox(gridPanel,"",[](bool state) {});
+          cb->setFixedSize(Vector2i(18,18));
+          cb->setFontSize(18);
+          cb->setChecked(true);
+        }
+
+        for(int i=0;i<5;i++)
+        {
+          new Label(gridPanel,"Attribute","sans-bold");
+
+          textBox = new TextBox(gridPanel);
+          textBox->setEditable(true);
+          textBox->setFixedSize(Vector2i(100,20));
+          textBox->setValue("50");
+          textBox->setUnits("%");
+          textBox->setDefaultValue("0.0");
+          textBox->setFontSize(16);
+          textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
+        }
+
+        new Label(gridPanel,"Combobox","sans-bold");
+        ComboBox* cobo = new ComboBox(gridPanel,{"Item 1","Item 2","Item 3"});
+        cobo->setFontSize(16);
+        cobo->setFixedSize(Vector2i(100,20));
+
+        new Label(gridPanel,"Color Button","sans-bold");
+        popupBtn = new PopupButton(gridPanel,"",0);
+        popupBtn->setBackgroundColor(Color(255,120,0,255));
+        popupBtn->setFontSize(16);
+        popupBtn->setFixedSize(Vector2i(100,20));
+        popup = popupBtn->popup();
+        popup->setLayout(new GroupLayout());
+      
+        ColorWheel* colorwheel = new ColorWheel(popup);
+        colorwheel->setColor(popupBtn->backgroundColor().block<3,1>(0,0));
+        
+        Button* colorBtn = new Button(popup,"Pick");
+        colorBtn->setFixedSize(Vector2i(100,25));
+        Vector3f c = colorwheel->color();
+        colorBtn->setBackgroundColor(Color(c));
+
+        PopupButton& popupBtnRef = *popupBtn;
+        Button& colorBtnRef = *colorBtn;
+        colorwheel->setCallback([&](const Vector3f &value) {
+          colorBtnRef.setBackgroundColor(Color(value));
+        });
+
+        colorBtn->setChangeCallback([&](bool pushed) {
+          if(pushed) {
+            popupBtnRef.setBackgroundColor(colorBtnRef.backgroundColor());
+            popupBtnRef.setPushed(false);
+          }
+        });
 
         performLayout(mNVGContext);
 

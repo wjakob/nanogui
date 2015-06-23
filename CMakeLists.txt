@@ -87,6 +87,7 @@ endif()
 include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_BINARY_DIR})
 add_library(nanogui STATIC
   ext/nanovg/src/nanovg.c resources.cpp
+  include/nanogui/formscreen.h src/formscreen.cpp
   include/nanogui/glutil.h src/glutil.cpp
   include/nanogui/nanogui.h src/nanogui.cpp
   include/nanogui/widget.h src/widget.cpp
@@ -109,6 +110,7 @@ add_library(nanogui STATIC
   include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
+  include/nanogui/opengl.h
   ${extra_source}
 )
 
