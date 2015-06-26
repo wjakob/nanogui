@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.3)
 
 project("NanoGUI")
 
-option(NANOGUI_INSTALL "Generate installation target for NanoGUI" ON)
+option(NANOGUI_INSTALL "Generate installation target for NanoGUI" OFF)
 
 
 # Parse arguments for nested build process
