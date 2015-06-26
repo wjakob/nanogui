@@ -568,21 +568,24 @@ nanogui::ComboBox* FormScreen::addEnumerationHelper(int& value,const std::string
 {
   ComboBox* cb = initEnumWidget(value,label,names,enabled);
   ComboBox& cbr = *cb;
+  
+  enumIdsList.push_back(enumIds);
+  enumNamesList.push_back(names);
 
-  cb->setCallback([&value,&cbr](int id)
+  std::vector<int>& enumIdsRef = enumIdsList.back();
+  std::vector<std::string>& namesRef = enumNamesList.back();
+
+  cb->setCallback([&value,&cbr,&enumIdsRef](int id)
   {
-    value = id;
+    value = enumIdsRef[id];
   });
 
-  enumIdsList.push_back(enumIds);
-  std::vector<int>& enumIdsRef = enumIdsList.back();
-  enumNamesList.push_back(names);
-  std::vector<std::string>& namesRef = enumNamesList.back();
   syncJobs.push_back([&value,&cbr,&enumIdsRef,&namesRef]()
   {
     auto it = std::find(enumIdsRef.begin(),enumIdsRef.end(),value);
-    if(namesRef[*it] != cbr.caption())
-      cbr.setSelectedIndex(value);
+    int id = it-enumIdsRef.begin();
+    if(namesRef[id] != cbr.caption())
+      cbr.setSelectedIndex(id);
   });
 
   return cb;
@@ -618,7 +621,8 @@ nanogui::ComboBox* FormScreen::addEnumerationHelper(std::function<void(int)> set
     {
       int id = lf();
       auto it = std::find(enumIdsRef.begin(),enumIdsRef.end(),id);
-      if(namesRef[it-enumIdsRef.begin()] != cbr.caption())
+      id = it-enumIdsRef.begin();
+      if(namesRef[id] != cbr.caption())
         cbr.setSelectedIndex(id);
     });
   }
