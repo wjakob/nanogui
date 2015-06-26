@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.3)
 
 project("NanoGUI")
 
-option(NANOGUI_INSTALL "Generate installation target for NanoGUI" ON)
+option(NANOGUI_INSTALL "Generate installation target for NanoGUI" OFF)
 
 
 # Parse arguments for nested build process
@@ -16,7 +16,7 @@ endif()
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
 set(bin2c_cmdline resources.cpp resources.h)
-file(GLOB resources "${CMAKE_SOURCE_DIR}/resources/*.ttf")
+file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
 foreach(file ${resources})
   list(APPEND bin2c_cmdline ${file})
 endforeach()
@@ -30,16 +30,17 @@ add_custom_command(
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if(NANOGUI_INSTALL)
 ExternalProject_Add(glfw_p
-  URL             "${CMAKE_SOURCE_DIR}/ext/glfw"
+  URL             "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw"
   PREFIX          "ext_build"
   CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST} -DGLFW_BUILD_TESTS=0 -DGLFW_BUILD_EXAMPLES=0 -DGLFW_BUILD_DOCS=0
 )
 else()
 ExternalProject_Add(glfw_p
-  URL             "${CMAKE_SOURCE_DIR}/ext/glfw"
+  URL             "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw"
   PREFIX          "ext_build"
   CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST} -DGLFW_BUILD_TESTS=0 -DGLFW_BUILD_EXAMPLES=0 -DGLFW_BUILD_DOCS=0 -DGLFW_INSTALL=0
   INSTALL_COMMAND ""
@@ -50,13 +51,13 @@ set(extra_source "")
 if(WIN32)
   if(NANOGUI_INSTALL)
     ExternalProject_Add(glew_p
-      URL             "${CMAKE_SOURCE_DIR}/ext/glew"
+      URL             "${CMAKE_CURRENT_SOURCE_DIR}/ext/glew"
       PREFIX          "ext_build"
       CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST}
     )
   else()
     ExternalProject_Add(glew_p
-      URL             "${CMAKE_SOURCE_DIR}/ext/glew"
+      URL             "${CMAKE_CURRENT_SOURCE_DIR}/ext/glew"
       PREFIX          "ext_build"
       CMAKE_ARGS      ${CMAKE_EXTERNAL_ARGUMENTS_LIST}
       INSTALL_COMMAND ""
