@@ -177,11 +177,6 @@ public:
         window = new Window(this,"Minimalistic Widgets");
         window->setPosition(Vector2i(600,15));
         window->setLayout(new BoxLayout(BoxLayout::Orientation::Vertical,BoxLayout::Alignment::Minimum,5,10));
-        //window->setFixedWidth(250);
-
-        int numAttr = 10;
-        Widget* lab = new Label(window,"Pipeline Step 1","sans-bold");
-        lab->setFontSize(20);
 
         Widget* gridPanel = new Widget(window);
         GridLayout* layout = new GridLayout(GridLayout::Orientation::Horizontal,2,0,1);

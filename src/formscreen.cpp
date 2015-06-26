@@ -1,4 +1,5 @@
 #include <nanogui/nanogui.h>
+#include <nanogui/opengl.h>
 #include <iostream>
 
 using namespace nanogui;

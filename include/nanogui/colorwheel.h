@@ -2,7 +2,6 @@
 #define __NANOGUI_COLORWHEEL_H
 
 #include <nanogui/widget.h>
-#include <nanogui/opengl.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
