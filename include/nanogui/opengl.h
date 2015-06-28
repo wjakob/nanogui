@@ -1,7 +1,7 @@
 #if !defined(__NANOGUI_OPENGL_H)
 #define __NANOGUI_OPENGL_H
 
-#include <nanogui/nanogui.h>
+#include <nanogui/common.h>
 
 #if defined(__APPLE__)
     #define GLFW_INCLUDE_GLCOREARB

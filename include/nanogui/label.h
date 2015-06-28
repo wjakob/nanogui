@@ -25,11 +25,6 @@ public:
     /// Get the currently active font
     inline const std::string &font() const { return mFont; }
 
-    /// Get the font size in pixels
-    inline int fontSize() const { return mFontSize; }
-    /// Set the font size in pixels
-    inline void setFontSize(int fontSize) { mFontSize = fontSize; }
-
     /// Get the label color
     inline Color color() const { return mColor; }
     /// Set the label color

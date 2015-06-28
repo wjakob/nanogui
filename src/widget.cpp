@@ -10,7 +10,7 @@ NANOGUI_NAMESPACE_BEGIN
 Widget::Widget(Widget *parent) 
     : mParent(nullptr), mLayout(nullptr), mPos(Vector2i::Zero()),
       mSize(Vector2i::Zero()), mFixedSize(Vector2i::Zero()), mVisible(true),
-      mEnabled(true), mFocused(false), mMouseFocus(false), mTooltip("") {
+      mEnabled(true),mFocused(false),mMouseFocus(false),mTooltip(""),mFontSize(-1.0f),mTheme(nullptr),mCursor(Cursor::None){
     if (parent) {
         parent->addChild(this);
         mTheme = parent->mTheme;
@@ -22,6 +22,10 @@ Widget::~Widget() {
         delete child;
     if (mLayout)
         delete mLayout;
+}
+
+int Widget::fontSize() const {
+  return mFontSize < 0 ? mTheme->mStandardFontSize : mFontSize;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
@@ -64,6 +68,7 @@ bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     }
     if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused)
         requestFocus();
+
     return false;
 }
 
@@ -73,8 +78,9 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
         if (!child->visible())
             continue;
         bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
-        if (contained != prevContained)
-            child->mouseEnterEvent(p, contained);
+        if(contained != prevContained) {
+            child->mouseEnterEvent(p,contained);
+        }
         if ((contained || prevContained) && child->mouseMotionEvent(p - mPos, rel, button, modifiers))
             return true;
     }
@@ -97,6 +103,12 @@ bool Widget::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, 
 
 bool Widget::mouseEnterEvent(const Vector2i &p, bool enter) {
     mMouseFocus = enter;
+
+    Screen* sc = dynamic_cast<Screen*>(this);
+    if(sc == nullptr)
+      sc = dynamic_cast<Screen*>(this->window()->parent());
+
+    sc->updateMouseFocus(this);
     return false;
 }
 
@@ -105,7 +117,11 @@ bool Widget::focusEvent(bool focused) {
     return false;
 }
 
-bool Widget::keyboardEvent(int key, int scancode, bool press, int modifiers) {
+bool Widget::keyboardEvent(int key, int scancode, int action, int modifiers) {
+    return false;
+}
+
+bool Widget::keyboardEvent(unsigned int codepoint) {
     return false;
 }
 
