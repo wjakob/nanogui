@@ -16,6 +16,7 @@
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
+#include <nanogui/graph.h>
 #if defined(WIN32)
 #include <windows.h>
 #endif
@@ -172,7 +173,14 @@ public:
         window->setLayout(new GroupLayout());
         new Label(window, "Color wheel", "sans-bold");
         new ColorWheel(window);
-
+        new Label(window, "Function graph", "sans-bold");
+        Graph *graph = new Graph(window, "Some function");
+        graph->setHeader("E = 2.35e-3");
+        graph->setFooter("Iteration 89");
+        Eigen::VectorXf &func = graph->values();
+        func.resize(100);
+        for (int i=0; i<100; ++i)
+            func[i] = 0.5f * (0.5f * std::sin(i/10.f)+0.5f*std::cos(i/23.f)+1);
 
         performLayout(mNVGContext);
 

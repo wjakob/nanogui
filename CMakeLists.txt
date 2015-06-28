@@ -109,6 +109,7 @@ add_library(nanogui STATIC
   include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
+  include/nanogui/graph.h src/graph.cpp
   ${extra_source}
 )
 
