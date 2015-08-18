@@ -5,6 +5,9 @@ It supports automatic layout generation, stateful C++11 lambdas callbacks,
 a variety of useful widget types and Retina-capable rendering on Apple devices
 thanks to [NanoVG](https://github.com/memononen/NanoVG) by Mikko Mononen.
 
+## Example screenshot
+![Screenshot](https://github.com/wjakob/nanogui/raw/master/resources/screenshot.png "Screenshot")
+
 ## Description
 NanoGUI builds on [GLFW](http://www.glfw.org/) for cross-platform OpenGL context
 creation and event handling, [GLEW](http://glew.sourceforge.net/) to use OpenGL
@@ -50,7 +53,7 @@ textBox->setUnits("%");
 
 /* Propagate slider changes to the text box */
 slider->setCallback([textBox](float value) {
-	textBox->setValue(std::to_string((int) (value * 100)));
+    textBox->setValue(std::to_string((int) (value * 100)));
 });
 ```
 
