@@ -47,7 +47,7 @@ public:
     virtual void framebufferSizeChanged() { /* To be overridden */ }
     
     /// Handle a file drop event
-    virtual bool dropEvent(const std::vector<std::string> &filenames) { return false; /* To be overridden */ }
+    virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
 
     /// Default keyboard event handler
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
@@ -83,12 +83,12 @@ protected:
     void initialize(GLFWwindow *window);
 
     /* Event handlers */
-    bool cursorPosCallbackEvent(GLFWwindow *w, double x, double y);
-    bool mouseButtonCallbackEvent(GLFWwindow *w, int button, int action, int modifiers);
-    bool keyCallbackEvent(GLFWwindow *w, int key, int scancode, int action, int mods);
-    bool charCallbackEvent(GLFWwindow *w, unsigned int codepoint);
-    bool dropCallbackEvent(GLFWwindow *w, int count, const char **filenames);
-    bool scrollCallbackEvent(GLFWwindow *w, double x, double y);
+    bool cursorPosCallbackEvent(double x, double y);
+    bool mouseButtonCallbackEvent(int button, int action, int modifiers);
+    bool keyCallbackEvent(int key, int scancode, int action, int mods);
+    bool charCallbackEvent(unsigned int codepoint);
+    bool dropCallbackEvent(int count, const char **filenames);
+    bool scrollCallbackEvent(double x, double y);
 
     /* Internal helper functions */
     void updateFocus(Widget *widget);

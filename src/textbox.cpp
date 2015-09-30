@@ -10,21 +10,22 @@ NANOGUI_NAMESPACE_BEGIN
 TextBox::TextBox(Widget *parent,const std::string &value)
     : Widget(parent),
       mEditable(false),
+      mCommitted(true),
       mValue(value),
-      mValueTemp(value),
+      mDefaultValue(""),
       mAlignment(Alignment::Center),
       mUnits(""),
       mFormat(".*"),
       mUnitsImage(-1),
-      mCommitted(true),
+      mValidFormat(true),
+      mValueTemp(value),
       mCursorPos(-1),
       mSelectionPos(-1),
-      mDefaultValue(""),
+      mMousePos(Vector2i(-1,-1)),
       mMouseDownPos(Vector2i(-1,-1)),
       mMouseDragPos(Vector2i(-1,-1)),
-      mValidFormat(true),
-      mTextOffset(0),
-      mCallback(nullptr) { }
+      mMouseDownModifier(0),
+      mTextOffset(0) { }
 
 void TextBox::setEditable(bool editable) {
     mEditable = editable;
@@ -231,8 +232,8 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
     return false;
 }
 
-bool TextBox::mouseMotionEvent(const Vector2i &p, const Vector2i &rel,
-                               int button, int modifiers) {
+bool TextBox::mouseMotionEvent(const Vector2i &p, const Vector2i & /* rel */,
+                               int /* button */, int /* modifiers */) {
     if (mEditable && focused()) {
         mMousePos = p + Vector2i(5, 5); // correct for ibeam cursor
         return true;
@@ -240,8 +241,8 @@ bool TextBox::mouseMotionEvent(const Vector2i &p, const Vector2i &rel,
     return false;
 }
 
-bool TextBox::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button,
-                             int modifiers) {
+bool TextBox::mouseDragEvent(const Vector2i &p, const Vector2i &/* rel */,
+                             int /* button */, int /* modifiers */) {
     if (mEditable && focused()) {
         mMouseDragPos = p + Vector2i(5, 5); // correct for ibeam cursor
         return true;
@@ -288,7 +289,7 @@ bool TextBox::focusEvent(bool focused) {
     return true;
 }
 
-bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) {
+bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
     if (mEditable && focused()) {
         if (action == GLFW_PRESS || action == GLFW_REPEAT) {
             if (key == GLFW_KEY_LEFT) {
@@ -309,7 +310,7 @@ bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) {
                     mSelectionPos = -1;
                 }
 
-                if (mCursorPos < mValueTemp.length())
+                if (mCursorPos < (int) mValueTemp.length())
                     mCursorPos++;
             } else if (key == GLFW_KEY_HOME) {
                 if (modifiers == GLFW_MOD_SHIFT) {
@@ -338,7 +339,7 @@ bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) {
                 }
             } else if (key == GLFW_KEY_DELETE) {
                 if (!deleteSelection()) {
-                    if (mCursorPos < mValueTemp.length())
+                    if (mCursorPos < (int) mValueTemp.length())
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos);
                 }
             } else if (key == GLFW_KEY_ENTER) {
@@ -435,7 +436,7 @@ bool TextBox::deleteSelection() {
     return false;
 }
 
-void TextBox::updateCursor(NVGcontext *ctx, float lastx,
+void TextBox::updateCursor(NVGcontext *, float lastx,
                            const NVGglyphPosition *glyphs, int size) {
     // handle mouse cursor events
     if (mMouseDownPos.x() != -1) {

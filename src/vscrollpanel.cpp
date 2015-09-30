@@ -22,8 +22,8 @@ Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
     return mChildren[0]->preferredSize(ctx) + Vector2i(12, 0);
 }
 
-bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
-                            int button, int modifiers) {
+bool VScrollPanel::mouseDragEvent(const Vector2i &, const Vector2i &rel,
+                            int, int) {
     if (mChildren.empty())
         return false;
 
@@ -35,7 +35,7 @@ bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
     return true;
 }
 
-bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
+bool VScrollPanel::scrollEvent(const Vector2i &/* p */, const Vector2f &rel) {
     float scrollAmount = rel.y() * (mSize.y() / 20.0f);
     float scrollh = height() *
         std::min(1.0f, height() / (float)mChildPreferredHeight);

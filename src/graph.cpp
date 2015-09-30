@@ -11,7 +11,7 @@ Graph::Graph(Widget *parent, const std::string &caption)
 	mTextColor = Color(240, 192);
 }
 
-Vector2i Graph::preferredSize(NVGcontext *ctx) const {
+Vector2i Graph::preferredSize(NVGcontext *) const {
 	return Vector2i(180, 45);
 }
 
@@ -28,7 +28,7 @@ void Graph::draw(NVGcontext *ctx) {
 
 	nvgBeginPath(ctx);
 	nvgMoveTo(ctx, mPos.x(), mPos.y()+mSize.y());
-	for (size_t i = 0; i < mValues.size(); i++) {
+	for (size_t i = 0; i < (size_t) mValues.size(); i++) {
 		float value = mValues[i];
 		float vx = mPos.x() + i * mSize.x() / (float) (mValues.size() - 1);
 		float vy = mPos.y() + (1-value) * mSize.y();

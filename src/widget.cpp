@@ -8,10 +8,11 @@
 NANOGUI_NAMESPACE_BEGIN
 
 Widget::Widget(Widget *parent)
-    : mParent(nullptr), mLayout(nullptr), mPos(Vector2i::Zero()),
-      mSize(Vector2i::Zero()), mFixedSize(Vector2i::Zero()), mVisible(true),
-      mEnabled(true), mFocused(false), mMouseFocus(false), mTooltip(""),
-      mFontSize(-1.0f), mTheme(nullptr), mCursor(Cursor::Arrow) {
+    : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
+      mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
+      mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
+      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
+      mCursor(Cursor::Arrow) {
     if (parent) {
         parent->addChild(this);
         mTheme = parent->mTheme;
@@ -97,11 +98,11 @@ bool Widget::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     return false;
 }
 
-bool Widget::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+bool Widget::mouseDragEvent(const Vector2i &, const Vector2i &, int, int) {
     return false;
 }
 
-bool Widget::mouseEnterEvent(const Vector2i &p, bool enter) {
+bool Widget::mouseEnterEvent(const Vector2i &, bool enter) {
     mMouseFocus = enter;
     return false;
 }
@@ -111,11 +112,11 @@ bool Widget::focusEvent(bool focused) {
     return false;
 }
 
-bool Widget::keyboardEvent(int key, int scancode, int action, int modifiers) {
+bool Widget::keyboardEvent(int, int, int, int) {
     return false;
 }
 
-bool Widget::keyboardEvent(unsigned int codepoint) {
+bool Widget::keyboardEvent(unsigned int) {
     return false;
 }
 

@@ -355,7 +355,7 @@ private:
     nanogui::GLShader mShader;
 };
 
-int main(int argc, char *argv[]) {
+int main(int /* argc */, char ** /* argv */) {
     try {
         nanogui::init();
 

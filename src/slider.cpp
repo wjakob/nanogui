@@ -4,14 +4,15 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
-Slider::Slider(Widget *parent, const std::string &caption)
+Slider::Slider(Widget *parent)
     : Widget(parent), mValue(0.0f), mUnsafeRange(std::make_pair(0.f, 0.f)) {}
 
-Vector2i Slider::preferredSize(NVGcontext *ctx) const {
+Vector2i Slider::preferredSize(NVGcontext *) const {
     return Vector2i(70, 12);
 }
 
-bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
+                            int /* button */, int /* modifiers */) {
     if (!mEnabled)
         return false;
     mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);
@@ -20,7 +21,7 @@ bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, 
     return true;
 }
 
-bool Slider::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
+bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int /* modifiers */) {
     if (!mEnabled)
         return false;
     mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);

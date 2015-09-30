@@ -11,7 +11,7 @@ ColorWheel::ColorWheel(Widget *parent, const Vector3f& rgb)
     setColor(rgb);
 }
 
-Vector2i ColorWheel::preferredSize(NVGcontext *ctx) const {
+Vector2i ColorWheel::preferredSize(NVGcontext *) const {
     return { 100, 100. };
 }
 
@@ -139,8 +139,8 @@ bool ColorWheel::mouseButtonEvent(const Vector2i &p, int button, bool down,
     }
 }
 
-bool ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
-                                int button, int modifiers) {
+bool ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &,
+                                int, int) {
     return adjustPosition(p, mDragRegion);
 }
 
@@ -258,7 +258,7 @@ void ColorWheel::setColor(const Vector3f &rgb) {
             h = (g - b) / d + (g < b ? 6 : 0);
         else if (max == g)
             h = (b - r) / d + 2;
-        else if (max == b)
+        else
             h = (r - g) / d + 4;
         h /= 6;
 

@@ -131,7 +131,7 @@ public:
     void setMargin(int margin) { mMargin[0] = mMargin[1] = margin; }
 
     Alignment alignment(int axis, int item) const {
-        if (item < mAlignment[axis].size())
+        if (item < (int) mAlignment[axis].size())
             return mAlignment[axis][item];
         else
             return mDefaultAlignment[axis];
@@ -140,7 +140,7 @@ public:
         mDefaultAlignment[axis] = value;
     }
     void setAlignment(int axis, int item, Alignment value) {
-        if (item >= mAlignment[axis].size())
+        if (item >= (int) mAlignment[axis].size())
             mAlignment[axis].resize(item+1, mDefaultAlignment[axis]);
         mAlignment[axis][item] = value;
     }

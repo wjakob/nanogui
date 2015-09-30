@@ -101,7 +101,8 @@ void Window::center() {
     ((Screen *) widget)->centerWindow(this);
 }
 
-bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
+                            int /* button */, int /* modifiers */) {
     if ((p.y() - mPos.y() - rel.y()) < mTheme->mWindowHeaderHeight) {
         mPos += rel;
         return true;

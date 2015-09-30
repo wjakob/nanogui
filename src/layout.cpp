@@ -150,8 +150,6 @@ void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
 Vector2i GridLayout::preferredSize(NVGcontext *ctx,
                                    const Widget *widget) const {
-    int axis1 = (int) mOrientation, axis2 = (axis1 + 1) % 2;
-
     /* Compute minimum row / column sizes */
     std::vector<int> grid[2];
     computeGridLayout(ctx, widget, grid);
@@ -170,7 +168,6 @@ Vector2i GridLayout::preferredSize(NVGcontext *ctx,
 }
 
 void GridLayout::computeGridLayout(NVGcontext *ctx, const Widget *widget, std::vector<int> *grid) const {
-    Vector2i size = Vector2i::Zero();
     int axis1 = (int) mOrientation, axis2 = (axis1 + 1) % 2;
     size_t numChildren = widget->children().size();
 
@@ -241,7 +238,7 @@ void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     int axis1 = (int) mOrientation, axis2 = (axis1 + 1) % 2;
     Vector2i start = mMargin + extra;
 
-    int numChildren = widget->children().size();
+    size_t numChildren = widget->children().size();
     size_t child = 0;
 
     Vector2i pos = start;

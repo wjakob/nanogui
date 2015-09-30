@@ -288,7 +288,7 @@ struct Arcball {
         return true;
     }
 
-    Matrix4f matrix(const Matrix4f &view) const {
+    Matrix4f matrix() const {
         Matrix4f result2 = Matrix4f::Identity();
         result2.block<3,3>(0, 0) = (mIncr * mQuat).toRotationMatrix();
         return result2;

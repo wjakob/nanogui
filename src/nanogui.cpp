@@ -203,6 +203,8 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
         cmd += "\"*." + pair.first +  "\" ";
     cmd += "\"";
     FILE *output = popen(cmd.c_str(), "r");
+    if (output == nullptr)
+        throw std::runtime_error("popen() failed -- could not launch zenity!");
     while (fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
         ;
     pclose(output);
@@ -214,3 +216,4 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 #endif
 
 NANOGUI_NAMESPACE_END
+

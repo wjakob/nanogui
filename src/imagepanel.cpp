@@ -27,20 +27,21 @@ int ImagePanel::indexForPosition(const Vector2i &p) const {
     return overImage ? (gridPos.x() + gridPos.y() * grid.x()) : -1;
 }
 
-bool ImagePanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel,
-                              int button, int modifiers) {
+bool ImagePanel::mouseMotionEvent(const Vector2i &p, const Vector2i & /* rel */,
+                              int /* button */, int /* modifiers */) {
     mMouseIndex = indexForPosition(p);
     return true;
 }
 
-bool ImagePanel::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
+bool ImagePanel::mouseButtonEvent(const Vector2i &p, int /* button */, bool down,
+                                  int /* modifiers */) {
     int index = indexForPosition(p);
     if (index >= 0 && mCallback && down)
         mCallback(index);
     return true;
 }
 
-Vector2i ImagePanel::preferredSize(NVGcontext *ctx) const {
+Vector2i ImagePanel::preferredSize(NVGcontext *) const {
     Vector2i grid = gridSize();
     return Vector2i(
         grid.x() * mThumbSize + (grid.x() - 1) * mSpacing + 2*mMargin,

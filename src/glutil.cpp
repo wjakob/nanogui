@@ -174,8 +174,8 @@ void GLShader::uploadAttrib(const std::string &name, uint32_t size, int dim,
     }
 }
 
-void GLShader::downloadAttrib(const std::string &name, uint32_t size, int dim,
-                             uint32_t compSize, GLuint glType, uint8_t *data) {
+void GLShader::downloadAttrib(const std::string &name, uint32_t size, int /* dim */,
+                             uint32_t compSize, GLuint /* glType */, uint8_t *data) {
     auto it = mBufferObjects.find(name);
     if (it == mBufferObjects.end())
         throw std::runtime_error("downloadAttrib(" + mName + ", " + name + ") : buffer not found!");

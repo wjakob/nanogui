@@ -31,6 +31,17 @@ if (UNIX)
   endif()
 endif()
 
+# Compile with compiler warnings turned on
+if(MSVC)
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
 set(bin2c_cmdline resources.cpp resources.h)
@@ -100,7 +111,6 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/popup.h src/popup.cpp
   include/nanogui/checkbox.h src/checkbox.cpp
   include/nanogui/button.h src/button.cpp
-  include/nanogui/toolbutton.h
   include/nanogui/popupbutton.h src/popupbutton.cpp
   include/nanogui/combobox.h src/combobox.cpp
   include/nanogui/progressbar.h src/progressbar.cpp
@@ -112,7 +122,9 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/graph.h src/graph.cpp
+  include/nanogui/toolbutton.h
   include/nanogui/opengl.h
+  include/nanogui/common.h
   ${extra_source}
 )
 

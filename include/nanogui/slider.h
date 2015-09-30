@@ -6,7 +6,7 @@ NANOGUI_NAMESPACE_BEGIN
 
 class NANOGUI_EXPORT Slider : public Widget {
 public:
-    Slider(Widget *parent, const std::string &caption = "Untitled");
+    Slider(Widget *parent);
 
     float value() const { return mValue; }
     void setValue(float value) { mValue = value; }

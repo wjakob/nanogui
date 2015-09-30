@@ -96,7 +96,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->cursorPosCallbackEvent(w, x, y);
+            s->cursorPosCallbackEvent(x, y);
         }
     );
 
@@ -108,7 +108,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->mouseButtonCallbackEvent(w, button, action, modifiers);
+            s->mouseButtonCallbackEvent(button, action, modifiers);
         }
     );
 
@@ -120,7 +120,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->keyCallbackEvent(w, key, scancode, action, mods);
+            s->keyCallbackEvent(key, scancode, action, mods);
         }
     );
 
@@ -132,7 +132,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->charCallbackEvent(w, codepoint);
+            s->charCallbackEvent(codepoint);
         }
     );
 
@@ -144,7 +144,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->dropCallbackEvent(w, count, filenames);
+            s->dropCallbackEvent(count, filenames);
         }
     );
 
@@ -156,7 +156,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             Screen *s = it->second;
             if (!s->mProcessEvents)
                 return;
-            s->scrollCallbackEvent(w, x, y);
+            s->scrollCallbackEvent(x, y);
         }
     );
 
@@ -322,7 +322,7 @@ bool Screen::keyboardEvent(unsigned int codepoint) {
     return handled;
 }
 
-bool Screen::cursorPosCallbackEvent(GLFWwindow *w, double x, double y) {
+bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
     bool ret = false;
     mLastInteraction = glfwGetTime();
@@ -353,8 +353,7 @@ bool Screen::cursorPosCallbackEvent(GLFWwindow *w, double x, double y) {
     return false;
 }
 
-bool Screen::mouseButtonCallbackEvent(GLFWwindow *w, int button, int action,
-                                      int modifiers) {
+bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     mModifiers = modifiers;
     mLastInteraction = glfwGetTime();
     try {
@@ -406,8 +405,7 @@ bool Screen::mouseButtonCallbackEvent(GLFWwindow *w, int button, int action,
     return false;
 }
 
-bool Screen::keyCallbackEvent(GLFWwindow *w, int key, int scancode, int action,
-                              int mods) {
+bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
     mLastInteraction = glfwGetTime();
     try {
         return keyboardEvent(key, scancode, action, mods);
@@ -419,7 +417,7 @@ bool Screen::keyCallbackEvent(GLFWwindow *w, int key, int scancode, int action,
     return false;
 }
 
-bool Screen::charCallbackEvent(GLFWwindow *w, unsigned int codepoint) {
+bool Screen::charCallbackEvent(unsigned int codepoint) {
     mLastInteraction = glfwGetTime();
     try {
         return keyboardEvent(codepoint);
@@ -432,15 +430,14 @@ bool Screen::charCallbackEvent(GLFWwindow *w, unsigned int codepoint) {
     return false;
 }
 
-bool Screen::dropCallbackEvent(GLFWwindow *w, int count,
-                               const char **filenames) {
+bool Screen::dropCallbackEvent(int count, const char **filenames) {
     std::vector<std::string> arg(count);
     for (int i = 0; i < count; ++i)
         arg[i] = filenames[i];
     return dropEvent(arg);
 }
 
-bool Screen::scrollCallbackEvent(GLFWwindow *w, double x, double y) {
+bool Screen::scrollCallbackEvent(double x, double y) {
     mLastInteraction = glfwGetTime();
     try {
         if (mFocusPath.size() > 1) {

@@ -52,6 +52,18 @@ public:
     Vector2i preferredSize(NVGcontext *ctx) const;
     void draw(NVGcontext* ctx);
 protected:
+    bool checkFormat(const std::string& input,const std::string& format);
+    bool copySelection();
+    void pasteFromClipboard();
+    bool deleteSelection();
+
+    void updateCursor(NVGcontext *ctx, float lastx,
+                      const NVGglyphPosition *glyphs, int size);
+    float cursorIndex2Position(int index, float lastx,
+                               const NVGglyphPosition *glyphs, int size);
+    int position2CursorIndex(float posx, float lastx,
+                             const NVGglyphPosition *glyphs, int size);
+protected:
     bool mEditable;
     bool mCommitted;
     std::string mValue;
@@ -71,18 +83,6 @@ protected:
     Vector2i mMouseDragPos;
     int mMouseDownModifier;
     float mTextOffset;
-
-    bool checkFormat(const std::string& input,const std::string& format);
-    bool copySelection();
-    void pasteFromClipboard();
-    bool deleteSelection();
-
-    void updateCursor(NVGcontext *ctx, float lastx,
-                      const NVGglyphPosition *glyphs, int size);
-    float cursorIndex2Position(int index, float lastx,
-                               const NVGglyphPosition *glyphs, int size);
-    int position2CursorIndex(float posx, float lastx,
-                             const NVGglyphPosition *glyphs, int size);
 };
 
 NANOGUI_NAMESPACE_END
