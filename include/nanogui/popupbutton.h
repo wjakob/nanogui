@@ -2,12 +2,15 @@
 
 #include <nanogui/button.h>
 #include <nanogui/popup.h>
+#include <nanogui/entypo.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
 class NANOGUI_EXPORT PopupButton : public Button {
 public:
-    PopupButton(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    PopupButton(Widget *parent, const std::string &caption = "Untitled",
+                int buttonIcon = 0,
+                int chevronIcon = ENTYPO_ICON_CHEVRON_SMALL_RIGHT);
 
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
@@ -18,6 +21,7 @@ public:
 
 protected:
     Popup *mPopup;
+    int mChevronIcon;
 };
 
 NANOGUI_NAMESPACE_END
