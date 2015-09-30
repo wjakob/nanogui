@@ -6,9 +6,17 @@
 NANOGUI_NAMESPACE_BEGIN
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mModal(false) { }
+    : Widget(parent), mTitle(title), mModal(false), mDispose(false) { }
 
 void Window::draw(NVGcontext *ctx) {
+    if (mDispose) {
+        Widget *widget = this;
+        while (widget->parent())
+            widget = widget->parent();
+        ((Screen *) widget)->disposeWindow(this);
+        return;
+    }
+
     int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
     int hh = mTheme->mWindowHeaderHeight;
 
@@ -81,10 +89,9 @@ void Window::draw(NVGcontext *ctx) {
 }
 
 void Window::dispose() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->disposeWindow(this);
+    /* Dispose window at next draw call (don't do it right away, since
+       the data structures may still be needed to finish event handling) */
+    mDispose = true;
 }
 
 void Window::center() {
