@@ -101,7 +101,6 @@ void Button::draw(NVGcontext *ctx) {
     if (mBackgroundColor.w() != 0) {
         nvgFillColor(ctx, Color(mBackgroundColor.head<3>(), 1.f));
         nvgFill(ctx);
-            mEnabled = false;
         if (mPushed) {
             gradTop.a = gradBot.a = 0.8f;
         } else {

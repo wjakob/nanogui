@@ -29,7 +29,7 @@ using std::endl;
 
 class ExampleApplication : public nanogui::Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test") {
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "NanoGUI Test") {
         using namespace nanogui;
 
         Window *window = new Window(this, "Button demo");
@@ -144,7 +144,7 @@ public:
             [](bool state) { cout << "Check box 1 state: " << state << endl; }
         );
         cb->setChecked(true);
-        new CheckBox(window, "Flag 2",
+        cb = new CheckBox(window, "Flag 2",
             [](bool state) { cout << "Check box 2 state: " << state << endl; }
         );
         new Label(window, "Progress bar", "sans-bold");
@@ -170,11 +170,13 @@ public:
         slider->setFinalCallback([&](float value) {
             cout << "Final slider value: " << (int) (value * 100) << endl;
         });
+        textBox->setFixedSize(Vector2i(60,25));
+        textBox->setFontSize(20);
 
-        window = new Window(this, "Misc. widgets");
-        window->setPosition(Vector2i(425, 15));
+        window = new Window(this,"Misc. widgets");
+        window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
-        new Label(window, "Color wheel", "sans-bold");
+        new Label(window,"Color wheel","sans-bold");
         new ColorWheel(window);
         new Label(window, "Function graph", "sans-bold");
         Graph *graph = new Graph(window, "Some function");
@@ -182,8 +184,85 @@ public:
         graph->setFooter("Iteration 89");
         Eigen::VectorXf &func = graph->values();
         func.resize(100);
-        for (int i=0; i<100; ++i)
-            func[i] = 0.5f * (0.5f * std::sin(i/10.f)+0.5f*std::cos(i/23.f)+1);
+        for (int i = 0; i < 100; ++i)
+            func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
+                              0.5f * std::cos(i / 23.f) + 1);
+
+        window = new Window(this, "Grid of small widgets");
+        window->setPosition(Vector2i(425, 288));
+        GridLayout *layout =
+            new GridLayout(GridLayout::Orientation::Horizontal, 2, 15, 5);
+        layout->setColAlignment(
+            { GridLayout::Alignment::Maximum, GridLayout::Alignment::Fill });
+        layout->setSpacing(0, 10);
+        window->setLayout(layout);
+
+        {
+            new Label(window, "Floating point :", "sans-bold");
+            textBox = new TextBox(window);
+            textBox->setEditable(true);
+            textBox->setFixedSize(Vector2i(100, 20));
+            textBox->setValue("50");
+            textBox->setUnits("GiB");
+            textBox->setDefaultValue("0.0");
+            textBox->setFontSize(16);
+            textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
+        }
+
+        {
+            new Label(window, "Positive integer :", "sans-bold");
+            textBox = new TextBox(window);
+            textBox->setEditable(true);
+            textBox->setFixedSize(Vector2i(100, 20));
+            textBox->setValue("50");
+            textBox->setUnits("Mhz");
+            textBox->setDefaultValue("0.0");
+            textBox->setFontSize(16);
+            textBox->setFormat("[1-9][0-9]*");
+        }
+
+        {
+            new Label(window, "Checkbox :", "sans-bold");
+
+            cb = new CheckBox(window, "Check me");
+            cb->setFontSize(16);
+            cb->setChecked(true);
+        }
+
+        new Label(window, "Combo box :", "sans-bold");
+        ComboBox *cobo =
+            new ComboBox(window, { "Item 1", "Item 2", "Item 3" });
+        cobo->setFontSize(16);
+        cobo->setFixedSize(Vector2i(100,20));
+
+        new Label(window, "Color button :", "sans-bold");
+        popupBtn = new PopupButton(window, "", 0);
+        popupBtn->setBackgroundColor(Color(255, 120, 0, 255));
+        popupBtn->setFontSize(16);
+        popupBtn->setFixedSize(Vector2i(100, 20));
+        popup = popupBtn->popup();
+        popup->setLayout(new GroupLayout());
+
+        ColorWheel *colorwheel = new ColorWheel(popup);
+        colorwheel->setColor(popupBtn->backgroundColor().block<3, 1>(0, 0));
+
+        Button *colorBtn = new Button(popup, "Pick");
+        colorBtn->setFixedSize(Vector2i(100, 25));
+        Vector3f c = colorwheel->color();
+        colorBtn->setBackgroundColor(Color(c));
+
+        PopupButton &popupBtnRef = *popupBtn;
+        Button &colorBtnRef = *colorBtn;
+        colorwheel->setCallback([&](const Vector3f &value) {
+            colorBtnRef.setBackgroundColor(Color(value));
+        });
+
+        colorBtn->setChangeCallback([&](bool pushed) {
+            if (pushed) {
+                popupBtnRef.setBackgroundColor(colorBtnRef.backgroundColor());
+                popupBtnRef.setPushed(false);
+            }
+        });
 
         performLayout(mNVGContext);
 

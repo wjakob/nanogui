@@ -34,6 +34,7 @@
 
 struct NVGcontext;
 struct NVGcolor;
+struct NVGglyphPosition;
 struct GLFWwindow;
 struct GLFWcursor;
 
