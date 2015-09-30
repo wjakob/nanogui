@@ -53,7 +53,7 @@ public:
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
 
     /// Text input event handler: codepoint is native endian UTF-32 format
-    virtual bool keyboardEvent(unsigned int codepoint);
+    virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }

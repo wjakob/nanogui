@@ -184,7 +184,7 @@ public:
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
 
     /// Handle text input (UTF-32 format) (default implementation: do nothing)
-    virtual bool keyboardEvent(unsigned int codepoint);
+    virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
     /// Request the focus to be moved to this widget
     virtual void requestFocus();

@@ -300,26 +300,22 @@ void Screen::drawWidgets() {
 }
 
 bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
-    bool handled = false;
-
     if (mFocusPath.size() > 0) {
         for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused())
-                handled |= (*it)->keyboardEvent(key, scancode, action, modifiers);
+            if ((*it)->focused() && (*it)->keyboardEvent(key, scancode, action, modifiers))
+                return true;
     }
 
-    return handled;
+    return false;
 }
 
-bool Screen::keyboardEvent(unsigned int codepoint) {
-    bool handled = false;
+bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
     if (mFocusPath.size() > 0) {
         for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused())
-                handled |= (*it)->keyboardEvent(codepoint);
+            if ((*it)->focused() && (*it)->keyboardCharacterEvent(codepoint))
+                return true;
     }
-
-    return handled;
+    return false;
 }
 
 bool Screen::cursorPosCallbackEvent(double x, double y) {
@@ -420,7 +416,7 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
 bool Screen::charCallbackEvent(unsigned int codepoint) {
     mLastInteraction = glfwGetTime();
     try {
-        return keyboardEvent(codepoint);
+        return keyboardCharacterEvent(codepoint);
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in event handler: " << e.what()
                   << std::endl;

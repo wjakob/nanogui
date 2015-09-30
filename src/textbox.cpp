@@ -368,7 +368,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
     return false;
 }
 
-bool TextBox::keyboardEvent(unsigned int codepoint) {
+bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
     if (mEditable && focused()) {
         std::ostringstream convert;
         convert << (char) codepoint;

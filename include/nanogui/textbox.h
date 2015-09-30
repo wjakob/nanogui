@@ -46,8 +46,8 @@ public:
     bool mouseDragEvent(const Vector2i &p,const Vector2i &rel,int button,int modifiers);
     bool mouseEnterEvent(const Vector2i &p,bool enter);
     bool focusEvent(bool focused);
-    bool keyboardEvent(int key,int scancode,int action,int modifiers);
-    bool keyboardEvent(unsigned int codepoint);
+    bool keyboardEvent(int key, int scancode, int action, int modifiers);
+    bool keyboardCharacterEvent(unsigned int codepoint);
 
     Vector2i preferredSize(NVGcontext *ctx) const;
     void draw(NVGcontext* ctx);

@@ -116,7 +116,7 @@ bool Widget::keyboardEvent(int, int, int, int) {
     return false;
 }
 
-bool Widget::keyboardEvent(unsigned int) {
+bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
