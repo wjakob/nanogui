@@ -24,11 +24,6 @@ public:
     /// Get the currently active font
     const std::string &font() const { return mFont; }
 
-    /// Get the font size in pixels
-    int fontSize() const { return mFontSize; }
-    /// Set the font size in pixels
-    void setFontSize(int fontSize) { mFontSize = fontSize; }
-
     /// Get the label color
     Color color() const { return mColor; }
     /// Set the label color
@@ -42,7 +37,6 @@ protected:
     std::string mCaption;
     std::string mFont;
     Color mColor;
-    int mFontSize;
 };
 
 NANOGUI_NAMESPACE_END
