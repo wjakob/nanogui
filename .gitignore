@@ -12,3 +12,7 @@ bin2c
 example
 icons
 *~
+nanogui.so
+nanogui.pyd
+libnanogui.so
+libnanogui.dylib

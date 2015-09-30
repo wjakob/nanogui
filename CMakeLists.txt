@@ -4,6 +4,7 @@ project("NanoGUI")
 
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
+option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -148,5 +149,52 @@ if(NANOGUI_BUILD_EXAMPLE)
 endif()
 
 file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+if (NANOGUI_BUILD_PYTHON)
+  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+  find_package(PythonLibs REQUIRED)
+  include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
+  add_library(nanogui_python SHARED src/python.cpp)
+  set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
+  target_link_libraries(nanogui_python nanogui glfw ${extra_libs})
+
+  set_target_properties(nanogui_python PROPERTIES PREFIX "")
+  if (WIN32)
+    if (MSVC)
+      # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
+      # /bigobj is needed for bigger binding projects due to the limit to 64k addressable sections
+      # /MP enables multithreaded builds
+      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "/Os /GL /MP /bigobj")
+      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "/LTCG")
+    endif()
+    # .PYD file extension on Windows
+    set_target_properties(nanogui_python PROPERTIES SUFFIX ".pyd")
+
+    # Link against the Python shared library
+    target_link_libraries(nanogui_python ${PYTHON_LIBRARY})
+  elseif(UNIX)
+    # .SO file extension on Linux/Mac OS
+    set_target_properties(nanogui_python PROPERTIES SUFFIX ".so")
+
+    # Strip unnecessary sections of the binary on Linux/Mac OS
+    if(APPLE)
+      set_target_properties(nanogui_python PROPERTIES MACOSX_RPATH ".")
+      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+        add_custom_command(TARGET nanogui_python POST_BUILD COMMAND strip -u -r ${PROJECT_BINARY_DIR}/nanogui.so)
+      endif()
+    else()
+      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+        add_custom_command(TARGET nanogui_python POST_BUILD COMMAND strip ${PROJECT_BINARY_DIR}/nanogui.so)
+      endif()
+    endif()
+  endif()
+endif()
+
+# Create documentation for python plugin (optional target for developers)
+add_custom_target(mkdoc COMMAND
+  python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
+  -Iinclude -Iext/nanovg/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/src/py_doc.h)
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:
