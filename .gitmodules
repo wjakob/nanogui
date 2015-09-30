@@ -10,3 +10,6 @@
 [submodule "eigen"]
 	path = ext/eigen
 	url = https://github.com/libigl/eigen.git
+[submodule "ext/pybind"]
+	path = ext/pybind11
+	url = https://github.com/wjakob/pybind11

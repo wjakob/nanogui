@@ -27,10 +27,10 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mCallback(nullptr) { }
 
 void TextBox::setEditable(bool editable) {
-  mEditable = editable;
+    mEditable = editable;
 
-  if(mEditable)
-    setCursor(Cursor::IBeam);
+    if (mEditable)
+        setCursor(Cursor::IBeam);
 }
 
 Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
@@ -139,13 +139,14 @@ void TextBox::draw(NVGcontext* ctx) {
     float clipHeight = mSize.y() - 3.0f;
     nvgScissor(ctx, clipX, clipY, clipWidth, clipHeight);
 
-    NVGglyphPosition glyphs[100];
     Vector2i oldDrawPos(drawPos);
     drawPos.x() += mTextOffset;
 
     if (mCommitted) {
         nvgText(ctx, drawPos.x(), drawPos.y(), mValue.c_str(), nullptr);
     } else {
+        const int maxGlyphs = 1024;
+        NVGglyphPosition glyphs[maxGlyphs];
         float textBound[4];
         nvgTextBounds(ctx, drawPos.x(), drawPos.y(), mValueTemp.c_str(),
                       nullptr, textBound);
@@ -154,7 +155,7 @@ void TextBox::draw(NVGcontext* ctx) {
         // find cursor positions
         int nglyphs =
             nvgTextGlyphPositions(ctx, drawPos.x(), drawPos.y(),
-                                  mValueTemp.c_str(), nullptr, glyphs, 100);
+                                  mValueTemp.c_str(), nullptr, glyphs, maxGlyphs);
         updateCursor(ctx, textBound[2], glyphs, nglyphs);
 
         // compute text offset
@@ -176,13 +177,11 @@ void TextBox::draw(NVGcontext* ctx) {
                       nullptr, textBound);
 
         // recompute cursor positions
-        nglyphs =
-            nvgTextGlyphPositions(ctx, drawPos.x(), drawPos.y(),
-                                  mValueTemp.c_str(), nullptr, glyphs, 100);
+        nglyphs = nvgTextGlyphPositions(ctx, drawPos.x(), drawPos.y(),
+                mValueTemp.c_str(), nullptr, glyphs, maxGlyphs);
 
         if (mCursorPos > -1) {
             if (mSelectionPos > -1) {
-
                 float caretx = cursorIndex2Position(mCursorPos, textBound[2],
                                                     glyphs, nglyphs);
                 float selx = cursorIndex2Position(mSelectionPos, textBound[2],
@@ -199,8 +198,7 @@ void TextBox::draw(NVGcontext* ctx) {
                 nvgFill(ctx);
             }
 
-            float caretx =
-                cursorIndex2Position(mCursorPos, textBound[2], glyphs, nglyphs);
+            float caretx = cursorIndex2Position(mCursorPos, textBound[2], glyphs, nglyphs);
 
             // draw cursor
             nvgBeginPath(ctx);
@@ -294,25 +292,43 @@ bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) {
     if (mEditable && focused()) {
         if (action == GLFW_PRESS || action == GLFW_REPEAT) {
             if (key == GLFW_KEY_LEFT) {
-                if (mCursorPos > 0) {
-                    if (modifiers == GLFW_MOD_SHIFT) {
-                        if (mSelectionPos == -1)
-                            mSelectionPos = mCursorPos;
-                    } else
-                        mSelectionPos = -1;
+                if (modifiers == GLFW_MOD_SHIFT) {
+                    if (mSelectionPos == -1)
+                        mSelectionPos = mCursorPos;
+                } else {
+                    mSelectionPos = -1;
+                }
 
+                if (mCursorPos > 0)
                     mCursorPos--;
-                }
             } else if (key == GLFW_KEY_RIGHT) {
-                if (mCursorPos < mValueTemp.size()) {
-                    if (modifiers == GLFW_MOD_SHIFT) {
-                        if (mSelectionPos == -1)
-                            mSelectionPos = mCursorPos;
-                    } else
-                        mSelectionPos = -1;
-
-                    mCursorPos++;
+                if (modifiers == GLFW_MOD_SHIFT) {
+                    if (mSelectionPos == -1)
+                        mSelectionPos = mCursorPos;
+                } else {
+                    mSelectionPos = -1;
                 }
+
+                if (mCursorPos < mValueTemp.length())
+                    mCursorPos++;
+            } else if (key == GLFW_KEY_HOME) {
+                if (modifiers == GLFW_MOD_SHIFT) {
+                    if (mSelectionPos == -1)
+                        mSelectionPos = mCursorPos;
+                } else {
+                    mSelectionPos = -1;
+                }
+
+                mCursorPos = 0;
+            } else if (key == GLFW_KEY_END) {
+                if (modifiers == GLFW_MOD_SHIFT) {
+                    if (mSelectionPos == -1)
+                        mSelectionPos = mCursorPos;
+                } else {
+                    mSelectionPos = -1;
+                }
+
+                mCursorPos = mValueTemp.size();
             } else if (key == GLFW_KEY_BACKSPACE) {
                 if (!deleteSelection()) {
                     if (mCursorPos > 0) {
@@ -322,15 +338,14 @@ bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) {
                 }
             } else if (key == GLFW_KEY_DELETE) {
                 if (!deleteSelection()) {
-                    if (mCursorPos < mValueTemp.size()) {
+                    if (mCursorPos < mValueTemp.length())
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos);
-                    }
                 }
             } else if (key == GLFW_KEY_ENTER) {
                 if (!mCommitted)
                     focusEvent(false);
             } else if (key == GLFW_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
-                mCursorPos = (int) mValueTemp.size();
+                mCursorPos = (int) mValueTemp.length();
                 mSelectionPos = 0;
             } else if (key == GLFW_KEY_X && modifiers == SYSTEM_COMMAND_MOD) {
                 copySelection();
