@@ -17,7 +17,10 @@ public:
     std::function<void(const Vector3f &)> callback() const           { return mCallback; }
     void setCallback(std::function<void(const Vector3f &)> callback) { mCallback = callback; }
 
+    /// Get the current color
     Vector3f color() const;
+    /// Set the current color
+    void setColor(const Vector3f& rgb);
 
 private:
     enum Region {
