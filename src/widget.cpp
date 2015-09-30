@@ -7,10 +7,11 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
-Widget::Widget(Widget *parent) 
+Widget::Widget(Widget *parent)
     : mParent(nullptr), mLayout(nullptr), mPos(Vector2i::Zero()),
       mSize(Vector2i::Zero()), mFixedSize(Vector2i::Zero()), mVisible(true),
-      mEnabled(true), mFocused(false), mMouseFocus(false), mTooltip("") {
+      mEnabled(true), mFocused(false), mMouseFocus(false), mTooltip(""),
+      mFontSize(-1.0f), mTheme(nullptr), mCursor(Cursor::Arrow) {
     if (parent) {
         parent->addChild(this);
         mTheme = parent->mTheme;
@@ -20,8 +21,11 @@ Widget::Widget(Widget *parent)
 Widget::~Widget() {
     for (auto child : mChildren)
         delete child;
-    if (mLayout)
-        delete mLayout;
+    delete mLayout;
+}
+
+int Widget::fontSize() const {
+    return mFontSize < 0 ? mTheme->mStandardFontSize : mFontSize;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
@@ -75,7 +79,8 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
         bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
         if (contained != prevContained)
             child->mouseEnterEvent(p, contained);
-        if ((contained || prevContained) && child->mouseMotionEvent(p - mPos, rel, button, modifiers))
+        if ((contained || prevContained) &&
+            child->mouseMotionEvent(p - mPos, rel, button, modifiers))
             return true;
     }
     return false;
@@ -91,6 +96,7 @@ bool Widget::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     }
     return false;
 }
+
 bool Widget::mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
     return false;
 }
@@ -105,7 +111,11 @@ bool Widget::focusEvent(bool focused) {
     return false;
 }
 
-bool Widget::keyboardEvent(int key, int scancode, bool press, int modifiers) {
+bool Widget::keyboardEvent(int key, int scancode, int action, int modifiers) {
+    return false;
+}
+
+bool Widget::keyboardEvent(unsigned int codepoint) {
     return false;
 }
 
@@ -127,7 +137,7 @@ Window *Widget::window() {
     }
 }
 
-inline void Widget::requestFocus() {
+void Widget::requestFocus() {
     Widget *widget = this;
     while (widget->parent())
         widget = widget->parent();

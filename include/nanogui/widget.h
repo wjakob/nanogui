@@ -5,6 +5,8 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
+enum class Cursor;
+
 /**
  * \brief Base class of all widgets
  *
@@ -29,15 +31,15 @@ public:
 
     /// Return thely used \ref Layout generator
     Layout *layout() { return mLayout; }
-    /// Return thely used \ref Layout generator
+    /// Return the used \ref Layout generator
     const Layout *layout() const { return mLayout; }
-    /// Set thely used \ref Layout generator
+    /// Set the used \ref Layout generator
     void setLayout(Layout *layout) { mLayout = layout; }
 
     /// Return the \ref Theme used to draw this widget
     const Theme *theme() const { return mTheme; }
     /// Set the \ref Theme used to draw this widget
-    void setTheme(const Theme *theme) { mTheme = theme; }
+    void setTheme(Theme *theme) { mTheme = theme; }
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
@@ -135,6 +137,16 @@ public:
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
+    /// Return current font size. If not set the default of the current theme will be returned
+    int fontSize() const;
+    /// Set the font size of this widget
+    void setFontSize(int fontSize) { mFontSize = fontSize; }
+
+    /// Return a pointer to the cursor of the widget
+    Cursor cursor() const { return mCursor; }
+    /// Set the cursor of the widget
+    void setCursor(Cursor cursor) { mCursor = cursor; }
+
     /// Compute the preferred size of the widget
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
 
@@ -169,7 +181,10 @@ public:
     virtual bool focusEvent(bool focused);
 
     /// Handle a keyboard event (default implementation: do nothing)
-    virtual bool keyboardEvent(int key, int scancode, bool press, int modifiers);
+    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
+
+    /// Handle text input (UTF-32 format) (default implementation: do nothing)
+    virtual bool keyboardEvent(unsigned int codepoint);
 
     /// Request the focus to be moved to this widget
     virtual void requestFocus();
@@ -179,7 +194,7 @@ public:
 
 protected:
     Widget *mParent;
-    const Theme *mTheme;
+    Theme *mTheme;
     Layout *mLayout;
     std::string mId;
     Vector2i mPos, mSize, mFixedSize;
@@ -187,6 +202,8 @@ protected:
     bool mVisible, mEnabled;
     bool mFocused, mMouseFocus;
     std::string mTooltip;
+    int mFontSize;
+    Cursor mCursor;
 };
 
 NANOGUI_NAMESPACE_END

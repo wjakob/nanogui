@@ -38,6 +38,17 @@ struct GLFWwindow;
 
 NANOGUI_NAMESPACE_BEGIN
 
+/* Cursor shapes */
+enum class Cursor {
+    Arrow = 0,
+    IBeam,
+    Crossair,
+    Hand,
+    HResize,
+    VResize,
+    CursorCount
+};
+
 /* Import some common Eigen types */
 using Eigen::Vector2f;
 using Eigen::Vector3f;
@@ -48,6 +59,7 @@ using Eigen::Vector4i;
 using Eigen::Matrix3f;
 using Eigen::Matrix4f;
 using Eigen::MatrixXf;
+
 typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
 
 /// Stores an RGBA color value
