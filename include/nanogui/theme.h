@@ -5,7 +5,6 @@
 NANOGUI_NAMESPACE_BEGIN
 
 struct NANOGUI_EXPORT Theme {
-public:
     /* Fonts */
     int mFontNormal;
     int mFontBold;

@@ -256,22 +256,10 @@ void GLShader::free() {
     if (mVertexArrayObject)
         glDeleteVertexArrays(1, &mVertexArrayObject);
 
-    if (mProgramShader) {
-        glDeleteProgram(mProgramShader);
-        mProgramShader = 0;
-    }
-    if (mVertexShader) {
-        glDeleteShader(mVertexShader);
-        mVertexShader = 0;
-    }
-    if (mFragmentShader) {
-        glDeleteShader(mFragmentShader);
-        mFragmentShader = 0;
-    }
-    if (mGeometryShader) {
-        glDeleteShader(mGeometryShader);
-        mGeometryShader = 0;
-    }
+    glDeleteProgram(mProgramShader); mProgramShader = 0;
+    glDeleteShader(mVertexShader);   mVertexShader = 0;
+    glDeleteShader(mFragmentShader); mFragmentShader = 0;
+    glDeleteShader(mGeometryShader); mGeometryShader = 0;
 }
 
 void GLFramebuffer::init(const Vector2i &size, int nSamples) {
