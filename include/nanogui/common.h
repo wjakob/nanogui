@@ -65,18 +65,37 @@ typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
 /// Stores an RGBA color value
 class Color : public Eigen::Vector4f {
 public:
-    Color() { }
-    Color(int intensity, int alpha) {
-        const float scale = 1.f / 255.f;
-        x() = y() = z() = intensity * scale; w() = alpha * scale;
-    }
-    Color(int r, int g, int b, int a) {
-        const float scale = 1.f / 255.f;
-        x() = r * scale; y() = g * scale;
-        z() = b * scale; w() = a * scale;
-    }
+    Color() : Color(0, 0, 0, 0) {}
+
+    Color(const Eigen::Vector4f &color) : Eigen::Vector4f(color) { }
+
+    Color(const Eigen::Vector3f &color, float alpha)
+        : Color(color(0), color(1), color(2), alpha) { }
+
+    Color(const Eigen::Vector3i &color, int alpha)
+        : Color(color.cast<float>() / 255.f, alpha / 255.f) { }
+
+    Color(const Eigen::Vector3f &color) : Color(color, 1.0f) {}
+
+    Color(const Eigen::Vector3i &color)
+        : Color((Vector3f)(color.cast<float>() / 255.f)) { }
+
+    Color(const Eigen::Vector4i &color)
+        : Color((Vector4f)(color.cast<float>() / 255.f)) { }
+
+    Color(float intensity, float alpha)
+        : Color(Vector3f::Constant(intensity), alpha) { }
+
+    Color(int intensity, int alpha)
+        : Color(Vector3i::Constant(intensity), alpha) { }
+
+    Color(float r, float g, float b, float a) : Color(Vector4f(r, g, b, a)) { }
+
+    Color(int r, int g, int b, int a) : Color(Vector4i(r, g, b, a)) { }
+
     inline operator const NVGcolor &() const;
 };
+
 
 /* Forward declarations */
 class BoxLayout;
