@@ -35,6 +35,14 @@
 struct NVGcontext;
 struct NVGcolor;
 struct GLFWwindow;
+struct GLFWcursor;
+
+// Define command key for windows/mac/linux
+#ifdef __APPLE__
+#define SYSTEM_COMMAND_MOD GLFW_MOD_SUPER
+#else
+#define SYSTEM_COMMAND_MOD GLFW_MOD_CONTROL
+#endif
 
 NANOGUI_NAMESPACE_BEGIN
 

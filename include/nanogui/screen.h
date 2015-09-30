@@ -22,8 +22,15 @@ public:
     /// Draw the Screen contents
     virtual void drawAll();
 
+    /// Get the window titlebar caption
+    const std::string &caption() const { return mCaption; }
+
+    /// Set the window titlebar caption
+    void setCaption(const std::string &caption);
+
     /// Return the screen's background color
     const Vector3f &background() const { return mBackground; }
+
     /// Set the screen's background color
     void setBackground(const Vector3f &background) { mBackground = background; }
 
@@ -40,10 +47,13 @@ public:
     virtual void framebufferSizeChanged() { /* To be overridden */ }
     
     /// Handle a file drop event
-    virtual void dropEvent(const std::vector<std::string> &filenames) { /* To be overridden */ }
+    virtual bool dropEvent(const std::vector<std::string> &filenames) { return false; /* To be overridden */ }
 
-    /// Basic default keyboard event handler: hide the window when the 'Escape' key is pressed
-    virtual bool keyboardEvent(int key, int scancode, bool press, int modifiers);
+    /// Default keyboard event handler
+    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
+
+    /// Text input event handler: codepoint is native endian UTF-32 format
+    virtual bool keyboardEvent(unsigned int codepoint);
 
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }
@@ -55,15 +65,43 @@ public:
     NVGcontext *nvgContext() { return mNVGContext; }
 
 protected:
+    /**
+     * \brief Default constructor
+     *
+     * Performs no initialization at all. Use this if the application is
+     * responsible for setting up GLFW, OpenGL, etc.
+     *
+     * In this case, override \ref Screen and call \ref initalize() with a
+     * pointer to an existing \c GLFWwindow instance
+     *
+     * You will also be responsible in this case to deliver GLFW callbacks
+     * to the appropriate callback event handlers below
+     */
+    Screen();
+
+    /// Initialize the \ref Screen
+    void initialize(GLFWwindow *window);
+
+    /* Event handlers */
+    bool cursorPosCallbackEvent(GLFWwindow *w, double x, double y);
+    bool mouseButtonCallbackEvent(GLFWwindow *w, int button, int action, int modifiers);
+    bool keyCallbackEvent(GLFWwindow *w, int key, int scancode, int action, int mods);
+    bool charCallbackEvent(GLFWwindow *w, unsigned int codepoint);
+    bool dropCallbackEvent(GLFWwindow *w, int count, const char **filenames);
+    bool scrollCallbackEvent(GLFWwindow *w, double x, double y);
+
     /* Internal helper functions */
     void updateFocus(Widget *widget);
     void disposeWindow(Window *window);
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
+    void drawWidgets();
 
 protected:
     GLFWwindow *mGLFWWindow;
     NVGcontext *mNVGContext;
+    GLFWcursor *mCursors[(int) Cursor::CursorCount];
+    Cursor mCursor;
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;
     float mPixelRatio;
@@ -74,6 +112,7 @@ protected:
     double mLastInteraction;
     bool mProcessEvents;
     Vector3f mBackground;
+    std::string mCaption;
 };
 
 NANOGUI_NAMESPACE_END
