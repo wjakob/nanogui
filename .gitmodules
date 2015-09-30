@@ -9,4 +9,4 @@
 	url = https://github.com/nigels-com/glew
 [submodule "eigen"]
 	path = ext/eigen
-	url = https://github.com/RLovelett/eigen
+	url = https://github.com/libigl/eigen.git
