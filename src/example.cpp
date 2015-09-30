@@ -43,7 +43,7 @@ public:
         Button *b = new Button(window, "Plain button");
         b->setCallback([] { cout << "pushed!" << endl; });
         b = new Button(window, "Styled", ENTYPO_ICON_ROCKET);
-        b->setBackgroundColor(Color(0, 0, 255, 255));
+        b->setBackgroundColor(Color(0, 0, 255, 25));
         b->setCallback([] { cout << "pushed!" << endl; });
 
         new Label(window, "Toggle buttons", "sans-bold");
