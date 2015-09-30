@@ -29,13 +29,15 @@ public:
     /// Set the parent widget
     void setParent(Widget *parent) { mParent = parent; }
 
-    /// Return thely used \ref Layout generator
+    /// Return the used \ref Layout generator
     Layout *layout() { return mLayout; }
     /// Return the used \ref Layout generator
     const Layout *layout() const { return mLayout; }
     /// Set the used \ref Layout generator
     void setLayout(Layout *layout) { mLayout = layout; }
 
+    /// Return the \ref Theme used to draw this widget
+    Theme *theme() { return mTheme; }
     /// Return the \ref Theme used to draw this widget
     const Theme *theme() const { return mTheme; }
     /// Set the \ref Theme used to draw this widget
@@ -81,6 +83,10 @@ public:
     /// Return the fixed size (see \ref setFixedSize())
     const Vector2i &fixedSize() const { return mFixedSize; }
 
+    // Return the fixed width (see \ref setFixedSize())
+    int fixedWidth() const { return mFixedSize.x(); }
+    // Return the fixed height (see \ref setFixedSize())
+    int fixedHeight() const { return mFixedSize.y(); }
     /// Set the fixed width (see \ref setFixedSize())
     void setFixedWidth(int width) { mFixedSize.x() = width; }
     /// Set the fixed height (see \ref setFixedSize())
@@ -133,6 +139,8 @@ public:
     bool focused() const { return mFocused; }
     /// Set whether or not this widget is currently focused
     void setFocused(bool focused) { mFocused = focused; }
+    /// Request the focus to be moved to this widget
+    void requestFocus();
 
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
@@ -146,12 +154,6 @@ public:
     Cursor cursor() const { return mCursor; }
     /// Set the cursor of the widget
     void setCursor(Cursor cursor) { mCursor = cursor; }
-
-    /// Compute the preferred size of the widget
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-
-    /// Invoke the associated layout generator to properly place child widgets, if any
-    virtual void performLayout(NVGcontext *ctx);
 
     /// Check if the widget contains a certain position
     bool contains(const Vector2i &p) const {
@@ -168,14 +170,14 @@ public:
     /// Handle a mouse motion event (default implementation: propagate to children)
     virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
 
-    /// Handle a mouse scroll event (default implementation: propagate to children)
-    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel);
-
     /// Handle a mouse drag event (default implementation: do nothing)
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
 
     /// Handle a mouse enter/leave event (default implementation: record this fact, but do nothing)
     virtual bool mouseEnterEvent(const Vector2i &p, bool enter);
+
+    /// Handle a mouse scroll event (default implementation: propagate to children)
+    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel);
 
     /// Handle a focus change event (default implementation: record the focus status, but do nothing)
     virtual bool focusEvent(bool focused);
@@ -186,8 +188,11 @@ public:
     /// Handle text input (UTF-32 format) (default implementation: do nothing)
     virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
-    /// Request the focus to be moved to this widget
-    virtual void requestFocus();
+    /// Compute the preferred size of the widget
+    virtual Vector2i preferredSize(NVGcontext *ctx) const;
+
+    /// Invoke the associated layout generator to properly place child widgets, if any
+    virtual void performLayout(NVGcontext *ctx);
 
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);

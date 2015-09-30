@@ -51,7 +51,7 @@ NANOGUI_NAMESPACE_BEGIN
 enum class Cursor {
     Arrow = 0,
     IBeam,
-    Crossair,
+    Crosshair,
     Hand,
     HResize,
     VResize,
