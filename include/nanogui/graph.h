@@ -8,27 +8,27 @@ class NANOGUI_EXPORT Graph : public Widget {
 public:
     Graph(Widget *parent, const std::string &caption = "Untitled");
 
-    inline const std::string &caption() const { return mCaption; }
-    inline void setCaption(const std::string &caption) { mCaption = caption; }
+    const std::string &caption() const { return mCaption; }
+    void setCaption(const std::string &caption) { mCaption = caption; }
 
-    inline const std::string &header() const { return mHeader; }
-    inline void setHeader(const std::string &header) { mHeader = header; }
+    const std::string &header() const { return mHeader; }
+    void setHeader(const std::string &header) { mHeader = header; }
 
-    inline const std::string &footer() const { return mFooter; }
-    inline void setFooter(const std::string &footer) { mFooter = footer; }
+    const std::string &footer() const { return mFooter; }
+    void setFooter(const std::string &footer) { mFooter = footer; }
 
-    inline const Color &backgroundColor() const { return mBackgroundColor; }
-    inline void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
+    const Color &backgroundColor() const { return mBackgroundColor; }
+    void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
-    inline const Color &foregroundColor() const { return mForegroundColor; }
-    inline void setForegroundColor(const Color &foregroundColor) { mForegroundColor = foregroundColor; }
+    const Color &foregroundColor() const { return mForegroundColor; }
+    void setForegroundColor(const Color &foregroundColor) { mForegroundColor = foregroundColor; }
 
-    inline const Color &textColor() const { return mTextColor; }
-    inline void setTextColor(const Color &textColor) { mTextColor = textColor; }
+    const Color &textColor() const { return mTextColor; }
+    void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
-    inline const Eigen::VectorXf &values() const { return mValues; }
-    inline Eigen::VectorXf &values() { return mValues; }
-    inline void setValues(const Eigen::VectorXf &values) { mValues = values; }
+    const Eigen::VectorXf &values() const { return mValues; }
+    Eigen::VectorXf &values() { return mValues; }
+    void setValues(const Eigen::VectorXf &values) { mValues = values; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext *ctx);

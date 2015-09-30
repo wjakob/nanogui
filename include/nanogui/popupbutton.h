@@ -9,8 +9,8 @@ class NANOGUI_EXPORT PopupButton : public Button {
 public:
     PopupButton(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
 
-    inline Popup *popup() { return mPopup; }
-    inline const Popup *popup() const { return mPopup; }
+    Popup *popup() { return mPopup; }
+    const Popup *popup() const { return mPopup; }
 
     virtual void draw(NVGcontext* ctx);
     virtual Vector2i preferredSize(NVGcontext *ctx) const;

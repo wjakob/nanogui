@@ -8,8 +8,8 @@ class NANOGUI_EXPORT ProgressBar : public Widget {
 public:
     ProgressBar(Widget *parent);
 
-    inline float value() { return mValue; }
-    inline void setValue(float value) { mValue = value; }
+    float value() { return mValue; }
+    void setValue(float value) { mValue = value; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext* ctx);

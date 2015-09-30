@@ -17,8 +17,8 @@ public:
                   const std::string &buttonText = "OK",
                   const std::string &altButtonText = "Cancel", bool altButton = false);
 
-    inline std::function<void(int)> callback() const { return mCallback; }
-    inline void setCallback(std::function<void(int)> callback) { mCallback = callback; }
+    std::function<void(int)> callback() const { return mCallback; }
+    void setCallback(std::function<void(int)> callback) { mCallback = callback; }
 protected:
     std::function<void(int)> mCallback;
 };

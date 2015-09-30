@@ -95,7 +95,7 @@ public:
     void freeAttrib(const std::string &name);
 
     /// Check if an attribute was registered a given name
-    inline bool hasAttrib(const std::string &name) const { 
+    bool hasAttrib(const std::string &name) const { 
         auto it = mBufferObjects.find(name);
         if (it == mBufferObjects.end())
             return false;
@@ -106,7 +106,7 @@ public:
     void shareAttrib(const GLShader &otherShader, const std::string &name, const std::string &as = "");
 
     /// Return the version number of a given attribute
-    inline int attribVersion(const std::string &name) const {
+    int attribVersion(const std::string &name) const {
         auto it = mBufferObjects.find(name);
         if (it == mBufferObjects.end())
             return -1;
@@ -114,7 +114,7 @@ public:
     }
 
     /// Reset the version number of a given attribute
-    inline void resetAttribVersion(const std::string &name) {
+    void resetAttribVersion(const std::string &name) {
         auto it = mBufferObjects.find(name);
         if (it != mBufferObjects.end())
             it->second.version = -1;
@@ -209,7 +209,7 @@ public:
     void blit();
 
     /// Return whether or not the framebuffer object has been initialized
-    inline bool ready() { return mFramebuffer != 0; }
+    bool ready() { return mFramebuffer != 0; }
 
     /// Return the number of MSAA samples
     int samples() const { return mSamples; }
@@ -227,13 +227,13 @@ struct Arcball {
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(speedFactor) { }
 
-    inline Arcball(const Quaternionf &quat)
+    Arcball(const Quaternionf &quat)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
           mQuat(quat),
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(2.0f) { }
 
-    inline Quaternionf &state() { return mQuat; }
+    Quaternionf &state() { return mQuat; }
 
     void setState(const Quaternionf &state) {
         mActive = false;
@@ -242,11 +242,11 @@ struct Arcball {
         mIncr = Quaternionf::Identity();
     }
 
-    inline void setSize(Vector2i size) { mSize = size; }
-    inline const Vector2i &size() const { return mSize; }
-    inline void setSpeedFactor(float speedFactor) { mSpeedFactor = speedFactor; }
-    inline float speedFactor() const { return mSpeedFactor; }
-    inline bool active() const { return mActive; }
+    void setSize(Vector2i size) { mSize = size; }
+    const Vector2i &size() const { return mSize; }
+    void setSpeedFactor(float speedFactor) { mSpeedFactor = speedFactor; }
+    float speedFactor() const { return mSpeedFactor; }
+    bool active() const { return mActive; }
 
     void button(Vector2i pos, bool pressed) {
         mActive = pressed;

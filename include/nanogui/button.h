@@ -23,41 +23,41 @@ public:
 
     Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
 
-    inline const std::string &caption() const { return mCaption; }
-    inline void setCaption(const std::string &caption) { mCaption = caption; }
+    const std::string &caption() const { return mCaption; }
+    void setCaption(const std::string &caption) { mCaption = caption; }
 
-    inline const Color &backgroundColor() const { return mBackgroundColor; }
-    inline void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
+    const Color &backgroundColor() const { return mBackgroundColor; }
+    void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
-    inline const Color &textColor() const { return mTextColor; }
-    inline void setTextColor(const Color &textColor) { mTextColor = textColor; }
+    const Color &textColor() const { return mTextColor; }
+    void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
-    inline int icon() const { return mIcon; }
-    inline void setIcon(int icon) { mIcon = icon; }
+    int icon() const { return mIcon; }
+    void setIcon(int icon) { mIcon = icon; }
 
-    inline int buttonFlags() const { return mButtonFlags; }
-    inline void setButtonFlags(int buttonFlags) { mButtonFlags = buttonFlags; }
+    int buttonFlags() const { return mButtonFlags; }
+    void setButtonFlags(int buttonFlags) { mButtonFlags = buttonFlags; }
 
-    inline int fontSize() const { return mFontSize; }
-    inline void setFontSize(int fontSize) { mFontSize = fontSize; }
+    int fontSize() const { return mFontSize; }
+    void setFontSize(int fontSize) { mFontSize = fontSize; }
 
-    inline IconPosition iconPosition() const { return mIconPosition; }
-    inline void setIconPosition(IconPosition iconPosition) { mIconPosition = iconPosition; }
+    IconPosition iconPosition() const { return mIconPosition; }
+    void setIconPosition(IconPosition iconPosition) { mIconPosition = iconPosition; }
 
-    inline bool pushed() const { return mPushed; }
-    inline void setPushed(bool pushed) { mPushed = pushed; }
+    bool pushed() const { return mPushed; }
+    void setPushed(bool pushed) { mPushed = pushed; }
 
     /// Set the push callback (for any type of button)
-    inline std::function<void()> callback() const { return mCallback; }
-    inline void setCallback(std::function<void()> callback) { mCallback = callback; }
+    std::function<void()> callback() const { return mCallback; }
+    void setCallback(std::function<void()> callback) { mCallback = callback; }
 
     /// Set the change callback (for toggle buttons)
-    inline std::function<void(bool)> changeCallback() const { return mChangeCallback; }
-    inline void setChangeCallback(std::function<void(bool)> callback) { mChangeCallback = callback; }
+    std::function<void(bool)> changeCallback() const { return mChangeCallback; }
+    void setChangeCallback(std::function<void(bool)> callback) { mChangeCallback = callback; }
 
     /// Set the button group (for radio buttons)
-    inline void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }
-    inline const std::vector<Button *> &buttonGroup() const { return mButtonGroup; }
+    void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }
+    const std::vector<Button *> &buttonGroup() const { return mButtonGroup; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);

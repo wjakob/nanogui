@@ -13,8 +13,8 @@ public:
     void setImageData(const std::vector<std::pair<int, std::string>> &data) { mImages = data; }
     const Images& images() const { return mImages; }
 
-    inline std::function<void(int)> callback() const { return mCallback; }
-    inline void setCallback(std::function<void(int)> callback) { mCallback = callback; }
+    std::function<void(int)> callback() const { return mCallback; }
+    void setCallback(std::function<void(int)> callback) { mCallback = callback; }
 
     virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);

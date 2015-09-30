@@ -16,19 +16,19 @@ public:
     Popup(Widget *parent, Window *parentWindow);
 
     /// Return the anchor position in the parent window; the placement of the popup is relative to it
-    inline void setAnchorPos(const Vector2i &anchorPos) { mAnchorPos = anchorPos; }
+    void setAnchorPos(const Vector2i &anchorPos) { mAnchorPos = anchorPos; }
     /// Set the anchor position in the parent window; the placement of the popup is relative to it
-    inline const Vector2i &anchorPos() const { return mAnchorPos; }
+    const Vector2i &anchorPos() const { return mAnchorPos; }
 
     /// Set the anchor height; this determines the vertical shift relative to the anchor position
-    inline void setAnchorHeight(int anchorHeight) { mAnchorHeight = anchorHeight; }
+    void setAnchorHeight(int anchorHeight) { mAnchorHeight = anchorHeight; }
     /// Return the anchor height; this determines the vertical shift relative to the anchor position
-    inline int anchorHeight() const { return mAnchorHeight; }
+    int anchorHeight() const { return mAnchorHeight; }
 
     /// Return the parent window of the popup
-    inline Window *parentWindow() { return mParentWindow; }
+    Window *parentWindow() { return mParentWindow; }
     /// Return the parent window of the popup
-    inline const Window *parentWindow() const { return mParentWindow; }
+    const Window *parentWindow() const { return mParentWindow; }
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);

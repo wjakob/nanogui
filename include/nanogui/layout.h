@@ -29,17 +29,17 @@ public:
     BoxLayout(Orientation orientation, Alignment alignment = Middle, int margin = 0, int spacing = 0)
         : mOrientation(orientation), mAlignment(alignment), mMargin(margin), mSpacing(spacing) {}
 
-    inline Orientation orientation() const { return mOrientation; }
-    inline void setOrientation(Orientation orientation) { mOrientation = orientation; }
+    Orientation orientation() const { return mOrientation; }
+    void setOrientation(Orientation orientation) { mOrientation = orientation; }
 
-    inline Alignment alignment() const { return mAlignment; }
-    inline void setAlignment(Alignment alignment) { mAlignment = alignment; }
+    Alignment alignment() const { return mAlignment; }
+    void setAlignment(Alignment alignment) { mAlignment = alignment; }
 
-    inline int margin() const { return mMargin; }
-    inline void setMargin(int margin) { mMargin = margin; }
+    int margin() const { return mMargin; }
+    void setMargin(int margin) { mMargin = margin; }
 
-    inline int spacing() const { return mSpacing; }
-    inline void setSpacing(int spacing) { mSpacing = spacing; }
+    int spacing() const { return mSpacing; }
+    void setSpacing(int spacing) { mSpacing = spacing; }
 
     /* Implementation of the layout interface */
     Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
@@ -60,17 +60,17 @@ public:
         : mMargin(margin), mSpacing(spacing), mGroupSpacing(groupSpacing),
           mGroupIndent(groupIndent) {}
     
-    inline int margin() const { return mMargin; }
-    inline void setMargin(int margin) { mMargin = margin; }
+    int margin() const { return mMargin; }
+    void setMargin(int margin) { mMargin = margin; }
 
-    inline int spacing() const { return mSpacing; }
-    inline void setSpacing(int spacing) { mSpacing = spacing; }
+    int spacing() const { return mSpacing; }
+    void setSpacing(int spacing) { mSpacing = spacing; }
 
-    inline int groupIndent() const { return mGroupIndent; }
-    inline void setGroupIndent(int groupIndent) { mGroupIndent = groupIndent; }
+    int groupIndent() const { return mGroupIndent; }
+    void setGroupIndent(int groupIndent) { mGroupIndent = groupIndent; }
 
-    inline int groupSpacing() const { return mGroupSpacing; }
-    inline void setGroupSpacing(int groupSpacing) { mGroupSpacing = groupSpacing; }
+    int groupSpacing() const { return mGroupSpacing; }
+    void setGroupSpacing(int groupSpacing) { mGroupSpacing = groupSpacing; }
 
     /* Implementation of the layout interface */
     Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;

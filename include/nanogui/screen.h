@@ -46,7 +46,7 @@ public:
     virtual bool keyboardEvent(int key, int scancode, bool press, int modifiers);
 
     /// Return the last observed mouse position value
-    inline Vector2i mousePos() const { return mMousePos; }
+    Vector2i mousePos() const { return mMousePos; }
 
     /// Return a pointer to the underlying GLFW window data structure
     GLFWwindow *glfwWindow() { return mGLFWWindow; }

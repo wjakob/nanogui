@@ -10,14 +10,14 @@ public:
     Window(Widget *parent, const std::string &title = "Untitled");
 
     /// Return the window title
-    inline const std::string &title() const { return mTitle; }
+    const std::string &title() const { return mTitle; }
     /// Set the window title
-    inline void setTitle(const std::string &title) { mTitle = title; }
+    void setTitle(const std::string &title) { mTitle = title; }
 
     /// Is this a model dialog?
-    inline bool modal() const { return mModal; }
+    bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
-    inline void setModal(bool modal) { mModal = modal; }
+    void setModal(bool modal) { mModal = modal; }
 
     /// Dispose the window
     void dispose();
