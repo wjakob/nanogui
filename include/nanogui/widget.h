@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nanogui/nanogui.h>
+#include <nanogui/common.h>
 #include <vector>
 
 NANOGUI_NAMESPACE_BEGIN

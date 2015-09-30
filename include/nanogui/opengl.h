@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nanogui/nanogui.h>
+#include <nanogui/common.h>
 
 #if defined(__APPLE__)
     #define GLFW_INCLUDE_GLCOREARB
