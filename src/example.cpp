@@ -59,7 +59,8 @@ public:
 
         new Label(window, "A tool palette", "sans-bold");
         Widget *tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
+                                       BoxLayout::Alignment::Middle, 0, 6));
 
         b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
         b = new ToolButton(tools, ENTYPO_ICON_FF);
@@ -83,7 +84,8 @@ public:
 
         new Label(window, "Message dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
+                                       BoxLayout::Alignment::Middle, 0, 6));
         b = new Button(tools, "Info");
         b->setCallback([&] {
             auto dlg = new MessageDialog(this, MessageDialog::Information, "Title", "This is an information message");
@@ -117,7 +119,8 @@ public:
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
+                                       BoxLayout::Alignment::Middle, 0, 6));
         b = new Button(tools, "Open");
         b->setCallback([&] {
             cout << "File dialog result: " << file_dialog(
@@ -150,8 +153,8 @@ public:
         new Label(window, "Slider and text box", "sans-bold");
 
         Widget *panel = new Widget(window);
-        panel->setLayout(
-            new BoxLayout(BoxLayout::Horizontal, BoxLayout::Middle, 0, 20));
+        panel->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
+                                       BoxLayout::Alignment::Middle, 0, 20));
 
         Slider *slider = new Slider(panel);
         slider->setValue(0.5f);
