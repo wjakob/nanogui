@@ -315,6 +315,16 @@ public:
         mShader.free();
     }
 
+    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
+        if (Screen::keyboardEvent(key, scancode, action, modifiers))
+            return true;
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+            setVisible(false);
+            return true;
+        }
+        return false;
+    }
+
     virtual void draw(NVGcontext *ctx) {
         /* Animate the scrollbar */
         mProgress->setValue(std::fmod((float) glfwGetTime() / 10, 1.0f));
