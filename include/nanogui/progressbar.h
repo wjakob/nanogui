@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_PROGRESSBAR_H)
-#define __NANOGUI_PROGRESSBAR_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ProgressBar : public Widget {
+class NANOGUI_EXPORT ProgressBar : public Widget {
 public:
     ProgressBar(Widget *parent);
 
@@ -18,7 +17,4 @@ protected:
     float mValue;
 };
 
-
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_PROGRESSBAR_H */

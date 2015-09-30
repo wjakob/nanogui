@@ -3,8 +3,7 @@
  * by Daniel Bruce
  */
 
-#if !defined(__NANOGUI_ENTYPO_H)
-#define __NANOGUI_ENTYPO_H
+#pragma once
 
 #define ENTYPO_ICON_PHONE                0x1F4DE
 #define ENTYPO_ICON_MOBILE               0x1F4F1
@@ -290,5 +289,3 @@
 #define ENTYPO_ICON_GOOGLE_CIRCLES       0xF351
 #define ENTYPO_ICON_VK                   0xF354
 #define ENTYPO_ICON_SMASHING             0xF357
-
-#endif /* __NANOGUI_ENTYPO_H */

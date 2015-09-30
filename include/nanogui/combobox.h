@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_COMBOBOX_H)
-#define __NANOGUI_COMBOBOX_H
+#pragma once
 
 #include <nanogui/popupbutton.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ComboBox : public PopupButton {
+class NANOGUI_EXPORT ComboBox : public PopupButton {
 public:
     /// Create a new combo box with the given items
     ComboBox(Widget *parent, const std::vector<std::string> &items);
@@ -30,5 +29,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_COMBOBOX_H */

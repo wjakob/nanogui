@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_OPENGL_H)
-#define __NANOGUI_OPENGL_H
+#pragma once
 
 #include <nanogui/nanogui.h>
 
@@ -28,5 +27,3 @@ inline bool nvgIsImageIcon(int value) { return value < 1024; }
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_OPENGL_H */

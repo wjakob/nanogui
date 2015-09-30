@@ -1,11 +1,8 @@
-#if !defined(__NANOGUI_COLORWHEEL_H)
-#define __NANOGUI_COLORWHEEL_H
-
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ColorWheel : public Widget {
+class NANOGUI_EXPORT ColorWheel : public Widget {
 public:
     ColorWheel(Widget *parent, const Vector3f& color = { 1., 0., 0. });
 
@@ -42,5 +39,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_COLORWHEEL_H */

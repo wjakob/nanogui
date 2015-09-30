@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_GRAPH_H)
-#define __NANOGUI_GRAPH_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class Graph : public Widget {
+class NANOGUI_EXPORT Graph : public Widget {
 public:
     Graph(Widget *parent, const std::string &caption = "Untitled");
 
@@ -40,5 +39,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_GRAPH_H */

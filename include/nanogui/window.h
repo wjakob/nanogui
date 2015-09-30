@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_WINDOW_H)
-#define __NANOGUI_WINDOW_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class Window : public Widget {
+class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
     Window(Widget *parent, const std::string &title = "Untitled");
@@ -44,5 +43,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_WINDOW_H */

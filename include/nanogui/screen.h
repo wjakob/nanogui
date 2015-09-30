@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_SCREEN_H)
-#define __NANOGUI_SCREEN_H
+#pragma once
 
 #include <nanogui/widget.h>
 
@@ -9,7 +8,7 @@ NANOGUI_NAMESPACE_BEGIN
  * \brief Represents a display surface (i.e. a full-screen or windowed GLFW window)
  * and forms the root element of a hierarchy of nanogui widgets
  */
-class Screen : public Widget {
+class NANOGUI_EXPORT Screen : public Widget {
     friend class Widget;
     friend class Window;
 public:
@@ -78,5 +77,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_SCREEN_H */

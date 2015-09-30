@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_LABEL_H)
-#define __NANOGUI_LABEL_H
+#pragma once
 
 #include <nanogui/widget.h>
 
@@ -11,7 +10,7 @@ NANOGUI_NAMESPACE_BEGIN
  * The font and color can be customized. When \ref Widget::setFixedWidth()
  * is used, the text is wrapped when it surpasses the specified width
  */
-class Label : public Widget {
+class NANOGUI_EXPORT Label : public Widget {
 public:
     Label(Widget *parent, const std::string &caption, const std::string &font = "sans");
 
@@ -47,5 +46,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_LABEL_H */

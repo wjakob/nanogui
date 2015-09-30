@@ -1,12 +1,11 @@
-#if !defined(__NANOGUI_POPUPBUTTON_H)
-#define __NANOGUI_POPUPBUTTON_H
+#pragma once
 
 #include <nanogui/button.h>
 #include <nanogui/popup.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class PopupButton : public Button {
+class NANOGUI_EXPORT PopupButton : public Button {
 public:
     PopupButton(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
 
@@ -22,5 +21,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_POPUPBUTTON_H */

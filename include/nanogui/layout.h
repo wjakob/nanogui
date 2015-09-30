@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_LAYOUT_H)
-#define __NANOGUI_LAYOUT_H
+#pragma once
 
 #include <nanogui/nanogui.h>
 
@@ -14,7 +13,7 @@ public:
 };
 
 /// Simple horizontal/vertical box layout
-class BoxLayout : public Layout {
+class NANOGUI_EXPORT BoxLayout : public Layout {
 public:
     enum Orientation {
         Horizontal = 0,
@@ -54,7 +53,7 @@ protected:
 };
 
 /// Group layout: vertical arrangement of indented widgets with (non-indented) group labels
-class GroupLayout : public Layout {
+class NANOGUI_EXPORT GroupLayout : public Layout {
 public:
     GroupLayout(int margin = 15, int spacing = 6, int groupSpacing = 14,
                 int groupIndent = 20)
@@ -84,5 +83,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_LAYOUT_H */

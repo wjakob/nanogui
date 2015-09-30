@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_POPUP_H)
-#define __NANOGUI_POPUP_H
+#pragma once
 
 #include <nanogui/window.h>
 
@@ -11,7 +10,7 @@ NANOGUI_NAMESPACE_BEGIN
  * Usually the Popup instance is constructed by another widget (e.g. \ref PopupButton)
  * and does not need to be created by hand.
  */
-class Popup : public Window {
+class NANOGUI_EXPORT Popup : public Window {
 public:
     /// Create a new popup parented to a screen (first argument) and a parent window
     Popup(Widget *parent, Window *parentWindow);
@@ -47,5 +46,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_POPUP_H */

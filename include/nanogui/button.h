@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_BUTTON_H)
-#define __NANOGUI_BUTTON_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class Button : public Widget {
+class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum ButtonFlags {
@@ -78,5 +77,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_BUTTON_H */

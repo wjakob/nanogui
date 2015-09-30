@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_TEXTBOX_H)
-#define __NANOGUI_TEXTBOX_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class TextBox : public Widget {
+class NANOGUI_EXPORT TextBox : public Widget {
 public:
     TextBox(Widget *parent, const std::string &value = "Untitled");
 
@@ -26,5 +25,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_TEXTBOX_H */

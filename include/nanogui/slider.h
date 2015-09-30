@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_SLIDER_H)
-#define __NANOGUI_SLIDER_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class Slider : public Widget {
+class NANOGUI_EXPORT Slider : public Widget {
 public:
     Slider(Widget *parent, const std::string &caption = "Untitled");
 
@@ -34,5 +33,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_SLIDER_H */

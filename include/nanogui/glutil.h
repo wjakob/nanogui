@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_GLUTIL_H)
-#define __NANOGUI_GLUTIL_H
+#pragma once
 
 #include <nanogui/opengl.h>
 #include <Eigen/Geometry>
@@ -23,7 +22,7 @@ template <> struct type_traits<float> { enum { type = GL_FLOAT, integral = 0 }; 
  * Helper class for compiling and linking OpenGL shaders and uploading
  * associated vertex and index buffers from Eigen matrices
  */
-class GLShader {
+class NANOGUI_EXPORT GLShader {
 public:
     /// Create an unitialized OpenGL shader
     GLShader()
@@ -190,7 +189,7 @@ protected:
 };
 
 /// Helper class for creating framebuffer objects
-class GLFramebuffer {
+class NANOGUI_EXPORT GLFramebuffer {
 public:
     GLFramebuffer() : mFramebuffer(0), mDepth(0), mColor(0), mSamples(0) { }
 
@@ -303,26 +302,24 @@ protected:
     float mSpeedFactor;
 };
 
-extern Vector3f project(const Vector3f &obj, const Matrix4f &model,
+extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &model,
                         const Matrix4f &proj, const Vector2i &viewportSize);
 
-extern Vector3f unproject(const Vector3f &win, const Matrix4f &model,
+extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win, const Matrix4f &model,
                           const Matrix4f &proj, const Vector2i &viewportSize);
 
-extern Matrix4f lookAt(const Vector3f &eye, const Vector3f &center,
+extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye, const Vector3f &center,
                        const Vector3f &up);
 
-extern Matrix4f ortho(const float left, const float right, const float bottom,
+extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right, const float bottom,
                       const float top, const float zNear, const float zFar);
 
-extern Matrix4f frustum(const float left, const float right, const float bottom,
+extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right, const float bottom,
                         const float top, const float nearVal,
                         const float farVal);
 
-extern Matrix4f scale(const Matrix4f &m, const Vector3f &v);
+extern NANOGUI_EXPORT Matrix4f scale(const Matrix4f &m, const Vector3f &v);
 
-extern Matrix4f translate(const Matrix4f &m, const Vector3f &v);
+extern NANOGUI_EXPORT Matrix4f translate(const Matrix4f &m, const Vector3f &v);
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_GLUTIL_H */

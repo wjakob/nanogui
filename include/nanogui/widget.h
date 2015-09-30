@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_WIDGET_H)
-#define __NANOGUI_WIDGET_H
+#pragma once
 
 #include <nanogui/nanogui.h>
 #include <vector>
@@ -13,7 +12,7 @@ NANOGUI_NAMESPACE_BEGIN
  * also be used as an panel to arrange an arbitrary number of child
  * widgets using a layout generator (see \ref Layout).
  */
-class Widget {
+class NANOGUI_EXPORT Widget {
 public:
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
@@ -191,5 +190,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_WIDGET_H */

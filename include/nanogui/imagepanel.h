@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_IMAGEPANEL_H)
-#define __NANOGUI_IMAGEPANEL_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ImagePanel : public Widget {
+class NANOGUI_EXPORT ImagePanel : public Widget {
 public:
     typedef std::vector<std::pair<int, std::string>> Images;
 public:
@@ -34,5 +33,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_IMAGEPANEL_H */

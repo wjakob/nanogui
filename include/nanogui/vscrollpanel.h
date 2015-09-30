@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_VSCROLLPANEL_H)
-#define __NANOGUI_VSCROLLPANEL_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class VScrollPanel : public Widget {
+class NANOGUI_EXPORT VScrollPanel : public Widget {
 public:
     VScrollPanel(Widget *parent);
 
@@ -22,5 +21,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_VSCROLLPANEL_H */

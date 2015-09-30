@@ -1,5 +1,4 @@
-#if !defined(__NANOGUI_H)
-#define __NANOGUI_H
+#pragma once
 
 #include <Eigen/Core>
 #include <stdint.h>
@@ -13,6 +12,22 @@
 /* Convenience definitions */
 #define NANOGUI_NAMESPACE_BEGIN namespace nanogui {
 #define NANOGUI_NAMESPACE_END }
+
+#if defined(NANOGUI_SHARED)
+#  if defined(WIN32)
+#    if !defined(NANOGUI_BUILD_SHARED)
+#      define NANOGUI_EXPORT __declspec(dllexport)
+#    else
+#      define NANOGUI_EXPORT __declspec(dllimport)
+#    endif
+#  elif defined(NANOGUI_BUILD_SHARED)
+#    define NANOGUI_EXPORT __attribute__ ((visibility("default")))
+#  else
+#    define NANOGUI_EXPORT
+#  endif
+#else
+#    define NANOGUI_EXPORT
+#endif
 
 /* Set to 1 to draw boxes around widgets */
 //#define NANOGUI_SHOW_WIDGET_BOUNDS 1
@@ -76,16 +91,16 @@ class Widget;
 class Window;
 
 /// Static initialization; should be called once before invoking any NanoGUI functions
-extern void init();
+extern NANOGUI_EXPORT void init();
 
 /// Static shutdown; should be called before the application terminates
-extern void shutdown();
+extern NANOGUI_EXPORT void shutdown();
 
 /// Enter the application main loop
-extern void mainloop();
+extern NANOGUI_EXPORT void mainloop();
 
 /// Request the application main loop to terminate
-extern void leave();
+extern NANOGUI_EXPORT void leave();
 
 /**
  * \brief Open a native file open/save dialog.
@@ -94,7 +109,7 @@ extern void leave();
  *     Pairs of permissible formats with descriptions like
  *     <tt>("png", "Portable Network Graphics")</tt>
  */
-extern std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save);
+extern NANOGUI_EXPORT std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save);
 
 #if defined(__APPLE__)
 /**
@@ -103,7 +118,7 @@ extern std::string file_dialog(const std::vector<std::pair<std::string, std::str
  * This is function is convenient when deploying .app bundles on OSX. It
  * adjusts the file path to the parent directory containing the bundle.
  */
-void chdir_to_bundle_parent();
+extern NANOGUI_EXPORT void chdir_to_bundle_parent();
 #endif
 
 /**
@@ -112,17 +127,15 @@ void chdir_to_bundle_parent();
  * NanoGUI uses this to convert the icon character codes
  * defined in entypo.h
  */
-extern std::array<char, 8> utf8(int c);
+extern NANOGUI_EXPORT std::array<char, 8> utf8(int c);
 
 /// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
-extern std::vector<std::pair<int, std::string>>
+extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
     loadImageDirectory(NVGcontext *ctx, const std::string &path);
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) __nanogui_get_image(ctx, #name, name##_png, name##_png_size)
 /// Helper function used by nvgImageIcon
-extern int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
+extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_H */

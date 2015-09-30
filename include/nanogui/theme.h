@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_THEME_H)
-#define __NANOGUI_THEME_H
+#pragma once
 
 #include <nanogui/nanogui.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-struct Theme {
+struct NANOGUI_EXPORT Theme {
 public:
     /* Fonts */
     int mFontNormal;
@@ -57,5 +56,3 @@ public:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_THEME_H */

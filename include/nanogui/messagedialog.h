@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_MESSAGEDIALOG_H)
-#define __NANOGUI_MESSAGEDIALOG_H
+#pragma once
 
 #include <nanogui/window.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class MessageDialog : public Window {
+class NANOGUI_EXPORT MessageDialog : public Window {
 public:
     enum Type {
         Information,
@@ -25,5 +24,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_MESSAGEDIALOG_H */

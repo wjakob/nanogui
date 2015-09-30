@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_IMAGEVIEW_H)
-#define __NANOGUI_IMAGEVIEW_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ImageView : public Widget {
+class NANOGUI_EXPORT ImageView : public Widget {
 public:
     ImageView(Widget *parent);
 
@@ -20,6 +19,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_IMAGEVIEW_H */
-

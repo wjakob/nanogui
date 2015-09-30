@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_TOOLBUTTON_H)
-#define __NANOGUI_TOOLBUTTON_H
+#pragma once
 
 #include <nanogui/button.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class ToolButton : public Button {
+class NANOGUI_EXPORT ToolButton : public Button {
 public:
     ToolButton(Widget *parent, int icon,
            const std::string &caption = "")
@@ -16,5 +15,3 @@ public:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_TOOLBUTTON_H */

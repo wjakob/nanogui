@@ -1,11 +1,10 @@
-#if !defined(__NANOGUI_CHECKBOX_H)
-#define __NANOGUI_CHECKBOX_H
+#pragma once
 
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-class CheckBox : public Widget {
+class NANOGUI_EXPORT CheckBox : public Widget {
 public:
     CheckBox(Widget *parent, const std::string &caption = "Untitled",
              const std::function<void(bool)> &callback = std::function<void(bool)>());
@@ -32,5 +31,3 @@ protected:
 };
 
 NANOGUI_NAMESPACE_END
-
-#endif /* __NANOGUI_CHECKBOX_H */
