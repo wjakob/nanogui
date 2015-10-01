@@ -34,6 +34,8 @@ public:
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     /// Accept scroll events and propagate them to the widget under the mouse cursor
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel);
+    /// Compute the preferred size of the widget
+    virtual Vector2i preferredSize(NVGcontext *ctx) const;
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();

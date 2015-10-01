@@ -8,6 +8,19 @@ NANOGUI_NAMESPACE_BEGIN
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mModal(false), mDispose(false) { }
 
+Vector2i Window::preferredSize(NVGcontext *ctx) const {
+    Vector2i result = Widget::preferredSize(ctx);
+
+    nvgFontSize(ctx, 18.0f);
+    nvgFontFace(ctx, "sans-bold");
+    float bounds[4];
+    nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
+
+    return result.cwiseMax(Vector2i(
+        bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]
+    ));
+}
+
 void Window::draw(NVGcontext *ctx) {
     if (mDispose) {
         Widget *widget = this;
