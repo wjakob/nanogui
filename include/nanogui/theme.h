@@ -1,10 +1,14 @@
 #pragma once
 
 #include <nanogui/common.h>
+#include <nanogui/object.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
-struct NANOGUI_EXPORT Theme {
+class NANOGUI_EXPORT Theme : public Object {
+public:
+    Theme(NVGcontext *ctx);
+
     /* Fonts */
     int mFontNormal;
     int mFontBold;
@@ -50,8 +54,8 @@ struct NANOGUI_EXPORT Theme {
 
     Color mWindowPopup;
     Color mWindowPopupTransparent;
-
-    Theme(NVGcontext *ctx);
+protected:
+    virtual ~Theme() { };
 };
 
 NANOGUI_NAMESPACE_END

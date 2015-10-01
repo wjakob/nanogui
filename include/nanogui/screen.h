@@ -19,9 +19,6 @@ public:
     /// Release all resources
     virtual ~Screen();
 
-    /// Draw the Screen contents
-    virtual void drawAll();
-
     /// Get the window titlebar caption
     const std::string &caption() const { return mCaption; }
 
@@ -39,6 +36,9 @@ public:
 
     /// Set window size
     void setSize(const Vector2i& size);
+
+    /// Draw the Screen contents
+    virtual void drawAll();
 
     /// Draw the window contents -- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }

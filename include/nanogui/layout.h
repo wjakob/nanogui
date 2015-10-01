@@ -1,14 +1,15 @@
 #pragma once
 
-#include <nanogui/common.h>
+#include <nanogui/object.h>
 
 NANOGUI_NAMESPACE_BEGIN
 
 /// Basic interface of a layout engine
-class Layout {
+class NANOGUI_EXPORT Layout : public Object {
 public:
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const = 0;
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
+protected:
     virtual ~Layout() { }
 };
 
@@ -107,7 +108,8 @@ public:
 
     /// Create a 2-column grid layout by default
     GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
-               int margin = 0, int spacing = 0, Alignment alignment = Alignment::Middle)
+               Alignment alignment = Alignment::Middle,
+               int margin = 0, int spacing = 0)
         : mOrientation(orientation), mResolution(resolution) {
         mDefaultAlignment[0] = mDefaultAlignment[1] = alignment;
         mSpacing = Vector2i::Constant(spacing);
@@ -164,6 +166,5 @@ protected:
     Vector2i mMargin;
     Vector2i mSpacing;
 };
-
 
 NANOGUI_NAMESPACE_END

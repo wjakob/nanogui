@@ -42,7 +42,6 @@ protected:
 protected:
     std::string mTitle;
     bool mModal;
-    bool mDispose;
 };
 
 NANOGUI_NAMESPACE_END

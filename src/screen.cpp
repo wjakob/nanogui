@@ -189,11 +189,11 @@ void Screen::initialize(GLFWwindow *window) {
 }
 
 Screen::~Screen() {
-    delete mTheme;
     __nanogui_screens.erase(mGLFWWindow);
-    for (int i=0; i < (int) Cursor::CursorCount; ++i)
+    for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
             glfwDestroyCursor(mCursors[i]);
+    }
     if (mNVGContext)
         nvgDeleteGL3(mNVGContext);
     if (mGLFWWindow)
@@ -476,12 +476,12 @@ void Screen::updateFocus(Widget *widget) {
 }
 
 void Screen::disposeWindow(Window *window) {
-    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
     if (std::find(mFocusPath.begin(), mFocusPath.end(), window) != mFocusPath.end())
         mFocusPath.clear();
     if (mDragWidget == window)
         mDragWidget = nullptr;
-    delete window;
+    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
+    window->decRef();
 }
 
 void Screen::centerWindow(Window *window) {

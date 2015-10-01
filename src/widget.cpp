@@ -20,9 +20,10 @@ Widget::Widget(Widget *parent)
 }
 
 Widget::~Widget() {
-    for (auto child : mChildren)
-        delete child;
-    delete mLayout;
+    for (auto child : mChildren) {
+        if (child)
+            child->decRef();
+    }
 }
 
 int Widget::fontSize() const {
@@ -122,6 +123,7 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
 
 void Widget::addChild(Widget *widget) {
     mChildren.push_back(widget);
+    widget->incRef();
     widget->setParent(this);
 }
 

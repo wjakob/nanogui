@@ -191,7 +191,8 @@ public:
         window = new Window(this, "Grid of small widgets");
         window->setPosition(Vector2i(425, 288));
         GridLayout *layout =
-            new GridLayout(GridLayout::Orientation::Horizontal, 2, 15, 5);
+            new GridLayout(GridLayout::Orientation::Horizontal, 2,
+                           GridLayout::Alignment::Middle, 15, 5);
         layout->setColAlignment(
             { GridLayout::Alignment::Maximum, GridLayout::Alignment::Fill });
         layout->setSpacing(0, 10);
@@ -359,13 +360,12 @@ int main(int /* argc */, char ** /* argv */) {
     try {
         nanogui::init();
 
-        ExampleApplication *app = new ExampleApplication();
-        app->drawAll();
-        app->setVisible(true);
-
-        nanogui::mainloop();
-
-        delete app;
+        {
+            nanogui::ref<ExampleApplication> app = new ExampleApplication();
+            app->drawAll();
+            app->setVisible(true);
+            nanogui::mainloop();
+        }
 
         nanogui::shutdown();
     } catch (const std::runtime_error &e) {

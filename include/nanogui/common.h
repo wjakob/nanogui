@@ -107,6 +107,7 @@ public:
 
 
 /* Forward declarations */
+template <typename T> class ref;
 class BoxLayout;
 class Button;
 class CheckBox;
@@ -118,13 +119,14 @@ class ImagePanel;
 class Label;
 class Layout;
 class MessageDialog;
+class Object;
 class Popup;
 class PopupButton;
 class ProgressBar;
 class Screen;
 class Slider;
 class TextBox;
-struct Theme;
+class Theme;
 class ToolButton;
 class VScrollPanel;
 class Widget;

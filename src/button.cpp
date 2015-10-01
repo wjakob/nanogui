@@ -36,6 +36,9 @@ Vector2i Button::preferredSize(NVGcontext *ctx) const {
 
 bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     Widget::mouseButtonEvent(p, button, down, modifiers);
+    /* Temporarily increase the reference count of the button in case the
+       button causes the parent window to be destructed */
+    ref<Button> self = this;
 
     if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
         bool pushedBackup = mPushed;

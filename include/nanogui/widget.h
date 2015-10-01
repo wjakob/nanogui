@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nanogui/common.h>
+#include <nanogui/object.h>
 #include <vector>
 
 NANOGUI_NAMESPACE_BEGIN
@@ -14,13 +14,10 @@ enum class Cursor;
  * also be used as an panel to arrange an arbitrary number of child
  * widgets using a layout generator (see \ref Layout).
  */
-class NANOGUI_EXPORT Widget {
+class NANOGUI_EXPORT Widget : public Object {
 public:
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
-
-    /// Free all resources used by the widget and any children
-    virtual ~Widget();
 
     /// Return the parent widget
     Widget *parent() { return mParent; }
@@ -32,14 +29,14 @@ public:
     /// Return the used \ref Layout generator
     Layout *layout() { return mLayout; }
     /// Return the used \ref Layout generator
-    const Layout *layout() const { return mLayout; }
+    const Layout *layout() const { return mLayout.get(); }
     /// Set the used \ref Layout generator
     void setLayout(Layout *layout) { mLayout = layout; }
 
     /// Return the \ref Theme used to draw this widget
     Theme *theme() { return mTheme; }
     /// Return the \ref Theme used to draw this widget
-    const Theme *theme() const { return mTheme; }
+    const Theme *theme() const { return mTheme.get(); }
     /// Set the \ref Theme used to draw this widget
     void setTheme(Theme *theme) { mTheme = theme; }
 
@@ -108,8 +105,6 @@ public:
         return visible;
     }
 
-    /// Return the list of child widgets of the current widget
-    std::vector<Widget *> &children() { return mChildren; }
     /// Return the list of child widgets of the current widget
     const std::vector<Widget *> &children() const { return mChildren; }
 
@@ -198,9 +193,13 @@ public:
     virtual void draw(NVGcontext *ctx);
 
 protected:
+    /// Free all resources used by the widget and any children
+    virtual ~Widget();
+
+protected:
     Widget *mParent;
-    Theme *mTheme;
-    Layout *mLayout;
+    ref<Theme> mTheme;
+    ref<Layout> mLayout;
     std::string mId;
     Vector2i mPos, mSize, mFixedSize;
     std::vector<Widget *> mChildren;
