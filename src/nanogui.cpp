@@ -54,28 +54,33 @@ void mainloop() {
         }
     );
 
-    while (__mainloop_active) {
-        int numScreens = 0;
-        for (auto kv : __nanogui_screens) {
-            Screen *screen = kv.second;
-            if (!screen->visible()) {
-                continue;
-            } else if (glfwWindowShouldClose(screen->glfwWindow())) {
-                screen->setVisible(false);
-                continue;
+    try {
+        while (__mainloop_active) {
+            int numScreens = 0;
+            for (auto kv : __nanogui_screens) {
+                Screen *screen = kv.second;
+                if (!screen->visible()) {
+                    continue;
+                } else if (glfwWindowShouldClose(screen->glfwWindow())) {
+                    screen->setVisible(false);
+                    continue;
+                }
+                screen->drawAll();
+                numScreens++;
             }
-            screen->drawAll();
-            numScreens++;
-        }
 
-        if (numScreens == 0) {
-            /* Give up if there was nothing to draw */
-            __mainloop_active = false;
-            break;
-        }
+            if (numScreens == 0) {
+                /* Give up if there was nothing to draw */
+                __mainloop_active = false;
+                break;
+            }
 
-        /* Wait for mouse/keyboard or empty refresh events */
-        glfwWaitEvents();
+            /* Wait for mouse/keyboard or empty refresh events */
+            glfwWaitEvents();
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
+        abort();
     }
 
     refresh_thread.join();
