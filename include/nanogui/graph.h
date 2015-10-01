@@ -26,16 +26,16 @@ public:
     const Color &textColor() const { return mTextColor; }
     void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
-    const Eigen::VectorXf &values() const { return mValues; }
-    Eigen::VectorXf &values() { return mValues; }
-    void setValues(const Eigen::VectorXf &values) { mValues = values; }
+    const VectorXf &values() const { return mValues; }
+    VectorXf &values() { return mValues; }
+    void setValues(const VectorXf &values) { mValues = values; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext *ctx);
 protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
-    Eigen::VectorXf mValues;
+    VectorXf mValues;
 };
 
 NANOGUI_NAMESPACE_END

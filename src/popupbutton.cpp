@@ -9,7 +9,7 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption,
                          int buttonIcon, int chevronIcon)
     : Button(parent, caption, buttonIcon), mChevronIcon(chevronIcon) {
 
-    setButtonFlags(ToggleButton | Button::PopupButton);
+    setFlags(Flags::ToggleButton | Flags::PopupButton);
 
     Window *parentWindow = window();
     mPopup = new Popup(parentWindow->parent(), window());

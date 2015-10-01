@@ -4,23 +4,21 @@ NANOGUI_NAMESPACE_BEGIN
 
 class NANOGUI_EXPORT ColorWheel : public Widget {
 public:
-    ColorWheel(Widget *parent, const Vector3f& color = { 1., 0., 0. });
+    ColorWheel(Widget *parent, const Color& color = { 1.f, 0.f, 0.f, 1.f });
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-
-    virtual void draw(NVGcontext *ctx);
-
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
-
-    /// Set the push callback (for any type of button)
-    std::function<void(const Vector3f &)> callback() const           { return mCallback; }
-    void setCallback(std::function<void(const Vector3f &)> callback) { mCallback = callback; }
+    /// Set the change callback
+    std::function<void(const Color &)> callback() const           { return mCallback; }
+    void setCallback(std::function<void(const Color &)> callback) { mCallback = callback; }
 
     /// Get the current color
-    Vector3f color() const;
+    Color color() const;
     /// Set the current color
-    void setColor(const Vector3f& rgb);
+    void setColor(const Color& rgb);
+
+    virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    virtual void draw(NVGcontext *ctx);
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
 
 private:
     enum Region {
@@ -30,7 +28,7 @@ private:
         Both = 3
     };
 
-    Vector3f hue2rgb(float h) const;
+    Color hue2rgb(float h) const;
     Region adjustPosition(const Vector2i &p, Region consideredRegions = Both);
 
 protected:
@@ -38,7 +36,7 @@ protected:
     float mWhite;
     float mBlack;
     Region mDragRegion;
-    std::function<void(const Vector3f &)> mCallback;
+    std::function<void(const Color &)> mCallback;
 };
 
 NANOGUI_NAMESPACE_END

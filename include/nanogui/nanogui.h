@@ -22,3 +22,4 @@
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
+#include <nanogui/graph.h>

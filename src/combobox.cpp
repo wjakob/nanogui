@@ -9,7 +9,7 @@ ComboBox::ComboBox(Widget *parent, const std::vector<std::string> &items)
     int index = 0;
     for (const auto &str: items) {
         Button *button = new Button(mPopup, str);
-        button->setButtonFlags(Button::RadioButton);
+        button->setFlags(Button::RadioButton);
         button->setCallback([&, index] {
             mSelectedIndex = index;
             setCaption(mItemsShort[index]);
@@ -29,7 +29,7 @@ ComboBox::ComboBox(Widget *parent, const std::vector<std::string> &items, const 
     int index = 0;
     for (const auto &str: items) {
         Button *button = new Button(mPopup, str);
-        button->setButtonFlags(Button::RadioButton);
+        button->setFlags(Button::RadioButton);
         button->setCallback([&, index] {
             mSelectedIndex = index;
             setCaption(mItemsShort[index]);

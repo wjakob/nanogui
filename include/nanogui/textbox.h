@@ -14,7 +14,7 @@ public:
 
     TextBox(Widget *parent, const std::string &value = "Untitled");
 
-    bool isEditable() const { return mEditable; }
+    bool editable() const { return mEditable; }
     void setEditable(bool editable);
 
     const std::string &value() const { return mValue; }
@@ -29,13 +29,13 @@ public:
     const std::string &units() const { return mUnits; }
     void setUnits(const std::string &units) { mUnits = units; }
 
+    int unitsImage() const { return mUnitsImage; }
+    void setUnitsImage(int image) { mUnitsImage = image; }
+
     /// Return the underlying regular expression specifying valid formats
     const std::string &format() const { return mFormat; }
     /// Specify a regular expression specifying valid formats
     void setFormat(const std::string &format) { mFormat = format; }
-
-    int unitsImage() const { return mUnitsImage; }
-    void setUnitsImage(int image) { mUnitsImage = image; }
 
     /// Set the change callback
     std::function<bool(const std::string& str)> callback() const { return mCallback; }

@@ -7,14 +7,14 @@ NANOGUI_NAMESPACE_BEGIN
 class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
-    enum ButtonFlags {
+    enum Flags {
         NormalButton = 1,
         RadioButton  = 2,
         ToggleButton = 4,
         PopupButton  = 8
     };
 
-    enum IconPosition {
+    enum class IconPosition {
         Left,
         LeftCentered,
         RightCentered,
@@ -35,11 +35,8 @@ public:
     int icon() const { return mIcon; }
     void setIcon(int icon) { mIcon = icon; }
 
-    int buttonFlags() const { return mButtonFlags; }
-    void setButtonFlags(int buttonFlags) { mButtonFlags = buttonFlags; }
-
-    int fontSize() const { return mFontSize; }
-    void setFontSize(int fontSize) { mFontSize = fontSize; }
+    int buttonFlags() const { return mFlags; }
+    void setFlags(int buttonFlags) { mFlags = buttonFlags; }
 
     IconPosition iconPosition() const { return mIconPosition; }
     void setIconPosition(IconPosition iconPosition) { mIconPosition = iconPosition; }
@@ -67,13 +64,12 @@ protected:
     int mIcon;
     IconPosition mIconPosition;
     bool mPushed;
-    int mButtonFlags;
+    int mFlags;
     Color mBackgroundColor;
     Color mTextColor;
     std::function<void()> mCallback;
     std::function<void(bool)> mChangeCallback;
     std::vector<Button *> mButtonGroup;
-    int mFontSize;
 };
 
 NANOGUI_NAMESPACE_END

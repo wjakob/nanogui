@@ -6,7 +6,7 @@ NANOGUI_NAMESPACE_BEGIN
 
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
-    ImageView(Widget *parent);
+    ImageView(Widget *parent, int image = 0);
 
     void setImage(int img)      { mImage = img; }
     int  image() const          { return mImage; }
@@ -15,7 +15,7 @@ public:
     virtual void draw(NVGcontext* ctx);
 
 protected:
-    int mImage = 0;
+    int mImage;
 };
 
 NANOGUI_NAMESPACE_END

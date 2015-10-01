@@ -9,7 +9,7 @@ public:
     ToolButton(Widget *parent, int icon,
            const std::string &caption = "")
         : Button(parent, caption, icon) {
-        setButtonFlags(RadioButton | ToggleButton);
+        setFlags(Flags::RadioButton | Flags::ToggleButton);
         setFixedSize(Vector2i(25, 25));
     }
 };

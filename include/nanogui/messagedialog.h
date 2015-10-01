@@ -6,7 +6,7 @@ NANOGUI_NAMESPACE_BEGIN
 
 class NANOGUI_EXPORT MessageDialog : public Window {
 public:
-    enum Type {
+    enum class Type {
         Information,
         Question,
         Warning

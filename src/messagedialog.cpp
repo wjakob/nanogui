@@ -19,9 +19,9 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
                                     BoxLayout::Alignment::Middle, 10, 15));
     int icon = 0;
     switch (type) {
-        case Information: icon = ENTYPO_ICON_CIRCLED_INFO; break;
-        case Question: icon = ENTYPO_ICON_CIRCLED_HELP; break;
-        case Warning: icon = ENTYPO_ICON_WARNING; break;
+        case Type::Information: icon = ENTYPO_ICON_CIRCLED_INFO; break;
+        case Type::Question: icon = ENTYPO_ICON_CIRCLED_HELP; break;
+        case Type::Warning: icon = ENTYPO_ICON_WARNING; break;
     }
     Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), "icons");
     iconLabel->setFontSize(50);

@@ -48,14 +48,14 @@ public:
 
         new Label(window, "Toggle buttons", "sans-bold");
         b = new Button(window, "Toggle me");
-        b->setButtonFlags(Button::ToggleButton);
+        b->setFlags(Button::ToggleButton);
         b->setChangeCallback([](bool state) { cout << "Toggle button state: " << state << endl; });
 
         new Label(window, "Radio buttons", "sans-bold");
         b = new Button(window, "Radio button 1");
-        b->setButtonFlags(Button::RadioButton);
+        b->setFlags(Button::RadioButton);
         b = new Button(window, "Radio button 2");
-        b->setButtonFlags(Button::RadioButton);
+        b->setFlags(Button::RadioButton);
 
         new Label(window, "A tool palette", "sans-bold");
         Widget *tools = new Widget(window);
@@ -88,17 +88,17 @@ public:
                                        BoxLayout::Alignment::Middle, 0, 6));
         b = new Button(tools, "Info");
         b->setCallback([&] {
-            auto dlg = new MessageDialog(this, MessageDialog::Information, "Title", "This is an information message");
+            auto dlg = new MessageDialog(this, MessageDialog::Type::Information, "Title", "This is an information message");
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
         b = new Button(tools, "Warn");
         b->setCallback([&] {
-            auto dlg = new MessageDialog(this, MessageDialog::Warning, "Title", "This is a warning message");
+            auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is a warning message");
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
         b = new Button(tools, "Ask");
         b->setCallback([&] {
-            auto dlg = new MessageDialog(this, MessageDialog::Warning, "Title", "This is a question message", "Yes", "No", true);
+            auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
 
@@ -111,11 +111,15 @@ public:
         popup = imagePanelBtn->popup();
         VScrollPanel *vscroll = new VScrollPanel(popup);
         ImagePanel *imgPanel = new ImagePanel(vscroll);
-        imgPanel->setImageData(icons);
+        imgPanel->setImages(icons);
         popup->setFixedSize(Vector2i(245, 150));
         new Label(window, "Selected image", "sans-bold");
         auto img = new ImageView(window);
         img->setFixedSize(Vector2i(40, 40));
+        img->setImage(icons[0].first);
+        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
+            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
+        });
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
@@ -130,11 +134,6 @@ public:
         b->setCallback([&] {
             cout << "File dialog result: " << file_dialog(
                     { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) << endl;
-        });
-
-        img->setImage(icons[0].first);
-        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
-            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
         });
 
         new Label(window, "Combo box", "sans-bold");
@@ -172,6 +171,7 @@ public:
         });
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
+        textBox->setAlignment(TextBox::Alignment::Right);
 
         window = new Window(this,"Misc. widgets");
         window->setPosition(Vector2i(425,15));
@@ -182,7 +182,7 @@ public:
         Graph *graph = new Graph(window, "Some function");
         graph->setHeader("E = 2.35e-3");
         graph->setFooter("Iteration 89");
-        Eigen::VectorXf &func = graph->values();
+        VectorXf &func = graph->values();
         func.resize(100);
         for (int i = 0; i < 100; ++i)
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
@@ -245,17 +245,17 @@ public:
         popup->setLayout(new GroupLayout());
 
         ColorWheel *colorwheel = new ColorWheel(popup);
-        colorwheel->setColor(popupBtn->backgroundColor().block<3, 1>(0, 0));
+        colorwheel->setColor(popupBtn->backgroundColor());
 
         Button *colorBtn = new Button(popup, "Pick");
         colorBtn->setFixedSize(Vector2i(100, 25));
-        Vector3f c = colorwheel->color();
-        colorBtn->setBackgroundColor(Color(c));
+        Color c = colorwheel->color();
+        colorBtn->setBackgroundColor(c);
 
         PopupButton &popupBtnRef = *popupBtn;
         Button &colorBtnRef = *colorBtn;
-        colorwheel->setCallback([&](const Vector3f &value) {
-            colorBtnRef.setBackgroundColor(Color(value));
+        colorwheel->setCallback([&](const Color &value) {
+            colorBtnRef.setBackgroundColor(value);
         });
 
         colorBtn->setChangeCallback([&](bool pushed) {

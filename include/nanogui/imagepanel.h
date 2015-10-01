@@ -10,7 +10,7 @@ public:
 public:
     ImagePanel(Widget *parent);
 
-    void setImageData(const std::vector<std::pair<int, std::string>> &data) { mImages = data; }
+    void setImages(const Images &data) { mImages = data; }
     const Images& images() const { return mImages; }
 
     std::function<void(int)> callback() const { return mCallback; }

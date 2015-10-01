@@ -6,8 +6,9 @@ NANOGUI_NAMESPACE_BEGIN
 
 Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
-      mIconPosition(LeftCentered), mPushed(false), mButtonFlags(NormalButton),
-      mBackgroundColor(Color(0, 0)), mTextColor(Color(0, 0)), mFontSize(-1) { }
+      mIconPosition(IconPosition::LeftCentered), mPushed(false),
+      mFlags(NormalButton), mBackgroundColor(Color(0, 0)),
+      mTextColor(Color(0, 0)) {}
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
     nvgFontSize(ctx, mTheme->mButtonFontSize);
@@ -43,7 +44,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
         bool pushedBackup = mPushed;
         if (down) {
-            if (mButtonFlags & RadioButton) {
+            if (mFlags & RadioButton) {
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
                         Button *button = dynamic_cast<Button *>(widget);
@@ -57,21 +58,21 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                     }
                 }
             }
-            if (mButtonFlags & PopupButton) {
+            if (mFlags & PopupButton) {
                 for (auto widget : parent()->children()) {
                     Button *button = dynamic_cast<Button *>(widget);
                     if (button != this && button && button->buttonFlags() & PopupButton)
                         button->mPushed = false;
                 }
             }
-            if (mButtonFlags & ToggleButton)
+            if (mFlags & ToggleButton)
                 mPushed = !mPushed;
             else
                 mPushed = true;
         } else if (mPushed) {
             if (contains(p) && mCallback)
                 mCallback();
-            if (mButtonFlags & NormalButton)
+            if (mFlags & NormalButton)
                 mPushed = false;
         }
         if (pushedBackup != mPushed && mChangeCallback)
@@ -163,15 +164,15 @@ void Button::draw(NVGcontext *ctx) {
         Vector2f iconPos = center;
         iconPos.y() -= 1;
 
-        if (mIconPosition == LeftCentered) {
+        if (mIconPosition == IconPosition::LeftCentered) {
             iconPos.x() -= (tw + iw) * 0.5f;
             textPos.x() += iw * 0.5f;
-        } else if (mIconPosition == RightCentered) {
+        } else if (mIconPosition == IconPosition::RightCentered) {
             textPos.x() -= iw * 0.5f;
             iconPos.x() += tw * 0.5f;
-        } else if (mIconPosition == Left) {
+        } else if (mIconPosition == IconPosition::Left) {
             iconPos.x() = mPos.x() + 8;
-        } else if (mIconPosition == Right) {
+        } else if (mIconPosition == IconPosition::Right) {
             iconPos.x() = mPos.x() + mSize.x() - iw - 8;
         }
 

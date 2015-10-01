@@ -6,7 +6,7 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
-ColorWheel::ColorWheel(Widget *parent, const Vector3f& rgb)
+ColorWheel::ColorWheel(Widget *parent, const Color& rgb)
     : Widget(parent), mDragRegion(None) {
     setColor(rgb);
 }
@@ -209,7 +209,7 @@ ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consider
     return None;
 }
 
-Vector3f ColorWheel::hue2rgb(float h) const {
+Color ColorWheel::hue2rgb(float h) const {
     float s = 1., v = 1.;
     float r,g,b;
 
@@ -230,17 +230,17 @@ Vector3f ColorWheel::hue2rgb(float h) const {
         case 5: r = v, g = p, b = q; break;
     }
 
-    return { r, g, b };
+    return { r, g, b, 1.f };
 }
 
-Vector3f ColorWheel::color() const {
-    Vector3f rgb    = hue2rgb(mHue);
-    Vector3f black  { 0.f, 0.f, 0.f };
-    Vector3f white  { 1.f, 1.f, 1.f };
+Color ColorWheel::color() const {
+    Color rgb    = hue2rgb(mHue);
+    Color black  { 0.f, 0.f, 0.f, 1.f };
+    Color white  { 1.f, 1.f, 1.f, 1.f };
     return rgb * (1 - mWhite - mBlack) + black * mBlack + white * mWhite;
 }
 
-void ColorWheel::setColor(const Vector3f &rgb) {
+void ColorWheel::setColor(const Color &rgb) {
     float r = rgb[0], g = rgb[1], b = rgb[2];
 
     float max = std::max({ r, g, b });
@@ -265,7 +265,7 @@ void ColorWheel::setColor(const Vector3f &rgb) {
         mHue = h;
 
         Eigen::Matrix<float, 4, 3> M;
-        M.topLeftCorner<3, 1>() = hue2rgb(h);
+        M.topLeftCorner<3, 1>() = hue2rgb(h).head<3>();
         M(3, 0) = 1.;
         M.col(1) = Vector4f{ 0., 0., 0., 1. };
         M.col(2) = Vector4f{ 1., 1., 1., 1. };

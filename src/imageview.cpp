@@ -3,8 +3,8 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
-ImageView::ImageView(Widget *parent)
-    : Widget(parent) {}
+ImageView::ImageView(Widget *parent, int img)
+    : Widget(parent), mImage(img) {}
 
 Vector2i ImageView::preferredSize(NVGcontext *ctx) const {
     if (!mImage)
