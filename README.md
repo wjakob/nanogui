@@ -61,7 +61,7 @@ slider->setCallback([textBox](float value) {
 
 The Python version of this same piece of code looks like this:
 ```Python
-# Create an empty panel with a horizontal layout 
+# Create an empty panel with a horizontal layout
 panel = Widget(window)
 panel.setLayout(BoxLayout(BoxLayout.Horizontal, BoxLayout.Middle, 0, 20))
 

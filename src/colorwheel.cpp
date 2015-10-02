@@ -211,7 +211,6 @@ ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consider
 
 Color ColorWheel::hue2rgb(float h) const {
     float s = 1., v = 1.;
-    float r,g,b;
 
     if (h < 0) h += 1;
 
@@ -221,7 +220,8 @@ Color ColorWheel::hue2rgb(float h) const {
     float q = v * (1 - f * s);
     float t = v * (1 - (1 - f) * s);
 
-    switch (i % 6) {
+	float r = 0, g = 0, b = 0;
+	switch (i % 6) {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
         case 2: r = p, g = v, b = t; break;
@@ -245,15 +245,15 @@ void ColorWheel::setColor(const Color &rgb) {
 
     float max = std::max({ r, g, b });
     float min = std::min({ r, g, b });
-    float h, s, l = (max + min) / 2;
+    float l = (max + min) / 2;
 
     if (max == min) {
         mHue = 0.;
         mBlack = 1. - l;
         mWhite = l;
     } else {
-        float d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        float d = max - min, h;
+        /* float s = l > 0.5 ? d / (2 - max - min) : d / (max + min); */
         if (max == r)
             h = (g - b) / d + (g < b ? 6 : 0);
         else if (max == g)

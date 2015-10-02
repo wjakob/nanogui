@@ -17,6 +17,10 @@ option(GLFW_BUILD_EXAMPLES " " OFF)
 option(GLFW_BUILD_TESTS " " OFF)
 option(GLFW_BUILD_DOCS " " OFF)
 option(GLFW_INSTALL " " OFF)
+if (NANOGUI_BUILD_SHARED)
+  # Build shared library version of GLFW
+  option(BUILD_SHARED_LIBS " " ON)
+endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
   # Quench annoying deprecation warnings when compiling GLFW on OSX
@@ -61,9 +65,6 @@ add_custom_command(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if (NANOGUI_BUILD_SHARED)
-  # Build shared library version of GLFW
-  option(BUILD_SHARED_LIBS " " ON)
-
   add_definitions ("-DNANOGUI_SHARED")
 endif()
 
@@ -129,6 +130,10 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   ${extra_source}
 )
 
+if (CMAKE_COMPILER_IS_GNUCC)
+  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+endif()
+
 if(APPLE AND NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui glfw ${extra_libs})
 endif()
@@ -157,6 +162,9 @@ if (NANOGUI_BUILD_PYTHON)
   add_library(nanogui_python SHARED src/python.cpp)
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
   target_link_libraries(nanogui_python nanogui glfw ${extra_libs})
+  if (CMAKE_COMPILER_IS_GNUCC)
+    set_source_files_properties(src/python.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-variable)
+  endif()
 
   set_target_properties(nanogui_python PROPERTIES PREFIX "")
   if (WIN32)
