@@ -4,6 +4,8 @@ NanoGUI is a a minimalistic cross-platform widget library for OpenGL 3.x.
 It supports automatic layout generation, stateful C++11 lambdas callbacks,
 a variety of useful widget types and Retina-capable rendering on Apple devices
 thanks to [NanoVG](https://github.com/memononen/NanoVG) by Mikko Mononen.
+Python bindings of all functionality are provided using
+[pybind11](https://github.com/wjakob/pybind11).
 
 ## Example screenshot
 ![Screenshot](https://github.com/wjakob/nanogui/raw/master/resources/screenshot.png "Screenshot")
@@ -55,6 +57,29 @@ textBox->setUnits("%");
 slider->setCallback([textBox](float value) {
     textBox->setValue(std::to_string((int) (value * 100)));
 });
+```
+
+The Python version of this same piece of code looks like this:
+```Python
+# Create an empty panel with a horizontal layout 
+panel = Widget(window)
+panel.setLayout(BoxLayout(BoxLayout.Horizontal, BoxLayout.Middle, 0, 20))
+
+# Add a slider and set defaults
+slider = Slider(panel)
+slider.setValue(0.5f)
+slider.setFixedWidth(80)
+
+# Add a textbox and set defaults
+textBox = TextBox(panel)
+textBox.setFixedSize(Vector2i(60, 25))
+textBox.setValue("50")
+textBox.setUnits("%")
+
+# Propagate slider changes to the text box
+def cb(value):
+    textBox.setValue("%i" % int(value * 100))
+slider.setCallback(cb)
 ```
 
 ## Compiling
