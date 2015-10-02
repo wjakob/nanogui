@@ -1,3 +1,6 @@
+// This is the C++ version of the example application
+// For a Python implementation, see '../example.py'
+
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/layout.h>
@@ -252,16 +255,14 @@ public:
         Color c = colorwheel->color();
         colorBtn->setBackgroundColor(c);
 
-        PopupButton &popupBtnRef = *popupBtn;
-        Button &colorBtnRef = *colorBtn;
-        colorwheel->setCallback([&](const Color &value) {
-            colorBtnRef.setBackgroundColor(value);
+        colorwheel->setCallback([colorBtn](const Color &value) {
+            colorBtn->setBackgroundColor(value);
         });
 
-        colorBtn->setChangeCallback([&](bool pushed) {
+        colorBtn->setChangeCallback([colorBtn, popupBtn](bool pushed) {
             if (pushed) {
-                popupBtnRef.setBackgroundColor(colorBtnRef.backgroundColor());
-                popupBtnRef.setPushed(false);
+                popupBtn->setBackgroundColor(colorBtn->backgroundColor());
+                popupBtn->setPushed(false);
             }
         });
 
