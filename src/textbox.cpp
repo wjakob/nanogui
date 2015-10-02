@@ -15,7 +15,7 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mDefaultValue(""),
       mAlignment(Alignment::Center),
       mUnits(""),
-      mFormat(".*"),
+      mFormat(""),
       mUnitsImage(-1),
       mValidFormat(true),
       mValueTemp(value),
@@ -386,8 +386,10 @@ bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
 }
 
 bool TextBox::checkFormat(const std::string &input, const std::string &format) {
-    std::regex regex(format);
-    return regex_match(input, regex);
+	if (format.empty())
+		return true;
+	std::regex regex(format);
+	return regex_match(input, regex);
 }
 
 bool TextBox::copySelection() {
