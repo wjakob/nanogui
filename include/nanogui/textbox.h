@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <sstream>
 
 NANOGUI_NAMESPACE_BEGIN
 
@@ -87,52 +88,31 @@ protected:
 
 class IntBox : public TextBox {
 public:
-    IntBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
+    IntBox(Widget *parent, const std::string &value = "0", bool is_signed = true) : TextBox(parent, value) {
         setDefaultValue("0");
-        setFormat("[-]?[0-9]*");
+        setFormat(is_signed ? "[-]?[0-9]*" : "[0-9]*");
     }
 
-    int value() const {
-        return std::stoi(TextBox::value());
+    int64_t value() const {
+        return (int64_t) stoll(TextBox::value());
     }
 
-    void setValue(int value) {
+    template <typename T> void setValue(T value) {
         TextBox::setValue(std::to_string(value));
     }
 
-    void setCallback(const std::function<void(int)> cb) {
+    template <typename T> void setCallback(const std::function<void(T)> cb) {
         TextBox::setCallback(
-            [cb](const std::string &str) { cb(std::stoi(str)); return true; });
+            [cb](const std::string &str) {
+                std::istringstream iss(str);
+                T value; iss >> value;
+                cb(value);
+                return true;
+            }
+        );
     }
 };
 
-class UIntBox : public TextBox {
-protected:
-    static unsigned stou(std::string const & str, size_t * idx = 0, int base = 10) {
-        unsigned long result = std::stoul(str, idx, base);
-        if (result > std::numeric_limits<unsigned>::max())
-            throw std::out_of_range("stou");
-        return result;
-    }
-public:
-    UIntBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
-        setDefaultValue("0");
-        setFormat("[0-9]*");
-    }
-
-    unsigned value() const {
-        return stou(TextBox::value());
-    }
-
-    void setValue(unsigned value) {
-        TextBox::setValue(std::to_string(value));
-    }
-
-    void setCallback(const std::function<void(unsigned)> cb) {
-        TextBox::setCallback(
-            [cb](const std::string &str) { cb(stou(str)); return true; });
-    }
-};
 
 template <typename Scalar> class FloatBox : public TextBox {
 public:
