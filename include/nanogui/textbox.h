@@ -85,4 +85,76 @@ protected:
     float mTextOffset;
 };
 
+class IntBox : public TextBox {
+public:
+    IntBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
+        setDefaultValue("0");
+        setFormat("[-]?[0-9]*");
+    }
+
+    int value() const {
+        return std::stoi(TextBox::value());
+    }
+
+    void setValue(int value) {
+        TextBox::setValue(std::to_string(value));
+    }
+
+    void setCallback(const std::function<void(int)> cb) {
+        TextBox::setCallback(
+            [cb](const std::string &str) { cb(std::stoi(str)); return true; });
+    }
+};
+
+class UIntBox : public TextBox {
+protected:
+    static unsigned stou(std::string const & str, size_t * idx = 0, int base = 10) {
+        unsigned long result = std::stoul(str, idx, base);
+        if (result > std::numeric_limits<unsigned>::max())
+            throw std::out_of_range("stou");
+        return result;
+    }
+public:
+    UIntBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
+        setDefaultValue("0");
+        setFormat("[0-9]*");
+    }
+
+    unsigned value() const {
+        return stou(TextBox::value());
+    }
+
+    void setValue(unsigned value) {
+        TextBox::setValue(std::to_string(value));
+    }
+
+    void setCallback(const std::function<void(unsigned)> cb) {
+        TextBox::setCallback(
+            [cb](const std::string &str) { cb(stou(str)); return true; });
+    }
+};
+
+template <typename Scalar> class FloatBox : public TextBox {
+public:
+    FloatBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
+        setDefaultValue("0");
+        setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+    }
+
+    Scalar value() const {
+        return (Scalar) std::stod(TextBox::value());
+    }
+
+    void setValue(Scalar value) {
+        char buffer[30];
+        snprintf(buffer, 30, sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g", value);
+        TextBox::setValue(buffer);
+    }
+
+    void setCallback(const std::function<void(Scalar)> cb) {
+        TextBox::setCallback(
+            [cb](const std::string &str) { cb(std::stof(str)); return true; });
+    }
+};
+
 NANOGUI_NAMESPACE_END
