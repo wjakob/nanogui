@@ -73,7 +73,6 @@ protected:
     std::string mFormat;
     int mUnitsImage;
     std::function<bool(const std::string& str)> mCallback;
-
     bool mValidFormat;
     std::string mValueTemp;
     int mCursorPos;
@@ -83,6 +82,7 @@ protected:
     Vector2i mMouseDragPos;
     int mMouseDownModifier;
     float mTextOffset;
+    double mLastClick;
 };
 
 class IntBox : public TextBox {

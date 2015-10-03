@@ -25,7 +25,8 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDownPos(Vector2i(-1,-1)),
       mMouseDragPos(Vector2i(-1,-1)),
       mMouseDownModifier(0),
-      mTextOffset(0) { }
+      mTextOffset(0),
+      mLastClick(0) { }
 
 void TextBox::setEditable(bool editable) {
     mEditable = editable;
@@ -218,10 +219,19 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                                int modifiers) {
     Widget::mouseButtonEvent(p, button, down, modifiers);
 
-    if (mEditable && focused()) {
+    if (mEditable && focused() && button == GLFW_MOUSE_BUTTON_1) {
         if (down) {
             mMouseDownPos = p + Vector2i(5, 5); // correct for ibeam cursor;
             mMouseDownModifier = modifiers;
+
+            double time = glfwGetTime();
+            if (time - mLastClick < 0.25) {
+                /* Double-click: select all text */
+                mSelectionPos = 0;
+                mCursorPos = mValueTemp.size();
+                mMouseDownPos = Vector2i(-1, 1);
+            }
+            mLastClick = time;
         } else {
             mMouseDownPos = Vector2i(-1, -1);
             mMouseDragPos = Vector2i(-1, -1);
