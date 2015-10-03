@@ -105,6 +105,9 @@ public:
         return visible;
     }
 
+    /// Return the number of child widgets
+    int childCount() const { return (int) mChildren.size(); }
+
     /// Return the list of child widgets of the current widget
     const std::vector<Widget *> &children() const { return mChildren; }
 
@@ -116,6 +119,12 @@ public:
      * adds the current widget to its parent
      */
     void addChild(Widget *widget);
+
+    /// Remove a child widget by index
+    void removeChild(int index);
+
+    /// Remove a child widget by value
+    void removeChild(const Widget *widget);
 
     // Walk up the hierarchy and return the parent window
     Window *window();

@@ -4,9 +4,9 @@
 
 NANOGUI_NAMESPACE_BEGIN
 
-Label::Label(Widget *parent, const std::string &caption, const std::string &font)
+Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
     : Widget(parent), mCaption(caption), mFont(font) {
-    mFontSize = mTheme->mStandardFontSize;
+    mFontSize = fontSize < 0 ? mTheme->mStandardFontSize : fontSize;
     mColor = mTheme->mTextColor;
 }
 

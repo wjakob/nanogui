@@ -480,8 +480,7 @@ void Screen::disposeWindow(Window *window) {
         mFocusPath.clear();
     if (mDragWidget == window)
         mDragWidget = nullptr;
-    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
-    window->decRef();
+    removeChild(window);
 }
 
 void Screen::centerWindow(Window *window) {

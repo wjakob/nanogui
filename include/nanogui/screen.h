@@ -64,6 +64,10 @@ public:
     /// Return a pointer to the underlying nanoVG draw context
     NVGcontext *nvgContext() { return mNVGContext; }
 
+    /// Compute the layout of all widgets 
+    void performLayout() {
+        Widget::performLayout(mNVGContext);
+    }
 protected:
     /**
      * \brief Default constructor
@@ -96,6 +100,10 @@ protected:
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
     void drawWidgets();
+
+    void performLayout(NVGcontext *ctx) {
+        Widget::performLayout(ctx);
+    }
 
 protected:
     GLFWwindow *mGLFWWindow;

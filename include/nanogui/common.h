@@ -129,18 +129,27 @@ public:
     /// Return a reference to the blue channel (const version)
     const float &b() const { return z(); }
 
+    Color contrastingColor() const {
+        float luminance = operator*(Color(0.299f, 0.587f, 0.144f, 0.f)).sum();
+        return Color(luminance < 0.5f ? 1.f : 0.0, 1.f);
+    }
+
     inline operator const NVGcolor &() const;
 };
 
 
 /* Forward declarations */
 template <typename T> class ref;
+class AdvancedGridLayout;
 class BoxLayout;
 class Button;
 class CheckBox;
+class ColorWheel;
+class ColorPicker;
 class ComboBox;
 class GLFramebuffer;
 class GLShader;
+class GridLayout;
 class GroupLayout;
 class ImagePanel;
 class Label;

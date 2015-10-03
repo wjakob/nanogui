@@ -86,26 +86,33 @@ protected:
     double mLastClick;
 };
 
-class IntBox : public TextBox {
+template <typename Scalar> class IntBox : public TextBox {
 public:
-    IntBox(Widget *parent, const std::string &value = "0", bool is_signed = true) : TextBox(parent, value) {
+    IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent) {
         setDefaultValue("0");
-        setFormat(is_signed ? "[-]?[0-9]*" : "[0-9]*");
+        setFormat(std::is_signed<Scalar>::value ? "[-]?[0-9]*" : "[0-9]*");
+        setValue(value);
     }
 
-    int64_t value() const {
-        return (int64_t) stoll(TextBox::value());
+    Scalar value() const {
+        Scalar value;
+        std::istringstream iss(TextBox::value());
+        if (!(iss >> value))
+            throw std::invalid_argument("Could not parse integer value!");
+        return value;
     }
 
-    template <typename T> void setValue(T value) {
+    void setValue(Scalar value) {
         TextBox::setValue(std::to_string(value));
     }
 
-    template <typename T> void setCallback(const std::function<void(T)> cb) {
+    void setCallback(const std::function<void(Scalar)> &cb) {
         TextBox::setCallback(
             [cb](const std::string &str) {
                 std::istringstream iss(str);
-                T value; iss >> value;
+                Scalar value;
+                if (!(iss >> value))
+                    throw std::invalid_argument("Could not parse integer value!");
                 cb(value);
                 return true;
             }
@@ -113,12 +120,12 @@ public:
     }
 };
 
-
 template <typename Scalar> class FloatBox : public TextBox {
 public:
-    FloatBox(Widget *parent, const std::string &value = "0") : TextBox(parent, value) {
+    FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+        setValue(value);
     }
 
     Scalar value() const {
@@ -131,9 +138,9 @@ public:
         TextBox::setValue(buffer);
     }
 
-    void setCallback(const std::function<void(Scalar)> cb) {
+    void setCallback(const std::function<void(Scalar)> &cb) {
         TextBox::setCallback(
-            [cb](const std::string &str) { cb(std::stof(str)); return true; });
+            [cb](const std::string &str) { cb((Scalar) std::stod(str)); return true; });
     }
 };
 

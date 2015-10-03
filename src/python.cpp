@@ -7,11 +7,14 @@ namespace py = pybind;
 
 struct NVGcontext { };
 struct GLFWwindow { };
+typedef FloatBox<double> DoubleBox;
+typedef IntBox<int64_t> Int64Box;
 
 DECLARE_LAYOUT(Layout);
-DECLARE_LAYOUT(GridLayout);
 DECLARE_LAYOUT(GroupLayout);
 DECLARE_LAYOUT(BoxLayout);
+DECLARE_LAYOUT(GridLayout);
+DECLARE_LAYOUT(AdvancedGridLayout);
 DECLARE_SCREEN(Screen);
 DECLARE_WIDGET(Widget);
 DECLARE_WIDGET(Window);
@@ -31,6 +34,9 @@ DECLARE_WIDGET(Slider);
 DECLARE_WIDGET(TextBox);
 DECLARE_WIDGET(ColorWheel);
 DECLARE_WIDGET(Graph);
+DECLARE_WIDGET(DoubleBox);
+DECLARE_WIDGET(Int64Box);
+DECLARE_WIDGET(ColorPicker);
 
 /// Make pybind aware of the ref-counted wrapper type
 namespace pybind { namespace detail {
@@ -132,8 +138,18 @@ PYTHON_PLUGIN(nanogui) {
         .value("VResize", Cursor::VResize);
 
     py::class_<Color>(m, "Color")
-        .def(py::init<int, int, int, int>())
-        .def(py::init<int, int>());
+        .def(py::init<float, float, float, float>())
+        .def(py::init<float, float>())
+        .def("contrastingColor", &Color::contrastingColor)
+        .def_property("r",
+            [](const Color &c) { return c.r(); },
+            [](Color &c, float v) { c.r() = v; })
+        .def_property("g",
+            [](const Color &c) { return c.g(); },
+            [](Color &c, float v) { c.g() = v; })
+        .def_property("b",
+            [](const Color &c) { return c.b(); },
+            [](Color &c, float v) { c.b() = v; });
 
     py::class_<NVGcontext> context(m, "NVGcontext");
 
@@ -168,6 +184,9 @@ PYTHON_PLUGIN(nanogui) {
         .def("children", (std::vector<Widget *>&(Widget::*)(void)) &Widget::children,
              D(Widget, children), py::return_value_policy::reference)
         .def("addChild", &Widget::addChild, D(Widget, addChild))
+        .def("childCount", &Widget::childCount, D(Widget, childCount))
+        .def("removeChild", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild))
+        .def("removeChild", (void(Widget::*)(const Widget *)) &Widget::removeChild, D(Widget, removeChild, 2))
         .def("window", &Widget::window, D(Widget, window))
         .def("setId", &Widget::setId, D(Widget, setId))
         .def("id", &Widget::id, D(Widget, id))
@@ -214,6 +233,7 @@ PYTHON_PLUGIN(nanogui) {
         .def("setBackground", &Screen::setBackground, D(Screen, setBackground))
         .def("setVisible", &Screen::setVisible, D(Screen, setVisible))
         .def("setSize", &Screen::setSize, D(Screen, setSize))
+        .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout)
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
         .def("framebufferSizeChanged", &Screen::framebufferSizeChanged, D(Screen, framebufferSizeChanged))
@@ -236,17 +256,26 @@ PYTHON_PLUGIN(nanogui) {
         .def("dispose", &Window::dispose, D(Window, dispose))
         .def("center", &Window::center, D(Window, center));
 
+    py::enum_<Alignment>(m, "Alignment")
+        .value("Minimum", Alignment::Minimum)
+        .value("Middle", Alignment::Middle)
+        .value("Maximum", Alignment::Maximum)
+        .value("Fill", Alignment::Fill);
+
+    py::enum_<Orientation>(m, "Orientation")
+        .value("Horizontal", Orientation::Horizontal)
+        .value("Vertical", Orientation::Vertical);
+
     py::class_<PyLayout, ref<PyLayout>> layout(m, "Layout", D(Layout));
     layout
         .alias<Layout>()
         .def("preferredSize", &Layout::preferredSize, D(Layout, preferredSize))
         .def("performLayout", &Layout::performLayout, D(Layout, performLayout));
 
-    py::class_<PyBoxLayout, ref<PyBoxLayout>> boxLayout(m, "BoxLayout", layout, D(BoxLayout));
-    boxLayout
+    py::class_<PyBoxLayout, ref<PyBoxLayout>>(m, "BoxLayout", layout, D(BoxLayout))
         .alias<BoxLayout>()
-        .def(py::init<BoxLayout::Orientation, BoxLayout::Alignment, int, int>(),
-             py::arg("orientation"), py::arg("alignment") = BoxLayout::Alignment::Middle,
+        .def(py::init<Orientation, Alignment, int, int>(),
+             py::arg("orientation"), py::arg("alignment") = Alignment::Middle,
              py::arg("margin") = 0, py::arg("spacing") = 0, D(BoxLayout, BoxLayout))
         .def("orientation", &BoxLayout::orientation, D(BoxLayout, orientation))
         .def("setOrientation", &BoxLayout::setOrientation, D(BoxLayout, setOrientation))
@@ -256,15 +285,6 @@ PYTHON_PLUGIN(nanogui) {
         .def("setMargin", &BoxLayout::setMargin, D(BoxLayout, setMargin))
         .def("spacing", &BoxLayout::spacing, D(BoxLayout, spacing))
         .def("setSpacing", &BoxLayout::setSpacing, D(BoxLayout, setSpacing));
-
-    py::enum_<BoxLayout::Orientation>(boxLayout, "Orientation")
-        .value("Horizontal", BoxLayout::Orientation::Horizontal)
-        .value("Vertical", BoxLayout::Orientation::Vertical);
-
-    py::enum_<BoxLayout::Alignment>(boxLayout, "Alignment")
-        .value("Minimum", BoxLayout::Alignment::Minimum)
-        .value("Middle", BoxLayout::Alignment::Middle)
-        .value("Maximum", BoxLayout::Alignment::Maximum);
 
     py::class_<PyGroupLayout, ref<PyGroupLayout>>(m, "GroupLayout", layout, D(GroupLayout))
         .alias<GroupLayout>()
@@ -281,11 +301,11 @@ PYTHON_PLUGIN(nanogui) {
         .def("groupSpacing", &GroupLayout::groupSpacing, D(GroupLayout, groupSpacing))
         .def("setGroupSpacing", &GroupLayout::setGroupSpacing, D(GroupLayout, setGroupSpacing));
 
-    py::class_<PyGridLayout, ref<PyGridLayout>> gridLayout(m, "GridLayout", layout, D(GridLayout));
-    gridLayout.alias<GridLayout>()
-        .def(py::init<GridLayout::Orientation, int, GridLayout::Alignment, int, int>(),
-             py::arg("orientation") = GridLayout::Orientation::Horizontal,
-             py::arg("resolution") = 2, py::arg("alignment") = GridLayout::Alignment::Middle,
+    py::class_<PyGridLayout, ref<PyGridLayout>>(m, "GridLayout", layout, D(GridLayout))
+        .alias<GridLayout>()
+        .def(py::init<Orientation, int, Alignment, int, int>(),
+             py::arg("orientation") = Orientation::Horizontal,
+             py::arg("resolution") = 2, py::arg("alignment") = Alignment::Middle,
              py::arg("margin") = 0, py::arg("spacing") = 0,
              D(GridLayout, GridLayout))
         .def("orientation", &GridLayout::orientation, D(GridLayout, orientation))
@@ -293,31 +313,51 @@ PYTHON_PLUGIN(nanogui) {
         .def("resolution", &GridLayout::resolution, D(GridLayout, resolution))
         .def("setResolution", &GridLayout::setResolution, D(GridLayout, setResolution))
         .def("margin", &GridLayout::margin, D(GridLayout, margin))
-        .def("setMargin", (void(GridLayout::*)(int)) &GridLayout::setMargin, D(GridLayout, setMargin))
-        .def("setMargin", (void(GridLayout::*)(int, int)) &GridLayout::setMargin)
+        .def("setMargin", &GridLayout::setMargin, D(GridLayout, setMargin))
         .def("spacing", &GridLayout::spacing, D(GridLayout, spacing))
         .def("setSpacing", (void(GridLayout::*)(int)) &GridLayout::setSpacing, D(GridLayout, setSpacing))
         .def("setSpacing", (void(GridLayout::*)(int, int)) &GridLayout::setSpacing)
         .def("alignment", &GridLayout::alignment, D(GridLayout, alignment))
-        .def("setAlignment", (void(GridLayout::*)(int, GridLayout::Alignment)) &GridLayout::setAlignment, D(GridLayout, setAlignment))
-        .def("setAlignment", (void(GridLayout::*)(int, int, GridLayout::Alignment)) &GridLayout::setAlignment)
-        .def("setColAlignment", &GridLayout::setColAlignment, D(GridLayout, setColAlignment))
-        .def("setRowAlignment", &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment));
+        .def("setColAlignment", (void(GridLayout::*)(Alignment)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment))
+        .def("setRowAlignment", (void(GridLayout::*)(Alignment)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment))
+        .def("setColAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment, 2))
+        .def("setRowAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment, 2));
 
-    py::enum_<GridLayout::Orientation>(gridLayout, "Orientation")
-        .value("Horizontal", GridLayout::Orientation::Horizontal)
-        .value("Vertical", GridLayout::Orientation::Vertical);
+    py::class_<PyAdvancedGridLayout, ref<PyAdvancedGridLayout>> advGridLayout(
+        m, "AdvancedGridLayout", layout, D(AdvancedGridLayout));
 
-    py::enum_<GridLayout::Alignment>(gridLayout, "Alignment")
-        .value("Minimum", GridLayout::Alignment::Minimum)
-        .value("Middle", GridLayout::Alignment::Middle)
-        .value("Maximum", GridLayout::Alignment::Maximum)
-        .value("Fill", GridLayout::Alignment::Fill);
+    advGridLayout.alias<AdvancedGridLayout>()
+        .def(py::init<const std::vector<int> &, const std::vector<int> &>(),
+             py::arg("widths"), py::arg("heights"),
+             D(AdvancedGridLayout, AdvancedGridLayout))
+        .def("rowCount", &AdvancedGridLayout::rowCount, D(AdvancedGridLayout, rowCount))
+        .def("colCount", &AdvancedGridLayout::colCount, D(AdvancedGridLayout, colCount))
+        .def("margin", &AdvancedGridLayout::margin, D(AdvancedGridLayout, margin))
+        .def("setMargin", &AdvancedGridLayout::setMargin, D(AdvancedGridLayout, setMargin))
+        .def("appendRow", &AdvancedGridLayout::appendRow, py::arg("size"),
+             py::arg("stretch") = 0, D(AdvancedGridLayout, appendRow))
+        .def("appendCol", &AdvancedGridLayout::appendCol, py::arg("size"),
+             py::arg("stretch") = 0, D(AdvancedGridLayout, appendCol))
+        .def("setRowStretch", &AdvancedGridLayout::setRowStretch)
+        .def("setColStretch", &AdvancedGridLayout::setColStretch)
+        .def("setAnchor", &AdvancedGridLayout::setAnchor)
+        .def("anchor", &AdvancedGridLayout::anchor);
+
+    py::class_<AdvancedGridLayout::Anchor>(advGridLayout, "Anchor")
+        .def(py::init<int, int, Alignment, Alignment>(),
+             py::arg("x"), py::arg("y"),
+             py::arg("horiz") = Alignment::Fill,
+             py::arg("vert") = Alignment::Fill)
+        .def(py::init<int, int, int, int, Alignment, Alignment>(),
+             py::arg("x"), py::arg("y"), py::arg("w"), py::arg("h"),
+             py::arg("horiz") = Alignment::Fill,
+             py::arg("vert") = Alignment::Fill);
 
     py::class_<PyLabel, ref<PyLabel>>(m, "Label", widget, D(Label))
         .alias<Label>()
-        .def(py::init<Widget *, const std::string &, const std::string &>(),
-             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"))
+        .def(py::init<Widget *, const std::string &, const std::string &, int>(),
+             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
+             py::arg("fontSize") = -1)
         .def("caption", &Label::caption, D(Label, caption))
         .def("setCaption", &Label::setCaption, D(Label, setCaption))
         .def("font", &Label::font, D(Label, font))
@@ -378,13 +418,16 @@ PYTHON_PLUGIN(nanogui) {
         .def("setAnchorHeight", &Popup::setAnchorHeight, D(Popup, setAnchorHeight))
         .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow));
 
-    py::class_<PyPopupButton, ref<PyPopupButton>>(m, "PopupButton", button, D(PopupButton))
+    py::class_<PyPopupButton, ref<PyPopupButton>> popupBtn(m, "PopupButton", button, D(PopupButton));
+    popupBtn
         .alias<PopupButton>()
         .def(py::init<Widget *, const std::string&, int, int>(),
                 py::arg("parent"), py::arg("caption") = std::string("Untitled"),
                 py::arg("buttonIcon") = 0, py::arg("chevronIcon") = ENTYPO_ICON_CHEVRON_SMALL_RIGHT,
                 D(PopupButton, PopupButton))
-        .def("popup", (Popup*(PopupButton::*)(void)) &PopupButton::popup, D(PopupButton, popup));
+        .def("popup", (Popup*(PopupButton::*)(void)) &PopupButton::popup, D(PopupButton, popup))
+        .def("chevronIcon", &PopupButton::chevronIcon, D(PopupButton, chevronIcon))
+        .def("setChevronIcon", &PopupButton::setChevronIcon, D(PopupButton, setChevronIcon));
 
     py::class_<PyCheckBox, ref<PyCheckBox>>(m, "CheckBox", widget, D(CheckBox))
         .alias<CheckBox>()
@@ -439,18 +482,19 @@ PYTHON_PLUGIN(nanogui) {
 
     py::class_<PyComboBox, ref<PyComboBox>>(m, "ComboBox", widget, D(ComboBox))
         .alias<ComboBox>()
+        .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
         .def(py::init<Widget *, const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items"), D(ComboBox, ComboBox))
+             py::arg("parent"), py::arg("items"), D(ComboBox, ComboBox, 2))
         .def(py::init<Widget *, const std::vector<std::string> &,
                       const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items"), py::arg("itemsShort"))
+             py::arg("parent"), py::arg("items"), py::arg("itemsShort"), D(ComboBox, ComboBox, 3))
         .def("callback", &ComboBox::callback, D(ComboBox, callback))
         .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
+        .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))
+        .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&,
+                          const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems, 2))
         .def("items", &ComboBox::items, D(ComboBox, items))
-        .def("setItems", &ComboBox::setItems, D(ComboBox, setItems))
-        .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort))
-        .def("setItemsShort", &ComboBox::setItemsShort,
-             D(ComboBox, setItemsShort));
+        .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort));
 
     py::class_<PyProgressBar, ref<PyProgressBar>>(m, "ProgressBar", widget, D(ProgressBar))
         .alias<ProgressBar>()
@@ -499,6 +543,22 @@ PYTHON_PLUGIN(nanogui) {
         .value("Center", TextBox::Alignment::Center)
         .value("Right", TextBox::Alignment::Right);
 
+    py::class_<PyInt64Box, ref<PyInt64Box>>(m, "IntBox", tbox, D(IntBox))
+        .alias<IntBox<int64_t>>()
+        .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0)
+        .def("value", &Int64Box::value, D(IntBox, value))
+        .def("setValue", (void (Int64Box::*)(int64_t)) &Int64Box::setValue, D(IntBox, setValue))
+        .def("setCallback", (void (Int64Box::*)(const std::function<void(int64_t)>&))
+                &Int64Box::setCallback, D(IntBox, setCallback));
+
+    py::class_<PyDoubleBox, ref<PyDoubleBox>>(m, "FloatBox", tbox, D(FloatBox))
+        .alias<FloatBox<double>>()
+        .def(py::init<Widget *, double>(), py::arg("parent"), py::arg("value") = 0.0)
+        .def("value", &DoubleBox::value, D(FloatBox, value))
+        .def("setValue", (void (DoubleBox::*)(int64_t)) &DoubleBox::setValue, D(FloatBox, setValue))
+        .def("setCallback", (void (DoubleBox::*)(const std::function<void(double)>&))
+                &DoubleBox::setCallback, D(FloatBox, setCallback));
+
     py::class_<PyColorWheel, ref<PyColorWheel>>(m, "ColorWheel", widget, D(ColorWheel))
         .alias<ColorWheel>()
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorWheel, ColorWheel))
@@ -507,6 +567,15 @@ PYTHON_PLUGIN(nanogui) {
         .def("setColor", &ColorWheel::setColor, D(ColorWheel, setColor))
         .def("callback", &ColorWheel::callback, D(ColorWheel, callback))
         .def("setCallback", &ColorWheel::setCallback, D(ColorWheel, setCallback));
+
+    py::class_<PyColorPicker, ref<PyColorPicker>>(m, "ColorPicker", popupBtn, D(ColorPicker))
+        .alias<ColorPicker>()
+        .def(py::init<Widget *>(), py::arg("parent"), D(ColorPicker, ColorPicker))
+        .def(py::init<Widget *, const Color &>(), py::arg("parent"), py::arg("Color"))
+        .def("color", &ColorPicker::color, D(ColorPicker, color))
+        .def("setColor", &ColorPicker::setColor, D(ColorPicker, setColor))
+        .def("callback", &ColorPicker::callback, D(ColorPicker, callback))
+        .def("setCallback", &ColorPicker::setCallback, D(ColorPicker, setCallback));
 
     py::class_<PyGraph, ref<PyGraph>>(m, "Graph", widget, D(Graph))
         .alias<Graph>()
@@ -526,6 +595,83 @@ PYTHON_PLUGIN(nanogui) {
         .def("setTextColor", &Graph::setTextColor, D(Graph, setTextColor))
         .def("values", (VectorXf &(Graph::*)(void)) &Graph::values, D(Graph, values))
         .def("setValues", &Graph::setValues, D(Graph, setValues));
+
+    enum DummyEnum { };
+
+    py::class_<FormHelper>(m, "FormHelper", D(FormHelper))
+        .def(py::init<Screen *>(), D(FormHelper, FormHelper))
+        .def("addWindow", &FormHelper::addWindow, py::arg("pos"),
+             py::arg("title") = std::string("Untitled"),
+             D(FormHelper, addWindow))
+        .def("addGroup", &FormHelper::addGroup, D(FormHelper, addGroup))
+        .def("addButton", &FormHelper::addButton, py::arg("label"),
+             py::arg("cb"), D(FormHelper, addGroup))
+        .def("addBoolVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(bool) > &setter,
+                const std::function<bool(void) > &getter, bool editable) -> CheckBox* {
+                return h.addVariable(label, setter, getter, editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("addIntVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(int64_t) > &setter,
+                const std::function<int64_t(void) > &getter, bool editable) -> Int64Box* {
+                return h.addVariable(label, setter, getter, editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("addDoubleVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(double) > &setter,
+                const std::function<double(void) > &getter, bool editable) -> FloatBox<double>* {
+                return h.addVariable(label, setter, getter, editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("addStringVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(std::string) > &setter,
+                const std::function<std::string(void) > &getter, bool editable) -> TextBox* {
+                return h.addVariable(label, setter, getter, editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("addColorVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(Color) > &setter,
+                const std::function<Color(void) > &getter, bool editable) -> ColorPicker* {
+                return h.addVariable(label, setter, getter, editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("addEnumVariable",
+             [](FormHelper &h, const std::string &label,
+                const std::function<void(int) > &setter,
+                const std::function<int(void) > &getter, bool editable) -> ComboBox* {
+                return h.addVariable(label,
+                        reinterpret_cast<const std::function<void(DummyEnum)>&>(setter),
+                        reinterpret_cast<const std::function<DummyEnum(void)>&>(getter),
+                        editable);
+             },
+             py::arg("label"), py::arg("setter"), py::arg("getter"),
+             py::arg("editable") = true)
+        .def("refresh", &FormHelper::refresh, D(FormHelper, refresh))
+        .def("window", &FormHelper::window, D(FormHelper, window))
+        .def("setWindow", &FormHelper::setWindow, D(FormHelper, setWindow))
+        .def("fixedSize", &FormHelper::fixedSize, D(FormHelper, fixedSize))
+        .def("setFixedSize", &FormHelper::setFixedSize, D(FormHelper, setFixedSize))
+        .def("groupFontName", &FormHelper::groupFontName, D(FormHelper, groupFontName))
+        .def("setGroupFontName", &FormHelper::setGroupFontName, D(FormHelper, setGroupFontName))
+        .def("labelFontName", &FormHelper::labelFontName, D(FormHelper, labelFontName))
+        .def("setLabelFontName", &FormHelper::setLabelFontName, D(FormHelper, setLabelFontName))
+        .def("groupFontSize", &FormHelper::groupFontSize, D(FormHelper, groupFontSize))
+        .def("setGroupFontSize", &FormHelper::setGroupFontSize, D(FormHelper, setGroupFontSize))
+        .def("labelFontSize", &FormHelper::labelFontSize, D(FormHelper, labelFontSize))
+        .def("setLabelFontSize", &FormHelper::setLabelFontSize, D(FormHelper, setLabelFontSize))
+        .def("widgetFontSize", &FormHelper::widgetFontSize, D(FormHelper, widgetFontSize))
+        .def("setWidgetFontSize", &FormHelper::setWidgetFontSize, D(FormHelper, setWidgetFontSize));
 
     /* GLFW constants */
     {

@@ -12,7 +12,8 @@ NANOGUI_NAMESPACE_BEGIN
  */
 class NANOGUI_EXPORT Label : public Widget {
 public:
-    Label(Widget *parent, const std::string &caption, const std::string &font = "sans");
+    Label(Widget *parent, const std::string &caption,
+          const std::string &font = "sans", int fontSize = -1);
 
     /// Get the label's text caption
     const std::string &caption() const { return mCaption; }

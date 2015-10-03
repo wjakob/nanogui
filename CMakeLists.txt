@@ -123,7 +123,9 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
+  include/nanogui/colorpicker.h src/colorpicker.cpp
   include/nanogui/graph.h src/graph.cpp
+  include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
   include/nanogui/common.h
@@ -149,8 +151,10 @@ if (WIN32 AND MSVC)
 endif()
 
 if(NANOGUI_BUILD_EXAMPLE)
-  add_executable(example src/example.cpp)
-  target_link_libraries(example nanogui glfw ${extra_libs})
+  add_executable(example1 src/example1.cpp)
+  add_executable(example2 src/example2.cpp)
+  target_link_libraries(example1 nanogui glfw ${extra_libs})
+  target_link_libraries(example2 nanogui glfw ${extra_libs})
 endif()
 
 file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

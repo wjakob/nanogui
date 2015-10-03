@@ -1,3 +1,5 @@
+#pragma once
+
 #include <nanogui/widget.h>
 
 NANOGUI_NAMESPACE_BEGIN
@@ -13,7 +15,7 @@ public:
     /// Get the current color
     Color color() const;
     /// Set the current color
-    void setColor(const Color& rgb);
+    void setColor(const Color& color);
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext *ctx);

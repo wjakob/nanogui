@@ -12,6 +12,9 @@ public:
                 int buttonIcon = 0,
                 int chevronIcon = ENTYPO_ICON_CHEVRON_SMALL_RIGHT);
 
+    void setChevronIcon(int icon) { mChevronIcon = icon; }
+    int chevronIcon() const { return mChevronIcon; }
+
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
 

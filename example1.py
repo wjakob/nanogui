@@ -9,7 +9,8 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     ToolButton, Vector2i, Label, Button, Widget, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
-                    TextBox, ColorWheel, Graph, VectorXf, GridLayout
+                    TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
+                    Alignment, Orientation
 
 from nanogui import GLFW, ENTYPO
 
@@ -30,7 +31,7 @@ class TestApp(Screen):
         b.setCallback(cb)
 
         b = Button(window, "Styled", ENTYPO.ICON_ROCKET)
-        b.setBackgroundColor(Color(0, 0, 255, 25))
+        b.setBackgroundColor(Color(0, 0, 1.0, 0.1))
         b.setCallback(cb)
 
         Label(window, "Toggle buttons", "sans-bold")
@@ -49,8 +50,8 @@ class TestApp(Screen):
 
         Label(window, "A tool palette", "sans-bold")
         tools = Widget(window)
-        tools.setLayout(BoxLayout(BoxLayout.Orientation.Horizontal,
-                                  BoxLayout.Alignment.Middle, 0, 6))
+        tools.setLayout(BoxLayout(Orientation.Horizontal,
+                                  Alignment.Middle, 0, 6))
 
         ToolButton(tools, ENTYPO.ICON_CLOUD)
         ToolButton(tools, ENTYPO.ICON_FF)
@@ -74,8 +75,8 @@ class TestApp(Screen):
 
         Label(window, "Message dialog", "sans-bold")
         tools = Widget(window)
-        tools.setLayout(BoxLayout(BoxLayout.Orientation.Horizontal,
-                                  BoxLayout.Alignment.Middle, 0, 6))
+        tools.setLayout(BoxLayout(Orientation.Horizontal,
+                                  Alignment.Middle, 0, 6))
 
         def cb2(result):
             print("Dialog result: %i" % result)
@@ -130,8 +131,8 @@ class TestApp(Screen):
 
         Label(window, "File dialog", "sans-bold")
         tools = Widget(window)
-        tools.setLayout(BoxLayout(BoxLayout.Orientation.Horizontal,
-                                  BoxLayout.Alignment.Middle, 0, 6))
+        tools.setLayout(BoxLayout(Orientation.Horizontal,
+                                  Alignment.Middle, 0, 6))
         b = Button(tools, "Open")
         valid = [("png", "Portable Network Graphics"), ("txt", "Text file")]
 
@@ -168,8 +169,8 @@ class TestApp(Screen):
         Label(window, "Slider and text box", "sans-bold")
 
         panel = Widget(window)
-        panel.setLayout(BoxLayout(BoxLayout.Orientation.Horizontal,
-                                  BoxLayout.Alignment.Middle, 0, 20))
+        panel.setLayout(BoxLayout(Orientation.Horizontal,
+                                  Alignment.Middle, 0, 20))
 
         slider = Slider(panel)
         slider.setValue(0.5)
@@ -179,6 +180,8 @@ class TestApp(Screen):
         textBox.setFixedSize(Vector2i(60, 25))
         textBox.setValue("50")
         textBox.setUnits("%")
+        textBox.setFontSize(20)
+        textBox.setAlignment(TextBox.Alignment.Right)
 
         def cb(value):
             textBox.setValue("%i" % int(value * 100))
@@ -187,9 +190,6 @@ class TestApp(Screen):
         def cb(value):
             print("Final slider value: %i" % int(value * 100))
         slider.setFinalCallback(cb)
-        textBox.setFixedSize(Vector2i(60, 25))
-        textBox.setFontSize(20)
-        textBox.setAlignment(TextBox.Alignment.Right)
 
         window = Window(self, "Misc. widgets")
         window.setPosition(Vector2i(425, 15))
@@ -208,32 +208,32 @@ class TestApp(Screen):
 
         window = Window(self, "Grid of small widgets")
         window.setPosition(Vector2i(425, 288))
-        layout = GridLayout(GridLayout.Orientation.Horizontal, 2,
-                            GridLayout.Alignment.Middle, 15, 5)
+        layout = GridLayout(Orientation.Horizontal, 2,
+                            Alignment.Middle, 15, 5)
         layout.setColAlignment(
-            [GridLayout.Alignment.Maximum, GridLayout.Alignment.Fill])
+            [Alignment.Maximum, Alignment.Fill])
         layout.setSpacing(0, 10)
         window.setLayout(layout)
 
         Label(window, "Floating point :", "sans-bold")
-        textBox = TextBox(window)
-        textBox.setEditable(True)
-        textBox.setFixedSize(Vector2i(100, 20))
-        textBox.setValue("50")
-        textBox.setUnits("GiB")
-        textBox.setDefaultValue("0.0")
-        textBox.setFontSize(16)
-        textBox.setFormat("[-]?[0-9]*\\.?[0-9]+")
+        floatBox = TextBox(window)
+        floatBox.setEditable(True)
+        floatBox.setFixedSize(Vector2i(100, 20))
+        floatBox.setValue("50")
+        floatBox.setUnits("GiB")
+        floatBox.setDefaultValue("0.0")
+        floatBox.setFontSize(16)
+        floatBox.setFormat("[-]?[0-9]*\\.?[0-9]+")
 
         Label(window, "Positive integer :", "sans-bold")
-        textBox = TextBox(window)
-        textBox.setEditable(True)
-        textBox.setFixedSize(Vector2i(100, 20))
-        textBox.setValue("50")
-        textBox.setUnits("Mhz")
-        textBox.setDefaultValue("0.0")
-        textBox.setFontSize(16)
-        textBox.setFormat("[1-9][0-9]*")
+        intBox = TextBox(window)
+        intBox.setEditable(True)
+        intBox.setFixedSize(Vector2i(100, 20))
+        intBox.setValue("50")
+        intBox.setUnits("Mhz")
+        intBox.setDefaultValue("0.0")
+        intBox.setFontSize(16)
+        intBox.setFormat("[1-9][0-9]*")
 
         Label(window, "Checkbox :", "sans-bold")
 
@@ -248,7 +248,7 @@ class TestApp(Screen):
 
         Label(window, "Color button :", "sans-bold")
         popupBtn = PopupButton(window, "", 0)
-        popupBtn.setBackgroundColor(Color(255, 120, 0, 255))
+        popupBtn.setBackgroundColor(Color(1, 0.47, 0, 1))
         popupBtn.setFontSize(16)
         popupBtn.setFixedSize(Vector2i(100, 20))
         popup = popupBtn.popup()
@@ -273,7 +273,7 @@ class TestApp(Screen):
                 popupBtn.setPushed(False)
         colorBtn.setChangeCallback(cb)
 
-        self.performLayout(self.nvgContext())
+        self.performLayout()
 
     def draw(self, ctx):
         self.progress.setValue(math.fmod(time.time() / 10, 1))

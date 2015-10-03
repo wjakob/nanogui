@@ -62,8 +62,8 @@ public:
 
         new Label(window, "A tool palette", "sans-bold");
         Widget *tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
-                                       BoxLayout::Alignment::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 6));
 
         b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
         b = new ToolButton(tools, ENTYPO_ICON_FF);
@@ -87,8 +87,8 @@ public:
 
         new Label(window, "Message dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
-                                       BoxLayout::Alignment::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 6));
         b = new Button(tools, "Info");
         b->setCallback([&] {
             auto dlg = new MessageDialog(this, MessageDialog::Type::Information, "Title", "This is an information message");
@@ -126,8 +126,8 @@ public:
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
-        tools->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
-                                       BoxLayout::Alignment::Middle, 0, 6));
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 6));
         b = new Button(tools, "Open");
         b->setCallback([&] {
             cout << "File dialog result: " << file_dialog(
@@ -155,8 +155,8 @@ public:
         new Label(window, "Slider and text box", "sans-bold");
 
         Widget *panel = new Widget(window);
-        panel->setLayout(new BoxLayout(BoxLayout::Orientation::Horizontal,
-                                       BoxLayout::Alignment::Middle, 0, 20));
+        panel->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 20));
 
         Slider *slider = new Slider(panel);
         slider->setValue(0.5f);
@@ -194,10 +194,10 @@ public:
         window = new Window(this, "Grid of small widgets");
         window->setPosition(Vector2i(425, 288));
         GridLayout *layout =
-            new GridLayout(GridLayout::Orientation::Horizontal, 2,
-                           GridLayout::Alignment::Middle, 15, 5);
+            new GridLayout(Orientation::Horizontal, 2,
+                           Alignment::Middle, 15, 5);
         layout->setColAlignment(
-            { GridLayout::Alignment::Maximum, GridLayout::Alignment::Fill });
+            { Alignment::Maximum, Alignment::Fill });
         layout->setSpacing(0, 10);
         window->setLayout(layout);
 

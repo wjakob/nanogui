@@ -127,6 +127,17 @@ void Widget::addChild(Widget *widget) {
     widget->setParent(this);
 }
 
+void Widget::removeChild(const Widget *widget) {
+    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
+    widget->decRef();
+}
+
+void Widget::removeChild(int index) {
+    Widget *widget = mChildren[index];
+    mChildren.erase(mChildren.begin() + index);
+    widget->decRef();
+}
+
 Window *Widget::window() {
     Widget *widget = this;
     while (true) {

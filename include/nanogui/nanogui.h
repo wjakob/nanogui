@@ -23,3 +23,4 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
+#include <nanogui/formhelper.h>

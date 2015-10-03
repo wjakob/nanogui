@@ -21,6 +21,86 @@
 #endif
 
 
+static const char *__doc_nanogui_AdvancedGridLayout = 
+R"doc(Advanced Grid layout
+
+The is a fancier grid layout with support for items that span multiple rows
+or columns, and per-widget alignment flags. Each row and column
+additionally stores a stretch factor that controls how additional space is
+redistributed. The downside of this flexibility is that a layout anchor
+data structure must be provided for each widget.
+
+An example:
+
+<pre> using AdvancedGridLayout::Anchor; Label *label = new Label(window, "A
+label"); // Add a centered label at grid position (1, 5), which spans two
+horizontal cells layout->setAnchor(label, Anchor(1, 5, 2, 1,
+Alignent::Middle, Alignment::Middle)); </pre>
+
+The grid is initialized with user-specified column and row size vectors
+(which can be expanded later on if desired). If a size value of zero is
+specified for a column or row, the size is set to the maximum preferred
+size of any widgets contained in the same row or column. Any remaining
+space is redistributed according to the row and column stretch factors.
+
+The high level usage somewhat resembles the classic HIG layout: https://web
+.archive.org/web/20070813221705/http://www.autel.cz/dmi/tutorial.html
+https://github.com/jaapgeurts/higlayout)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_AdvancedGridLayout = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor_2 = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor_3 = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_size = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_anchor = R"doc(Retrieve the anchor data structure for a given widget)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_appendCol = R"doc(Append a column of the given size (and stretch factor))doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_appendRow = R"doc(Append a row of the given size (and stretch factor))doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_colCount = R"doc(Return the number of cols)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_computeLayout = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mAnchor = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mColStretch = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mCols = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mMargin = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mRowStretch = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_mRows = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_margin = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_rowCount = R"doc(Return the number of rows)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_setAnchor = R"doc(Specify the anchor data structure for a given widget)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_setColStretch = R"doc(Set the stretch factor of a given column)doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_setMargin = R"doc()doc";
+
+static const char *__doc_nanogui_AdvancedGridLayout_setRowStretch = R"doc(Set the stretch factor of a given row)doc";
+
 static const char *__doc_nanogui_Arcball = R"doc(Arcball helper class to interactively rotate objects on-screen)doc";
 
 static const char *__doc_nanogui_Arcball_Arcball = R"doc()doc";
@@ -59,9 +139,24 @@ static const char *__doc_nanogui_Arcball_speedFactor = R"doc()doc";
 
 static const char *__doc_nanogui_Arcball_state = R"doc()doc";
 
-static const char *__doc_nanogui_BoxLayout = R"doc(Simple horizontal/vertical box layout)doc";
+static const char *__doc_nanogui_BoxLayout = 
+R"doc(Simple horizontal/vertical box layout
 
-static const char *__doc_nanogui_BoxLayout_BoxLayout = R"doc()doc";
+This widget stacks up a bunch of widgets horizontally or vertically. It
+adds margins around the entire container and a custom spacing between
+adjacent widgets)doc";
+
+static const char *__doc_nanogui_BoxLayout_BoxLayout = 
+R"doc(Construct a box layout which packs widgets in the given ``orientation``
+
+Parameter ``alignment``:
+    Widget alignment perpendicular to the chosen orientation.
+
+Parameter ``margin``:
+    Margin around the layout container
+
+Parameter ``spacing``:
+    Extra spacing placed between widgets)doc";
 
 static const char *__doc_nanogui_BoxLayout_alignment = R"doc()doc";
 
@@ -197,6 +292,24 @@ static const char *__doc_nanogui_CheckBox_setPushed = R"doc()doc";
 
 static const char *__doc_nanogui_Color = R"doc(Stores an RGBA color value)doc";
 
+static const char *__doc_nanogui_ColorPicker = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_ColorPicker = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_callback = R"doc(Set the change callback)doc";
+
+static const char *__doc_nanogui_ColorPicker_color = R"doc(Get the current color)doc";
+
+static const char *__doc_nanogui_ColorPicker_mCallback = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_mColorWheel = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_mPickButton = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_setCallback = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_setColor = R"doc(Set the current color)doc";
+
 static const char *__doc_nanogui_ColorWheel = R"doc()doc";
 
 static const char *__doc_nanogui_ColorWheel_ColorWheel = R"doc()doc";
@@ -259,6 +372,8 @@ static const char *__doc_nanogui_Color_b = R"doc(Return a reference to the blue 
 
 static const char *__doc_nanogui_Color_b_2 = R"doc(Return a reference to the blue channel (const version))doc";
 
+static const char *__doc_nanogui_Color_contrastingColor = R"doc()doc";
+
 static const char *__doc_nanogui_Color_g = R"doc(Return a reference to the green channel)doc";
 
 static const char *__doc_nanogui_Color_g_2 = R"doc(Return a reference to the green channel (const version))doc";
@@ -271,9 +386,11 @@ static const char *__doc_nanogui_Color_r_2 = R"doc(Return a reference to the red
 
 static const char *__doc_nanogui_ComboBox = R"doc()doc";
 
-static const char *__doc_nanogui_ComboBox_ComboBox = R"doc(Create a new combo box with the given items)doc";
+static const char *__doc_nanogui_ComboBox_ComboBox = R"doc(Create an empty combo box)doc";
 
-static const char *__doc_nanogui_ComboBox_ComboBox_2 = 
+static const char *__doc_nanogui_ComboBox_ComboBox_2 = R"doc(Create a new combo box with the given items)doc";
+
+static const char *__doc_nanogui_ComboBox_ComboBox_3 = 
 R"doc(Create a new combo box with the given items, providing both short and long
 descriptive labels for each item)doc";
 
@@ -297,9 +414,111 @@ static const char *__doc_nanogui_ComboBox_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setItems = R"doc()doc";
 
-static const char *__doc_nanogui_ComboBox_setItemsShort = R"doc()doc";
+static const char *__doc_nanogui_ComboBox_setItems_2 = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setSelectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_FloatBox_Scalar_ = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_setCallback = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_value = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper = 
+R"doc(Convenience class to create simple AntTweakBar-style layouts that expose
+variables of various types using NanoGUI widgets
+
+Example:
+
+<pre> [ ... initialize NanoGUI, construct screen ... ]
+
+FormHelper* h = new FormHelper(screen);
+
+// Add a new windows widget h->addWindow(Eigen::Vector2i(10,10),"Menu");
+
+// Start a new group h->addGroup("Group 1");
+
+// Expose an integer variable by reference h->addVariable("integer
+variable", aInt);
+
+// Expose a float variable via setter/getter functions h->addVariable(
+[&](float value){ aFloat = value; }, [&](){ return *aFloat; }, "float
+variable");
+
+// add a new button h->addButton("Button",[&](){ std::cout << "Button
+pressed" << std::endl; }); </pre>)doc";
+
+static const char *__doc_nanogui_FormHelper_FormHelper = R"doc(Create a helper class to construct NanoGUI widgets on the given screen)doc";
+
+static const char *__doc_nanogui_FormHelper_addButton = R"doc(Add a button with a custom callback)doc";
+
+static const char *__doc_nanogui_FormHelper_addGroup = R"doc(Add a new group that may contain several sub-widgets)doc";
+
+static const char *__doc_nanogui_FormHelper_addVariable = R"doc(Add a new data widget controlled using custom getter/setter functions)doc";
+
+static const char *__doc_nanogui_FormHelper_addVariable_2 = R"doc(Add a new data widget that exposes a raw variable in memory)doc";
+
+static const char *__doc_nanogui_FormHelper_addWindow = R"doc(Add a new top-level window)doc";
+
+static const char *__doc_nanogui_FormHelper_fixedSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_groupFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_groupFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_labelFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_labelFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mFixedSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mGroupFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mGroupFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mLabelFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mLabelFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mLayout = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mPostGroupSpacing = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mPreGroupSpacing = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mRefreshCallbacks = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mScreen = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mVariableSpacing = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mWidgetFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_mWindow = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_refresh = R"doc(Cause all widgets to re-synchronize with the underlying variable state)doc";
+
+static const char *__doc_nanogui_FormHelper_setFixedSize = R"doc(Specify a fixed size for newly added widgets)doc";
+
+static const char *__doc_nanogui_FormHelper_setGroupFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_setGroupFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_setLabelFontName = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_setLabelFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_setWidgetFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_setWindow = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_widgetFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_window = R"doc(Access the currently active Window instance)doc";
 
 static const char *__doc_nanogui_GLFramebuffer = R"doc(Helper class for creating framebuffer objects)doc";
 
@@ -478,15 +697,17 @@ static const char *__doc_nanogui_Graph_values_2 = R"doc()doc";
 static const char *__doc_nanogui_GridLayout = 
 R"doc(Grid layout
 
-Widgets are aranged in a grid that has a fixed grid resolution
+Widgets are arranged in a grid that has a fixed grid resolution
 ``resolution`` along one of the axes. The layout orientation indicates the
-fixed dimension; widgets are also appended on this axis.)doc";
+fixed dimension; widgets are also appended on this axis. The spacing
+between items can be specified per axis. The horizontal/vertical alignment
+can be specified per row and column.)doc";
 
 static const char *__doc_nanogui_GridLayout_GridLayout = R"doc(Create a 2-column grid layout by default)doc";
 
 static const char *__doc_nanogui_GridLayout_alignment = R"doc()doc";
 
-static const char *__doc_nanogui_GridLayout_computeGridLayout = R"doc()doc";
+static const char *__doc_nanogui_GridLayout_computeLayout = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_mAlignment = R"doc()doc";
 
@@ -510,21 +731,19 @@ static const char *__doc_nanogui_GridLayout_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_resolution = R"doc()doc";
 
-static const char *__doc_nanogui_GridLayout_setAlignment = R"doc()doc";
-
-static const char *__doc_nanogui_GridLayout_setAlignment_2 = R"doc()doc";
-
 static const char *__doc_nanogui_GridLayout_setColAlignment = R"doc()doc";
 
-static const char *__doc_nanogui_GridLayout_setMargin = R"doc()doc";
+static const char *__doc_nanogui_GridLayout_setColAlignment_2 = R"doc()doc";
 
-static const char *__doc_nanogui_GridLayout_setMargin_2 = R"doc()doc";
+static const char *__doc_nanogui_GridLayout_setMargin = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setOrientation = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setResolution = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setRowAlignment = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_setRowAlignment_2 = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setSpacing = R"doc()doc";
 
@@ -533,8 +752,14 @@ static const char *__doc_nanogui_GridLayout_setSpacing_2 = R"doc()doc";
 static const char *__doc_nanogui_GridLayout_spacing = R"doc()doc";
 
 static const char *__doc_nanogui_GroupLayout = 
-R"doc(Group layout: vertical arrangement of indented widgets with (non-indented)
-group labels)doc";
+R"doc(Special layout for widgets grouped by labels
+
+This widget resembles a box layout in that it arranges a set of widgets
+vertically. All widgets are indented on the horizontal axis except for
+Label widgets, which are not indented.
+
+This creates a pleasing layout where a number of widgets are grouped under
+some high-level heading.)doc";
 
 static const char *__doc_nanogui_GroupLayout_GroupLayout = R"doc()doc";
 
@@ -616,6 +841,16 @@ static const char *__doc_nanogui_ImageView_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_setImage = R"doc()doc";
 
+static const char *__doc_nanogui_IntBox = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_IntBox_Scalar_ = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_setCallback = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_value = R"doc()doc";
+
 static const char *__doc_nanogui_Label = 
 R"doc(Text label widget
 
@@ -692,6 +927,8 @@ static const char *__doc_nanogui_PopupButton = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_PopupButton = R"doc()doc";
 
+static const char *__doc_nanogui_PopupButton_chevronIcon = R"doc()doc";
+
 static const char *__doc_nanogui_PopupButton_draw = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_mChevronIcon = R"doc()doc";
@@ -705,6 +942,8 @@ static const char *__doc_nanogui_PopupButton_popup = R"doc()doc";
 static const char *__doc_nanogui_PopupButton_popup_2 = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_setChevronIcon = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_Popup = 
 R"doc(Create a new popup parented to a screen (first argument) and a parent
@@ -850,6 +1089,10 @@ static const char *__doc_nanogui_Screen_moveWindowToFront = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_nvgContext = R"doc(Return a pointer to the underlying nanoVG draw context)doc";
 
+static const char *__doc_nanogui_Screen_performLayout = R"doc(Compute the layout of all widgets)doc";
+
+static const char *__doc_nanogui_Screen_performLayout_2 = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_scrollCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_setBackground = R"doc(Set the screen's background color)doc";
@@ -947,6 +1190,8 @@ static const char *__doc_nanogui_TextBox_mDefaultValue = R"doc()doc";
 static const char *__doc_nanogui_TextBox_mEditable = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mFormat = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_mLastClick = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mMouseDownModifier = R"doc()doc";
 
@@ -1123,6 +1368,8 @@ R"doc(Add a child widget to the current widget
 This function almost never needs to be called by hand, since the
 constructor of Widget automatically adds the current widget to its parent)doc";
 
+static const char *__doc_nanogui_Widget_childCount = R"doc(Return the number of child widgets)doc";
+
 static const char *__doc_nanogui_Widget_children = R"doc(Return the list of child widgets of the current widget)doc";
 
 static const char *__doc_nanogui_Widget_contains = R"doc(Check if the widget contains a certain position)doc";
@@ -1214,6 +1461,10 @@ any)doc";
 static const char *__doc_nanogui_Widget_position = R"doc(Return the position relative to the parent widget)doc";
 
 static const char *__doc_nanogui_Widget_preferredSize = R"doc(Compute the preferred size of the widget)doc";
+
+static const char *__doc_nanogui_Widget_removeChild = R"doc(Remove a child widget by index)doc";
+
+static const char *__doc_nanogui_Widget_removeChild_2 = R"doc(Remove a child widget by value)doc";
 
 static const char *__doc_nanogui_Widget_requestFocus = R"doc(Request the focus to be moved to this widget)doc";
 
@@ -1325,6 +1576,28 @@ R"doc(Move to the application bundle's parent directory
 
 This is function is convenient when deploying .app bundles on OSX. It
 adjusts the file path to the parent directory containing the bundle.)doc";
+
+static const char *__doc_nanogui_detail_FormWidget = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_3 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_FormWidget = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_FormWidget_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_FormWidget_3 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_setCallback = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_setEditable = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_setEditable_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_setValue_2 = R"doc()doc";
 
 static const char *__doc_nanogui_file_dialog = 
 R"doc(Open a native file open/save dialog.
