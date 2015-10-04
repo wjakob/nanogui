@@ -109,7 +109,10 @@ class TestApp(Screen):
         import os
         import sys
         os.chdir(sys.path[0])
-        icons = nanogui.loadImageDirectory(self.nvgContext(), "icons")
+        try:
+            icons = nanogui.loadImageDirectory(self.nvgContext(), "icons")
+        except:
+            icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
