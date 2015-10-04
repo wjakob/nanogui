@@ -151,9 +151,13 @@ endif()
 set_target_properties(nanogui PROPERTIES COMPILE_DEFINITIONS "NANOGUI_BUILD")
 
 if (WIN32 AND MSVC)
-  # Enforce link time code generation on MSVC, /MP enables multithreaded builds
-  set_target_properties(nanogui PROPERTIES COMPILE_FLAGS "/GL /MP")
-  set_target_properties(nanogui PROPERTIES LINK_FLAGS "/LTCG")
+  # Enforce link time code generation on MSVC (when building shared libraries), /MP enables multithreaded builds
+  if (NANOGUI_BUILD_SHARED)
+    set_target_properties(nanogui PROPERTIES COMPILE_FLAGS "/GL /MP")
+    set_target_properties(nanogui PROPERTIES LINK_FLAGS "/LTCG")
+  else()
+    set_target_properties(nanogui PROPERTIES COMPILE_FLAGS "/MP")
+  endif()
   # Quench warnings while compiling NanoVG
   set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
 endif()
