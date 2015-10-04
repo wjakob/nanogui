@@ -1,10 +1,21 @@
+/*
+    src/messagedialog.cpp -- Simple "OK" or "Yes/No"-style modal dialogs
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/messagedialog.h>
 #include <nanogui/layout.h>
 #include <nanogui/button.h>
 #include <nanogui/entypo.h>
 #include <nanogui/label.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title,
               const std::string &message,
@@ -41,4 +52,4 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
     requestFocus();
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

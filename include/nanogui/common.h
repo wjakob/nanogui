@@ -1,3 +1,14 @@
+/*
+    nanogui/common.h -- common definitions used by NanoGUI
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <Eigen/Core>
@@ -10,8 +21,12 @@
 #endif
 
 /* Convenience definitions */
-#define NANOGUI_NAMESPACE_BEGIN namespace nanogui {
-#define NANOGUI_NAMESPACE_END }
+#if !defined(NAMESPACE_BEGIN)
+#define NAMESPACE_BEGIN(name) namespace name {
+#endif
+#if !defined(NAMESPACE_END)
+#define NAMESPACE_END(name) }
+#endif
 
 #if defined(NANOGUI_SHARED)
 #  if defined(WIN32)
@@ -45,7 +60,7 @@ struct GLFWcursor;
 #define SYSTEM_COMMAND_MOD GLFW_MOD_CONTROL
 #endif
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 /* Cursor shapes */
 enum class Cursor {
@@ -216,4 +231,4 @@ extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 /// Helper function used by nvgImageIcon
 extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

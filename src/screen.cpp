@@ -1,3 +1,16 @@
+/*
+    src/screen.cpp -- Top-level widget and interface between NanoGUI and GLFW
+
+    A significant redesign of this code was contributed by Christian Schueller.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/screen.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
@@ -9,7 +22,7 @@
 #define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
@@ -513,4 +526,4 @@ void Screen::moveWindowToFront(Window *window) {
     } while (changed);
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

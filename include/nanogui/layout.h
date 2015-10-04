@@ -1,9 +1,22 @@
+/*
+    nanogui/layout.h -- A collection of useful layout managers
+
+    The grid layout was contributed by Christian Schueller.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/object.h>
 #include <unordered_map>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 enum class Alignment : uint8_t {
     Minimum = 0,
@@ -283,4 +296,4 @@ protected:
     int mMargin;
 };
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

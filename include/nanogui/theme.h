@@ -1,9 +1,22 @@
+/*
+    nanogui/theme.h -- Storage class for basic theme-related properties
+
+    The text box widget was contributed by Christian Schueller.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT Theme : public Object {
 public:
@@ -58,4 +71,4 @@ protected:
     virtual ~Theme() { };
 };
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

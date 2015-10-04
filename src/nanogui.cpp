@@ -1,3 +1,14 @@
+/*
+    nanogui/nanogui.cpp -- Basic initialization and utility routines
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/screen.h>
 #if defined(WIN32)
 #include <windows.h>
@@ -14,7 +25,7 @@
     #include <sys/dir.h>
 #endif
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 static bool __mainloop_active = false;
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
@@ -220,5 +231,5 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 }
 #endif
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)
 

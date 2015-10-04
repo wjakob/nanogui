@@ -1,9 +1,20 @@
+/*
+    src/window.cpp -- Top-level window widget
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/window.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/screen.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mModal(false) { }
@@ -130,4 +141,4 @@ void Window::refreshRelativePlacement() {
     /* Overridden in \ref Popup */
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

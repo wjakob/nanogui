@@ -1,10 +1,23 @@
+/*
+    src/colorwheel.cpp -- fancy analog widget to select a color value
+
+    This widget was contributed by Dmitriy Morozov.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <Eigen/QR>
 #include <Eigen/Geometry>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 ColorWheel::ColorWheel(Widget *parent, const Color& rgb)
     : Widget(parent), mDragRegion(None) {
@@ -278,5 +291,5 @@ void ColorWheel::setColor(const Color &rgb) {
     }
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)
 

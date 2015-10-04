@@ -1,8 +1,19 @@
+/*
+    nanogui/button.h -- [Normal/Toggle/Radio/Popup] Button widget
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/widget.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT Button : public Widget {
 public:
@@ -72,4 +83,4 @@ protected:
     std::vector<Button *> mButtonGroup;
 };
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

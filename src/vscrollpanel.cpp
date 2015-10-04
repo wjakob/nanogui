@@ -1,8 +1,20 @@
+/*
+    src/vscrollpanel.cpp -- Adds a vertical scrollbar around a widget
+    that is too big to fit into a certain area
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 VScrollPanel::VScrollPanel(Widget *parent)
     : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f) {}
@@ -97,4 +109,4 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgFill(ctx);
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

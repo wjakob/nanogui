@@ -1,8 +1,19 @@
+/*
+    src/graph.cpp -- Simple graph widget for showing a function plot
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/graph.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 Graph::Graph(Widget *parent, const std::string &caption)
     : Widget(parent), mCaption(caption) {
@@ -70,4 +81,4 @@ void Graph::draw(NVGcontext *ctx) {
 	nvgStroke(ctx);
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

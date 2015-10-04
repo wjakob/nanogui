@@ -1,8 +1,21 @@
+/*
+    src/theme.cpp -- Storage class for basic theme-related properties
+
+    The text box widget was contributed by Christian Schueller.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <resources.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 Theme::Theme(NVGcontext *ctx) {
     mStandardFontSize                 = 16;
@@ -53,4 +66,4 @@ Theme::Theme(NVGcontext *ctx) {
         throw std::runtime_error("Could not load fonts!");
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

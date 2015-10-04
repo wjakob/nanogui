@@ -1,3 +1,15 @@
+/*
+    nanogui/formhelper.h -- helper class to construct forms for editing a set
+    of variables of various types
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/screen.h>
@@ -9,11 +21,11 @@
 #include <nanogui/layout.h>
 #include <cassert>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
-namespace detail {
-    template <typename T, typename sfinae = std::true_type> class FormWidget { };
-}
+NAMESPACE_BEGIN(detail)
+template <typename T, typename sfinae = std::true_type> class FormWidget { };
+NAMESPACE_END(detail)
 
 /**
 * \brief Convenience class to create simple AntTweakBar-style layouts that
@@ -170,49 +182,49 @@ protected:
     int mVariableSpacing = 5;
 };
 
-namespace detail {
-    /* Various types of form widgets for different input types below */
-    template <> class FormWidget<bool, std::true_type> : public CheckBox {
-    public:
-        FormWidget(Widget *p) : CheckBox(p, "") { setFixedWidth(20); }
-        void setValue(bool v) { setChecked(v); }
-        void setEditable(bool e) { setEnabled(e); }
-    };
-
-    template <typename T> class FormWidget<T, typename std::is_enum<T>::type> : public ComboBox {
-    public:
-        FormWidget(Widget *p) : ComboBox(p) { }
-        void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
-        void setCallback(const std::function<void(T)> &cb) {
-            ComboBox::setCallback([cb](int v) { cb((T) v); });
-        }
-        void setEditable(bool e) { setEnabled(e); }
-    };
-
-    template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
-    public:
-        FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-    };
-
-    template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
-    public:
-        FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-    };
-
-    template <> class FormWidget<std::string, std::true_type> : public TextBox {
-    public:
-        FormWidget(Widget *p) : TextBox(p) { setAlignment(TextBox::Alignment::Left); }
-        void setCallback(const std::function<void(const std::string&)> &cb) {
-            TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
-        }
-    };
-
-    template <> class FormWidget<Color, std::true_type> : public ColorPicker {
-    public:
-        FormWidget(Widget *p) : ColorPicker(p) { }
-        void setValue(const Color &c) { setColor(c); }
-        void setEditable(bool e) { setEnabled(e); }
-    };
+NAMESPACE_BEGIN(detail)
+/* Various types of form widgets for different input types below */
+template <> class FormWidget<bool, std::true_type> : public CheckBox {
+public:
+    FormWidget(Widget *p) : CheckBox(p, "") { setFixedWidth(20); }
+    void setValue(bool v) { setChecked(v); }
+    void setEditable(bool e) { setEnabled(e); }
 };
 
-NANOGUI_NAMESPACE_END
+template <typename T> class FormWidget<T, typename std::is_enum<T>::type> : public ComboBox {
+public:
+    FormWidget(Widget *p) : ComboBox(p) { }
+    void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
+    void setCallback(const std::function<void(T)> &cb) {
+        ComboBox::setCallback([cb](int v) { cb((T) v); });
+    }
+    void setEditable(bool e) { setEnabled(e); }
+};
+
+template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
+public:
+    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+};
+
+template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
+public:
+    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+};
+
+template <> class FormWidget<std::string, std::true_type> : public TextBox {
+public:
+    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextBox::Alignment::Left); }
+    void setCallback(const std::function<void(const std::string&)> &cb) {
+        TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
+    }
+};
+
+template <> class FormWidget<Color, std::true_type> : public ColorPicker {
+public:
+    FormWidget(Widget *p) : ColorPicker(p) { }
+    void setValue(const Color &c) { setColor(c); }
+    void setEditable(bool e) { setEnabled(e); }
+};
+
+NAMESPACE_END(detail)
+NAMESPACE_END(nanogui)

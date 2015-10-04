@@ -1,10 +1,21 @@
+/*
+    nanogui/popupbutton.h -- Button which launches a popup widget
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/button.h>
 #include <nanogui/popup.h>
 #include <nanogui/entypo.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT PopupButton : public Button {
 public:
@@ -27,4 +38,4 @@ protected:
     int mChevronIcon;
 };
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

@@ -1,7 +1,19 @@
+/*
+    src/imageview.cpp -- Simple widget which shows an image that was
+    previously uploaded to the graphics card
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/imageview.h>
 #include <nanogui/opengl.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 ImageView::ImageView(Widget *parent, int img)
     : Widget(parent), mImage(img) {}
@@ -41,4 +53,4 @@ void ImageView::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

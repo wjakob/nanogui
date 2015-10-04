@@ -1,5 +1,13 @@
-# This is the Python version of the example application
-# For a C++ implementation, see 'src/example.cpp'
+# python/example2.py -- Python version of an example application that shows
+# how to use the form helper class. For a C++ implementation, see
+# '../src/example2.cpp'.
+#
+# NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+# The widget drawing code is based on the NanoVG demo application
+# by Mikko Mononen.
+#
+# All rights reserved. Use of this source code is governed by a
+# BSD-style license that can be found in the LICENSE.txt file.
 
 import nanogui
 import math

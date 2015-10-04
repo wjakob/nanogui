@@ -1,10 +1,21 @@
+/*
+    nanogui/glutil.h -- Convenience classes for accessing OpenGL >= 3.x
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #pragma once
 
 #include <nanogui/opengl.h>
 #include <Eigen/Geometry>
 #include <map>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 using Eigen::Quaternionf;
 
@@ -322,4 +333,4 @@ extern NANOGUI_EXPORT Matrix4f scale(const Matrix4f &m, const Vector3f &v);
 
 extern NANOGUI_EXPORT Matrix4f translate(const Matrix4f &m, const Vector3f &v);
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)

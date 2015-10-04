@@ -1,8 +1,21 @@
+/*
+    src/colorpicker.cpp -- push button with a popup to tweak a color value
+
+    This widget was contributed by Christian Schueller.
+
+    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    The widget drawing code is based on the NanoVG demo application
+    by Mikko Mononen.
+
+    All rights reserved. Use of this source code is governed by a
+    BSD-style license that can be found in the LICENSE.txt file.
+*/
+
 #include <nanogui/colorpicker.h>
 #include <nanogui/layout.h>
 #include <nanogui/colorwheel.h>
 
-NANOGUI_NAMESPACE_BEGIN
+NAMESPACE_BEGIN(nanogui)
 
 ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(parent, "") {
     setBackgroundColor(color);
@@ -43,4 +56,4 @@ void ColorPicker::setColor(const Color& color) {
     mPickButton->setTextColor(fg);
 }
 
-NANOGUI_NAMESPACE_END
+NAMESPACE_END(nanogui)
