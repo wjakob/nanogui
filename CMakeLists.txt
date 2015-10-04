@@ -6,10 +6,6 @@ option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 NEW)
-endif()
-
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -26,16 +22,21 @@ if (NANOGUI_BUILD_SHARED)
   option(BUILD_SHARED_LIBS " " ON)
 endif()
 
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
   # Quench annoying deprecation warnings when compiling GLFW on OSX
   set(CMAKE_C_FLAGS "-Wno-deprecated-declarations")
 endif()
+
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if (UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
 endif()
