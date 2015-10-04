@@ -17,7 +17,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 /// Reference counted object base class
-class Object {
+class NANOGUI_EXPORT Object {
 public:
     /// Default constructor
     Object() { }

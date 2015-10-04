@@ -75,8 +75,8 @@ public:
         GLuint glType = (GLuint) type_traits<typename Matrix::Scalar>::type;
         bool integral = (bool) type_traits<typename Matrix::Scalar>::integral;
 
-        uploadAttrib(name, M.size(), M.rows(), compSize,
-                glType, integral, (const uint8_t *) M.data(), version);
+        uploadAttrib(name, (uint32_t) M.size(), (int) M.rows(), compSize,
+                     glType, integral, (const uint8_t *) M.data(), version);
     }
 
     /// Download a vertex buffer object into an Eigen matrix

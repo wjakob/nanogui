@@ -6,6 +6,10 @@ option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -72,6 +76,9 @@ set(extra_source "")
 
 if(WIN32)
   list(APPEND extra_source "${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c")
+  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c" PROPERTIES COMPILE_DEFINITIONS GLEW_BUILD)
+  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c" PROPERTIES COMPILE_DEFINITIONS GLEW_BUILD)
+
   include_directories(ext/glew/include)
   add_definitions (/D "_CRT_SECURE_NO_WARNINGS")
   set(extra_libs opengl32)
@@ -133,21 +140,22 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
 )
 
 if (CMAKE_COMPILER_IS_GNUCC)
+  # Quench warnings while compiling NanoVG
   set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS -Wno-unused-result)
 endif()
 
-if(APPLE AND NANOGUI_BUILD_SHARED)
+if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui glfw ${extra_libs})
 endif()
 
-if(NANOGUI_BUILD_SHARED)
-  set_target_properties(nanogui PROPERTIES COMPILE_DEFINITIONS "NANOGUI_BUILD_SHARED")
-endif()
+set_target_properties(nanogui PROPERTIES COMPILE_DEFINITIONS "NANOGUI_BUILD")
 
 if (WIN32 AND MSVC)
   # Enforce link time code generation on MSVC, /MP enables multithreaded builds
   set_target_properties(nanogui PROPERTIES COMPILE_FLAGS "/GL /MP")
   set_target_properties(nanogui PROPERTIES LINK_FLAGS "/LTCG")
+  # Quench warnings while compiling NanoVG
+  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
 endif()
 
 if(NANOGUI_BUILD_EXAMPLE)
@@ -157,13 +165,18 @@ if(NANOGUI_BUILD_EXAMPLE)
   target_link_libraries(example2 nanogui glfw ${extra_libs})
 endif()
 
+if (WIN32)
+  # Copy GLFW dependency
+  add_custom_command(TARGET nanogui POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:glfw> $<TARGET_FILE_DIR:nanogui>)
+endif()
+
 file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 if (NANOGUI_BUILD_PYTHON)
   set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
   find_package(PythonLibs REQUIRED)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
-  add_library(nanogui_python SHARED python/python.cpp)
+  add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
   target_link_libraries(nanogui_python nanogui glfw ${extra_libs})
   if (CMAKE_COMPILER_IS_GNUCC)
@@ -182,6 +195,16 @@ if (NANOGUI_BUILD_PYTHON)
     endif()
     # .PYD file extension on Windows
     set_target_properties(nanogui_python PROPERTIES SUFFIX ".pyd")
+
+    # Set output path
+    set_target_properties(nanogui_python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "Release/python")
+    set_target_properties(nanogui_python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "Debug/python")
+    set_target_properties(nanogui_python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/python")
+    set_target_properties(nanogui_python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/python")
+    set_target_properties(nanogui_python PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/python")
+    set_target_properties(nanogui_python PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/python")
+    set_target_properties(nanogui_python PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/python")
+    set_target_properties(nanogui_python PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/python")
 
     # Link against the Python shared library
     target_link_libraries(nanogui_python ${PYTHON_LIBRARY})

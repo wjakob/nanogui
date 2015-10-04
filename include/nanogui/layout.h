@@ -253,10 +253,10 @@ public:
     void setMargin(int margin) { mMargin = margin; }
 
     /// Return the number of cols
-    int colCount() const { return mCols.size(); }
+    int colCount() const { return (int) mCols.size(); }
 
     /// Return the number of rows
-    int rowCount() const { return mRows.size(); }
+    int rowCount() const { return (int) mRows.size(); }
 
     /// Append a row of the given size (and stretch factor)
     void appendRow(int size, float stretch = 0.f) { mRows.push_back(size); mRowStretch.push_back(stretch); };

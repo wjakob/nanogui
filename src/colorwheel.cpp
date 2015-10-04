@@ -154,7 +154,7 @@ bool ColorWheel::mouseButtonEvent(const Vector2i &p, int button, bool down,
 
 bool ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &,
                                 int, int) {
-    return adjustPosition(p, mDragRegion);
+    return adjustPosition(p, mDragRegion) != None;
 }
 
 ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consideredRegions) {

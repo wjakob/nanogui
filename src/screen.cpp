@@ -422,8 +422,6 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
         std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
         abort();
     }
-
-    return false;
 }
 
 bool Screen::charCallbackEvent(unsigned int codepoint) {
@@ -435,8 +433,6 @@ bool Screen::charCallbackEvent(unsigned int codepoint) {
                   << std::endl;
         abort();
     }
-
-    return false;
 }
 
 bool Screen::dropCallbackEvent(int count, const char **filenames) {

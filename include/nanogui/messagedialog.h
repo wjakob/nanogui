@@ -29,7 +29,7 @@ public:
                   const std::string &altButtonText = "Cancel", bool altButton = false);
 
     std::function<void(int)> callback() const { return mCallback; }
-    void setCallback(std::function<void(int)> callback) { mCallback = callback; }
+    void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
 protected:
     std::function<void(int)> mCallback;
 };

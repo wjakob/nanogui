@@ -57,11 +57,11 @@ public:
 
     /// Set the push callback (for any type of button)
     std::function<void()> callback() const { return mCallback; }
-    void setCallback(std::function<void()> callback) { mCallback = callback; }
+    void setCallback(const std::function<void()> &callback) { mCallback = callback; }
 
     /// Set the change callback (for toggle buttons)
     std::function<void(bool)> changeCallback() const { return mChangeCallback; }
-    void setChangeCallback(std::function<void(bool)> callback) { mChangeCallback = callback; }
+    void setChangeCallback(const std::function<void(bool)> &callback) { mChangeCallback = callback; }
 
     /// Set the button group (for radio buttons)
     void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }

@@ -58,7 +58,7 @@ NAMESPACE_END(detail)
 * </pre>
 */
 
-class NANOGUI_EXPORT FormHelper {
+class FormHelper {
 public:
     /// Create a helper class to construct NanoGUI widgets on the given screen
     FormHelper(Screen *screen) : mScreen(screen) { }

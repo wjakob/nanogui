@@ -29,10 +29,10 @@ public:
     void setHighlightedRange(std::pair<float, float> highlightedRange) { mHighlightedRange = highlightedRange; }
 
     std::function<void(float)> callback() const { return mCallback; }
-    void setCallback(std::function<void(float)> callback) { mCallback = callback; }
+    void setCallback(const std::function<void(float)> &callback) { mCallback = callback; }
 
     std::function<void(float)> finalCallback() const { return mFinalCallback; }
-    void setFinalCallback(std::function<void(float)> callback) { mFinalCallback = callback; }
+    void setFinalCallback(const std::function<void(float)> &callback) { mFinalCallback = callback; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);

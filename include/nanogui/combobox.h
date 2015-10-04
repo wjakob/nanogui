@@ -31,7 +31,7 @@ public:
              const std::vector<std::string> &itemsShort);
 
     std::function<void(int)> callback() const { return mCallback; }
-    void setCallback(std::function<void(int)> callback) { mCallback = callback; }
+    void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
 
     int selectedIndex() const { return mSelectedIndex; }
     void setSelectedIndex(int idx);

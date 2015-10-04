@@ -54,7 +54,7 @@ public:
 
     /// Set the change callback
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
-    void setCallback(std::function<bool(const std::string& str)> callback) { mCallback = callback; }
+    void setCallback(const std::function<bool(const std::string& str)> &callback) { mCallback = callback; }
 
     bool mouseButtonEvent(const Vector2i &p,int button,bool down,int modifiers);
     bool mouseMotionEvent(const Vector2i &p,const Vector2i &rel,int button,int modifiers);

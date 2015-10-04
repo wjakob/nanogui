@@ -242,7 +242,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             if (time - mLastClick < 0.25) {
                 /* Double-click: select all text */
                 mSelectionPos = 0;
-                mCursorPos = mValueTemp.size();
+                mCursorPos = (int) mValueTemp.size();
                 mMouseDownPos = Vector2i(-1, 1);
             }
             mLastClick = time;
@@ -353,7 +353,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                     mSelectionPos = -1;
                 }
 
-                mCursorPos = mValueTemp.size();
+                mCursorPos = (int) mValueTemp.size();
             } else if (key == GLFW_KEY_BACKSPACE) {
                 if (!deleteSelection()) {
                     if (mCursorPos > 0) {

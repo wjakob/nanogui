@@ -389,7 +389,7 @@ PYTHON_PLUGIN(nanogui) {
         .def("changeCallback", &Button::changeCallback, D(Button, changeCallback))
         .def("setChangeCallback", &Button::setChangeCallback, D(Button, setChangeCallback))
         .def("buttonGroup", &Button::buttonGroup, D(Button, buttonGroup))
-        .def("setButtonGroup", &Button::setCallback, D(Button, setButtonGroup));
+        .def("setButtonGroup", &Button::setButtonGroup, D(Button, setButtonGroup));
 
     py::enum_<Button::IconPosition>(button, "IconPosition")
         .value("Left", Button::IconPosition::Left)
@@ -434,7 +434,7 @@ PYTHON_PLUGIN(nanogui) {
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"),
              D(CheckBox, CheckBox))
-        .def(py::init<Widget *, const std::string &, std::function<void(bool)>>(),
+        .def(py::init<Widget *, const std::string &, const std::function<void(bool)>&>(),
              py::arg("parent"), py::arg("caption"), py::arg("callback"),
              D(CheckBox, CheckBox))
         .def("caption", &CheckBox::caption, D(CheckBox, caption))
@@ -520,7 +520,7 @@ PYTHON_PLUGIN(nanogui) {
     tbox
         .alias<TextBox>()
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
-             py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
+            py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
         .def("editable", &TextBox::editable, D(TextBox, editable))
         .def("setEditable", &TextBox::setEditable, D(TextBox, setEditable))
         .def("value", &TextBox::value, D(TextBox, value))

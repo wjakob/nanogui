@@ -22,8 +22,8 @@ public:
     ColorPicker(Widget *parent, const Color& color = { 1.f, 0.f, 0.f, 1.f });
 
     /// Set the change callback
-    std::function<void(const Color &)> callback() const           { return mCallback; }
-    void setCallback(std::function<void(const Color &)> callback) { mCallback = callback; }
+    std::function<void(const Color &)> callback() const                  { return mCallback; }
+    void setCallback(const std::function<void(const Color &)> &callback) { mCallback = callback; }
 
     /// Get the current color
     Color color() const;

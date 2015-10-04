@@ -58,22 +58,22 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             if (mFlags & RadioButton) {
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
-                        Button *button = dynamic_cast<Button *>(widget);
-                        if (button != this && button && button->buttonFlags() & RadioButton)
-                            button->mPushed = false;
+                        Button *b = dynamic_cast<Button *>(widget);
+                        if (b != this && b && b->buttonFlags() & RadioButton)
+                            b->mPushed = false;
                     }
                 } else {
-                    for (auto button : mButtonGroup) {
-                        if (button != this && button->buttonFlags() & RadioButton)
-                            button->mPushed = false;
+                    for (auto b : mButtonGroup) {
+                        if (b != this && b->buttonFlags() & RadioButton)
+                            b->mPushed = false;
                     }
                 }
             }
             if (mFlags & PopupButton) {
                 for (auto widget : parent()->children()) {
-                    Button *button = dynamic_cast<Button *>(widget);
-                    if (button != this && button && button->buttonFlags() & PopupButton)
-                        button->mPushed = false;
+                    Button *b = dynamic_cast<Button *>(widget);
+                    if (b != this && b && b->buttonFlags() & PopupButton)
+                        b->mPushed = false;
                 }
             }
             if (mFlags & ToggleButton)

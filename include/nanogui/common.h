@@ -16,11 +16,9 @@
 #include <array>
 #include <vector>
 
-#if defined(WIN32)
-#pragma warning(disable : 4244)
-#endif
+/* Set to 1 to draw boxes around widgets */
+//#define NANOGUI_SHOW_WIDGET_BOUNDS 1
 
-/* Convenience definitions */
 #if !defined(NAMESPACE_BEGIN)
 #define NAMESPACE_BEGIN(name) namespace name {
 #endif
@@ -29,13 +27,13 @@
 #endif
 
 #if defined(NANOGUI_SHARED)
-#  if defined(WIN32)
-#    if !defined(NANOGUI_BUILD_SHARED)
+#  if defined(_WIN32)
+#    if defined(NANOGUI_BUILD)
 #      define NANOGUI_EXPORT __declspec(dllexport)
 #    else
 #      define NANOGUI_EXPORT __declspec(dllimport)
 #    endif
-#  elif defined(NANOGUI_BUILD_SHARED)
+#  elif defined(NANOGUI_BUILD)
 #    define NANOGUI_EXPORT __attribute__ ((visibility("default")))
 #  else
 #    define NANOGUI_EXPORT
@@ -44,8 +42,13 @@
 #    define NANOGUI_EXPORT
 #endif
 
-/* Set to 1 to draw boxes around widgets */
-//#define NANOGUI_SHOW_WIDGET_BOUNDS 1
+#if defined(_WIN32) && defined(NANOGUI_BUILD)
+/* Quench a few warnings on when compiling NanoGUI on Windows */
+#pragma warning(disable : 4127) // warning C4127: conditional expression is constant
+#pragma warning(disable : 4244) // warning C4244: conversion from X to Y, possible loss of data
+#endif
+#pragma warning(disable : 4251) // warning C4251: class X needs to have dll-interface to be used by clients of class Y
+#pragma warning(disable : 4714) // warning C4714: funtion X marked as __forceinline not inlined
 
 struct NVGcontext;
 struct NVGcolor;
@@ -146,7 +149,7 @@ public:
 
     Color contrastingColor() const {
         float luminance = operator*(Color(0.299f, 0.587f, 0.144f, 0.f)).sum();
-        return Color(luminance < 0.5f ? 1.f : 0.0, 1.f);
+        return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
     }
 
     inline operator const NVGcolor &() const;

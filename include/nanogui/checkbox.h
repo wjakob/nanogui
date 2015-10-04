@@ -30,7 +30,7 @@ public:
     void setPushed(const bool &pushed) { mPushed = pushed; }
 
     std::function<void(bool)> callback() const { return mCallback; }
-    void setCallback(std::function<void(bool)> callback) { mCallback = callback; }
+    void setCallback(const std::function<void(bool)> &callback) { mCallback = callback; }
 
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     virtual Vector2i preferredSize(NVGcontext *ctx) const;

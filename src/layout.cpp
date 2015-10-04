@@ -54,11 +54,10 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
 }
 
 void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    Vector2i ps = preferredSize(ctx, widget);
-    Vector2i fs = widget->fixedSize();
+    Vector2i fs_w = widget->fixedSize();
     Vector2i containerSize(
-        fs[0] ? fs[0] : ps[0],
-        fs[1] ? fs[1] : ps[1]
+        fs_w[0] ? fs_w[0] : widget->width(),
+        fs_w[1] ? fs_w[1] : widget->height()
     );
 
     int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
@@ -196,7 +195,7 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
 
     Vector2i dim;
     dim[axis1] = mResolution;
-    dim[axis2] = (numChildren + mResolution - 1) / mResolution;
+    dim[axis2] = (int) ((numChildren + mResolution - 1) / mResolution);
 
     grid[axis1].clear(); grid[axis1].resize(dim[axis1], 0);
     grid[axis2].clear(); grid[axis2].resize(dim[axis2], 0);
@@ -222,10 +221,10 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
 }
 
 void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    Vector2i fs = widget->fixedSize();
+    Vector2i fs_w = widget->fixedSize();
     Vector2i containerSize(
-        fs[0] ? fs[0] : widget->size()[0],
-        fs[1] ? fs[1] : widget->size()[1]
+        fs_w[0] ? fs_w[0] : widget->width(),
+        fs_w[1] ? fs_w[1] : widget->height()
     );
 
     /* Compute minimum row / column sizes */
@@ -378,11 +377,10 @@ void AdvancedGridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
 void AdvancedGridLayout::computeLayout(NVGcontext *ctx, const Widget *widget,
                                        std::vector<int> *_grid) const {
-    Vector2i fs = widget->fixedSize();
-
+    Vector2i fs_w = widget->fixedSize();
     Vector2i containerSize(
-        (fs[0] ? fs[0] : widget->size()[0]),
-        (fs[1] ? fs[1] : widget->size()[1])
+        fs_w[0] ? fs_w[0] : widget->width(),
+        fs_w[1] ? fs_w[1] : widget->height()
     );
 
     Vector2i extra = Vector2i::Constant(2 * mMargin);

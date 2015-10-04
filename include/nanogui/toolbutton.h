@@ -15,7 +15,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-class NANOGUI_EXPORT ToolButton : public Button {
+class ToolButton : public Button {
 public:
     ToolButton(Widget *parent, int icon,
            const std::string &caption = "")

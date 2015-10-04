@@ -24,8 +24,8 @@ enum test_enum {
 
 bool bvar = true;
 int ivar = 12345678;
-float fvar = (float) M_PI;
-double dvar = M_PI;
+double dvar = 3.1415926;
+float fvar = (float)dvar;
 std::string strval = "A string";
 test_enum enumval = Item2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
