@@ -138,6 +138,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/opengl.h
   include/nanogui/common.h
   ${extra_source}
+  $<TARGET_OBJECTS:glfw_objects>
 )
 
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -146,7 +147,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 if (NANOGUI_BUILD_SHARED)
-  target_link_libraries(nanogui glfw ${extra_libs})
+  target_link_libraries(nanogui ${extra_libs})
 endif()
 
 set_target_properties(nanogui PROPERTIES COMPILE_DEFINITIONS "NANOGUI_BUILD")
@@ -166,13 +167,8 @@ endif()
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1 src/example1.cpp)
   add_executable(example2 src/example2.cpp)
-  target_link_libraries(example1 nanogui glfw ${extra_libs})
-  target_link_libraries(example2 nanogui glfw ${extra_libs})
-endif()
-
-if (WIN32)
-  # Copy GLFW dependency
-  add_custom_command(TARGET nanogui POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:glfw> $<TARGET_FILE_DIR:nanogui>)
+  target_link_libraries(example1 nanogui ${extra_libs})
+  target_link_libraries(example2 nanogui ${extra_libs})
 endif()
 
 file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -183,7 +179,7 @@ if (NANOGUI_BUILD_PYTHON)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
-  target_link_libraries(nanogui_python nanogui glfw ${extra_libs})
+  target_link_libraries(nanogui_python nanogui ${extra_libs})
   if (CMAKE_COMPILER_IS_GNUCC)
     set_source_files_properties(python/python.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-variable)
   endif()
