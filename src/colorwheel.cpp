@@ -233,8 +233,8 @@ Color ColorWheel::hue2rgb(float h) const {
     float q = v * (1 - f * s);
     float t = v * (1 - (1 - f) * s);
 
-	float r = 0, g = 0, b = 0;
-	switch (i % 6) {
+    float r = 0, g = 0, b = 0;
+    switch (i % 6) {
         case 0: r = v, g = t, b = p; break;
         case 1: r = q, g = v, b = p; break;
         case 2: r = p, g = v, b = t; break;

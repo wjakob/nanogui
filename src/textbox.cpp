@@ -410,10 +410,10 @@ bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
 }
 
 bool TextBox::checkFormat(const std::string &input, const std::string &format) {
-	if (format.empty())
-		return true;
-	std::regex regex(format);
-	return regex_match(input, regex);
+    if (format.empty())
+        return true;
+    std::regex regex(format);
+    return regex_match(input, regex);
 }
 
 bool TextBox::copySelection() {
