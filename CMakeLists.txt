@@ -6,6 +6,10 @@ option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -13,18 +17,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-option(GLFW_BUILD_EXAMPLES " " OFF)
-option(GLFW_BUILD_TESTS " " OFF)
-option(GLFW_BUILD_DOCS " " OFF)
-option(GLFW_INSTALL " " OFF)
-if (NANOGUI_BUILD_SHARED)
-  # Build shared library version of GLFW
-  option(BUILD_SHARED_LIBS " " ON)
-endif()
-
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 NEW)
-endif()
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
   # Quench annoying deprecation warnings when compiling GLFW on OSX
