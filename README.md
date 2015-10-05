@@ -22,7 +22,7 @@ code to draw good-looking static widgets; what NanoGUI does is to flesh it
 out into a complete GUI toolkit with event handling, layout generation, etc.
 
 NanoGUI currently works on Mac OS X (Clang) Linux (GCC or Clang) and Windows
-(Visual Studio ≥ 2013); it requires a recent C++11 capable compiler. All
+(Visual Studio ≥ 2015); it requires a recent C++11 capable compiler. All
 dependencies are jointly built using a CMake-based build system.
 
 ## Creating widgets
