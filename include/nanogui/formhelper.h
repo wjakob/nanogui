@@ -198,7 +198,7 @@ public:
 template <typename T> class FormWidget<T, typename std::is_enum<T>::type> : public ComboBox {
 public:
     FormWidget(Widget *p) : ComboBox(p) { }
-    T value() const { return selectedIndex(); }
+    T value() const { return (T) selectedIndex(); }
     void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
     void setCallback(const std::function<void(T)> &cb) {
         ComboBox::setCallback([cb](int v) { cb((T) v); });
