@@ -83,10 +83,8 @@ using Eigen::Vector2f;
 using Eigen::Vector3f;
 using Eigen::Vector4f;
 using Eigen::Vector2i;
-using Eigen::Array3f;
-using Eigen::Array4f;
-using Eigen::Array3i;
-using Eigen::Array4i;
+using Eigen::Vector3i;
+using Eigen::Vector4i;
 using Eigen::Matrix3f;
 using Eigen::Matrix4f;
 using Eigen::VectorXf;
@@ -95,43 +93,43 @@ using Eigen::MatrixXf;
 typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
 
 /// Stores an RGBA color value
-class Color : public Eigen::Array4f {
-    typedef Eigen::Array4f Base;
+class Color : public Eigen::Vector4f {
+    typedef Eigen::Vector4f Base;
 public:
     Color() : Color(0, 0, 0, 0) {}
 
-    Color(const Eigen::Array4f &color) : Eigen::Array4f(color) { }
+    Color(const Eigen::Vector4f &color) : Eigen::Vector4f(color) { }
 
-    Color(const Eigen::Array3f &color, float alpha)
+    Color(const Eigen::Vector3f &color, float alpha)
         : Color(color(0), color(1), color(2), alpha) { }
 
-    Color(const Eigen::Array3i &color, int alpha)
+    Color(const Eigen::Vector3i &color, int alpha)
         : Color(color.cast<float>() / 255.f, alpha / 255.f) { }
 
-    Color(const Eigen::Array3f &color) : Color(color, 1.0f) {}
+    Color(const Eigen::Vector3f &color) : Color(color, 1.0f) {}
 
-    Color(const Eigen::Array3i &color)
-        : Color((Array3f)(color.cast<float>() / 255.f)) { }
+    Color(const Eigen::Vector3i &color)
+        : Color((Vector3f)(color.cast<float>() / 255.f)) { }
 
-    Color(const Eigen::Array4i &color)
-        : Color((Array4f)(color.cast<float>() / 255.f)) { }
+    Color(const Eigen::Vector4i &color)
+        : Color((Vector4f)(color.cast<float>() / 255.f)) { }
 
     Color(float intensity, float alpha)
-        : Color(Array3f::Constant(intensity), alpha) { }
+        : Color(Vector3f::Constant(intensity), alpha) { }
 
     Color(int intensity, int alpha)
-        : Color(Array3i::Constant(intensity), alpha) { }
+        : Color(Vector3i::Constant(intensity), alpha) { }
 
-    Color(float r, float g, float b, float a) : Color(Array4f(r, g, b, a)) { }
+    Color(float r, float g, float b, float a) : Color(Vector4f(r, g, b, a)) { }
 
-    Color(int r, int g, int b, int a) : Color(Array4i(r, g, b, a)) { }
+    Color(int r, int g, int b, int a) : Color(Vector4i(r, g, b, a)) { }
 
-    /// Construct a color vector from ArrayBase (needed to play nice with Eigen)
-    template <typename Derived> Color(const Eigen::ArrayBase<Derived>& p) 
+    /// Construct a color vector from MatrixBase (needed to play nice with Eigen)
+    template <typename Derived> Color(const Eigen::MatrixBase<Derived>& p)
         : Base(p) { }
 
-    /// Assign a color vector from ArrayBase (needed to play nice with Eigen)
-    template <typename Derived> Color &operator=(const Eigen::ArrayBase<Derived>& p) {
+    /// Assign a color vector from MatrixBase (needed to play nice with Eigen)
+    template <typename Derived> Color &operator=(const Eigen::MatrixBase<Derived>& p) {
         this->Base::operator=(p);
         return *this;
     }
@@ -150,7 +148,7 @@ public:
     const float &b() const { return z(); }
 
     Color contrastingColor() const {
-        float luminance = operator*(Color(0.299f, 0.587f, 0.144f, 0.f)).sum();
+        float luminance = cwiseProduct(Color(0.299f, 0.587f, 0.144f, 0.f)).sum();
         return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
     }
 

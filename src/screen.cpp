@@ -32,14 +32,14 @@ static bool glewInitialized = false;
 
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow) {
+      mCursor(Cursor::Arrow), mShutdownGLFWOnDestruct(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption,
                bool resizable, bool fullscreen)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mCaption(caption) {
+      mCursor(Cursor::Arrow), mCaption(caption), mShutdownGLFWOnDestruct(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL 3.3 core profile context */
@@ -161,7 +161,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         }
     );
 
-    glfwSetScrollCallback(mGLFWWindow, 
+    glfwSetScrollCallback(mGLFWWindow,
         [](GLFWwindow *w, double x, double y) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -173,11 +173,12 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         }
     );
 
-    initialize(mGLFWWindow);
+    initialize(mGLFWWindow, true);
 }
 
-void Screen::initialize(GLFWwindow *window) {
+void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mGLFWWindow = window;
+    mShutdownGLFWOnDestruct = shutdownGLFWOnDestruct;
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
 
@@ -209,7 +210,7 @@ Screen::~Screen() {
     }
     if (mNVGContext)
         nvgDeleteGL3(mNVGContext);
-    if (mGLFWWindow)
+    if (mGLFWWindow && mShutdownGLFWOnDestruct)
         glfwDestroyWindow(mGLFWWindow);
 }
 

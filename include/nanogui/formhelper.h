@@ -73,6 +73,7 @@ public:
         mLayout->setColStretch(2, 1);
         mWindow->setPosition(pos);
         mWindow->setLayout(mLayout);
+        mWindow->setVisible(true);
         return mWindow;
     }
 
@@ -94,7 +95,9 @@ public:
         Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
         auto widget = new detail::FormWidget<Type>(mWindow);
         auto refresh = [widget, getter] {
-            widget->setValue(getter());
+            Type value = getter(), current = widget->value();
+            if (value != current)
+                widget->setValue(value);
         };
         refresh();
         widget->setCallback(setter);
@@ -118,7 +121,7 @@ public:
         return addVariable<Type>(label,
             [&](Type v) { value = v; },
             [&]() -> Type { return value; },
-            editable 
+            editable
         );
     }
 
@@ -189,11 +192,13 @@ public:
     FormWidget(Widget *p) : CheckBox(p, "") { setFixedWidth(20); }
     void setValue(bool v) { setChecked(v); }
     void setEditable(bool e) { setEnabled(e); }
+    bool value() const { return checked(); }
 };
 
 template <typename T> class FormWidget<T, typename std::is_enum<T>::type> : public ComboBox {
 public:
     FormWidget(Widget *p) : ComboBox(p) { }
+    T value() const { return selectedIndex(); }
     void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
     void setCallback(const std::function<void(T)> &cb) {
         ComboBox::setCallback([cb](int v) { cb((T) v); });
@@ -224,6 +229,7 @@ public:
     FormWidget(Widget *p) : ColorPicker(p) { }
     void setValue(const Color &c) { setColor(c); }
     void setEditable(bool e) { setEnabled(e); }
+    Color value() const { return color(); }
 };
 
 NAMESPACE_END(detail)

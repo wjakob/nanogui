@@ -58,7 +58,7 @@ public:
 
     /// Invoked when the window is resized
     virtual void framebufferSizeChanged() { /* To be overridden */ }
-    
+
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
 
@@ -73,15 +73,20 @@ public:
 
     /// Return a pointer to the underlying GLFW window data structure
     GLFWwindow *glfwWindow() { return mGLFWWindow; }
-    
+
     /// Return a pointer to the underlying nanoVG draw context
     NVGcontext *nvgContext() { return mNVGContext; }
 
-    /// Compute the layout of all widgets 
+    void setShutdownGLFWOnDestruct(bool v) { mShutdownGLFWOnDestruct = v; }
+    bool shutdownGLFWOnDestruct() { return mShutdownGLFWOnDestruct; }
+
+    /// Compute the layout of all widgets
     void performLayout() {
         Widget::performLayout(mNVGContext);
     }
-protected:
+public:
+    /********* API for applications which manage GLFW themselves *********/
+
     /**
      * \brief Default constructor
      *
@@ -97,7 +102,7 @@ protected:
     Screen();
 
     /// Initialize the \ref Screen
-    void initialize(GLFWwindow *window);
+    void initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct);
 
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
@@ -134,6 +139,7 @@ protected:
     bool mProcessEvents;
     Vector3f mBackground;
     std::string mCaption;
+    bool mShutdownGLFWOnDestruct;
 };
 
 NAMESPACE_END(nanogui)
