@@ -9,7 +9,8 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 bin2c
-example
+example1
+example2
 icons
 *~
 nanogui.so
