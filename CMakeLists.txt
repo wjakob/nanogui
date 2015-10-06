@@ -112,9 +112,16 @@ if(APPLE AND NANOGUI_BUILD_SHARED)
 endif()
 
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-  ext/nanovg/src/nanovg.c resources.cpp
+  # Merge GLFW into the NanoGUI library
+  $<TARGET_OBJECTS:glfw_objects>
+  # Merge NanoVG into the NanoGUI library
+  ext/nanovg/src/nanovg.c
+  # Merge GLEW into the NanoGUI library (only if needed)
+  ${extra_source}
+  # Fonts etc.
+  resources.cpp
   include/nanogui/glutil.h src/glutil.cpp
-  include/nanogui/nanogui.h src/nanogui.cpp
+  include/nanogui/common.h src/common.cpp
   include/nanogui/widget.h src/widget.cpp
   include/nanogui/theme.h src/theme.cpp
   include/nanogui/layout.h src/layout.cpp
@@ -139,9 +146,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
-  include/nanogui/common.h
-  ${extra_source}
-  $<TARGET_OBJECTS:glfw_objects>
+  include/nanogui/nanogui.h
 )
 
 if (CMAKE_COMPILER_IS_GNUCC)
