@@ -404,8 +404,7 @@ void AdvancedGridLayout::computeLayout(NVGcontext *ctx, const Widget *widget,
                 int ps = w->preferredSize(ctx)[axis], fs = w->fixedSize()[axis];
                 int targetSize = fs ? fs : ps;
 
-                if (anchor.pos[axis] < 0 || anchor.size[axis] < 0 ||
-                    anchor.pos[axis] + anchor.size[axis] > grid.size())
+                if (anchor.pos[axis] + anchor.size[axis] > grid.size())
                     throw std::runtime_error(
                         "Advanced grid layout: widget is out of bounds: " +
                         (std::string) anchor);
