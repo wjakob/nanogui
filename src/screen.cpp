@@ -265,7 +265,6 @@ void Screen::drawWidgets() {
     mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
-    nvgTranslate(mNVGContext, -2, -2);
     draw(mNVGContext);
 
     double elapsed = glfwGetTime() - mLastInteraction;
@@ -337,17 +336,20 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     bool ret = false;
     mLastInteraction = glfwGetTime();
     try {
-        if (mDragActive) {
-            ret = mDragWidget->mouseDragEvent(
-                p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
-                mMouseState, mModifiers);
-        } else {
-            Widget *widget = findWidget(mMousePos);
+        p -= Vector2i(1, 2);
+
+        if (!mDragActive) {
+            Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
                 glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
             }
         }
+
+        if (mDragActive)
+            ret = mDragWidget->mouseDragEvent(
+                p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
+                mMouseState, mModifiers);
 
         if (!ret)
             ret = mouseMotionEvent(p, p - mMousePos, mMouseState, mModifiers);

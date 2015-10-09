@@ -235,7 +235,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
 
     if (mEditable && focused() && button == GLFW_MOUSE_BUTTON_1) {
         if (down) {
-            mMouseDownPos = p + Vector2i(5, 5); // correct for ibeam cursor;
+            mMouseDownPos = p;
             mMouseDownModifier = modifiers;
 
             double time = glfwGetTime();
@@ -259,7 +259,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
 bool TextBox::mouseMotionEvent(const Vector2i &p, const Vector2i & /* rel */,
                                int /* button */, int /* modifiers */) {
     if (mEditable && focused()) {
-        mMousePos = p + Vector2i(5, 5); // correct for ibeam cursor
+        mMousePos = p;
         return true;
     }
     return false;
@@ -268,7 +268,7 @@ bool TextBox::mouseMotionEvent(const Vector2i &p, const Vector2i & /* rel */,
 bool TextBox::mouseDragEvent(const Vector2i &p, const Vector2i &/* rel */,
                              int /* button */, int /* modifiers */) {
     if (mEditable && focused()) {
-        mMouseDragPos = p + Vector2i(5, 5); // correct for ibeam cursor
+        mMouseDragPos = p;
         return true;
     }
     return false;
