@@ -344,12 +344,11 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
                 mCursor = widget->cursor();
                 glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
             }
-        }
-
-        if (mDragActive)
+        } else {
             ret = mDragWidget->mouseDragEvent(
                 p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
                 mMouseState, mModifiers);
+        }
 
         if (!ret)
             ret = mouseMotionEvent(p, p - mMousePos, mMouseState, mModifiers);
