@@ -53,6 +53,7 @@ protected:
 protected:
     std::string mTitle;
     bool mModal;
+    bool mDrag;
 };
 
 NAMESPACE_END(nanogui)
