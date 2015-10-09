@@ -29,6 +29,8 @@ Vector2i ColorWheel::preferredSize(NVGcontext *) const {
 }
 
 void ColorWheel::draw(NVGcontext *ctx) {
+    Widget::draw(ctx);
+
     if (!mVisible)
         return;
 
@@ -173,7 +175,8 @@ ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consider
 
     float mr = std::sqrt(x*x + y*y);
 
-    if ((mr >= r0 && mr <= r1) || (consideredRegions == OuterCircle)) {
+    if ((consideredRegions & OuterCircle) &&
+        ((mr >= r0 && mr <= r1) || (consideredRegions == OuterCircle))) {
         if (!(consideredRegions & OuterCircle))
             return None;
         mHue = std::atan(y / x);
@@ -208,10 +211,19 @@ ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consider
 
     Vector2f bary = T.colPivHouseholderQr().solve(pos);
     float l0 = bary[0], l1 = bary[1], l2 = 1 - l0 - l1;
+    bool triangleTest = l0 >= 0 && l0 <= 1.f && l1 >= 0.f && l1 <= 1.f &&
+                        l2 >= 0.f && l2 <= 1.f;
 
-    if (l0 >= 0 && l0 <= 1.f && l1 >= 0.f && l1 <= 1.f && l2 >= 0.f && l2 <= 1.f) {
+    if ((consideredRegions & InnerTriangle) &&
+        (triangleTest || consideredRegions == InnerTriangle)) {
         if (!(consideredRegions & InnerTriangle))
             return None;
+        l0 = std::min(std::max(0.f, l0), 1.f);
+        l1 = std::min(std::max(0.f, l1), 1.f);
+        l2 = std::min(std::max(0.f, l2), 1.f);
+        float sum = l0 + l1 + l2;
+        l0 /= sum;
+        l1 /= sum;
         mWhite = l0;
         mBlack = l1;
         if (mCallback)
