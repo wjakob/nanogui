@@ -53,6 +53,10 @@ if (MSVC)
 
   # Parallel build on MSVC (all targets)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
+  if (CMAKE_SIZEOF_VOID_P NOT EQUAL 8)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
+  endif()
 endif()
 
 # Compile with compiler warnings turned on
