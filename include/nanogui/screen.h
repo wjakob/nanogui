@@ -68,6 +68,9 @@ public:
     /// Text input event handler: codepoint is native endian UTF-32 format
     virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
+    /// Window resize event handler
+    virtual bool resizeEvent(int /*width*/, int /*height*/) { return false; }
+
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }
 
@@ -111,6 +114,7 @@ public:
     bool charCallbackEvent(unsigned int codepoint);
     bool dropCallbackEvent(int count, const char **filenames);
     bool scrollCallbackEvent(double x, double y);
+    bool resizeCallbackEvent(int width, int height);
 
     /* Internal helper functions */
     void updateFocus(Widget *widget);
