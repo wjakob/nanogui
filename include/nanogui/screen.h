@@ -69,7 +69,7 @@ public:
     virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
     /// Window resize event handler
-    virtual bool resizeEvent(int /*width*/, int /*height*/) { return false; }
+    virtual bool resizeEvent(int /* width */, int /* height */) { return false; }
 
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }

@@ -63,6 +63,9 @@
     } \
     virtual bool dropEvent(const std::vector<std::string> &filenames) { \
         PYBIND_OVERLOAD(bool, Parent, dropEvent, filenames); \
+    } \
+    virtual bool resizeEvent(int width, int height) { \
+        PYBIND_OVERLOAD(bool, Parent, resizeEvent, width, height); \
     }
 
 #define DECLARE_LAYOUT(Name) \
