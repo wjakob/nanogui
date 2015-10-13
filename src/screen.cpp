@@ -173,6 +173,18 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         }
     );
 
+    glfwSetWindowSizeCallback(mGLFWWindow,
+        [](GLFWwindow* w, int width, int height) {
+          auto it = __nanogui_screens.find(w);
+          if (it == __nanogui_screens.end())
+              return;
+          Screen* s = it->second;
+          if (!s->mProcessEvents)
+              return;
+          s->resizeCallbackEvent(width, height);
+        }
+    );
+
     initialize(mGLFWWindow, true);
 }
 
@@ -463,6 +475,17 @@ bool Screen::scrollCallbackEvent(double x, double y) {
     }
 
     return false;
+}
+
+bool Screen::resizeCallbackEvent(int width, int height) {
+    mLastInteraction = glfwGetTime();
+    try {
+        return resizeEvent(width, height);
+    } catch (const std::exception &e) {
+        std::cerr << "Caught exception in event handler: " << e.what()
+                  << std::endl;
+        abort();
+    }
 }
 
 void Screen::updateFocus(Widget *widget) {
