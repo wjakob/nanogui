@@ -209,6 +209,12 @@ elseif(MSVC)
   set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
 endif()
 
+if (NANOGUI_BUILD_SHARED)
+  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_DEFINITIONS "NVG_BUILD;NVG_SHARED")
+else()
+  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_DEFINITIONS "NVG_BUILD")
+endif()
+
 
 # Build example application if desired
 if(NANOGUI_BUILD_EXAMPLE)
@@ -266,6 +272,11 @@ if (NANOGUI_BUILD_PYTHON)
   elseif(UNIX)
     # .SO file extension on Linux/Mac OS
     set_target_properties(nanogui_python PROPERTIES SUFFIX ".so")
+
+    # Optimize for a small binary size
+    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "-Os")
+    endif()
 
     # Strip unnecessary sections of the binary on Linux/Mac OS
     if(APPLE)

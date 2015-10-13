@@ -53,7 +53,7 @@ void mainloop() {
 
     /* If there are no mouse/keyboard events, try to refresh the
        view roughly every 50 ms; this is to support animations
-       such as progress bards while keeping the system load
+       such as progress bars while keeping the system load
        reasonably low */
     std::thread refresh_thread = std::thread(
         [&]() {

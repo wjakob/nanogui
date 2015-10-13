@@ -56,9 +56,6 @@ public:
     /// Draw the window contents -- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }
 
-    /// Invoked when the window is resized
-    virtual void framebufferSizeChanged() { /* To be overridden */ }
-
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
 

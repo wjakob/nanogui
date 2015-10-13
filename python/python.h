@@ -1,9 +1,9 @@
 #if !defined(__PYTHON_H)
 #define __PYTHON_H
 
-#include <pybind/stl.h>
-#include <pybind/operators.h>
-#include <pybind/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/operators.h>
+#include <pybind11/functional.h>
 #include "py_doc.h"
 
 #define D(...) DOC(nanogui, __VA_ARGS__ )
@@ -57,9 +57,6 @@
     } \
     virtual void drawContents() { \
         PYBIND_OVERLOAD(void, Parent, drawContents); \
-    } \
-    virtual void framebufferSizeChanged() { \
-        PYBIND_OVERLOAD(void, Parent, framebufferSizeChanged); \
     } \
     virtual bool dropEvent(const std::vector<std::string> &filenames) { \
         PYBIND_OVERLOAD(bool, Parent, dropEvent, filenames); \

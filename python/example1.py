@@ -20,7 +20,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
                     Alignment, Orientation
 
-from nanogui import GLFW, ENTYPO
+from nanogui import glfw, entypo
 
 
 class TestApp(Screen):
@@ -38,7 +38,7 @@ class TestApp(Screen):
             print("pushed!")
         b.setCallback(cb)
 
-        b = Button(window, "Styled", ENTYPO.ICON_ROCKET)
+        b = Button(window, "Styled", entypo.ICON_ROCKET)
         b.setBackgroundColor(Color(0, 0, 1.0, 0.1))
         b.setCallback(cb)
 
@@ -61,18 +61,18 @@ class TestApp(Screen):
         tools.setLayout(BoxLayout(Orientation.Horizontal,
                                   Alignment.Middle, 0, 6))
 
-        ToolButton(tools, ENTYPO.ICON_CLOUD)
-        ToolButton(tools, ENTYPO.ICON_FF)
-        ToolButton(tools, ENTYPO.ICON_COMPASS)
-        ToolButton(tools, ENTYPO.ICON_INSTALL)
+        ToolButton(tools, entypo.ICON_CLOUD)
+        ToolButton(tools, entypo.ICON_FF)
+        ToolButton(tools, entypo.ICON_COMPASS)
+        ToolButton(tools, entypo.ICON_INSTALL)
 
         Label(window, "Popup buttons", "sans-bold")
-        popupBtn = PopupButton(window, "Popup", ENTYPO.ICON_EXPORT)
+        popupBtn = PopupButton(window, "Popup", entypo.ICON_EXPORT)
         popup = popupBtn.popup()
         popup.setLayout(GroupLayout())
         Label(popup, "Arbitrary widgets can be placed here")
         CheckBox(popup, "A check box")
-        popupBtn = PopupButton(popup, "Recursive popup", ENTYPO.ICON_FLASH)
+        popupBtn = PopupButton(popup, "Recursive popup", entypo.ICON_FLASH)
         popup = popupBtn.popup()
         popup.setLayout(GroupLayout())
         CheckBox(popup, "Another check box")
@@ -124,7 +124,7 @@ class TestApp(Screen):
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
-        imagePanelBtn.setIcon(ENTYPO.ICON_FOLDER)
+        imagePanelBtn.setIcon(entypo.ICON_FOLDER)
         popup = imagePanelBtn.popup()
         vscroll = VScrollPanel(popup)
         imgPanel = ImagePanel(vscroll)
@@ -294,7 +294,7 @@ class TestApp(Screen):
         if super(TestApp, self).keyboardEvent(key, scancode,
                                               action, modifiers):
             return True
-        if key == GLFW.KEY_ESCAPE and action == GLFW.PRESS:
+        if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             self.setVisible(False)
             return True
         return False

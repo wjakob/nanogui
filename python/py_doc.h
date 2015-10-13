@@ -350,7 +350,7 @@ static const char *__doc_nanogui_Color_Color_10 = R"doc()doc";
 
 static const char *__doc_nanogui_Color_Color_11 = R"doc()doc";
 
-static const char *__doc_nanogui_Color_Color_12 = R"doc(Construct a color vector from ArrayBase (needed to play nice with Eigen))doc";
+static const char *__doc_nanogui_Color_Color_12 = R"doc(Construct a color vector from MatrixBase (needed to play nice with Eigen))doc";
 
 static const char *__doc_nanogui_Color_Color_2 = R"doc()doc";
 
@@ -378,7 +378,7 @@ static const char *__doc_nanogui_Color_g = R"doc(Return a reference to the green
 
 static const char *__doc_nanogui_Color_g_2 = R"doc(Return a reference to the green channel (const version))doc";
 
-static const char *__doc_nanogui_Color_operator_assign = R"doc(Assign a color vector from ArrayBase (needed to play nice with Eigen))doc";
+static const char *__doc_nanogui_Color_operator_assign = R"doc(Assign a color vector from MatrixBase (needed to play nice with Eigen))doc";
 
 static const char *__doc_nanogui_Color_r = R"doc(Return a reference to the red channel)doc";
 
@@ -1081,6 +1081,8 @@ static const char *__doc_nanogui_Screen_mPixelRatio = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mProcessEvents = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_mShutdownGLFWOnDestruct = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_mouseButtonCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mousePos = R"doc(Return the last observed mouse position value)doc";
@@ -1093,15 +1095,23 @@ static const char *__doc_nanogui_Screen_performLayout = R"doc(Compute the layout
 
 static const char *__doc_nanogui_Screen_performLayout_2 = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_resizeCallbackEvent = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_resizeEvent = R"doc(Window resize event handler)doc";
+
 static const char *__doc_nanogui_Screen_scrollCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_setBackground = R"doc(Set the screen's background color)doc";
 
 static const char *__doc_nanogui_Screen_setCaption = R"doc(Set the window titlebar caption)doc";
 
+static const char *__doc_nanogui_Screen_setShutdownGLFWOnDestruct = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_setSize = R"doc(Set window size)doc";
 
 static const char *__doc_nanogui_Screen_setVisible = R"doc(Set the top-level window visibility (no effect on full-screen windows))doc";
+
+static const char *__doc_nanogui_Screen_shutdownGLFWOnDestruct = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_updateFocus = R"doc()doc";
 
@@ -1543,6 +1553,8 @@ static const char *__doc_nanogui_Window_dispose = R"doc(Dispose the window)doc";
 
 static const char *__doc_nanogui_Window_draw = R"doc(Draw the window)doc";
 
+static const char *__doc_nanogui_Window_mDrag = R"doc()doc";
+
 static const char *__doc_nanogui_Window_mModal = R"doc()doc";
 
 static const char *__doc_nanogui_Window_mTitle = R"doc()doc";
@@ -1598,6 +1610,10 @@ static const char *__doc_nanogui_detail_FormWidget_setEditable_2 = R"doc()doc";
 static const char *__doc_nanogui_detail_FormWidget_setValue = R"doc()doc";
 
 static const char *__doc_nanogui_detail_FormWidget_setValue_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_value = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_value_2 = R"doc()doc";
 
 static const char *__doc_nanogui_file_dialog = 
 R"doc(Open a native file open/save dialog.

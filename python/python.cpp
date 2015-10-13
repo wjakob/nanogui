@@ -3,7 +3,7 @@
 #include "python.h"
 
 using namespace nanogui;
-namespace py = pybind;
+namespace py = pybind11;
 
 struct NVGcontext { };
 struct GLFWwindow { };
@@ -39,12 +39,9 @@ DECLARE_WIDGET(Int64Box);
 DECLARE_WIDGET(ColorPicker);
 
 /// Make pybind aware of the ref-counted wrapper type
-namespace pybind { namespace detail {
-template <typename T> class type_caster<ref<T>>
-    : public type_caster_holder<T, ref<T>> { };
-}}
+PYBIND_DECLARE_HOLDER_TYPE(T, ref<T>);
 
-PYTHON_PLUGIN(nanogui) {
+PYBIND_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
     m.def("init", &nanogui::init);
@@ -236,7 +233,8 @@ PYTHON_PLUGIN(nanogui) {
         .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout)
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
-        .def("framebufferSizeChanged", &Screen::framebufferSizeChanged, D(Screen, framebufferSizeChanged))
+        .def("resizeEvent", &Screen::resizeEvent, py::arg("width"), py::arg("height"),
+             D(Screen, resizeEvent))
         .def("dropEvent", &Screen::dropEvent, D(Screen, dropEvent))
         .def("mousePos", &Screen::mousePos, D(Screen, mousePos))
         .def("glfwWindow", &Screen::glfwWindow, D(Screen, glfwWindow),
@@ -676,7 +674,7 @@ PYTHON_PLUGIN(nanogui) {
     /* GLFW constants */
     {
         #define C(name) g.attr(#name) = py::int_(GLFW_##name);
-        py::module g = m.def_submodule("GLFW");
+        py::module g = m.def_submodule("glfw");
         C(KEY_UNKNOWN); C(KEY_SPACE); C(KEY_APOSTROPHE); C(KEY_COMMA);
         C(KEY_MINUS); C(KEY_PERIOD); C(KEY_SLASH); C(KEY_0); C(KEY_1);
         C(KEY_2); C(KEY_3); C(KEY_4); C(KEY_5); C(KEY_6); C(KEY_7); C(KEY_8);
@@ -714,7 +712,7 @@ PYTHON_PLUGIN(nanogui) {
     /* Entypo constants */
     {
         #define C(name) g.attr("ICON_" #name) = py::int_(ENTYPO_ICON_##name);
-        py::module g = m.def_submodule("ENTYPO");
+        py::module g = m.def_submodule("entypo");
         C(PHONE); C(MOBILE); C(MOUSE); C(ADDRESS); C(MAIL); C(PAPER_PLANE);
         C(PENCIL); C(FEATHER); C(ATTACH); C(INBOX); C(REPLY); C(REPLY_ALL);
         C(FORWARD); C(USER); C(USERS); C(ADD_USER); C(VCARD); C(EXPORT);

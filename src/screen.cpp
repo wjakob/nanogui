@@ -102,7 +102,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
 
     /* Propagate GLFW events to the appropriate Screen instance */
     glfwSetCursorPosCallback(mGLFWWindow,
-        [](GLFWwindow *w,double x,double y) {
+        [](GLFWwindow *w, double x, double y) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
                 return;
@@ -150,7 +150,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
     );
 
     glfwSetDropCallback(mGLFWWindow,
-        [](GLFWwindow *w,int count,const char **filenames) {
+        [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
                 return;
@@ -199,6 +199,8 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 #else
     mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
 #endif
+    if (mNVGContext == nullptr)
+        throw std::runtime_error("Could not initialize NanoVG!");
 
     mVisible = glfwGetWindowAttrib(window, GLFW_VISIBLE) != 0;
     mTheme = new Theme(mNVGContext);
@@ -251,7 +253,7 @@ void Screen::setSize(const Vector2i &size) {
 }
 
 void Screen::drawAll() {
-    glClearColor(mBackground[0],mBackground[1],mBackground[2],1.0f);
+    glClearColor(mBackground[0], mBackground[1], mBackground[2], 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     drawContents();
@@ -264,14 +266,10 @@ void Screen::drawWidgets() {
     if (!mVisible)
         return;
 
-    Vector2i oldFBSize(mFBSize);
     glfwMakeContextCurrent(mGLFWWindow);
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
-
-    if (oldFBSize != mFBSize)
-        framebufferSizeChanged();
 
     /* Calculate pixel ratio for hi-dpi devices. */
     mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
