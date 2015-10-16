@@ -137,6 +137,18 @@ public:
         return button;
     }
 
+    /// Add an arbitrary (optionally labeled) widget to the layout
+    void addWidget(const std::string &label, Widget *widget) {
+        mLayout->appendRow(0);
+        if (label == "") {
+            mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
+        } else {
+            Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
+            mLayout->setAnchor(labelW, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1));
+            mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(3, mLayout->rowCount()-1));
+        }
+    }
+
     /// Cause all widgets to re-synchronize with the underlying variable state
     void refresh() {
         for (auto const &callback : mRefreshCallbacks)
