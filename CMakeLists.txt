@@ -60,7 +60,7 @@ if (MSVC)
   # Parallel build on MSVC (all targets)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
-  if (CMAKE_SIZEOF_VOID_P NOT EQUAL 8)
+  if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 
     # Disable Eigen vectorization for Windows 32 bit builds (issues with unaligned access segfaults)
