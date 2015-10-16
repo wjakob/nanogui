@@ -655,6 +655,7 @@ PYBIND_PLUGIN(nanogui) {
              },
              py::arg("label"), py::arg("setter"), py::arg("getter"),
              py::arg("editable") = true)
+        .def("addWidget", &FormHelper::addWidget, D(FormHelper, addWidget))
         .def("refresh", &FormHelper::refresh, D(FormHelper, refresh))
         .def("window", &FormHelper::window, D(FormHelper, window))
         .def("setWindow", &FormHelper::setWindow, D(FormHelper, setWindow))

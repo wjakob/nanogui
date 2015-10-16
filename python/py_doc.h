@@ -462,6 +462,8 @@ static const char *__doc_nanogui_FormHelper_addVariable = R"doc(Add a new data w
 
 static const char *__doc_nanogui_FormHelper_addVariable_2 = R"doc(Add a new data widget that exposes a raw variable in memory)doc";
 
+static const char *__doc_nanogui_FormHelper_addWidget = R"doc(Add an arbitrary (optionally labeled) widget to the layout)doc";
+
 static const char *__doc_nanogui_FormHelper_addWindow = R"doc(Add a new top-level window)doc";
 
 static const char *__doc_nanogui_FormHelper_fixedSize = R"doc()doc";
@@ -1036,8 +1038,6 @@ static const char *__doc_nanogui_Screen_drawWidgets = R"doc()doc";
 static const char *__doc_nanogui_Screen_dropCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_dropEvent = R"doc(Handle a file drop event)doc";
-
-static const char *__doc_nanogui_Screen_framebufferSizeChanged = R"doc(Invoked when the window is resized)doc";
 
 static const char *__doc_nanogui_Screen_glfwWindow = R"doc(Return a pointer to the underlying GLFW window data structure)doc";
 
