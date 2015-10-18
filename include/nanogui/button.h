@@ -46,7 +46,7 @@ public:
     int icon() const { return mIcon; }
     void setIcon(int icon) { mIcon = icon; }
 
-    int buttonFlags() const { return mFlags; }
+    int flags() const { return mFlags; }
     void setFlags(int buttonFlags) { mFlags = buttonFlags; }
 
     IconPosition iconPosition() const { return mIconPosition; }

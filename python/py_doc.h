@@ -192,7 +192,7 @@ static const char *__doc_nanogui_Button_Button = R"doc()doc";
 
 static const char *__doc_nanogui_Button_backgroundColor = R"doc()doc";
 
-static const char *__doc_nanogui_Button_buttonFlags = R"doc()doc";
+static const char *__doc_nanogui_Button_flags = R"doc()doc";
 
 static const char *__doc_nanogui_Button_buttonGroup = R"doc()doc";
 

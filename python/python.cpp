@@ -39,9 +39,9 @@ DECLARE_WIDGET(Int64Box);
 DECLARE_WIDGET(ColorPicker);
 
 /// Make pybind aware of the ref-counted wrapper type
-PYBIND_DECLARE_HOLDER_TYPE(T, ref<T>);
+PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
 
-PYBIND_PLUGIN(nanogui) {
+PYBIND11_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
     m.def("init", &nanogui::init);
@@ -376,7 +376,7 @@ PYBIND_PLUGIN(nanogui) {
         .def("setTextColor", &Button::setTextColor, D(Button, setTextColor))
         .def("icon", &Button::icon, D(Button, icon))
         .def("setIcon", &Button::setIcon, D(Button, setIcon))
-        .def("buttonFlags", &Button::buttonFlags, D(Button, buttonFlags))
+        .def("flags", &Button::flags, D(Button, flags))
         .def("setFlags", &Button::setFlags, D(Button, setFlags))
         .def("iconPosition", &Button::iconPosition, D(Button, iconPosition))
         .def("setIconPosition", &Button::setIconPosition, D(Button, setIconPosition))

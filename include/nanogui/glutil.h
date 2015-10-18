@@ -15,6 +15,8 @@
 #include <Eigen/Geometry>
 #include <map>
 
+namespace half_float { class half; }
+
 NAMESPACE_BEGIN(nanogui)
 
 using Eigen::Quaternionf;
@@ -28,6 +30,7 @@ template <> struct type_traits<uint8_t> { enum { type = GL_UNSIGNED_BYTE, integr
 template <> struct type_traits<int8_t> { enum { type = GL_BYTE, integral = 1 }; };
 template <> struct type_traits<double> { enum { type = GL_DOUBLE, integral = 0 }; };
 template <> struct type_traits<float> { enum { type = GL_FLOAT, integral = 0 }; };
+template <> struct type_traits<half_float::half> { enum { type = GL_HALF_FLOAT, integral = 0 }; };
 
 /**
  * Helper class for compiling and linking OpenGL shaders and uploading
@@ -100,7 +103,7 @@ public:
     }
 
     /// Invalidate the version numbers assiciated with attribute data
-    void invalidateAttribss();
+    void invalidateAttribs();
 
     /// Completely free an existing attribute buffer
     void freeAttrib(const std::string &name);

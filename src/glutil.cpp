@@ -225,7 +225,7 @@ void GLShader::shareAttrib(const GLShader &otherShader, const std::string &name,
     }
 }
 
-void GLShader::invalidateAttribss() {
+void GLShader::invalidateAttribs() {
     for (auto &buffer : mBufferObjects)
         buffer.second.version = -1;
 }
