@@ -19,7 +19,18 @@
 #include <iostream>
 #include <map>
 
+/* Allow enforcing the GL2 implementation of NanoVG */
+#ifdef NANOVG_GL2_IMPLEMENTATION
+#define nvgCreateGL nvgCreateGL2
+#define nvgDeleteGL nvgDeleteGL2
+#else
+#define nvgCreateGL nvgCreateGL3
+#define nvgDeleteGL nvgDeleteGL3
+#ifndef NANOVG_GL3_IMPLEMENTATION
 #define NANOVG_GL3_IMPLEMENTATION
+#endif
+#endif
+
 #include <nanovg_gl.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -195,9 +206,9 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
 
 #ifdef NDEBUG
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
+    mNVGContext = nvgCreateGL(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
 #else
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
+    mNVGContext = nvgCreateGL(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
 #endif
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
@@ -223,7 +234,7 @@ Screen::~Screen() {
             glfwDestroyCursor(mCursors[i]);
     }
     if (mNVGContext)
-        nvgDeleteGL3(mNVGContext);
+        nvgDeleteGL(mNVGContext);
     if (mGLFWWindow && mShutdownGLFWOnDestruct)
         glfwDestroyWindow(mGLFWWindow);
 }

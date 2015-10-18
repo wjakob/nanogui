@@ -11,6 +11,7 @@ endif()
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
+set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
 # Required libraries for linking against nanogui (all targets)
 set(NANOGUI_EXTRA_LIBS "")
@@ -173,7 +174,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
 )
 
 # Compile/link flags for NanoGUI
-set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD ")
+set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD ")
 
 if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui ${NANOGUI_EXTRA_LIBS})
@@ -192,7 +193,7 @@ endif()
 
 if (NANOGUI_BUILD_SHARED)
   # When GLFW is merged into the NanoGUI library, this flag must be specified
-  set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL ")
+  set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL ")
 endif()
 
 if (NANOGUI_BUILD_SHARED AND NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
@@ -237,7 +238,7 @@ if (NANOGUI_BUILD_PYTHON)
 
   # Detect Python
   set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-  find_package(PythonLibs REQUIRED)
+  find_package(PythonLibs ${NANOGUI_PYTHON_VERSION} REQUIRED)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
