@@ -40,13 +40,13 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDragPos(Vector2i(-1,-1)),
       mMouseDownModifier(0),
       mTextOffset(0),
-      mLastClick(0) { }
+      mLastClick(0) {
+    mFontSize = mTheme->mTextBoxFontSize;
+}
 
 void TextBox::setEditable(bool editable) {
     mEditable = editable;
-
-    if (mEditable)
-        setCursor(Cursor::IBeam);
+    setCursor(editable ? Cursor::IBeam : Cursor::Arrow);
 }
 
 Vector2i TextBox::preferredSize(NVGcontext *ctx) const {

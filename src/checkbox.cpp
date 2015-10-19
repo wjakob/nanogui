@@ -50,8 +50,8 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
     nvgFontFace(ctx, "sans");
     return Vector2i(
         nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) +
-            1.7 * fontSize(),
-        fontSize());
+            1.7f * fontSize(),
+        fontSize() * 1.3f);
 }
 
 void CheckBox::draw(NVGcontext *ctx) {

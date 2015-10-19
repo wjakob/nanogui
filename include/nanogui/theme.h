@@ -30,6 +30,7 @@ public:
     /* Spacing-related parameters */
     int mStandardFontSize;
     int mButtonFontSize;
+    int mTextBoxFontSize;
     int mWindowCornerRadius;
     int mWindowHeaderHeight;
     int mWindowDropShadowSize;
