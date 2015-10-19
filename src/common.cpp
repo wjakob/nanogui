@@ -126,7 +126,7 @@ std::array<char, 8> utf8(int c) {
     return seq;
 }
 
-inline int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size) {
+int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size) {
     static std::map<std::string, int> iconCache;
     auto it = iconCache.find(name);
     if (it != iconCache.end())
