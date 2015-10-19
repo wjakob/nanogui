@@ -85,6 +85,43 @@ def cb(value):
 slider.setCallback(cb)
 ```
 
+## "Simple mode"
+
+Christian Schüller contributed a convenience class that makes it possible to
+create AntTweakBar-style variable manipulators using just a few lines of code.
+For instance, the source code below was used to create the following example
+application.
+
+![Screenshot](https://github.com/wjakob/nanogui/raw/master/resources/screenshot2.png "Screenshot")
+
+
+```C++
+/// dvar, bar, strvar, etc. are double/bool/string/.. variables
+
+FormHelper *gui = new FormHelper(screen);
+ref<Window> window = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
+gui->addGroup("Basic types");
+gui->addVariable("bool", bvar);
+gui->addVariable("string", strvar);
+
+gui->addGroup("Validating fields");
+gui->addVariable("int", ivar);
+gui->addVariable("float", fvar);
+gui->addVariable("double", dvar);
+
+gui->addGroup("Complex types");
+gui->addVariable("Enumeration", enumval, enabled)
+   ->setItems({"Item 1", "Item 2", "Item 3"});
+gui->addVariable("Color", colval);
+
+gui->addGroup("Other widgets");
+gui->addButton("A button", [](){ std::cout << "Button pressed." << std::endl; });
+
+screen->setVisible(true);
+screen->performLayout();
+window->center();
+```
+
 ## Compiling
 Clone the repository and all dependencies (with `git clone --recursive`),
 run CMake to generate Makefiles or CMake/Visual Studio project files, and
