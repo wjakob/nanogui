@@ -22,11 +22,11 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
       mTextColor(Color(0, 0)) {}
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
+    int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
+    nvgFontSize(ctx, fontSize);
     nvgFontFace(ctx, "sans-bold");
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
-    int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     float iw = 0.0f, ih = fontSize;
-    nvgFontSize(ctx, fontSize);
 
     if (mIcon) {
         if (nvgIsFontIcon(mIcon)) {

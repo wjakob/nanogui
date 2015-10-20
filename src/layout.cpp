@@ -136,7 +136,8 @@ Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
 }
 
 void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    int height = mMargin, availableWidth = widget->width() - 2*mMargin;
+    int height = mMargin, availableWidth =
+        (widget->fixedWidth() ? widget->fixedWidth() : widget->width()) - 2*mMargin;
 
     const Window *window = dynamic_cast<const Window *>(widget);
     if (window && !window->title().empty())
