@@ -164,6 +164,8 @@ public:
     int fontSize() const;
     /// Set the font size of this widget
     void setFontSize(int fontSize) { mFontSize = fontSize; }
+    /// Return whether the font size is explicitly specified for this widget
+    bool hasFontSize() const { return mFontSize > 0; }
 
     /// Return a pointer to the cursor of the widget
     Cursor cursor() const { return mCursor; }

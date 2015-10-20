@@ -192,8 +192,6 @@ static const char *__doc_nanogui_Button_Button = R"doc()doc";
 
 static const char *__doc_nanogui_Button_backgroundColor = R"doc()doc";
 
-static const char *__doc_nanogui_Button_flags = R"doc()doc";
-
 static const char *__doc_nanogui_Button_buttonGroup = R"doc()doc";
 
 static const char *__doc_nanogui_Button_callback = R"doc(Set the push callback (for any type of button))doc";
@@ -203,6 +201,8 @@ static const char *__doc_nanogui_Button_caption = R"doc()doc";
 static const char *__doc_nanogui_Button_changeCallback = R"doc(Set the change callback (for toggle buttons))doc";
 
 static const char *__doc_nanogui_Button_draw = R"doc()doc";
+
+static const char *__doc_nanogui_Button_flags = R"doc()doc";
 
 static const char *__doc_nanogui_Button_icon = R"doc()doc";
 
@@ -598,7 +598,7 @@ static const char *__doc_nanogui_GLShader_init = R"doc(Initialize the shader usi
 
 static const char *__doc_nanogui_GLShader_initFromFiles = R"doc(Initialize the shader using the specified files on disk)doc";
 
-static const char *__doc_nanogui_GLShader_invalidateAttribss = R"doc(Invalidate the version numbers assiciated with attribute data)doc";
+static const char *__doc_nanogui_GLShader_invalidateAttribs = R"doc(Invalidate the version numbers assiciated with attribute data)doc";
 
 static const char *__doc_nanogui_GLShader_mBufferObjects = R"doc()doc";
 
@@ -1303,6 +1303,8 @@ static const char *__doc_nanogui_Theme_mIconColor = R"doc()doc";
 
 static const char *__doc_nanogui_Theme_mStandardFontSize = R"doc()doc";
 
+static const char *__doc_nanogui_Theme_mTextBoxFontSize = R"doc()doc";
+
 static const char *__doc_nanogui_Theme_mTextColor = R"doc()doc";
 
 static const char *__doc_nanogui_Theme_mTextColorShadow = R"doc()doc";
@@ -1407,6 +1409,8 @@ static const char *__doc_nanogui_Widget_focused = R"doc(Return whether or not th
 static const char *__doc_nanogui_Widget_fontSize = 
 R"doc(Return current font size. If not set the default of the current theme will
 be returned)doc";
+
+static const char *__doc_nanogui_Widget_hasFontSize = R"doc(Return whether the font size is explicitly specified for this widget)doc";
 
 static const char *__doc_nanogui_Widget_height = R"doc(Return the height of the widget)doc";
 

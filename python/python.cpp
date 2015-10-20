@@ -196,6 +196,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setTooltip", &Widget::setTooltip, D(Widget, setTooltip))
         .def("fontSize", &Widget::fontSize, D(Widget, fontSize))
         .def("setFontSize", &Widget::setFontSize, D(Widget, setFontSize))
+        .def("hasFontSize", &Widget::hasFontSize, D(Widget, hasFontSize))
         .def("cursor", &Widget::cursor, D(Widget, cursor))
         .def("setCursor", &Widget::setCursor, D(Widget, setCursor))
         .def("findWidget", &Widget::findWidget, D(Widget, findWidget))
