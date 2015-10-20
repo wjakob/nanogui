@@ -19,7 +19,7 @@ matrix:
     - os: linux
       compiler: gcc-4.8
       script:
-        - CXXFLAGS=-DNANOVG_GL2_IMPLEMENTATION cmake -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.8
+        - CXXFLAGS=-DNANOVG_GL_NO_UNIFORMBUFFER=1 cmake -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.8
         - make -j 2
     - os: osx
       compiler: clang
