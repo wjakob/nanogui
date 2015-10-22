@@ -39,9 +39,9 @@ ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(paren
 
     mPickButton->setCallback([&]() {
         Color value = mColorWheel->color();
+        setPushed(false);
         setColor(value);
         mCallback(value);
-        setPushed(false);
     });
 }
 
@@ -50,7 +50,8 @@ Color ColorPicker::color() const {
 }
 
 void ColorPicker::setColor(const Color& color) {
-    if(!mPushed) {
+    /* Ignore setColor() calls when the user is currently editing */
+    if (!mPushed) {
         Color fg = color.contrastingColor();
         setBackgroundColor(color);
         setTextColor(fg);

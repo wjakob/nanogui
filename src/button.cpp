@@ -19,7 +19,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
       mFlags(NormalButton), mBackgroundColor(Color(0, 0)),
-      mTextColor(Color(0, 0)) {}
+      mTextColor(Color(0, 0)) { }
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
@@ -58,17 +58,17 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
                         Button *b = dynamic_cast<Button *>(widget);
-                        if (b != this && b && b->flags() & RadioButton && b->mPushed)
+                        if (b != this && b && (b->flags() & RadioButton) && b->mPushed) {
                             b->mPushed = false;
-                            if(b->mChangeCallback)
+                            if (b->mChangeCallback)
                                 b->mChangeCallback(false);
                         }
                     }
                 } else {
                     for (auto b : mButtonGroup) {
-                        if (b != this && b->flags() & RadioButton && b->mPushed)
+                        if (b != this && (b->flags() & RadioButton) && b->mPushed) {
                             b->mPushed = false;
-                            if(b->mChangeCallback)
+                            if (b->mChangeCallback)
                                 b->mChangeCallback(false);
                         }
                     }
@@ -77,7 +77,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             if (mFlags & PopupButton) {
                 for (auto widget : parent()->children()) {
                     Button *b = dynamic_cast<Button *>(widget);
-                    if (b != this && b && b->flags() & PopupButton && b->mPushed)
+                    if (b != this && b && (b->flags() & PopupButton) && b->mPushed) {
                         b->mPushed = false;
                         if(b->mChangeCallback)
                             b->mChangeCallback(false);
