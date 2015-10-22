@@ -28,11 +28,13 @@ ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(paren
 
     PopupButton::setChangeCallback([&](bool) {
         setColor(backgroundColor());
+        mCallback(backgroundColor());
     });
 
     mColorWheel->setCallback([&](const Color &value) {
         mPickButton->setBackgroundColor(value);
         mPickButton->setTextColor(value.contrastingColor());
+        mCallback(value);
     });
 
     mPickButton->setCallback([&]() {
@@ -48,12 +50,14 @@ Color ColorPicker::color() const {
 }
 
 void ColorPicker::setColor(const Color& color) {
-    Color fg = color.contrastingColor();
-    setBackgroundColor(color);
-    setTextColor(fg);
-    mColorWheel->setColor(color);
-    mPickButton->setBackgroundColor(color);
-    mPickButton->setTextColor(fg);
+    if(!mPushed) {
+        Color fg = color.contrastingColor();
+        setBackgroundColor(color);
+        setTextColor(fg);
+        mColorWheel->setColor(color);
+        mPickButton->setBackgroundColor(color);
+        mPickButton->setTextColor(fg);
+    }
 }
 
 NAMESPACE_END(nanogui)

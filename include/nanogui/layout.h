@@ -202,7 +202,7 @@ protected:
  *   using AdvancedGridLayout::Anchor;
  *   Label *label = new Label(window, "A label");
  *   // Add a centered label at grid position (1, 5), which spans two horizontal cells
- *   layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignent::Middle, Alignment::Middle));
+ *   layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignment::Middle, Alignment::Middle));
  * </pre>
  *
  * The grid is initialized with user-specified column and row size vectors
