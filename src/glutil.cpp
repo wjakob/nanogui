@@ -15,7 +15,9 @@
 
 namespace nanogui {
 
-static GLuint createShader_helper(GLint type, const std::string &defines, std::string shader_string) {
+static GLuint createShader_helper(GLint type, const std::string &name,
+                                  const std::string &defines,
+                                  std::string shader_string) {
     if (shader_string.empty())
         return (GLuint) 0;
 
@@ -45,12 +47,14 @@ static GLuint createShader_helper(GLint type, const std::string &defines, std::s
 
     if (status != GL_TRUE) {
         char buffer[512];
+        std::cerr << "Error while compiling ";
         if (type == GL_VERTEX_SHADER)
-            std::cerr << "Vertex shader:" << std::endl;
+            std::cerr << "vertex shader";
         else if (type == GL_FRAGMENT_SHADER)
-            std::cerr << "Fragment shader:" << std::endl;
+            std::cerr << "fragment shader";
         else if (type == GL_GEOMETRY_SHADER)
-            std::cerr << "Geometry shader:" << std::endl;
+            std::cerr << "geometry shader";
+        std::cerr << " \"" << name << "\":" << std::endl;
         std::cerr << shader_string << std::endl << std::endl;
         glGetShaderInfoLog(id, 512, nullptr, buffer);
         std::cerr << "Error: " << std::endl << buffer << std::endl;
@@ -65,7 +69,9 @@ bool GLShader::initFromFiles(
     const std::string &vertex_fname,
     const std::string &fragment_fname,
     const std::string &geometry_fname) {
-    auto file_to_string = [](const std::string &filename) {
+    auto file_to_string = [](const std::string &filename) -> std::string {
+        if (filename.empty())
+            return "";
         std::ifstream t(filename);
         return std::string((std::istreambuf_iterator<char>(t)),
                            std::istreambuf_iterator<char>());
@@ -88,13 +94,15 @@ bool GLShader::init(const std::string &name,
     glGenVertexArrays(1, &mVertexArrayObject);
     mName = name;
     mVertexShader =
-        createShader_helper(GL_VERTEX_SHADER, defines, vertex_str);
+        createShader_helper(GL_VERTEX_SHADER, name, defines, vertex_str);
     mGeometryShader =
-        createShader_helper(GL_GEOMETRY_SHADER, defines, geometry_str);
+        createShader_helper(GL_GEOMETRY_SHADER, name, defines, geometry_str);
     mFragmentShader =
-        createShader_helper(GL_FRAGMENT_SHADER, defines, fragment_str);
+        createShader_helper(GL_FRAGMENT_SHADER, name, defines, fragment_str);
 
     if (!mVertexShader || !mFragmentShader)
+        return false;
+    if (!geometry_str.empty() && !mGeometryShader)
         return false;
 
     mProgramShader = glCreateProgram();
@@ -113,7 +121,7 @@ bool GLShader::init(const std::string &name,
     if (status != GL_TRUE) {
         char buffer[512];
         glGetProgramInfoLog(mProgramShader, 512, nullptr, buffer);
-        std::cerr << "Linker error: " << std::endl << buffer << std::endl;
+        std::cerr << "Linker error (" << mName << "): " << std::endl << buffer << std::endl;
         mProgramShader = 0;
         throw std::runtime_error("Shader linking failed!");
     }
