@@ -174,15 +174,21 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         }
     );
 
-    glfwSetWindowSizeCallback(mGLFWWindow,
+    /* React to framebuffer size events -- includes window
+       size events and also catches things like dragging
+       a window from a Retina-capable screen to a normal
+       screen on Mac OS X */
+    glfwSetFramebufferSizeCallback(mGLFWWindow,
         [](GLFWwindow* w, int width, int height) {
-          auto it = __nanogui_screens.find(w);
-          if (it == __nanogui_screens.end())
-              return;
-          Screen* s = it->second;
-          if (!s->mProcessEvents)
-              return;
-          s->resizeCallbackEvent(width, height);
+            auto it = __nanogui_screens.find(w);
+            if (it == __nanogui_screens.end())
+                return;
+            Screen* s = it->second;
+
+            if (!s->mProcessEvents)
+                return;
+
+            s->resizeCallbackEvent(width, height);
         }
     );
 
@@ -475,10 +481,12 @@ bool Screen::scrollCallbackEvent(double x, double y) {
     return false;
 }
 
-bool Screen::resizeCallbackEvent(int width, int height) {
+bool Screen::resizeCallbackEvent(int, int) {
+    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
+    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
     mLastInteraction = glfwGetTime();
     try {
-        return resizeEvent(width, height);
+        return resizeEvent(mSize);
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in event handler: " << e.what()
                   << std::endl;

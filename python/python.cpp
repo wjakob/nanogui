@@ -234,8 +234,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout)
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
-        .def("resizeEvent", &Screen::resizeEvent, py::arg("width"), py::arg("height"),
-             D(Screen, resizeEvent))
+        .def("resizeEvent", &Screen::resizeEvent, py::arg("size"), D(Screen, resizeEvent))
         .def("dropEvent", &Screen::dropEvent, D(Screen, dropEvent))
         .def("mousePos", &Screen::mousePos, D(Screen, mousePos))
         .def("glfwWindow", &Screen::glfwWindow, D(Screen, glfwWindow),
