@@ -15,8 +15,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-ImageView::ImageView(Widget *parent, int img)
-    : Widget(parent), mImage(img) {}
+ImageView::ImageView(Widget *parent, int img, SizePolicy policy)
+    : Widget(parent), mImage(img), mPolicy(policy) {}
 
 Vector2i ImageView::preferredSize(NVGcontext *ctx) const {
     if (!mImage)
@@ -35,14 +35,26 @@ void ImageView::draw(NVGcontext* ctx) {
     int w, h;
     nvgImageSize(ctx, mImage, &w, &h);
 
-    if (s.x() < w) {
+    if (mPolicy == SizePolicy::Fixed) {
+        if (s.x() < w) {
+            h = (int) std::round(h * (float) s.x() / w);
+            w = s.x();
+        }
+
+        if (s.y() < h) {
+            w = (int) std::round(w * (float) s.y() / h);
+            h = s.y();
+        }
+    } else {    // mPolicy == Expand
+        // expand to width
         h = (int) std::round(h * (float) s.x() / w);
         w = s.x();
-    }
 
-    if (s.y() < h) {
-        w = (int) std::round(w * (float) s.y() / h);
-        h = s.y();
+        // shrink to height, if necessary
+        if (s.y() < h) {
+            w = (int) std::round(w * (float) s.y() / h);
+            h = s.y();
+        }
     }
 
     NVGpaint imgPaint = nvgImagePattern(ctx, p.x(), p.y(), w, h, 0, mImage, 1.0);
