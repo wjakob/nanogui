@@ -18,7 +18,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation
+                    Alignment, Orientation, SizePolicy
 
 from nanogui import glfw, entypo
 
@@ -130,15 +130,28 @@ class TestApp(Screen):
         imgPanel = ImagePanel(vscroll)
         imgPanel.setImages(icons)
         popup.setFixedSize(Vector2i(245, 150))
-        Label(window, "Selected image", "sans-bold")
-        img = ImageView(window)
-        img.setFixedSize(Vector2i(40, 40))
+
+        img_window = Window(self, "Selected image")
+        img_window.setPosition(Vector2i(675, 15))
+        img_window.setLayout(GroupLayout());
+
+        img = ImageView(img_window)
+        img.setPolicy(SizePolicy.Expand)
+        img.setFixedSize(Vector2i(300, 300))
         img.setImage(icons[0][0])
 
         def cb(i):
             print("Selected item %i" % i)
             img.setImage(icons[i][0])
         imgPanel.setCallback(cb)
+
+        def cb(s):
+            if s:
+                img.setPolicy(SizePolicy.Expand)
+            else:
+                img.setPolicy(SizePolicy.Fixed)
+        img_cb = CheckBox(img_window, "Expand", cb)
+        img_cb.setChecked(True)
 
         Label(window, "File dialog", "sans-bold")
         tools = Widget(window)
