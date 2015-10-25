@@ -18,7 +18,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation, SizePolicy
+                    Alignment, Orientation
 
 from nanogui import glfw, entypo
 
@@ -136,7 +136,7 @@ class TestApp(Screen):
         img_window.setLayout(GroupLayout());
 
         img = ImageView(img_window)
-        img.setPolicy(SizePolicy.Expand)
+        img.setPolicy(ImageView.SizePolicy.Expand)
         img.setFixedSize(Vector2i(300, 300))
         img.setImage(icons[0][0])
 
@@ -147,9 +147,9 @@ class TestApp(Screen):
 
         def cb(s):
             if s:
-                img.setPolicy(SizePolicy.Expand)
+                img.setPolicy(ImageView.SizePolicy.Expand)
             else:
-                img.setPolicy(SizePolicy.Fixed)
+                img.setPolicy(ImageView.SizePolicy.Fixed)
         img_cb = CheckBox(img_window, "Expand", cb)
         img_cb.setChecked(True)
 
