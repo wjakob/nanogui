@@ -126,13 +126,22 @@ public:
         ImagePanel *imgPanel = new ImagePanel(vscroll);
         imgPanel->setImages(icons);
         popup->setFixedSize(Vector2i(245, 150));
-        new Label(window, "Selected image", "sans-bold");
-        auto img = new ImageView(window);
-        img->setFixedSize(Vector2i(40, 40));
+
+        auto img_window = new Window(this, "Selected image");
+        img_window->setPosition(Vector2i(675, 15));
+        img_window->setLayout(new GroupLayout());
+
+        auto img = new ImageView(img_window);
+        img->setPolicy(ImageView::SizePolicy::Expand);
+        img->setFixedSize(Vector2i(300, 300));
         img->setImage(icons[0].first);
         imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
             img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
         });
+        auto img_cb = new CheckBox(img_window, "Expand",
+            [img](bool state) { if (state) img->setPolicy(ImageView::SizePolicy::Expand);
+                                else       img->setPolicy(ImageView::SizePolicy::Fixed); });
+        img_cb->setChecked(true);
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);

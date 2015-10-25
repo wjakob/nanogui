@@ -472,11 +472,17 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ImagePanel::callback, D(ImagePanel, callback))
         .def("setCallback", &ImagePanel::setCallback, D(ImagePanel, setCallback));
 
+    py::enum_<ImageView::SizePolicy>(m, "SizePolicy")
+        .value("Fixed", ImageView::SizePolicy::Fixed)
+        .value("Expand", ImageView::SizePolicy::Expand);
+
     py::class_<PyImageView, ref<PyImageView>>(m, "ImageView", widget, D(ImageView))
         .alias<ImageView>()
-        .def(py::init<Widget *, int>(), py::arg("parent"), py::arg("image") = 0, D(ImageView, ImageView))
+        .def(py::init<Widget *, int, ImageView::SizePolicy>(), py::arg("parent"), py::arg("image") = 0, py::arg("policy") = ImageView::SizePolicy::Fixed, D(ImageView, ImageView))
         .def("image", &ImageView::image, D(ImageView, image))
-        .def("setImage", &ImageView::setImage, D(ImageView, setImage));
+        .def("setImage", &ImageView::setImage, D(ImageView, setImage))
+        .def("policy", &ImageView::policy, D(ImageView, policy))
+        .def("setPolicy", &ImageView::setPolicy, D(ImageView, setPolicy));
 
     py::class_<PyComboBox, ref<PyComboBox>>(m, "ComboBox", widget, D(ComboBox))
         .alias<ComboBox>()
