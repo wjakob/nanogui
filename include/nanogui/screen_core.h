@@ -45,6 +45,9 @@ public:
     /// Release all resources
     virtual ~ScreenCore();
     
+    /// Release all resources
+    void release();
+    
     /// Initialize the \ref ScreenCore
     void init(const Vector2i &s, float pRatio);
 
