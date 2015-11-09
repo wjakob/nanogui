@@ -93,10 +93,16 @@ public:
     bool dropCallbackEvent(int count, const char **filenames);
     bool resizeCallbackEvent(int width, int height);
 
-protected:
     /// Reimplementing this for calling glfwSetCursor()
-    void setCursorGLFW(int c);
+    void setCursorAppearance(int c);
     
+    /// Reimplement this anc call glfwSetClipboardString() with the string given by the parameter
+    void setCliboardString(const std::string &str);
+    
+    /// Reimplement this anc call glfwGetClipboardString()
+    std::string getClipboardString();
+    
+protected:
     GLFWwindow *mGLFWWindow;
     GLFWcursor *mCursors[(int) Cursor::CursorCount];
     Vector2i mFBSize;

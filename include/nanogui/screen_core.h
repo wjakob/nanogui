@@ -87,11 +87,11 @@ public:
     }
 
     /// Reimplement this and call glfwSetCursor() with the cursor type given by the parameter
-    virtual void setCursorGLFW(int) { }
+    virtual void setCursorAppearance(int) { }
     /// Reimplement this anc call glfwSetClipboardString() with the string given by the parameter
     virtual void setCliboardString(const std::string &) { }
     /// Reimplement this anc call glfwGetClipboardString()
-    virtual std::string getClipboardString() { return std::string(); }
+    virtual std::string getClipboardString() { return std::string(); }
 
 protected:    
     NVGcontext *mNVGContext;

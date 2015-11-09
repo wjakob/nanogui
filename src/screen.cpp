@@ -273,8 +273,18 @@ bool Screen::resizeCallbackEvent(int, int) {
     }
 }
 
-void Screen::setCursorGLFW(int c) {
+void Screen::setCursorAppearance(int c) {
     glfwSetCursor(mGLFWWindow, mCursors[c]);
+}
+
+/// Reimplement this anc call glfwSetClipboardString() with the string given by the parameter
+void Screen::setCliboardString(const std::string &str) {
+    glfwSetClipboardString(mGLFWWindow, str.c_str());
+}
+
+/// Reimplement this anc call glfwGetClipboardString()
+std::string Screen::getClipboardString() {
+    return std::string(glfwGetClipboardString(mGLFWWindow));
 }
 
 NAMESPACE_END(nanogui)

@@ -134,7 +134,7 @@ bool ScreenCore::cursorPosCallbackEvent(double x, double y) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
-                setCursorGLFW((int) mCursor);
+                setCursorAppearance((int) mCursor);
             }
         } else {
             ret = mDragWidget->mouseDragEvent(
@@ -183,7 +183,7 @@ bool ScreenCore::mouseButtonCallbackEvent(int button, int action, int modifiers)
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
-            setCursorGLFW((int) mCursor);
+            setCursorAppearance((int) mCursor);
         }
 
         if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
