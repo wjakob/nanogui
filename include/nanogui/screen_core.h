@@ -86,10 +86,14 @@ public:
         Widget::performLayout(ctx);
     }
 
-protected:
     /// Reimplement this and call glfwSetCursor() with the cursor type given by the parameter
     virtual void setCursorGLFW(int) { }
-    
+    /// Reimplement this anc call glfwSetClipboardString() with the string given by the parameter
+    virtual void setCliboardString(const std::string &) { }
+    /// Reimplement this anc call glfwGetClipboardString()
+    virtual std::string getClipboardString() { return std::string(); }
+
+protected:    
     NVGcontext *mNVGContext;
     Cursor mCursor;
     std::vector<Widget *> mFocusPath;

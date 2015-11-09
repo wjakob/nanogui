@@ -33,7 +33,7 @@ public:
     /// Dispose the window
     void dispose();
 
-    /// Center the window in the current \ref Screen
+    /// Center the window in the current \ref ScreenCore
     void center();
 
     /// Draw the window

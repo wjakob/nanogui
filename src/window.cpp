@@ -12,7 +12,7 @@
 #include <nanogui/window.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
-#include <nanogui/screen.h>
+#include <nanogui/screen_core.h>
 #include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
@@ -109,14 +109,14 @@ void Window::dispose() {
     Widget *widget = this;
     while (widget->parent())
         widget = widget->parent();
-    ((Screen *) widget)->disposeWindow(this);
+    ((ScreenCore *) widget)->disposeWindow(this);
 }
 
 void Window::center() {
     Widget *widget = this;
     while (widget->parent())
         widget = widget->parent();
-    ((Screen *) widget)->centerWindow(this);
+    ((ScreenCore *) widget)->centerWindow(this);
 }
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,

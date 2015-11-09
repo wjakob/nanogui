@@ -13,7 +13,7 @@
 */
 
 #include <nanogui/window.h>
-#include <nanogui/screen.h>
+#include <nanogui/screen_core.h>
 #include <nanogui/textbox.h>
 #include <nanogui/opengl.h>
 #include <nanogui/theme.h>
@@ -418,7 +418,7 @@ bool TextBox::checkFormat(const std::string &input, const std::string &format) {
 
 bool TextBox::copySelection() {
     if (mSelectionPos > -1) {
-        Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
+        ScreenCore *sc = dynamic_cast<ScreenCore *>(this->window()->parent());
 
         int begin = mCursorPos;
         int end = mSelectionPos;
@@ -426,8 +426,7 @@ bool TextBox::copySelection() {
         if (begin > end)
             std::swap(begin, end);
 
-        glfwSetClipboardString(sc->glfwWindow(),
-                               mValueTemp.substr(begin, end).c_str());
+        sc->setCliboardString(mValueTemp.substr(begin, end));
         return true;
     }
 
@@ -435,8 +434,8 @@ bool TextBox::copySelection() {
 }
 
 void TextBox::pasteFromClipboard() {
-    Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
-    std::string str(glfwGetClipboardString(sc->glfwWindow()));
+    ScreenCore *sc = dynamic_cast<ScreenCore *>(this->window()->parent());
+    std::string str = sc->getClipboardString();
     mValueTemp.insert(mCursorPos, str);
 }
 
