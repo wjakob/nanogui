@@ -26,6 +26,10 @@ ScreenCore::ScreenCore()
     : Widget(nullptr), mNVGContext(nullptr), mCursor(Cursor::Arrow) { }
 
 ScreenCore::~ScreenCore() {
+    release();
+}
+
+void ScreenCore::release() {
     if (mNVGContext)
         nvgDeleteGL3(mNVGContext);
 }
@@ -52,6 +56,7 @@ void ScreenCore::init(const Vector2i &s, float pRatio) {
 
 void ScreenCore::setPixelRatio(float pRatio) {
     mPixelRatio = pRatio;
+    mLastInteraction = glfwGetTime();
 }
 
 void ScreenCore::drawWidgets() {
