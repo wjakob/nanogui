@@ -247,8 +247,7 @@ void Screen::drawAll() {
     drawContents();
     
     if (mVisible)
-    
-    drawWidgets();
+        drawWidgets();
 
     glfwSwapBuffers(mGLFWWindow);
 }
