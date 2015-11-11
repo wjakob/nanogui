@@ -127,3 +127,11 @@ Clone the repository and all dependencies (with `git clone --recursive`),
 run CMake to generate Makefiles or CMake/Visual Studio project files, and
 the rest should just work automatically.
 
+On Debian/Ubuntu, make sure that you have installed the following packages
+```bash
+$ apt-get install cmake xorg-dev libglu1-mesa-dev
+```
+To also get the Python bindings, you'll need to run
+```bash
+$ apt-get install python-dev
+```
