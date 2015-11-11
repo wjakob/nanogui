@@ -19,6 +19,7 @@
 
 #include <nanogui/window.h>
 #include <nanogui/opengl.h>
+#include <chrono>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -53,6 +54,13 @@ public:
 
     /// Set the pixel ratio
     void setPixelRatio(float pRatio);
+    
+    /// Set/get the min time before displaying the tooltips
+    void setTooltipDelay(const std::chrono::milliseconds &delay);
+    const std::chrono::milliseconds & getTooltipDelay() const;
+    ///Set/get how long the tooltips must be displayed
+    void setTooltipDuration(const std::chrono::milliseconds &duration);
+    const std::chrono::milliseconds & getTooltipDuration() const;
 
     /// Default keyboard event handler
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
@@ -105,7 +113,9 @@ protected:
     Vector2i mMousePos;
     bool mDragActive;
     Widget *mDragWidget = nullptr;
-    double mLastInteraction;
+    std::chrono::steady_clock::time_point mLastInteraction;
+    std::chrono::milliseconds mTooltipDelay;
+    std::chrono::milliseconds mTooltipDuration;
     bool mProcessEvents;
 };
 

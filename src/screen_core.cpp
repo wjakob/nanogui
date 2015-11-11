@@ -23,7 +23,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 ScreenCore::ScreenCore()
-    : Widget(nullptr), mNVGContext(nullptr), mCursor(Cursor::Arrow) { }
+    : Widget(nullptr), mNVGContext(nullptr), mCursor(Cursor::Arrow)
+    , mLastInteraction(std::chrono::steady_clock::now()), mTooltipDelay(500), mTooltipDuration(5000) { }
 
 ScreenCore::~ScreenCore() {
     release();
@@ -50,13 +51,28 @@ void ScreenCore::init(const Vector2i &s, float pRatio) {
     mMousePos = Vector2i::Zero();
     mMouseState = mModifiers = 0;
     mDragActive = false;
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     mProcessEvents = true;
 }
 
 void ScreenCore::setPixelRatio(float pRatio) {
     mPixelRatio = pRatio;
-    mLastInteraction = glfwGetTime();
+}
+
+void ScreenCore::setTooltipDelay(const std::chrono::milliseconds &delay) {
+    mTooltipDelay = delay;
+}
+
+const std::chrono::milliseconds & ScreenCore::getTooltipDelay() const {
+    return mTooltipDelay;
+}
+
+void ScreenCore::setTooltipDuration(const std::chrono::milliseconds &duration) {
+    mTooltipDuration = duration;
+}
+
+const std::chrono::milliseconds & ScreenCore::getTooltipDuration() const {
+    return mTooltipDuration;
 }
 
 void ScreenCore::drawWidgets() {
@@ -64,9 +80,9 @@ void ScreenCore::drawWidgets() {
 
     draw(mNVGContext);
 
-    double elapsed = glfwGetTime() - mLastInteraction;
+    std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - mLastInteraction);
 
-    if (elapsed > 0.5f) {
+    if (elapsed >= mTooltipDelay && elapsed <= mTooltipDelay+mTooltipDuration) {
         /* Draw tooltips */
         const Widget *widget = findWidget(mMousePos);
         if (widget && !widget->tooltip().empty()) {
@@ -83,8 +99,9 @@ void ScreenCore::drawWidgets() {
             nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
                              widget->tooltip().c_str(), nullptr, bounds);
 
-            nvgGlobalAlpha(mNVGContext,
-                           std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
+            float alpha = std::min((elapsed - mTooltipDelay).count(), (mTooltipDelay+mTooltipDuration - elapsed).count()) / 500.0f;
+            alpha = std::min(1.0f, alpha) * 0.8f;
+            nvgGlobalAlpha(mNVGContext, alpha);
 
             nvgBeginPath(mNVGContext);
             nvgFillColor(mNVGContext, Color(0, 255));
@@ -131,7 +148,7 @@ bool ScreenCore::keyboardCharacterEvent(unsigned int codepoint) {
 bool ScreenCore::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
     bool ret = false;
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     try {
         p -= Vector2i(1, 2);
 
@@ -163,7 +180,7 @@ bool ScreenCore::cursorPosCallbackEvent(double x, double y) {
 
 bool ScreenCore::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     mModifiers = modifiers;
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     try {
         if (mFocusPath.size() > 1) {
             const Window *window =
@@ -214,7 +231,7 @@ bool ScreenCore::mouseButtonCallbackEvent(int button, int action, int modifiers)
 }
 
 bool ScreenCore::keyCallbackEvent(int key, int scancode, int action, int mods) {
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     try {
         return keyboardEvent(key, scancode, action, mods);
     } catch (const std::exception &e) {
@@ -224,7 +241,7 @@ bool ScreenCore::keyCallbackEvent(int key, int scancode, int action, int mods) {
 }
 
 bool ScreenCore::charCallbackEvent(unsigned int codepoint) {
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     try {
         return keyboardCharacterEvent(codepoint);
     } catch (const std::exception &e) {
@@ -235,7 +252,7 @@ bool ScreenCore::charCallbackEvent(unsigned int codepoint) {
 }
 
 bool ScreenCore::scrollCallbackEvent(double x, double y) {
-    mLastInteraction = glfwGetTime();
+    mLastInteraction = std::chrono::steady_clock::now();
     try {
         if (mFocusPath.size() > 1) {
             const Window *window =
