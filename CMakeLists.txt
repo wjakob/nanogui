@@ -253,15 +253,22 @@ if(NANOGUI_BUILD_EXAMPLE)
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
+  # Detect Python
+  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+  find_package(PythonLibs ${NANOGUI_PYTHON_VERSION})
+  if (NOT PYTHONLIBS_FOUND)
+    # Python not found -- disable the plugin
+    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
+  endif()
+endif()
+
+if (NANOGUI_BUILD_PYTHON)
   # Need PIC code in libnanogui even when compiled as a static library
   set_target_properties(nanogui PROPERTIES POSITION_INDEPENDENT_CODE ON)
   if (NOT GLFW_FOUND)
     set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
   endif()
 
-  # Detect Python
-  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-  find_package(PythonLibs ${NANOGUI_PYTHON_VERSION} REQUIRED)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
