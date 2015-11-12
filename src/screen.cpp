@@ -262,7 +262,6 @@ bool Screen::dropCallbackEvent(int count, const char **filenames) {
 bool Screen::resizeCallbackEvent(int, int) {
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
-    mLastInteraction = std::chrono::steady_clock::now();
     try {
         return resizeEvent(mSize);
     } catch (const std::exception &e) {

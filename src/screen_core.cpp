@@ -51,7 +51,7 @@ void ScreenCore::init(const Vector2i &s, float pRatio) {
     mMousePos = Vector2i::Zero();
     mMouseState = mModifiers = 0;
     mDragActive = false;
-    mLastInteraction = std::chrono::steady_clock::now();
+    mLastInteraction = std::chrono::steady_clock::now() - mTooltipDelay - mTooltipDuration;
     mProcessEvents = true;
 }
 
@@ -61,6 +61,7 @@ void ScreenCore::setPixelRatio(float pRatio) {
 
 void ScreenCore::setTooltipDelay(const std::chrono::milliseconds &delay) {
     mTooltipDelay = delay;
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
 }
 
 const std::chrono::milliseconds & ScreenCore::getTooltipDelay() const {
@@ -69,6 +70,7 @@ const std::chrono::milliseconds & ScreenCore::getTooltipDelay() const {
 
 void ScreenCore::setTooltipDuration(const std::chrono::milliseconds &duration) {
     mTooltipDuration = duration;
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
 }
 
 const std::chrono::milliseconds & ScreenCore::getTooltipDuration() const {
@@ -180,7 +182,7 @@ bool ScreenCore::cursorPosCallbackEvent(double x, double y) {
 
 bool ScreenCore::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     mModifiers = modifiers;
-    mLastInteraction = std::chrono::steady_clock::now();
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
     try {
         if (mFocusPath.size() > 1) {
             const Window *window =
@@ -231,7 +233,7 @@ bool ScreenCore::mouseButtonCallbackEvent(int button, int action, int modifiers)
 }
 
 bool ScreenCore::keyCallbackEvent(int key, int scancode, int action, int mods) {
-    mLastInteraction = std::chrono::steady_clock::now();
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
     try {
         return keyboardEvent(key, scancode, action, mods);
     } catch (const std::exception &e) {
@@ -241,7 +243,7 @@ bool ScreenCore::keyCallbackEvent(int key, int scancode, int action, int mods) {
 }
 
 bool ScreenCore::charCallbackEvent(unsigned int codepoint) {
-    mLastInteraction = std::chrono::steady_clock::now();
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
     try {
         return keyboardCharacterEvent(codepoint);
     } catch (const std::exception &e) {
@@ -252,7 +254,7 @@ bool ScreenCore::charCallbackEvent(unsigned int codepoint) {
 }
 
 bool ScreenCore::scrollCallbackEvent(double x, double y) {
-    mLastInteraction = std::chrono::steady_clock::now();
+    mLastInteraction -= mTooltipDelay + mTooltipDuration;
     try {
         if (mFocusPath.size() > 1) {
             const Window *window =
