@@ -36,14 +36,14 @@ void init() {
         setlocale(LC_NUMERIC, "C");
     #endif
 
-    if (!glfwInit())
-        throw std::runtime_error("Could not initialize GLFW!");
-
     glfwSetErrorCallback(
         [](int error, const char *desc) {
             std::cerr << "GLFW error " << error << ": " << desc << std::endl;
         }
     );
+
+    if (!glfwInit())
+        throw std::runtime_error("Could not initialize GLFW!");
 
     glfwSetTime(0);
 }
