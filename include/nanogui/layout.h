@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <nanogui/compat.h>
 #include <nanogui/object.h>
 #include <unordered_map>
 
@@ -241,12 +242,7 @@ public:
 
         operator std::string() const {
             char buf[50];
-#ifdef _MSC_VER
-            _snprintf
-#else
-            snprintf
-#endif
-            (buf, 50, "Format[pos=(%i, %i), size=(%i, %i), align=(%i, %i)]",
+            NANOGUI_SNPRINTF(buf, 50, "Format[pos=(%i, %i), size=(%i, %i), align=(%i, %i)]",
                 pos[0], pos[1], size[0], size[1], (int) align[0], (int) align[1]);
             return buf;
         }
