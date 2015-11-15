@@ -39,6 +39,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
 set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
 set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -310,16 +311,16 @@ if (NANOGUI_BUILD_PYTHON)
   endif()
 endif()
 
-# Create documentation for python plugin (optional target for developers)
-add_custom_target(mkdoc COMMAND
-  python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
-  -Iinclude -Iext/nanovg/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
-
 get_directory_property(NANOGUI_HAS_PARENT PARENT_DIRECTORY)
 if(NANOGUI_HAS_PARENT)
   # This project is included from somewhere else. Export NANOGUI_EXTRA_LIBS variable
   set(NANOGUI_EXTRA_LIBS ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
+else()
+  # Create documentation for python plugin (optional target for developers)
+  add_custom_target(mkdoc COMMAND
+    python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
+    -Iinclude -Iext/nanovg/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
 endif()
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:
