@@ -1,3 +1,5 @@
+#ifdef NANOGUI_PYTHON
+
 #include <nanogui/nanogui.h>
 #include <nanogui/opengl.h>
 #include "python.h"
@@ -781,3 +783,5 @@ PYBIND11_PLUGIN(nanogui) {
 
     return m.ptr();
 }
+
+#endif

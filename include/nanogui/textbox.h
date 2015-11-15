@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <nanogui/compat.h>
 #include <nanogui/widget.h>
 #include <sstream>
 
@@ -148,7 +149,7 @@ public:
 
     void setValue(Scalar value) {
         char buffer[30];
-        snprintf(buffer, 30, sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g", value);
+        NANOGUI_SNPRINTF(buffer, 30, sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g", value);
         TextBox::setValue(buffer);
     }
 

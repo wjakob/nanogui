@@ -49,6 +49,11 @@ endif()
 # Compile GLFW
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
+# Python support: add NANOGUI_PYTHON flag to all targets
+if (NANOGUI_BUILD_PYTHON)
+  add_definitions ("-DNANOGUI_PYTHON")
+endif()
+
 # Shared library mode: add NANOGUI_SHARED flag to all targets
 if (NANOGUI_BUILD_SHARED)
   add_definitions ("-DNANOGUI_SHARED")
