@@ -18,8 +18,10 @@
     #ifndef GLFW_INCLUDE_GLCOREARB
         #define GLFW_INCLUDE_GLCOREARB
     #endif
-#elif defined(WIN32)
-    #define GLEW_STATIC
+#elif defined(_WIN32)
+    #ifndef GLEW_STATIC
+        #define GLEW_STATIC
+    #endif
     #include <GL/glew.h>
 #else
     #define GL_GLEXT_PROTOTYPES

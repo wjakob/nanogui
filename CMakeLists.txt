@@ -44,6 +44,7 @@ else()
   set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
   set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
   set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+  set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
   set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # Quench annoying deprecation warnings when compiling GLFW on OSX
@@ -51,6 +52,11 @@ else()
   endif()
   # Compile GLFW
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+endif()
+
+# Python support: add NANOGUI_PYTHON flag to all targets
+if (NANOGUI_BUILD_PYTHON)
+  add_definitions ("-DNANOGUI_PYTHON")
 endif()
 
 # Shared library mode: add NANOGUI_SHARED flag to all targets
@@ -328,17 +334,17 @@ if (NANOGUI_BUILD_PYTHON)
   endif()
 endif()
 
-# Create documentation for python plugin (optional target for developers)
-add_custom_target(mkdoc COMMAND
-  python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
-  -Iinclude -Iext/nanovg/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
-
 get_directory_property(NANOGUI_HAS_PARENT PARENT_DIRECTORY)
 if(NANOGUI_HAS_PARENT)
   # This project is included from somewhere else. Export NANOGUI_INCLUDE_DIRS and NANOGUI_LIBRARIES variables
   set(NANOGUI_INCLUDE_DIRS ${nanogui_include_dirs} PARENT_SCOPE)
   set(NANOGUI_LIBRARIES nanogui ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
+else()
+  # Create documentation for python plugin (optional target for developers)
+  add_custom_target(mkdoc COMMAND
+    python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
+    -Iinclude -Iext/nanovg/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
 endif()
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:

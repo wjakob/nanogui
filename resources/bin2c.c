@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	fprintf(f_h, "#include <stdint.h>\n\n");
 
 	for (i=3; i<(unsigned int) argc; ++i) {
-		char *name = strdup(strrchr(argv[i], '/') + 1);
+		char *name = strdup(strrchr(argv[i], '/') ? strrchr(argv[i], '/')+1 : argv[i] );
 		for (j=0; j<strlen(name); ++j) {
 			if (name[j] == '.' || name[j] == '-')
 				name[j] = '_';
