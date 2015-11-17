@@ -482,9 +482,16 @@ bool Screen::scrollCallbackEvent(double x, double y) {
 }
 
 bool Screen::resizeCallbackEvent(int, int) {
-    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
+    Vector2i fbSize, size;
+    glfwGetFramebufferSize(mGLFWWindow, &fbSize[0], &fbSize[1]);
+    glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
+
+    if (mFBSize == Vector2i(0, 0) || size == Vector2i(0, 0))
+        return false;
+
+    mFBSize = fbSize; mSize = size;
     mLastInteraction = glfwGetTime();
+
     try {
         return resizeEvent(mSize);
     } catch (const std::exception &e) {
