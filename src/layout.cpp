@@ -35,6 +35,8 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
     bool first = true;
     int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
     for (auto w : widget->children()) {
+        if (!w->visible())
+            continue;
         if (first)
             first = false;
         else
@@ -68,6 +70,8 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
     bool first = true;
     for (auto w : widget->children()) {
+        if (!w->visible())
+            continue;
         if (first)
             first = false;
         else
@@ -113,6 +117,8 @@ Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
 
     bool first = true, indent = false;
     for (auto c : widget->children()) {
+        if (!c->visible())
+            continue;
         const Label *label = dynamic_cast<const Label *>(c);
         if (!first)
             height += (label == nullptr) ? mSpacing : mGroupSpacing;
@@ -145,6 +151,8 @@ void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
     bool first = true, indent = false;
     for (auto c : widget->children()) {
+        if (!c->visible())
+            continue;
         const Label *label = dynamic_cast<const Label *>(c);
         if (!first)
             height += (label == nullptr) ? mSpacing : mGroupSpacing;
@@ -192,11 +200,13 @@ Vector2i GridLayout::preferredSize(NVGcontext *ctx,
 
 void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vector<int> *grid) const {
     int axis1 = (int) mOrientation, axis2 = (axis1 + 1) % 2;
-    size_t numChildren = widget->children().size();
+    size_t numChildren = widget->children().size(), visibleChildren = 0;
+    for (auto w : widget->children())
+        visibleChildren += w->visible() ? 1 : 0;
 
     Vector2i dim;
     dim[axis1] = mResolution;
-    dim[axis2] = (int) ((numChildren + mResolution - 1) / mResolution);
+    dim[axis2] = (int) ((visibleChildren + mResolution - 1) / mResolution);
 
     grid[axis1].clear(); grid[axis1].resize(dim[axis1], 0);
     grid[axis2].clear(); grid[axis2].resize(dim[axis2], 0);
@@ -204,9 +214,12 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
     size_t child = 0;
     for (int i2 = 0; i2 < dim[axis2]; i2++) {
         for (int i1 = 0; i1 < dim[axis1]; i1++) {
-            if (child >= numChildren)
-                return;
-            Widget *w = widget->children()[child++];
+            Widget *w = nullptr;
+            do {
+                if (child >= numChildren)
+                    return;
+                w = widget->children()[child++];
+            } while (!w->visible());
 
             Vector2i ps = w->preferredSize(ctx);
             Vector2i fs = w->fixedSize();
@@ -268,9 +281,12 @@ void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     for (int i2 = 0; i2 < dim[axis2]; i2++) {
         pos[axis1] = start[axis1];
         for (int i1 = 0; i1 < dim[axis1]; i1++) {
-            if (child >= numChildren)
-                return;
-            Widget *w = widget->children()[child++];
+            Widget *w = nullptr;
+            do {
+                if (child >= numChildren)
+                    return;
+                w = widget->children()[child++];
+            } while (!w->visible());
 
             Vector2i ps = w->preferredSize(ctx);
             Vector2i fs = w->fixedSize();
@@ -346,6 +362,8 @@ void AdvancedGridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
         for (Widget *w : widget->children()) {
             Anchor anchor = this->anchor(w);
+            if (!w->visible())
+                continue;
 
             int itemPos = grid[axis][anchor.pos[axis]];
             int cellSize  = grid[axis][anchor.pos[axis] + anchor.size[axis]] - itemPos;
@@ -396,9 +414,11 @@ void AdvancedGridLayout::computeLayout(NVGcontext *ctx, const Widget *widget,
         const std::vector<float> &stretch = axis == 0 ? mColStretch : mRowStretch;
         grid = sizes;
 
-        for (int phase = 0; phase<2; ++phase) {
+        for (int phase = 0; phase < 2; ++phase) {
             for (auto pair : mAnchor) {
                 const Widget *w = pair.first;
+                if (!w->visible())
+                    continue;
                 const Anchor &anchor = pair.second;
                 if ((anchor.size[axis] == 1) != (phase == 0))
                     continue;
