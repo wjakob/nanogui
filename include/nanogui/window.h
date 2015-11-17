@@ -30,6 +30,9 @@ public:
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
 
+    /// Return the panel used to house window buttons
+    Widget *buttonPanel();
+
     /// Dispose the window
     void dispose();
 
@@ -47,11 +50,14 @@ public:
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel);
     /// Compute the preferred size of the widget
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    /// Invoke the associated layout generator to properly place child widgets, if any
+    virtual void performLayout(NVGcontext *ctx);
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
 protected:
     std::string mTitle;
+    Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
 };
