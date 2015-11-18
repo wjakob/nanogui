@@ -213,7 +213,7 @@ public:
     /// Release all associated resources
     void free();
 
-    /// Bind the framebuffer boject
+    /// Bind the framebuffer object
     void bind();
 
     /// Release/unbind the framebuffer object
@@ -227,6 +227,9 @@ public:
 
     /// Return the number of MSAA samples
     int samples() const { return mSamples; }
+
+    /// Quick and dirty method to write a TGA (32bpp RGBA) file of the framebuffer contents for debugging
+    void downloadTGA(const std::string &filename);
 protected:
     GLuint mFramebuffer, mDepth, mColor;
     Vector2i mSize;
