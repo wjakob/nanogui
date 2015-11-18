@@ -15,10 +15,12 @@
 #include <nanogui/common.h>
 
 #if defined(__APPLE__)
-    #define GLFW_INCLUDE_GLCOREARB
+    #ifndef GLFW_INCLUDE_GLCOREARB
+        #define GLFW_INCLUDE_GLCOREARB
+    #endif
 #elif defined(_WIN32)
     #ifndef GLEW_STATIC
-    #define GLEW_STATIC
+        #define GLEW_STATIC
     #endif
     #include <GL/glew.h>
 #else

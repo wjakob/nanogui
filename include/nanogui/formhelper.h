@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <nanogui/screen.h>
+#include <nanogui/screen_core.h>
 #include <nanogui/label.h>
 #include <nanogui/checkbox.h>
 #include <nanogui/textbox.h>
@@ -61,7 +61,7 @@ NAMESPACE_END(detail)
 class FormHelper {
 public:
     /// Create a helper class to construct NanoGUI widgets on the given screen
-    FormHelper(Screen *screen) : mScreen(screen) { }
+    FormHelper(ScreenCore *screen) : mScreen(screen) { }
 
     /// Add a new top-level window
     Window *addWindow(const Vector2i &pos,
@@ -182,7 +182,7 @@ public:
     void setWidgetFontSize(int value) { mWidgetFontSize = value; }
 
 protected:
-    ref<Screen> mScreen;
+    ref<ScreenCore> mScreen;
     ref<Window> mWindow;
     ref<AdvancedGridLayout> mLayout;
     std::vector<std::function<void()>> mRefreshCallbacks;

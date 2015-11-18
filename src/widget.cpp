@@ -14,7 +14,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/window.h>
 #include <nanogui/opengl.h>
-#include <nanogui/screen.h>
+#include <nanogui/screen_core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -166,7 +166,7 @@ void Widget::requestFocus() {
     Widget *widget = this;
     while (widget->parent())
         widget = widget->parent();
-    ((Screen *) widget)->updateFocus(this);
+    ((ScreenCore *) widget)->updateFocus(this);
 }
 
 void Widget::draw(NVGcontext *ctx) {

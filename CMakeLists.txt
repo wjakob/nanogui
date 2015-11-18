@@ -2,12 +2,6 @@ cmake_minimum_required (VERSION 2.8.3)
 
 project("NanoGUI")
 
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
-  message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
-    "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
-endif()
-
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
@@ -35,20 +29,30 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  # Quench annoying deprecation warnings when compiling GLFW on OSX
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
+# GLFW
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules ${CMAKE_MODULE_PATH})
+find_package(GLFW QUIET)
+if(NOT GLFW_FOUND AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
+  message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
+    "You probably did not clone the project with --recursive. It is possible to recover "
+    "by calling \"git submodule update --init --recursive\"")
 endif()
-
-# Compile GLFW
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+if(GLFW_FOUND)
+  list(APPEND NANOGUI_EXTRA_LIBS ${GLFW_LIBRARIES})
+else()
+  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+  set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
+  set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # Quench annoying deprecation warnings when compiling GLFW on OSX
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
+  endif()
+  # Compile GLFW
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+endif()
 
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
@@ -112,7 +116,12 @@ elseif("${CMAKE_SYSTEM}" MATCHES "Linux")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread dl rt)
 endif()
 
-include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+if(GLFW_FOUND)
+  set(glfw_include_dirs ${GLFW_INCLUDE_DIRS})
+else()
+  set(glfw_include_dirs ext/glfw/include)
+endif()
+set(nanogui_include_dirs ${glfw_include_dirs} ext/eigen ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
@@ -140,47 +149,59 @@ else()
   set(NANOGUI_LIBRARY_TYPE "STATIC")
 endif()
 
-# Compile main NanoGUI library
-add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-  # Merge GLFW into the NanoGUI library
-  $<TARGET_OBJECTS:glfw_objects>
-  # Merge NanoVG into the NanoGUI library
-  ext/nanovg/src/nanovg.c
-  # Merge GLEW into the NanoGUI library (only if needed)
-  ${LIBNANOGUI_EXTRA_SOURCE}
-  # Fonts etc.
-  resources.cpp
-  include/nanogui/glutil.h src/glutil.cpp
-  include/nanogui/common.h src/common.cpp
-  include/nanogui/widget.h src/widget.cpp
-  include/nanogui/theme.h src/theme.cpp
-  include/nanogui/layout.h src/layout.cpp
-  include/nanogui/screen.h src/screen.cpp
-  include/nanogui/label.h src/label.cpp
-  include/nanogui/window.h src/window.cpp
-  include/nanogui/popup.h src/popup.cpp
-  include/nanogui/checkbox.h src/checkbox.cpp
-  include/nanogui/button.h src/button.cpp
-  include/nanogui/popupbutton.h src/popupbutton.cpp
-  include/nanogui/combobox.h src/combobox.cpp
-  include/nanogui/progressbar.h src/progressbar.cpp
-  include/nanogui/slider.h src/slider.cpp
-  include/nanogui/messagedialog.h src/messagedialog.cpp
-  include/nanogui/textbox.h src/textbox.cpp
-  include/nanogui/imagepanel.h src/imagepanel.cpp
-  include/nanogui/imageview.h src/imageview.cpp
-  include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
-  include/nanogui/colorwheel.h src/colorwheel.cpp
-  include/nanogui/colorpicker.h src/colorpicker.cpp
-  include/nanogui/graph.h src/graph.cpp
-  include/nanogui/formhelper.h
-  include/nanogui/toolbutton.h
-  include/nanogui/opengl.h
-  include/nanogui/nanogui.h
+set(glfw_obj "")
+if(NOT GLFW_FOUND)
+  set(glfw_obj $<TARGET_OBJECTS:glfw_objects>)
+endif()
+set(nanogui_src
+    # Merge GLFW into the NanoGUI library
+    ${glfw_obj}
+    # Merge NanoVG into the NanoGUI library
+    ext/nanovg/src/nanovg.c
+    # Merge GLEW into the NanoGUI library (only if needed)
+    ${LIBNANOGUI_EXTRA_SOURCE}
+    # Fonts etc.
+    resources.cpp
+    include/nanogui/glutil.h src/glutil.cpp
+    include/nanogui/common.h src/common.cpp
+    include/nanogui/widget.h src/widget.cpp
+    include/nanogui/theme.h src/theme.cpp
+    include/nanogui/layout.h src/layout.cpp
+    include/nanogui/screen_core.h src/screen_core.cpp
+    include/nanogui/screen.h src/screen.cpp
+    include/nanogui/label.h src/label.cpp
+    include/nanogui/window.h src/window.cpp
+    include/nanogui/popup.h src/popup.cpp
+    include/nanogui/checkbox.h src/checkbox.cpp
+    include/nanogui/button.h src/button.cpp
+    include/nanogui/popupbutton.h src/popupbutton.cpp
+    include/nanogui/combobox.h src/combobox.cpp
+    include/nanogui/progressbar.h src/progressbar.cpp
+    include/nanogui/slider.h src/slider.cpp
+    include/nanogui/messagedialog.h src/messagedialog.cpp
+    include/nanogui/textbox.h src/textbox.cpp
+    include/nanogui/imagepanel.h src/imagepanel.cpp
+    include/nanogui/imageview.h src/imageview.cpp
+    include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
+    include/nanogui/colorwheel.h src/colorwheel.cpp
+    include/nanogui/colorpicker.h src/colorpicker.cpp
+    include/nanogui/graph.h src/graph.cpp
+    include/nanogui/formhelper.h
+    include/nanogui/toolbutton.h
+    include/nanogui/opengl.h
+    include/nanogui/nanogui.h
 )
+
+# Compile main NanoGUI library
+add_library(nanogui ${NANOGUI_LIBRARY_TYPE} ${nanogui_src})
+
+target_include_directories(nanogui PUBLIC ${nanogui_include_dirs})
 
 # Compile/link flags for NanoGUI
 set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD ")
+set_target_properties(nanogui PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON)
 
 if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui ${NANOGUI_EXTRA_LIBS})
@@ -197,7 +218,7 @@ if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
   endif()
 endif()
 
-if (NANOGUI_BUILD_SHARED)
+if(NANOGUI_BUILD_SHARED AND NANOGUI_BUILD_WITH_GLFW)
   # When GLFW is merged into the NanoGUI library, this flag must be specified
   set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL ")
 endif()
@@ -250,7 +271,9 @@ endif()
 if (NANOGUI_BUILD_PYTHON)
   # Need PIC code in libnanogui even when compiled as a static library
   set_target_properties(nanogui PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  if (NOT GLFW_FOUND)
+    set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
 
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
@@ -313,8 +336,9 @@ endif()
 
 get_directory_property(NANOGUI_HAS_PARENT PARENT_DIRECTORY)
 if(NANOGUI_HAS_PARENT)
-  # This project is included from somewhere else. Export NANOGUI_EXTRA_LIBS variable
-  set(NANOGUI_EXTRA_LIBS ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
+  # This project is included from somewhere else. Export NANOGUI_INCLUDE_DIRS and NANOGUI_LIBRARIES variables
+  set(NANOGUI_INCLUDE_DIRS ${nanogui_include_dirs} PARENT_SCOPE)
+  set(NANOGUI_LIBRARIES nanogui ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
 else()
   # Create documentation for python plugin (optional target for developers)
   add_custom_target(mkdoc COMMAND
