@@ -13,15 +13,20 @@
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/screen_core.h>
+#include <nanogui/layout.h>
 #include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mModal(false), mDrag(false) { }
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
+    if (mButtonPanel)
+        mButtonPanel->setVisible(false);
     Vector2i result = Widget::preferredSize(ctx);
+    if (mButtonPanel)
+        mButtonPanel->setVisible(true);
 
     nvgFontSize(ctx, 18.0f);
     nvgFontFace(ctx, "sans-bold");
@@ -31,6 +36,31 @@ Vector2i Window::preferredSize(NVGcontext *ctx) const {
     return result.cwiseMax(Vector2i(
         bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]
     ));
+}
+
+Widget *Window::buttonPanel() {
+    if (!mButtonPanel) {
+        mButtonPanel = new Widget(this);
+        mButtonPanel->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 4));
+    }
+    return mButtonPanel;
+}
+
+void Window::performLayout(NVGcontext *ctx) {
+    if (!mButtonPanel) {
+        Widget::performLayout(ctx);
+    } else {
+        mButtonPanel->setVisible(false);
+        Widget::performLayout(ctx);
+        for (auto w : mButtonPanel->children()) {
+            w->setFixedSize(Vector2i(22, 22));
+            w->setFontSize(15);
+        }
+        mButtonPanel->setVisible(true);
+        mButtonPanel->setSize(Vector2i(width(), 22));
+        mButtonPanel->setPosition(Vector2i(width() - (mButtonPanel->preferredSize(ctx).x() + 5), 3));
+        mButtonPanel->performLayout(ctx);
+    }
 }
 
 void Window::draw(NVGcontext *ctx) {
