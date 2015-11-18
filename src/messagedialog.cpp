@@ -36,8 +36,8 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
     }
     Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), "icons");
     iconLabel->setFontSize(50);
-    Label *msgLabel = new Label(panel1, message);
-    msgLabel->setFixedWidth(200);
+    mMessageLabel = new Label(panel1, message);
+    mMessageLabel->setFixedWidth(200);
     Widget *panel2 = new Widget(this);
     panel2->setLayout(new BoxLayout(Orientation::Horizontal,
                                     Alignment::Middle, 0, 15));

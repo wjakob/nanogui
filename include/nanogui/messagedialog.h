@@ -28,10 +28,14 @@ public:
                   const std::string &buttonText = "OK",
                   const std::string &altButtonText = "Cancel", bool altButton = false);
 
+    Label *messageLabel() { return mMessageLabel; }
+    const Label *messageLabel() const { return mMessageLabel; }
+
     std::function<void(int)> callback() const { return mCallback; }
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
 protected:
     std::function<void(int)> mCallback;
+    Label *mMessageLabel;
 };
 
 NAMESPACE_END(nanogui)
