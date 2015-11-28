@@ -27,7 +27,7 @@ NAMESPACE_BEGIN(nanogui)
 
 std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
-#if defined(WIN32)
+#if defined(_WIN32)
 static bool glewInitialized = false;
 #endif
 
@@ -75,7 +75,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
 
     glfwMakeContextCurrent(mGLFWWindow);
 
-#if defined(WIN32)
+#if defined(_WIN32)
     if (!glewInitialized) {
         glewExperimental = GL_TRUE;
         glewInitialized = true;

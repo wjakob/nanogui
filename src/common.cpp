@@ -10,7 +10,7 @@
 */
 
 #include <nanogui/screen.h>
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <nanogui/opengl.h>
@@ -19,7 +19,7 @@
 #include <chrono>
 #include <iostream>
 
-#if !defined(WIN32)
+#if !defined(_WIN32)
     #include <locale.h>
     #include <signal.h>
     #include <sys/dir.h>
@@ -31,7 +31,7 @@ static bool __mainloop_active = false;
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
 void init() {
-    #if !defined(WIN32)
+    #if !defined(_WIN32)
         /* Avoid locale-related number parsing issues */
         setlocale(LC_NUMERIC, "C");
     #endif
@@ -141,7 +141,7 @@ int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data,
 std::vector<std::pair<int, std::string>>
 loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     std::vector<std::pair<int, std::string> > result;
-#if !defined(WIN32)
+#if !defined(_WIN32)
     DIR *dp = opendir(path.c_str());
     if (!dp)
         throw std::runtime_error("Could not open image directory!");
@@ -165,7 +165,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
             throw std::runtime_error("Could not open image data!");
         result.push_back(
             std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
-#if !defined(WIN32)
+#if !defined(_WIN32)
     }
     closedir(dp);
 #else
@@ -178,7 +178,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
 #if !defined(__APPLE__)
 std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
 #define FILE_DIALOG_MAX_BUFFER 1024
-#if defined(WIN32)
+#if defined(_WIN32)
     OPENFILENAME ofn;
     ZeroMemory(&ofn, sizeof(OPENFILENAME));
     ofn.lStructSize = sizeof(OPENFILENAME);
