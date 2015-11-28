@@ -30,7 +30,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <nanogui/glutil.h>
@@ -391,7 +391,7 @@ int main(int /* argc */, char ** /* argv */) {
         nanogui::shutdown();
     } catch (const std::runtime_error &e) {
         std::string error_msg = std::string("Caught a fatal error: ") + std::string(e.what());
-        #if defined(WIN32)
+        #if defined(_WIN32)
             MessageBoxA(nullptr, error_msg.c_str(), NULL, MB_ICONERROR | MB_OK);
         #else
             std::cerr << error_msg << endl;
