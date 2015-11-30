@@ -19,13 +19,11 @@ set(NANOGUI_EXTRA_LIBS "")
 # Platform-dependent files for libnanogui
 set(LIBNANOGUI_EXTRA_SOURCE "")
 
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 NEW)
-endif()
-
 if(APPLE AND NANOGUI_BUILD_SHARED)
   set(CMAKE_MACOSX_RPATH ON)
 endif()
+
+include(CheckCXXCompilerFlag)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -42,7 +40,7 @@ set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
 set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # Quench annoying deprecation warnings when compiling GLFW on OSX
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
 endif()
@@ -82,11 +80,11 @@ if(MSVC)
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
   endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   # Enable C++11 mode on GCC / Clang
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
@@ -108,7 +106,7 @@ elseif (APPLE)
   find_library(iokit_library IOKit)
   list(APPEND NANOGUI_EXTRA_LIBS ${cocoa_library} ${opengl_library} ${corevideo_library} ${iokit_library})
   list(APPEND LIBNANOGUI_EXTRA_SOURCE src/darwin.mm)
-elseif("${CMAKE_SYSTEM}" MATCHES "Linux")
+elseif(CMAKE_SYSTEM MATCHES "Linux")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread dl rt)
 endif()
 
@@ -191,9 +189,14 @@ if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
   if (MSVC)
     set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS "/LTCG ")
     set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "/GL ")
-  elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-fvisibility=hidden ")
-    set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
+
+    # Check for Link Time Optimization support
+    CHECK_CXX_COMPILER_FLAG("-flto" HAS_LTO_FLAG)
+    if (HAS_LTO_FLAG)
+      set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
+    endif()
   endif()
 endif()
 
