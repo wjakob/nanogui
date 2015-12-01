@@ -42,6 +42,17 @@
 #    define NANOGUI_EXPORT
 #endif
 
+/* Force usage of discrete GPU on laptops (macro must be invoked in main application) */
+#if defined(_WIN32)
+#define NANOGUI_FORCE_DISCRETE_GPU() \
+    extern "C" { \
+        __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1; \
+        __declspec(dllexport) int NvOptimusEnablement = 1; \
+    }
+#else
+#define NANOGUI_FORCE_DISCRETE_GPU()
+#endif
+
 #if defined(_WIN32)
 #if defined(NANOGUI_BUILD)
 /* Quench a few warnings on when compiling NanoGUI on Windows */
