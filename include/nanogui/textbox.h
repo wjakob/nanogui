@@ -139,10 +139,10 @@ public:
 template <typename Scalar> class FloatBox : public TextBox {
 public:
     FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
+        mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
         setValue(value);
-        mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
     }
 
     std::string numberFormat() const { return mNumberFormat; }
