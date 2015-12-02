@@ -123,11 +123,12 @@ public:
 
     void setCallback(const std::function<void(Scalar)> &cb) {
         TextBox::setCallback(
-            [cb](const std::string &str) {
+            [cb, this](const std::string &str) {
                 std::istringstream iss(str);
                 Scalar value;
                 if (!(iss >> value))
                     throw std::invalid_argument("Could not parse integer value!");
+                setValue(value);
                 cb(value);
                 return true;
             }
@@ -141,22 +142,32 @@ public:
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
         setValue(value);
+        mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
     }
+
+    std::string numberFormat() const { return mNumberFormat; }
+    void numberFormat(const std::string &format) { mNumberFormat = format; }
 
     Scalar value() const {
         return (Scalar) std::stod(TextBox::value());
     }
 
     void setValue(Scalar value) {
-        char buffer[30];
-        NANOGUI_SNPRINTF(buffer, 30, sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g", value);
+        char buffer[50];
+        NANOGUI_SNPRINTF(buffer, 50, mNumberFormat.c_str(), value);
         TextBox::setValue(buffer);
     }
 
     void setCallback(const std::function<void(Scalar)> &cb) {
-        TextBox::setCallback(
-            [cb](const std::string &str) { cb((Scalar) std::stod(str)); return true; });
+        TextBox::setCallback([cb, this](const std::string &str) {
+            Scalar scalar = (Scalar) std::stod(str);
+            setValue(scalar);
+            cb(scalar);
+            return true;
+        });
     }
+private:
+    std::string mNumberFormat;
 };
 
 NAMESPACE_END(nanogui)
