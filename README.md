@@ -135,3 +135,8 @@ To also get the Python bindings, you'll need to run
 ```bash
 $ apt-get install python-dev
 ```
+### License
+
+nanogui is provided under a BSD-style license that can be found in the
+``LICENSE.txt`` file. By using, distributing, or contributing to this project,
+you agree to the terms and conditions of this license.
