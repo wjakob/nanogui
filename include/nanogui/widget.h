@@ -27,6 +27,13 @@ enum class Cursor;
  */
 class NANOGUI_EXPORT Widget : public Object {
 public:
+    template<typename WidgetClass, typename... Args>
+    WidgetClass& add(const Args&... args)
+    {
+        WidgetClass* widget = new WidgetClass(this, args...);
+        return *widget;
+    }
+
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
 
