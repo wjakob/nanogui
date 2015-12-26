@@ -12,6 +12,7 @@
 #include <nanogui/slider.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -94,6 +95,21 @@ void Slider::draw(NVGcontext* ctx) {
     nvgStrokePaint(ctx, knobReverse);
     nvgStroke(ctx);
     nvgFill(ctx);
+}
+
+void Slider::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("value", mValue);
+    s.set("highlightedRange", mHighlightedRange);
+    s.set("highlightColor", mHighlightColor);
+}
+
+bool Slider::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("value", mValue)) return false;
+    if (!s.get("highlightedRange", mHighlightedRange)) return false;
+    if (!s.get("highlightColor", mHighlightColor)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

@@ -15,6 +15,7 @@
 #include <nanogui/window.h>
 #include <nanogui/opengl.h>
 #include <nanogui/screen.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -186,6 +187,33 @@ void Widget::draw(NVGcontext *ctx) {
         if (child->visible())
             child->draw(ctx);
     nvgTranslate(ctx, -mPos.x(), -mPos.y());
+}
+
+void Widget::save(Serializer &s) const {
+    s.set("position", mPos);
+    s.set("size", mSize);
+    s.set("fixedSize", mFixedSize);
+    s.set("visible", mVisible);
+    s.set("enabled", mEnabled);
+    s.set("focused", mFocused);
+    s.set("tooltip", mTooltip);
+    s.set("fontSize", mFontSize);
+    s.set("cursor", (int) mCursor);
+}
+
+bool Widget::load(Serializer &s) {
+    if (!s.get("position", mPos)) return false;
+    if (!s.get("size", mSize)) return false;
+    if (!s.get("fixedSize", mFixedSize)) return false;
+    if (!s.get("visible", mVisible)) return false;
+    if (!s.get("enabled", mEnabled)) return false;
+    if (!s.get("focused", mFocused)) return false;
+    if (!s.get("tooltip", mTooltip)) return false;
+    if (!s.get("fontSize", mFontSize)) return false;
+    int cursor;
+    if (!s.get("cursor", cursor)) return false;
+    mCursor = (Cursor) cursor;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

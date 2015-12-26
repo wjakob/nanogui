@@ -52,6 +52,8 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();

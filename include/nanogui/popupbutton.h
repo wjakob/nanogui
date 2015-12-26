@@ -33,6 +33,8 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void performLayout(NVGcontext *ctx);
 
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     Popup *mPopup;
     int mChevronIcon;

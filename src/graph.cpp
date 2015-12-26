@@ -12,6 +12,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -79,6 +80,29 @@ void Graph::draw(NVGcontext *ctx) {
     nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
     nvgStrokeColor(ctx, Color(100, 255));
     nvgStroke(ctx);
+}
+
+void Graph::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("caption", mCaption);
+    s.set("header", mHeader);
+    s.set("footer", mFooter);
+    s.set("backgroundColor", mBackgroundColor);
+    s.set("foregroundColor", mForegroundColor);
+    s.set("textColor", mTextColor);
+    s.set("values", mValues);
+}
+
+bool Graph::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("caption", mCaption)) return false;
+    if (!s.get("header", mHeader)) return false;
+    if (!s.get("footer", mFooter)) return false;
+    if (!s.get("backgroundColor", mBackgroundColor)) return false;
+    if (!s.get("foregroundColor", mForegroundColor)) return false;
+    if (!s.get("textColor", mTextColor)) return false;
+    if (!s.get("values", mValues)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

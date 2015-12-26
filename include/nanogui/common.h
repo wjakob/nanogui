@@ -189,6 +189,7 @@ class Popup;
 class PopupButton;
 class ProgressBar;
 class Screen;
+class Serializer;
 class Slider;
 class TextBox;
 class Theme;

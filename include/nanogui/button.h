@@ -70,6 +70,9 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     virtual void draw(NVGcontext *ctx);
+
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     std::string mCaption;
     int mIcon;

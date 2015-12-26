@@ -33,7 +33,6 @@ public:
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext* ctx);
-
 protected:
     int mImage;
     SizePolicy mPolicy;

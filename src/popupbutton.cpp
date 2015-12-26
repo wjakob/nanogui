@@ -13,6 +13,7 @@
 #include <nanogui/entypo.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -63,6 +64,19 @@ void PopupButton::performLayout(NVGcontext *ctx) {
 
     mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15,
         absolutePosition().y() - parentWindow->position().y() + mSize.y() /2));
+}
+
+void PopupButton::save(Serializer &s) const {
+    Button::save(s);
+    s.set("chevronIcon", mChevronIcon);
+}
+
+bool PopupButton::load(Serializer &s) {
+    if (!Button::load(s))
+        return false;
+    if (!s.get("chevronIcon", mChevronIcon))
+        return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

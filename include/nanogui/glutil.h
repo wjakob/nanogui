@@ -19,8 +19,7 @@ namespace half_float { class half; }
 
 NAMESPACE_BEGIN(nanogui)
 
-using Eigen::Quaternionf;
-
+NAMESPACE_BEGIN(detail)
 template <typename T> struct type_traits;
 template <> struct type_traits<uint32_t> { enum { type = GL_UNSIGNED_INT, integral = 1 }; };
 template <> struct type_traits<int32_t> { enum { type = GL_INT, integral = 1 }; };
@@ -31,12 +30,17 @@ template <> struct type_traits<int8_t> { enum { type = GL_BYTE, integral = 1 }; 
 template <> struct type_traits<double> { enum { type = GL_DOUBLE, integral = 0 }; };
 template <> struct type_traits<float> { enum { type = GL_FLOAT, integral = 0 }; };
 template <> struct type_traits<half_float::half> { enum { type = GL_HALF_FLOAT, integral = 0 }; };
+template <typename T> struct serialization_helper;
+NAMESPACE_END(detail)
+
+using Eigen::Quaternionf;
 
 /**
  * Helper class for compiling and linking OpenGL shaders and uploading
  * associated vertex and index buffers from Eigen matrices
  */
 class NANOGUI_EXPORT GLShader {
+    template <typename T> friend struct detail::serialization_helper;
 public:
     /// Create an unitialized OpenGL shader
     GLShader()
@@ -75,8 +79,8 @@ public:
     /// Upload an Eigen matrix as a vertex buffer object (refreshing it as needed)
     template <typename Matrix> void uploadAttrib(const std::string &name, const Matrix &M, int version = -1) {
         uint32_t compSize = sizeof(typename Matrix::Scalar);
-        GLuint glType = (GLuint) type_traits<typename Matrix::Scalar>::type;
-        bool integral = (bool) type_traits<typename Matrix::Scalar>::integral;
+        GLuint glType = (GLuint) detail::type_traits<typename Matrix::Scalar>::type;
+        bool integral = (bool) detail::type_traits<typename Matrix::Scalar>::integral;
 
         uploadAttrib(name, (uint32_t) M.size(), (int) M.rows(), compSize,
                      glType, integral, (const uint8_t *) M.data(), version);
@@ -85,7 +89,7 @@ public:
     /// Download a vertex buffer object into an Eigen matrix
     template <typename Matrix> void downloadAttrib(const std::string &name, Matrix &M) {
         uint32_t compSize = sizeof(typename Matrix::Scalar);
-        GLuint glType = (GLuint) type_traits<typename Matrix::Scalar>::type;
+        GLuint glType = (GLuint) detail::type_traits<typename Matrix::Scalar>::type;
 
         auto it = mBufferObjects.find(name);
         if (it == mBufferObjects.end())

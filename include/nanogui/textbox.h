@@ -67,6 +67,8 @@ public:
 
     Vector2i preferredSize(NVGcontext *ctx) const;
     void draw(NVGcontext* ctx);
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();

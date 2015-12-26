@@ -175,6 +175,10 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
   include/nanogui/nanogui.h
+  include/nanogui/serializer/core.h
+  include/nanogui/serializer/opengl.h
+  include/nanogui/serializer/sparse.h
+  src/serializer.cpp
 )
 
 # Compile/link flags for NanoGUI

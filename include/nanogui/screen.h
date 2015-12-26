@@ -84,6 +84,7 @@ public:
     void performLayout() {
         Widget::performLayout(mNVGContext);
     }
+
 public:
     /********* API for applications which manage GLFW themselves *********/
 

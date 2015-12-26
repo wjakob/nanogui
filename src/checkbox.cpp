@@ -13,6 +13,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/theme.h>
 #include <nanogui/entypo.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -86,6 +87,21 @@ void CheckBox::draw(NVGcontext *ctx) {
                 mPos.y() + mSize.y() * 0.5f, utf8(ENTYPO_ICON_CHECK).data(),
                 nullptr);
     }
+}
+
+void CheckBox::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("caption", mCaption);
+    s.set("pushed", mPushed);
+    s.set("checked", mChecked);
+}
+
+bool CheckBox::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("caption", mCaption)) return false;
+    if (!s.get("pushed", mPushed)) return false;
+    if (!s.get("checked", mChecked)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

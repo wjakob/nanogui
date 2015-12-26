@@ -13,6 +13,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -109,6 +110,19 @@ void VScrollPanel::draw(NVGcontext *ctx) {
                    scrollh - 2, 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
+}
+
+void VScrollPanel::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("childPreferredHeight", mChildPreferredHeight);
+    s.set("scroll", mScroll);
+}
+
+bool VScrollPanel::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("childPreferredHeight", mChildPreferredHeight)) return false;
+    if (!s.get("scroll", mScroll)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

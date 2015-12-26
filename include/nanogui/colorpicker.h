@@ -29,7 +29,6 @@ public:
     Color color() const;
     /// Set the current color
     void setColor(const Color& color);
-
 protected:
     std::function<void(const Color &)> mCallback;
     ColorWheel *mColorWheel;

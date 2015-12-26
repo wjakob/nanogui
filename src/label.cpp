@@ -12,6 +12,7 @@
 #include <nanogui/label.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -54,6 +55,21 @@ void Label::draw(NVGcontext *ctx) {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         nvgText(ctx, mPos.x(), mPos.y() + mSize.y() * 0.5f, mCaption.c_str(), nullptr);
     }
+}
+
+void Label::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("caption", mCaption);
+    s.set("font", mFont);
+    s.set("color", mColor);
+}
+
+bool Label::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("caption", mCaption)) return false;
+    if (!s.get("font", mFont)) return false;
+    if (!s.get("color", mColor)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

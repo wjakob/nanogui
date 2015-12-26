@@ -43,6 +43,9 @@ public:
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext *ctx);
+
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;

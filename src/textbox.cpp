@@ -17,6 +17,7 @@
 #include <nanogui/textbox.h>
 #include <nanogui/opengl.h>
 #include <nanogui/theme.h>
+#include <nanogui/serializer/core.h>
 #include <regex>
 
 NAMESPACE_BEGIN(nanogui)
@@ -517,6 +518,43 @@ int TextBox::position2CursorIndex(float posx, float lastx,
         mCursorId = size;
 
     return mCursorId;
+}
+
+void TextBox::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("editable", mEditable);
+    s.set("committed", mCommitted);
+    s.set("value", mValue);
+    s.set("defaultValue", mDefaultValue);
+    s.set("alignment", (int) mAlignment);
+    s.set("units", mUnits);
+    s.set("format", mFormat);
+    s.set("unitsImage", mUnitsImage);
+    s.set("validFormat", mValidFormat);
+    s.set("valueTemp", mValueTemp);
+    s.set("cursorPos", mCursorPos);
+    s.set("selectionPos", mSelectionPos);
+}
+
+bool TextBox::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("editable", mEditable)) return false;
+    if (!s.get("committed", mCommitted)) return false;
+    if (!s.get("value", mValue)) return false;
+    if (!s.get("defaultValue", mDefaultValue)) return false;
+    int alignment;
+    if (!s.get("alignment", alignment)) return false;
+    mAlignment = (Alignment) alignment;
+    if (!s.get("units", mUnits)) return false;
+    if (!s.get("format", mFormat)) return false;
+    if (!s.get("unitsImage", mUnitsImage)) return false;
+    if (!s.get("validFormat", mValidFormat)) return false;
+    if (!s.get("valueTemp", mValueTemp)) return false;
+    if (!s.get("cursorPos", mCursorPos)) return false;
+    if (!s.get("selectionPos", mSelectionPos)) return false;
+    mMousePos = mMouseDownPos = mMouseDragPos = Vector2i::Constant(-1);
+    mMouseDownModifier = mTextOffset = 0;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

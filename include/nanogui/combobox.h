@@ -40,6 +40,9 @@ public:
     void setItems(const std::vector<std::string> &items) { setItems(items, items); }
     const std::vector<std::string> &items() const { return mItems; }
     const std::vector<std::string> &itemsShort() const { return mItemsShort; }
+
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     std::vector<std::string> mItems, mItemsShort;
     std::function<void(int)> mCallback;

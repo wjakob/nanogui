@@ -47,6 +47,9 @@ public:
 
     /// Draw the popup window
     virtual void draw(NVGcontext* ctx);
+
+    virtual void save(Serializer &s) const;
+    virtual bool load(Serializer &s);
 protected:
     /// Internal helper function to maintain nested window position values
     virtual void refreshRelativePlacement();

@@ -149,7 +149,8 @@ GLint GLShader::uniform(const std::string &name, bool warn) const {
 }
 
 void GLShader::uploadAttrib(const std::string &name, uint32_t size, int dim,
-                             uint32_t compSize, GLuint glType, bool integral, const uint8_t *data, int version) {
+                            uint32_t compSize, GLuint glType, bool integral,
+                            const uint8_t *data, int version) {
     int attribID = 0;
     if (name != "indices") {
         attribID = attrib(name);
