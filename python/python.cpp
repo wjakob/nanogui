@@ -47,7 +47,7 @@ PYBIND11_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
     m.def("init", &nanogui::init);
-    m.def("shutdown", &nanogui::init);
+    m.def("shutdown", &nanogui::shutdown);
     m.def("mainloop", &nanogui::mainloop);
     m.def("leave", &nanogui::leave);
     m.def("file_dialog", &nanogui::file_dialog);
