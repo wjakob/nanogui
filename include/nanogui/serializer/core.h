@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <memory>
+#include <set>
 
 namespace half_float { class half; }
 
@@ -227,6 +228,34 @@ template <typename T> struct serialization_helper<std::vector<T>> {
             s.read(&size, sizeof(uint32_t));
             value->resize(size);
             serialization_helper<T>::read(s, value->data(), size);
+            value++;
+        }
+    }
+};
+
+template <typename T> struct serialization_helper<std::set<T>> {
+    static std::string type_id() {
+        return "S" + serialization_helper<T>::type_id();
+    }
+
+    static void write(Serializer &s, const std::set<T> *value, size_t count) {
+        for (size_t i = 0; i<count; ++i) {
+            std::vector<T> temp(value->size());
+            uint32_t idx = 0;
+            for (auto it = value->begin(); it != value->end(); ++it)
+                temp[idx++] = *it;
+            serialization_helper<std::vector<T>>::write(s, &temp, 1);
+            value++;
+        }
+    }
+
+    static void read(Serializer &s, std::set<T> *value, size_t count) {
+        for (size_t i = 0; i<count; ++i) {
+            std::vector<T> temp;
+            serialization_helper<std::vector<T>>::read(s, &temp, 1);
+            value->clear();
+            for (auto k: temp)
+                value->insert(k);
             value++;
         }
     }
