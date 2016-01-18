@@ -11,6 +11,7 @@
 
 import nanogui
 import math
+import gc
 
 from nanogui import Screen, FormHelper, Vector2i
 
@@ -30,10 +31,10 @@ def make_accessors(name):
         return globals()[name]
     return setter, getter
 
-
 nanogui.init()
 
 screen = Screen(Vector2i(500, 700), "NanoGUI test")
+
 gui = FormHelper(screen)
 window = gui.addWindow(Vector2i(10, 10), "Form helper example")
 
@@ -62,4 +63,6 @@ screen.performLayout()
 window.center()
 
 nanogui.mainloop()
+screen = gui = window = None
+gc.collect()
 nanogui.shutdown()

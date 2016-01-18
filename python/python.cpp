@@ -61,7 +61,19 @@ PYBIND11_PLUGIN(nanogui) {
     py::handle vector2i = py::detail::get_type_handle(typeid(Vector2i));
     if (!vector2i) {
         py::class_<Vector2i>(m, "Vector2i")
-            .def(py::init<int, int>());
+            .def(py::init<int, int>())
+            .def_property("x", [](const Vector2i &v) { return v.x();}, [](Vector2i &v, int x) { v.x() = x; })
+            .def_property("y", [](const Vector2i &v) { return v.y();}, [](Vector2i &v, int y) { v.y() = y; })
+            .def("__getitem__", [](const VectorXf &m, size_t i) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                return m[i];
+             })
+            .def("__setitem__", [](VectorXf &m, size_t i, float v) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                m[i] = v;
+             });
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
@@ -113,12 +125,12 @@ PYBIND11_PLUGIN(nanogui) {
             /* Buffer access for interacting with NumPy */
             .def_buffer([](VectorXf &m) -> py::buffer_info {
                 return py::buffer_info(
-                    m.data(),                /* Pointer to buffer */
+                    m.data(),               /* Pointer to buffer */
                     sizeof(float),          /* Size of one scalar */
                     /* Python struct-style format descriptor */
                     py::format_descriptor<float>::value(),
-                    1,                       /* Number of dimensions */
-                    { (size_t) m.size() },   /* Buffer dimensions */
+                    1,                      /* Number of dimensions */
+                    { (size_t) m.size() },  /* Buffer dimensions */
                     { sizeof(float) }       /* Strides (in bytes) for each index */
                 );
              });
@@ -477,7 +489,6 @@ PYBIND11_PLUGIN(nanogui) {
     py::class_<PyImageView, ref<PyImageView>> imageview(m, "ImageView", widget, D(ImageView));
     imageview
         .alias<ImageView>()
-        .def(py::init<Widget *, int, ImageView::SizePolicy>(), py::arg("parent"), py::arg("image") = 0, py::arg("policy") = ImageView::SizePolicy::Fixed, D(ImageView, ImageView))
         .def("image", &ImageView::image, D(ImageView, image))
         .def("setImage", &ImageView::setImage, D(ImageView, setImage))
         .def("policy", &ImageView::policy, D(ImageView, policy))
@@ -486,6 +497,11 @@ PYBIND11_PLUGIN(nanogui) {
     py::enum_<ImageView::SizePolicy>(imageview, "SizePolicy")
         .value("Fixed", ImageView::SizePolicy::Fixed)
         .value("Expand", ImageView::SizePolicy::Expand);
+
+    imageview.def(py::init<Widget *, int, ImageView::SizePolicy>(),
+                  py::arg("parent"), py::arg("image") = 0,
+                  py::arg("policy") = ImageView::SizePolicy::Fixed,
+                  D(ImageView, ImageView));
 
     py::class_<PyComboBox, ref<PyComboBox>>(m, "ComboBox", widget, D(ComboBox))
         .alias<ComboBox>()

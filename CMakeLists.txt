@@ -85,8 +85,16 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  # Enable C++11 mode on GCC / Clang
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
+
+  if (HAS_CPP14_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+  elseif (HAS_CPP11_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  else()
+    message(FATAL_ERROR "Unsupported compiler -- pybind11 requires C++11 support!")
+  endif()
 endif()
 
 if(WIN32)
@@ -246,7 +254,7 @@ endif()
 
 if (NANOGUI_BUILD_PYTHON)
   # Detect Python
-  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
   find_package(PythonLibs ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
@@ -299,13 +307,13 @@ if (NANOGUI_BUILD_PYTHON)
 
     # Optimize for a small binary size
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "-Os")
+      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "-Os -fvisibility=hidden ")
     endif()
 
     # Strip unnecessary sections of the binary on Linux/Mac OS
     if(APPLE)
       set_target_properties(nanogui_python PROPERTIES MACOSX_RPATH ".")
-      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup ")
 
       if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
         add_custom_command(TARGET nanogui_python POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)

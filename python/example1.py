@@ -12,6 +12,7 @@
 import nanogui
 import math
 import time
+import gc
 
 from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     ToolButton, Vector2i, Label, Button, Widget, \
@@ -318,4 +319,5 @@ if __name__ == "__main__":
     test.drawAll()
     test.setVisible(True)
     nanogui.mainloop()
+    gc.collect()
     nanogui.shutdown()
