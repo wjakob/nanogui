@@ -64,12 +64,12 @@ PYBIND11_PLUGIN(nanogui) {
             .def(py::init<int, int>())
             .def_property("x", [](const Vector2i &v) { return v.x();}, [](Vector2i &v, int x) { v.x() = x; })
             .def_property("y", [](const Vector2i &v) { return v.y();}, [](Vector2i &v, int y) { v.y() = y; })
-            .def("__getitem__", [](const VectorXf &m, size_t i) {
+            .def("__getitem__", [](const Vector2i &m, size_t i) {
                 if (i >= (size_t) m.size())
                     throw py::index_error();
                 return m[i];
              })
-            .def("__setitem__", [](VectorXf &m, size_t i, float v) {
+            .def("__setitem__", [](Vector2i &m, size_t i, int v) {
                 if (i >= (size_t) m.size())
                     throw py::index_error();
                 m[i] = v;
@@ -78,6 +78,28 @@ PYBIND11_PLUGIN(nanogui) {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
         m.attr("Vector2i") = vector2i;
+    }
+
+    py::handle vector2f = py::detail::get_type_handle(typeid(Vector2f));
+    if (!vector2f) {
+        py::class_<Vector2f>(m, "Vector2f")
+            .def(py::init<int, int>())
+            .def_property("x", [](const Vector2f &v) { return v.x();}, [](Vector2f &v, float x) { v.x() = x; })
+            .def_property("y", [](const Vector2f &v) { return v.y();}, [](Vector2f &v, float y) { v.y() = y; })
+            .def("__getitem__", [](const Vector2f &m, size_t i) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                return m[i];
+             })
+            .def("__setitem__", [](Vector2f &m, size_t i, float v) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                m[i] = v;
+             });
+    } else {
+        /* Don't create a new type if some other library has already
+           exposed (potentially much fancier) Eigen Python bindings */
+        m.attr("Vector2f") = vector2f;
     }
 
     py::handle vectorXf = py::detail::get_type_handle(typeid(VectorXf));
