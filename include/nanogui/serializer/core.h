@@ -156,7 +156,7 @@ template <> struct serialization_helper<std::string> {
 
     static void write(Serializer &s, const std::string *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
-            uint32_t length = value->length();
+            uint32_t length = (uint32_t) value->length();
             s.write(&length, sizeof(uint32_t));
             s.write((char *) value->data(), sizeof(char) * value->length());
             value++;
@@ -215,7 +215,7 @@ template <typename T> struct serialization_helper<std::vector<T>> {
 
     static void write(Serializer &s, const std::vector<T> *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
-            uint32_t size = value->size();
+            uint32_t size = (uint32_t) value->size();
             s.write(&size, sizeof(uint32_t));
             serialization_helper<T>::write(s, value->data(), size);
             value++;

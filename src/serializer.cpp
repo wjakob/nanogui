@@ -30,7 +30,7 @@ bool Serializer::isSerializedFile(const std::string &filename) {
     try {
         Serializer s(filename, false);
         return true;
-    } catch (const std::exception &e) {
+    } catch (const std::exception &) {
         return false;
     }
 }
@@ -107,7 +107,7 @@ void Serializer::set_base(const std::string &name,
 
 void Serializer::writeTOC() {
     uint64_t trailer_offset = (uint64_t) mFile.tellp();
-    uint32_t nItems = mTOC.size();
+    uint32_t nItems = (uint32_t) mTOC.size();
 
     seek(0);
     write(serialized_header_id, serialized_header_id_length);
