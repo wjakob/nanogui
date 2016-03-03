@@ -25,10 +25,8 @@ Widget::Widget(Widget *parent)
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
       mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
       mCursor(Cursor::Arrow) {
-    if (parent) {
+    if (parent)
         parent->addChild(this);
-        mTheme = parent->mTheme;
-    }
 }
 
 Widget::~Widget() {
@@ -38,8 +36,16 @@ Widget::~Widget() {
     }
 }
 
+void Widget::setTheme(Theme *theme) {
+    if (mTheme.get() == theme)
+        return;
+    mTheme = theme;
+    for (auto child : mChildren)
+        child->setTheme(theme);
+}
+
 int Widget::fontSize() const {
-    return mFontSize < 0 ? mTheme->mStandardFontSize : mFontSize;
+    return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
@@ -137,6 +143,7 @@ void Widget::addChild(Widget *widget) {
     mChildren.push_back(widget);
     widget->incRef();
     widget->setParent(this);
+    widget->setTheme(mTheme);
 }
 
 void Widget::removeChild(const Widget *widget) {

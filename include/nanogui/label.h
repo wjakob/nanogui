@@ -41,6 +41,9 @@ public:
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
 
+    /// Set the \ref Theme used to draw this widget
+    virtual void setTheme(Theme *theme) override;
+
     /// Compute the size needed to fully display the label
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     /// Draw the label
