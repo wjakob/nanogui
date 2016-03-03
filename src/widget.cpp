@@ -27,7 +27,6 @@ Widget::Widget(Widget *parent)
       mCursor(Cursor::Arrow) {
     if (parent) {
         parent->addChild(this);
-        setTheme(parent->mTheme);
     }
 }
 
@@ -137,6 +136,7 @@ void Widget::addChild(Widget *widget) {
     mChildren.push_back(widget);
     widget->incRef();
     widget->setParent(this);
+    widget->setTheme(mTheme);
 }
 
 void Widget::removeChild(const Widget *widget) {
