@@ -27,7 +27,7 @@ Widget::Widget(Widget *parent)
       mCursor(Cursor::Arrow) {
     if (parent) {
         parent->addChild(this);
-        mTheme = parent->mTheme;
+        setTheme(parent->mTheme);
     }
 }
 
@@ -39,7 +39,7 @@ Widget::~Widget() {
 }
 
 int Widget::fontSize() const {
-    return mFontSize < 0 ? mTheme->mStandardFontSize : mFontSize;
+    return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {

@@ -42,12 +42,17 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDownModifier(0),
       mTextOffset(0),
       mLastClick(0) {
-    mFontSize = mTheme->mTextBoxFontSize;
+    if(mTheme) mFontSize = mTheme->mTextBoxFontSize;
 }
 
 void TextBox::setEditable(bool editable) {
     mEditable = editable;
     setCursor(editable ? Cursor::IBeam : Cursor::Arrow);
+}
+
+void TextBox::setTheme(Theme *theme) {
+    Widget::setTheme(theme);
+    if(mTheme) mFontSize = mTheme->mTextBoxFontSize;
 }
 
 Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
