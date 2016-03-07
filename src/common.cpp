@@ -48,22 +48,8 @@ void init() {
     glfwSetTime(0);
 }
 
-void mainloop() {
+void mainloop_plain() {
     __mainloop_active = true;
-
-    /* If there are no mouse/keyboard events, try to refresh the
-       view roughly every 50 ms; this is to support animations
-       such as progress bars while keeping the system load
-       reasonably low */
-    std::thread refresh_thread = std::thread(
-        [&]() {
-            std::chrono::milliseconds time(50);
-            while (__mainloop_active) {
-                std::this_thread::sleep_for(time);
-                glfwPostEmptyEvent();
-            }
-        }
-    );
 
     try {
         while (__mainloop_active) {
@@ -93,6 +79,25 @@ void mainloop() {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         abort();
     }
+}
+
+
+void mainloop() {
+    /* If there are no mouse/keyboard events, try to refresh the
+       view roughly every 50 ms; this is to support animations
+       such as progress bars while keeping the system load
+       reasonably low */
+    std::thread refresh_thread = std::thread(
+        [&]() {
+            std::chrono::milliseconds time(50);
+            while (__mainloop_active) {
+                std::this_thread::sleep_for(time);
+                glfwPostEmptyEvent();
+            }
+        }
+    );
+
+    mainloop_plain();
 
     refresh_thread.join();
 }
