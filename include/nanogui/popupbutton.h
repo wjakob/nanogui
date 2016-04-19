@@ -29,12 +29,12 @@ public:
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
 
-    virtual void draw(NVGcontext* ctx);
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void performLayout(NVGcontext *ctx);
+    virtual void draw(NVGcontext* ctx) override;
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void performLayout(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     Popup *mPopup;
     int mChevronIcon;

@@ -60,18 +60,18 @@ public:
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
     void setCallback(const std::function<bool(const std::string& str)> &callback) { mCallback = callback; }
 
-    bool mouseButtonEvent(const Vector2i &p,int button,bool down,int modifiers);
-    bool mouseMotionEvent(const Vector2i &p,const Vector2i &rel,int button,int modifiers);
-    bool mouseDragEvent(const Vector2i &p,const Vector2i &rel,int button,int modifiers);
-    bool mouseEnterEvent(const Vector2i &p,bool enter);
-    bool focusEvent(bool focused);
-    bool keyboardEvent(int key, int scancode, int action, int modifiers);
-    bool keyboardCharacterEvent(unsigned int codepoint);
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    virtual bool mouseEnterEvent(const Vector2i &p, bool enter) override;
+    virtual bool focusEvent(bool focused) override;
+    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
+    virtual bool keyboardCharacterEvent(unsigned int codepoint) override;
 
-    Vector2i preferredSize(NVGcontext *ctx) const;
-    void draw(NVGcontext* ctx);
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext* ctx) override;
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();

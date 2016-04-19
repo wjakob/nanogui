@@ -80,6 +80,8 @@ public:
     void setShutdownGLFWOnDestruct(bool v) { mShutdownGLFWOnDestruct = v; }
     bool shutdownGLFWOnDestruct() { return mShutdownGLFWOnDestruct; }
 
+    using Widget::performLayout;
+
     /// Compute the layout of all widgets
     void performLayout() {
         Widget::performLayout(mNVGContext);
@@ -120,10 +122,6 @@ public:
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
     void drawWidgets();
-
-    void performLayout(NVGcontext *ctx) {
-        Widget::performLayout(ctx);
-    }
 
 protected:
     GLFWwindow *mGLFWWindow;

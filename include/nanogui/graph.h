@@ -41,11 +41,11 @@ public:
     VectorXf &values() { return mValues; }
     void setValues(const VectorXf &values) { mValues = values; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void draw(NVGcontext *ctx);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;

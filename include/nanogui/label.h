@@ -45,12 +45,13 @@ public:
     virtual void setTheme(Theme *theme) override;
 
     /// Compute the size needed to fully display the label
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    /// Draw the label
-    virtual void draw(NVGcontext *ctx);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    /// Draw the label
+    virtual void draw(NVGcontext *ctx) override;
+
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::string mCaption;
     std::string mFont;

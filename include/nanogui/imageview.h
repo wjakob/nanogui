@@ -31,8 +31,8 @@ public:
     void       setPolicy(SizePolicy policy) { mPolicy = policy; }
     SizePolicy policy() const { return mPolicy; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void draw(NVGcontext* ctx);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext* ctx) override;
 protected:
     int mImage;
     SizePolicy mPolicy;

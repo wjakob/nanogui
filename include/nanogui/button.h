@@ -67,12 +67,12 @@ public:
     void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }
     const std::vector<Button *> &buttonGroup() const { return mButtonGroup; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual void draw(NVGcontext *ctx);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual void draw(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::string mCaption;
     int mIcon;

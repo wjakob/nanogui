@@ -32,12 +32,12 @@ public:
     std::function<void(bool)> callback() const { return mCallback; }
     void setCallback(const std::function<void(bool)> &callback) { mCallback = callback; }
 
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void draw(NVGcontext *ctx);
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::string mCaption;
     bool mPushed, mChecked;

@@ -34,12 +34,12 @@ public:
     std::function<void(float)> finalCallback() const { return mFinalCallback; }
     void setFinalCallback(const std::function<void(float)> &callback) { mFinalCallback = callback; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual void draw(NVGcontext* ctx);
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual void draw(NVGcontext* ctx) override;
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 
 protected:
     float mValue;

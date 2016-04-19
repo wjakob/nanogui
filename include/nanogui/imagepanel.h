@@ -28,10 +28,10 @@ public:
     std::function<void(int)> callback() const { return mCallback; }
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
 
-    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void draw(NVGcontext* ctx);
+    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext* ctx) override;
 protected:
     Vector2i gridSize() const;
     int indexForPosition(const Vector2i &p) const;

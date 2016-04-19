@@ -43,16 +43,16 @@ public:
     const Window *parentWindow() const { return mParentWindow; }
 
     /// Invoke the associated layout generator to properly place child widgets, if any
-    virtual void performLayout(NVGcontext *ctx);
+    virtual void performLayout(NVGcontext *ctx) override;
 
     /// Draw the popup window
-    virtual void draw(NVGcontext* ctx);
+    virtual void draw(NVGcontext* ctx) override;
 
-    virtual void save(Serializer &s) const;
-    virtual bool load(Serializer &s);
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     /// Internal helper function to maintain nested window position values
-    virtual void refreshRelativePlacement();
+    virtual void refreshRelativePlacement() override;
 
 protected:
     Window *mParentWindow;
