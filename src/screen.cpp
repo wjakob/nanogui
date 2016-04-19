@@ -210,7 +210,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
         throw std::runtime_error("Could not initialize NanoVG!");
 
     mVisible = glfwGetWindowAttrib(window, GLFW_VISIBLE) != 0;
-    mTheme = new Theme(mNVGContext);
+    setTheme(new Theme(mNVGContext));
     mMousePos = Vector2i::Zero();
     mMouseState = mModifiers = 0;
     mDragActive = false;
