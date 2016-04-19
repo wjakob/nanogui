@@ -91,6 +91,23 @@ public:
         popup->setLayout(new GroupLayout());
         new CheckBox(popup, "Another check box");
 
+        //use add functino with widget semantics
+        {
+            performLayout(mNVGContext);
+            auto& window2 = add<Window>("Button demo with add style");
+            window2.setPosition( Vector2i(18,18 + window->size().y() ) );
+            window2.setLayout(new GroupLayout());
+
+            window2.add<Label>("Push buttons", "sans-bold");
+
+            window2.add<Button>("Plain button")
+                   .setCallback([] { cout << "pushed!" << endl; });
+            
+            auto& btn = window2.add<Button>("Styled", ENTYPO_ICON_ROCKET);
+            btn.setBackgroundColor(Color(0, 0, 255, 25));
+            btn.setCallback([] { cout << "pushed!" << endl; });
+        }
+
         window = new Window(this, "Basic widgets");
         window->setPosition(Vector2i(200, 15));
         window->setLayout(new GroupLayout());
