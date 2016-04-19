@@ -1,10 +1,10 @@
-*.a
+ext/pybind11*.a
 *.exe
 *.lib
 *.cmake
 .DS_Store
 ext_build
-resources.*
+nanogui_resources.*
 build
 CMakeCache.txt
 CMakeFiles
