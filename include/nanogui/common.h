@@ -204,6 +204,9 @@ extern NANOGUI_EXPORT void init();
 /// Static shutdown; should be called before the application terminates
 extern NANOGUI_EXPORT void shutdown();
 
+/// Enter the application main loop without the 50ms timer.
+extern NANOGUI_EXPORT void mainloop_plain();
+
 /// Enter the application main loop
 extern NANOGUI_EXPORT void mainloop();
 
