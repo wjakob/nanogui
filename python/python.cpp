@@ -46,17 +46,16 @@ PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
 PYBIND11_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
-    m.def("init", &nanogui::init);
-    m.def("shutdown", &nanogui::shutdown);
-    m.def("mainloop", &nanogui::mainloop);
-    m.def("leave", &nanogui::leave);
-    m.def("file_dialog", &nanogui::file_dialog);
+    m.def("init", &nanogui::init, D(init));
+    m.def("shutdown", &nanogui::shutdown, D(shutdown));
+    m.def("mainloop", &nanogui::mainloop, py::arg("refresh") = 50, D(mainloop));
+    m.def("leave", &nanogui::leave, D(leave));
+    m.def("file_dialog", &nanogui::file_dialog, D(file_dialog));
     #if defined(__APPLE__)
         m.def("chdir_to_bundle_parent", &nanogui::chdir_to_bundle_parent);
     #endif
-    m.def("file_dialog", &nanogui::file_dialog);
-    m.def("utf8", [](int c) { return std::string(utf8(c).data()); });
-    m.def("loadImageDirectory", &nanogui::loadImageDirectory);
+    m.def("utf8", [](int c) { return std::string(utf8(c).data()); }, D(utf8));
+    m.def("loadImageDirectory", &nanogui::loadImageDirectory, D(loadImageDirectory));
 
     py::handle vector2i = py::detail::get_type_handle(typeid(Vector2i));
     if (!vector2i) {

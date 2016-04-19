@@ -17,10 +17,7 @@
 #if defined(__APPLE__)
     #define GLFW_INCLUDE_GLCOREARB
 #elif defined(_WIN32)
-    #ifndef GLEW_STATIC
-    #define GLEW_STATIC
-    #endif
-    #include <GL/glew.h>
+    #include <glad/glad.h>
 #else
     #define GL_GLEXT_PROTOTYPES
 #endif

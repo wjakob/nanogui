@@ -140,6 +140,7 @@ protected:
     Vector3f mBackground;
     std::string mCaption;
     bool mShutdownGLFWOnDestruct;
+    bool mFullscreen;
 };
 
 NAMESPACE_END(nanogui)

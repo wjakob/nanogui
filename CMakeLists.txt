@@ -97,11 +97,17 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
   endif()
 endif()
 
-if(WIN32)
-  # Build and include GLEW on Windows
-  list(APPEND LIBNANOGUI_EXTRA_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c")
-  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c" PROPERTIES COMPILE_DEFINITIONS GLEW_BUILD)
-  include_directories(ext/glew/include)
+if (WIN32)
+  # Build and include GLAD on Windows
+  list(APPEND LIBNANOGUI_EXTRA_SOURCE
+     "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
+	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/glad/glad.h"
+	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/KHR/khrplatform.h")
+  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_DEFINITIONS GLAD_GLAPI_EXPORT_BUILD)
+  if (MSVC)
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_FLAGS "/wd4055 ")
+  endif()
+  include_directories(ext/glad/include)
 endif()
 
 # Required core libraries on various platforms
@@ -152,7 +158,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   $<TARGET_OBJECTS:glfw_objects>
   # Merge NanoVG into the NanoGUI library
   ext/nanovg/src/nanovg.c
-  # Merge GLEW into the NanoGUI library (only if needed)
+  # Merge GLAD into the NanoGUI library (only if needed)
   ${LIBNANOGUI_EXTRA_SOURCE}
   # Fonts etc.
   nanogui_resources.cpp

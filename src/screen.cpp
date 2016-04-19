@@ -19,6 +19,16 @@
 #include <iostream>
 #include <map>
 
+#if defined(_WIN32)
+#define NOMINMAX
+#undef APIENTRY
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define GLFW_EXPOSE_NATIVE_WGL
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#endif
+
 /* Allow enforcing the GL2 implementation of NanoVG */
 #define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
@@ -28,19 +38,49 @@ NAMESPACE_BEGIN(nanogui)
 std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
 #if defined(_WIN32)
-static bool glewInitialized = false;
+static bool gladInitialized = false;
 #endif
 
+/* Calculate pixel ratio for hi-dpi devices. */
+static float get_pixel_ratio(GLFWwindow *window) {
+#if defined(_WIN32)
+    HWND hWnd = glfwGetWin32Window(window);
+    HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+    /* The following function only exists on Windows 8.1+, but we don't want to make that a dependency */
+    static HRESULT (WINAPI *GetDpiForMonitor_)(HMONITOR, UINT, UINT*, UINT*) = nullptr;
+    static bool GetDpiForMonitor_tried = false;
+
+    if (!GetDpiForMonitor_tried) {
+        auto shcore = LoadLibrary(TEXT("shcore"));
+        if (shcore)
+            GetDpiForMonitor_ = (decltype(GetDpiForMonitor_)) GetProcAddress(shcore, "GetDpiForMonitor");
+        GetDpiForMonitor_tried = true;
+    }
+
+    if (GetDpiForMonitor_) {
+        uint32_t dpiX, dpiY;
+        if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
+            return std::round(dpiX / 96.0);
+    }
+    return 1.f;
+#else
+    Vector2i fbSize, size;
+    glfwGetFramebufferSize(window, &fbSize[0], &fbSize[1]);
+    glfwGetWindowSize(window, &size[0], &size[1]);
+    return (float)fbSize[0] / (float)size[0];
+#endif
+}
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mShutdownGLFWOnDestruct(false) {
+      mCursor(Cursor::Arrow), mShutdownGLFWOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption,
                bool resizable, bool fullscreen)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mCaption(caption), mShutdownGLFWOnDestruct(false) {
+      mCursor(Cursor::Arrow), mCaption(caption), mShutdownGLFWOnDestruct(false),
+      mFullscreen(fullscreen) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL 3.3 core profile context */
@@ -66,8 +106,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         mGLFWWindow = glfwCreateWindow(mode->width, mode->height,
                                        caption.c_str(), monitor, nullptr);
     } else {
-        mGLFWWindow = glfwCreateWindow(size.x(), size.y(), caption.c_str(),
-                                       nullptr, nullptr);
+        mGLFWWindow = glfwCreateWindow(size.x(), size.y(),
+                                       caption.c_str(), nullptr, nullptr);
     }
 
     if (!mGLFWWindow)
@@ -76,11 +116,10 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
     glfwMakeContextCurrent(mGLFWWindow);
 
 #if defined(_WIN32)
-    if (!glewInitialized) {
-        glewExperimental = GL_TRUE;
-        glewInitialized = true;
-        if (glewInit() != GLEW_NO_ERROR)
-            throw std::runtime_error("Could not initialize GLEW!");
+    if (!gladInitialized) {
+        gladInitialized = true;
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+            throw std::runtime_error("Could not initialize GLAD!");
         glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
     }
 #endif
@@ -201,6 +240,13 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
 
+    mPixelRatio = get_pixel_ratio(window);
+
+#if defined(_WIN32)
+    if (mPixelRatio != 1 && !mFullscreen)
+        glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
+#endif
+
 #ifdef NDEBUG
     mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
 #else
@@ -273,8 +319,21 @@ void Screen::drawWidgets() {
         return;
 
     glfwMakeContextCurrent(mGLFWWindow);
+    float newPixelRatio = get_pixel_ratio(mGLFWWindow);
+
+#if defined(_WIN32)
+    if (mPixelRatio != newPixelRatio && !mFullscreen)
+        glfwSetWindowSize(mGLFWWindow, mSize.x() * newPixelRatio / mPixelRatio, mSize.y() * newPixelRatio / mPixelRatio);
+#endif
+
+    mPixelRatio = newPixelRatio;
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
+
+#if defined(_WIN32)
+    mSize /= mPixelRatio;
+#endif
+
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
 
     /* Calculate pixel ratio for hi-dpi devices. */
@@ -349,6 +408,9 @@ bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
 
 bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
+#if defined(_WIN32)
+    p /= mPixelRatio;
+#endif
     bool ret = false;
     mLastInteraction = glfwGetTime();
     try {
@@ -376,8 +438,6 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
         abort();
     }
-
-    return false;
 }
 
 bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
@@ -428,8 +488,6 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
         std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
         abort();
     }
-
-    return false;
 }
 
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
@@ -477,14 +535,15 @@ bool Screen::scrollCallbackEvent(double x, double y) {
                   << std::endl;
         abort();
     }
-
-    return false;
 }
 
 bool Screen::resizeCallbackEvent(int, int) {
     Vector2i fbSize, size;
     glfwGetFramebufferSize(mGLFWWindow, &fbSize[0], &fbSize[1]);
     glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
+#if defined(_WIN32)
+    size /= mPixelRatio;
+#endif
 
     if (mFBSize == Vector2i(0, 0) || size == Vector2i(0, 0))
         return false;
