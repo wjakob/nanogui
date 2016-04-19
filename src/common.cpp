@@ -48,22 +48,25 @@ void init() {
     glfwSetTime(0);
 }
 
-void mainloop() {
+void mainloop(int refresh) {
     __mainloop_active = true;
 
-    /* If there are no mouse/keyboard events, try to refresh the
-       view roughly every 50 ms; this is to support animations
-       such as progress bars while keeping the system load
-       reasonably low */
-    std::thread refresh_thread = std::thread(
-        [&]() {
-            std::chrono::milliseconds time(50);
-            while (__mainloop_active) {
-                std::this_thread::sleep_for(time);
-                glfwPostEmptyEvent();
+    std::thread refresh_thread;
+    if (refresh > 0) {
+        /* If there are no mouse/keyboard events, try to refresh the
+           view roughly every 50 ms (default); this is to support animations
+           such as progress bars while keeping the system load
+           reasonably low */
+        refresh_thread = std::thread(
+            [&]() {
+                std::chrono::milliseconds time(refresh);
+                while (__mainloop_active) {
+                    std::this_thread::sleep_for(time);
+                    glfwPostEmptyEvent();
+                }
             }
-        }
-    );
+        );
+    }
 
     try {
         while (__mainloop_active) {
@@ -94,7 +97,8 @@ void mainloop() {
         abort();
     }
 
-    refresh_thread.join();
+    if (refresh > 0)
+        refresh_thread.join();
 }
 
 void leave() {

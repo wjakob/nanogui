@@ -204,8 +204,14 @@ extern NANOGUI_EXPORT void init();
 /// Static shutdown; should be called before the application terminates
 extern NANOGUI_EXPORT void shutdown();
 
-/// Enter the application main loop
-extern NANOGUI_EXPORT void mainloop();
+/**
+ * \brief Enter the application main loop
+ *
+ * NanoGUI issues a redraw whenever an event is received, or at least every
+ * ``refresh`` milliseconds. To disable the refresh timer, specify a negative
+ * value.
+ */
+extern NANOGUI_EXPORT void mainloop(int refresh = 50);
 
 /// Request the application main loop to terminate
 extern NANOGUI_EXPORT void leave();
