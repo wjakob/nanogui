@@ -288,6 +288,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("modal", &Window::modal, D(Window, modal))
         .def("setModal", &Window::setModal, D(Window, setModal))
         .def("dispose", &Window::dispose, D(Window, dispose))
+        .def("buttonPanel", &Window::buttonPanel, D(Window, buttonPanel))
         .def("center", &Window::center, D(Window, center));
 
     py::enum_<Alignment>(m, "Alignment")
@@ -488,6 +489,7 @@ PYBIND11_PLUGIN(nanogui) {
             py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
             py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
             py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false)
+        .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
         .def("setCallback", &MessageDialog::setCallback, D(MessageDialog, setCallback));
 
