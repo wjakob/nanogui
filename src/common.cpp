@@ -38,8 +38,10 @@ void init() {
     #endif
 
     glfwSetErrorCallback(
-        [](int error, const char *desc) {
-            std::cerr << "GLFW error " << error << ": " << desc << std::endl;
+        [](int error, const char *descr) {
+            if (error == GLFW_NOT_INITIALIZED)
+                return; /* Ignore */
+            std::cerr << "GLFW error " << error << ": " << descr << std::endl;
         }
     );
 
