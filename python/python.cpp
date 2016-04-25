@@ -375,6 +375,10 @@ PYBIND11_PLUGIN(nanogui) {
              D(Widget, children), py::return_value_policy::reference)
         .def("addChild", &Widget::addChild, D(Widget, addChild))
         .def("childCount", &Widget::childCount, D(Widget, childCount))
+        .def("__len__", &Widget::childCount, D(Widget, childCount))
+        .def("__iter__", [](const Widget &w) {
+                return py::make_iterator(w.children().begin(), w.children().end());
+            }, py::keep_alive<0, 1>())
         .def("removeChild", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild))
         .def("removeChild", (void(Widget::*)(const Widget *)) &Widget::removeChild, D(Widget, removeChild, 2))
         .def("window", &Widget::window, D(Widget, window))
