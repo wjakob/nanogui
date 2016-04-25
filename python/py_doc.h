@@ -925,6 +925,8 @@ static const char *__doc_nanogui_Label_setFont =
 R"doc(Set the currently active font (2 are available by default: 'sans' and
 'sans-bold'))doc";
 
+static const char *__doc_nanogui_Label_setTheme = R"doc(Set the Theme used to draw this widget)doc";
+
 static const char *__doc_nanogui_Layout = R"doc(Basic interface of a layout engine)doc";
 
 static const char *__doc_nanogui_Layout_performLayout = R"doc()doc";
@@ -1123,6 +1125,8 @@ static const char *__doc_nanogui_Screen_mFBSize = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mFocusPath = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_mFullscreen = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_mGLFWWindow = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mLastInteraction = R"doc()doc";
@@ -1150,8 +1154,6 @@ static const char *__doc_nanogui_Screen_moveWindowToFront = R"doc()doc";
 static const char *__doc_nanogui_Screen_nvgContext = R"doc(Return a pointer to the underlying nanoVG draw context)doc";
 
 static const char *__doc_nanogui_Screen_performLayout = R"doc(Compute the layout of all widgets)doc";
-
-static const char *__doc_nanogui_Screen_performLayout_2 = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_resizeCallbackEvent = R"doc()doc";
 
@@ -1314,6 +1316,8 @@ static const char *__doc_nanogui_TextBox_setDefaultValue = R"doc()doc";
 static const char *__doc_nanogui_TextBox_setEditable = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_setFormat = R"doc(Specify a regular expression specifying valid formats)doc";
+
+static const char *__doc_nanogui_TextBox_setTheme = R"doc(Set the Theme used to draw this widget)doc";
 
 static const char *__doc_nanogui_TextBox_setUnits = R"doc()doc";
 
@@ -1726,7 +1730,41 @@ with ImagePanel))doc";
 
 static const char *__doc_nanogui_lookAt = R"doc()doc";
 
-static const char *__doc_nanogui_mainloop = R"doc(Enter the application main loop)doc";
+static const char *__doc_nanogui_mainloop = 
+R"doc(Enter the application main loop
+
+Parameter ``refresh``:
+    NanoGUI issues a redraw call whenever an keyboard/mouse/.. event is
+    received. In the absence of any external events, it enforces a redraw
+    once every ``refresh`` milliseconds. To disable the refresh timer,
+    specify a negative value here.
+
+Parameter ``detach``:
+    This pararameter only exists in the Python bindings. When the active
+    ``Screen`` instance is provided via the ``detach`` parameter, the
+    ``mainloop()`` function becomes non-blocking and returns immediately
+    (in this case, the main loop runs in parallel on a newly created
+    thread). This feature is convenient for prototyping user interfaces on
+    an interactive Python command prompt.
+
+When ``detach != None``, the function returns an opaque handle that will
+release any resources allocated by the created thread when the handle's
+``join()`` method is invoked (or when it is garbage collected).
+
+Remark:
+    Unfortunately, Mac OS X strictly requires all event processing to take
+    place on the application's main thread, which is fundamentally
+    incompatible with this type of approach. Thus, NanoGUI relies on a
+    rather crazy workaround on Mac OS (kudos to Dmitriy Morozov):
+    ``mainloop()`` launches a new thread as before but then uses libcoro to
+    swap the thread execution environment (stack, registers, ..) with the
+    main thread. This means that the main application thread is hijacked
+    and processes events in the main loop to satisfy the requirements on
+    Mac OS, while the thread that actually returns from this function is
+    the newly created one (paradoxical, as that may seem). Deleting or
+    ``join()``ing the returned handle causes application to wait for the
+    termination of the main loop and then swap the two thread environments
+    back into their initial configuration.)doc";
 
 static const char *__doc_nanogui_nvgIsFontIcon = 
 R"doc(Determine whether an icon ID is a font-based icon (e.g. from the entypo.ttf

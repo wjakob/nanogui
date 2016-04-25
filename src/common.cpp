@@ -10,9 +10,11 @@
 */
 
 #include <nanogui/screen.h>
+
 #if defined(_WIN32)
 #include <windows.h>
 #endif
+
 #include <nanogui/opengl.h>
 #include <map>
 #include <thread>
@@ -27,7 +29,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-static bool __mainloop_active = false;
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
 void init() {
@@ -48,8 +49,13 @@ void init() {
     glfwSetTime(0);
 }
 
+static bool mainloop_active = false;
+
 void mainloop(int refresh) {
-    __mainloop_active = true;
+    if (mainloop_active)
+        throw std::runtime_error("Main loop is already running!");
+
+    mainloop_active = true;
 
     std::thread refresh_thread;
     if (refresh > 0) {
@@ -58,9 +64,9 @@ void mainloop(int refresh) {
            such as progress bars while keeping the system load
            reasonably low */
         refresh_thread = std::thread(
-            [&]() {
+            [refresh]() {
                 std::chrono::milliseconds time(refresh);
-                while (__mainloop_active) {
+                while (mainloop_active) {
                     std::this_thread::sleep_for(time);
                     glfwPostEmptyEvent();
                 }
@@ -69,7 +75,7 @@ void mainloop(int refresh) {
     }
 
     try {
-        while (__mainloop_active) {
+        while (mainloop_active) {
             int numScreens = 0;
             for (auto kv : __nanogui_screens) {
                 Screen *screen = kv.second;
@@ -85,13 +91,16 @@ void mainloop(int refresh) {
 
             if (numScreens == 0) {
                 /* Give up if there was nothing to draw */
-                __mainloop_active = false;
+                mainloop_active = false;
                 break;
             }
 
             /* Wait for mouse/keyboard or empty refresh events */
             glfwWaitEvents();
         }
+
+        /* Process events once more */
+        glfwPollEvents();
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         abort();
@@ -102,7 +111,7 @@ void mainloop(int refresh) {
 }
 
 void leave() {
-    __mainloop_active = false;
+    mainloop_active = false;
 }
 
 void shutdown() {
