@@ -189,7 +189,7 @@ PYBIND11_PLUGIN(nanogui) {
                             handle->stack.sptr, handle->stack.ssze);
                 coro_transfer(&handle->ctx_main, &handle->ctx_helper);
             #else
-                handle->thread = std::thread([handle]{
+                handle->thread = std::thread([]{
                     mainloop(handle->refresh);
                 });
             #endif
