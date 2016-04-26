@@ -89,7 +89,7 @@ public:
 
     /// Move another reference into the current one
     ref& operator=(ref&& r) noexcept {
-        if (&r != &this) {
+        if (&r != this) {
             if (m_ptr)
                 ((Object *) m_ptr)->decRef();
             m_ptr = r.m_ptr;
