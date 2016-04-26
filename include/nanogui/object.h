@@ -37,18 +37,12 @@ public:
      * The object will automatically be deallocated once
      * the reference count reaches zero.
      */
-    void decRef(bool dealloc = true) const {
-        --m_refCount;
-        if (m_refCount == 0 && dealloc)
-            delete this;
-        else if (m_refCount < 0)
-            throw std::runtime_error("Internal error: reference count < 0!");
-    }
+    void decRef(bool dealloc = true) const noexcept;
 protected:
     /** \brief Virtual protected deconstructor.
      * (Will only be called by \ref ref)
      */
-    virtual ~Object() { }
+    virtual ~Object();
 private:
     mutable std::atomic<int> m_refCount { 0 };
 };
@@ -56,21 +50,24 @@ private:
 /**
  * \brief Reference counting helper
  *
- * The \a ref refeference template is a simple wrapper to store a
- * pointer to an object. It takes care of increasing and decreasing
- * the reference count of the object. When the last reference goes
- * out of scope, the associated object will be deallocated.
+ * The \a ref template is a simple wrapper to store a pointer to an object. It
+ * takes care of increasing and decreasing the object's reference count as
+ * needed. When the last reference goes out of scope, the associated object
+ * will be deallocated.
  *
- * \ingroup libcore
+ * The advantage over C++ solutions such as <tt>std::shared_ptr</tt> is that
+ * the reference count is very compactly integrated into the base object
+ * itself.
  */
 template <typename T> class ref {
 public:
-    /// Create a nullptr reference
-    ref() : m_ptr(nullptr) { }
+    /// Create a <tt>nullptr</tt>-valued reference
+    ref() { }
 
     /// Construct a reference from a pointer
     ref(T *ptr) : m_ptr(ptr) {
-        if (m_ptr) ((Object *) m_ptr)->incRef();
+        if (m_ptr)
+            ((Object *) m_ptr)->incRef();
     }
 
     /// Copy constructor
@@ -80,8 +77,8 @@ public:
     }
 
     /// Move constructor
-    ref(ref &&r) : m_ptr(r.m_ptr) {
-        r.m_ptr = nullptr; 
+    ref(ref &&r) noexcept : m_ptr(r.m_ptr) {
+        r.m_ptr = nullptr;
     }
 
     /// Destroy this reference
@@ -91,37 +88,37 @@ public:
     }
 
     /// Move another reference into the current one
-    ref& operator=(ref&& r) {
-        if (*this == r)
-            return *this;
-        if (m_ptr)
-            ((Object *) m_ptr)->decRef();
-        m_ptr = r.m_ptr;
-        r.m_ptr = nullptr;
+    ref& operator=(ref&& r) noexcept {
+        if (&r != &this) {
+            if (m_ptr)
+                ((Object *) m_ptr)->decRef();
+            m_ptr = r.m_ptr;
+            r.m_ptr = nullptr;
+        }
         return *this;
     }
 
     /// Overwrite this reference with another reference
-    ref& operator=(const ref& r) {
-        if (m_ptr == r.m_ptr)
-            return *this;
-        if (m_ptr)
-            ((Object *) m_ptr)->decRef();
-        m_ptr = r.m_ptr;
-        if (m_ptr)
-            ((Object *) m_ptr)->incRef();
+    ref& operator=(const ref& r) noexcept {
+        if (m_ptr != r.m_ptr) {
+            if (r.m_ptr)
+                ((Object *) r.m_ptr)->incRef();
+            if (m_ptr)
+                ((Object *) m_ptr)->decRef();
+            m_ptr = r.m_ptr;
+        }
         return *this;
     }
 
     /// Overwrite this reference with a pointer to another object
-    ref& operator=(T *ptr) {
-        if (m_ptr == ptr)
-            return *this;
-        if (m_ptr)
-            ((Object *) m_ptr)->decRef();
-        m_ptr = ptr;
-        if (m_ptr)
-            ((Object *) m_ptr)->incRef();
+    ref& operator=(T *ptr) noexcept {
+        if (m_ptr != ptr) {
+            if (ptr)
+                ((Object *) ptr)->incRef();
+            if (m_ptr)
+                ((Object *) m_ptr)->decRef();
+            m_ptr = ptr;
+        }
         return *this;
     }
 
@@ -161,7 +158,7 @@ public:
     /// Check if the object is defined
     operator bool() const { return m_ptr != nullptr; }
 private:
-    T *m_ptr;
+    T *m_ptr = nullptr;
 };
 
 NAMESPACE_END(nanogui)
