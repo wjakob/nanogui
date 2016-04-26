@@ -548,9 +548,7 @@ bool TextBox::load(Serializer &s) {
     if (!s.get("committed", mCommitted)) return false;
     if (!s.get("value", mValue)) return false;
     if (!s.get("defaultValue", mDefaultValue)) return false;
-    int alignment;
-    if (!s.get("alignment", alignment)) return false;
-    mAlignment = (Alignment) alignment;
+    if (!s.get("alignment", mAlignment)) return false;
     if (!s.get("units", mUnits)) return false;
     if (!s.get("format", mFormat)) return false;
     if (!s.get("unitsImage", mUnitsImage)) return false;

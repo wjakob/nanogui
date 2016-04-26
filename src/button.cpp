@@ -232,9 +232,7 @@ bool Button::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
     if (!s.get("icon", mIcon)) return false;
-    int iconPosition;
-    if (!s.get("iconPosition", iconPosition)) return false;
-    mIconPosition = (IconPosition) iconPosition;
+    if (!s.get("iconPosition", mIconPosition)) return false;
     if (!s.get("pushed", mPushed)) return false;
     if (!s.get("flags", mFlags)) return false;
     if (!s.get("backgroundColor", mBackgroundColor)) return false;

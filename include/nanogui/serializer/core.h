@@ -124,7 +124,7 @@ private:
 
 NAMESPACE_BEGIN(detail)
 
-template <typename T> struct serialization_traits { };
+template <typename T, typename SFINAE = void> struct serialization_traits { };
 template <> struct serialization_traits<int8_t>           { const char *type_id = "u8";  };
 template <> struct serialization_traits<uint8_t>          { const char *type_id = "s8";  };
 template <> struct serialization_traits<int16_t>          { const char *type_id = "u16"; };
@@ -138,6 +138,10 @@ template <> struct serialization_traits<float>            { const char *type_id 
 template <> struct serialization_traits<double>           { const char *type_id = "f64"; };
 template <> struct serialization_traits<bool>             { const char *type_id = "b8";  };
 template <> struct serialization_traits<char>             { const char *type_id = "c8";  };
+
+template <typename T> struct serialization_traits<T> : 
+    serialization_traits<typename std::underlying_type<T>::type,
+                         typename std::enable_if<std::is_enum<T>::value>::type> { };
 
 template <typename T> struct serialization_helper {
     static std::string type_id() { return serialization_traits<T>().type_id; }

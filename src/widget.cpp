@@ -217,9 +217,7 @@ bool Widget::load(Serializer &s) {
     if (!s.get("focused", mFocused)) return false;
     if (!s.get("tooltip", mTooltip)) return false;
     if (!s.get("fontSize", mFontSize)) return false;
-    int cursor;
-    if (!s.get("cursor", cursor)) return false;
-    mCursor = (Cursor) cursor;
+    if (!s.get("cursor", mCursor)) return false;
     return true;
 }
 
