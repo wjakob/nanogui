@@ -210,12 +210,9 @@ if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui ${NANOGUI_EXTRA_LIBS})
 endif()
 
-if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
-  # Link-time code generation (only for shared library)
-  if (MSVC)
-    set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS "/LTCG ")
-    set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "/GL ")
-  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
+    # Link-time code generation (only for shared library in release mode)
     set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-fvisibility=hidden ")
 
     # Check for Link Time Optimization support
@@ -224,6 +221,13 @@ if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
       set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
     endif()
   endif()
+elseif (MSVC AND NANOGUI_BUILD_SHARED)
+  # Link-time code generation (only for shared library in release mode)
+  set_property(TARGET nanogui APPEND PROPERTY COMPILE_OPTIONS
+    "$<$<CONFIG:Release>:/GL>" "$<$<CONFIG:MinSizeRel>:/GL>" "$<$<CONFIG:RelWithDebInfo>:/GL>")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "/LTCG ")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL "/LTCG ")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO "/LTCG ")
 endif()
 
 if (NANOGUI_BUILD_SHARED)
@@ -314,7 +318,8 @@ if (NANOGUI_BUILD_PYTHON)
 
     if (MSVC)
       # Optimize size, /bigobj is needed for due to the heavy template metaprogramming in pybind11
-      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "/Os /bigobj")
+      set_property(TARGET nanogui_python APPEND PROPERTY COMPILE_OPTIONS
+        "/bigobj" "$<$<CONFIG:Release>:/Os>" "$<$<CONFIG:MinSizeRel>:/Os>" "$<$<CONFIG:RelWithDebInfo>:/Os>")
     endif()
   elseif(UNIX)
     # .SO file extension on Linux/Mac OS
