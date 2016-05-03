@@ -144,34 +144,58 @@ public:
     /// Draw a sequence of primitives using a previously uploaded index buffer
     void drawIndexed(int type, uint32_t offset, uint32_t count);
 
-    /// Initialize a uniform parameter with a 4x4 matrix
-    void setUniform(const std::string &name, const Matrix4f &mat, bool warn = true) {
-        glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.data());
+    /// Initialize a uniform parameter with a 4x4 matrix (float)
+    template <typename T>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 4> &mat, bool warn = true) {
+        glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.template cast<float>().data());
     }
 
     /// Initialize a uniform parameter with an integer value
-    void setUniform(const std::string &name, int value, bool warn = true) {
-        glUniform1i(uniform(name, warn), value);
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, T value, bool warn = true) {
+        glUniform1i(uniform(name, warn), (int) value);
     }
 
-    /// Initialize a uniform parameter with a float value
-    void setUniform(const std::string &name, float value, bool warn = true) {
-        glUniform1f(uniform(name, warn), value);
+    /// Initialize a uniform parameter with a floating point value
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, T value, bool warn = true) {
+        glUniform1f(uniform(name, warn), (float) value);
     }
 
-    /// Initialize a uniform parameter with a 2D vector
-    void setUniform(const std::string &name, const Vector2f &v, bool warn = true) {
-        glUniform2f(uniform(name, warn), v.x(), v.y());
+    /// Initialize a uniform parameter with a 2D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 2, 1>  &v, bool warn = true) {
+        glUniform2i(uniform(name, warn), (int) v.x(), (int) v.y());
     }
 
-    /// Initialize a uniform parameter with a 3D vector
-    void setUniform(const std::string &name, const Vector3f &v, bool warn = true) {
-        glUniform3f(uniform(name, warn), v.x(), v.y(), v.z());
+    /// Initialize a uniform parameter with a 2D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 2, 1>  &v, bool warn = true) {
+        glUniform2f(uniform(name, warn), (float) v.x(), (float) v.y());
     }
 
-    /// Initialize a uniform parameter with a 4D vector
-    void setUniform(const std::string &name, const Vector4f &v, bool warn = true) {
-        glUniform4f(uniform(name, warn), v.x(), v.y(), v.z(), v.w());
+    /// Initialize a uniform parameter with a 3D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 3, 1>  &v, bool warn = true) {
+        glUniform3i(uniform(name, warn), (int) v.x(), (int) v.y(), (int) v.z());
+    }
+
+    /// Initialize a uniform parameter with a 3D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 3, 1>  &v, bool warn = true) {
+        glUniform3f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z());
+    }
+
+    /// Initialize a uniform parameter with a 4D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 1>  &v, bool warn = true) {
+        glUniform4i(uniform(name, warn), (int) v.x(), (int) v.y(), (int) v.z(), (int) v.w());
+    }
+
+    /// Initialize a uniform parameter with a 4D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 1>  &v, bool warn = true) {
+        glUniform4f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z(), (float) v.w());
     }
 
     /// Return the size of all registered buffers in bytes
