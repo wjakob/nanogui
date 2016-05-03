@@ -419,9 +419,10 @@ PYBIND11_PLUGIN(nanogui) {
 
     py::class_<PyScreen, ref<PyScreen>>(m, "Screen", widget, D(Screen))
         .alias<Screen>()
-        .def(py::init<const Vector2i &, const std::string &, bool, bool>(),
+        .def(py::init<const Vector2i &, const std::string &, bool, bool, int, int, int, int, int>(),
             py::arg("size"), py::arg("caption"), py::arg("resizable") = true, py::arg("fullscreen") = false,
-            D(Screen, Screen))
+            py::arg("colorBits") = 8, py::arg("alphaBits") = 8, py::arg("depthBits") = 24, py::arg("stencilBits") = 8,
+            py::arg("nSamples") = 0, D(Screen, Screen))
         .def("caption", &Screen::caption, D(Screen, caption))
         .def("setCaption", &Screen::setCaption, D(Screen, setCaption))
         .def("background", &Screen::background, D(Screen, background))

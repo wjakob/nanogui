@@ -77,8 +77,9 @@ Screen::Screen()
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
-Screen::Screen(const Vector2i &size, const std::string &caption,
-               bool resizable, bool fullscreen)
+Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
+               bool fullscreen, int colorBits, int alphaBits, int depthBits,
+               int stencilBits, int nSamples)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
@@ -90,14 +91,13 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Request a RGBA8 buffer without MSAA */
-    glfwWindowHint(GLFW_SAMPLES, 16);
-    glfwWindowHint(GLFW_RED_BITS, 8);
-    glfwWindowHint(GLFW_GREEN_BITS, 8);
-    glfwWindowHint(GLFW_BLUE_BITS, 8);
-    glfwWindowHint(GLFW_ALPHA_BITS, 8);
-    glfwWindowHint(GLFW_STENCIL_BITS, 8);
-    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    glfwWindowHint(GLFW_SAMPLES, nSamples);
+    glfwWindowHint(GLFW_RED_BITS, colorBits);
+    glfwWindowHint(GLFW_GREEN_BITS, colorBits);
+    glfwWindowHint(GLFW_BLUE_BITS, colorBits);
+    glfwWindowHint(GLFW_ALPHA_BITS, alphaBits);
+    glfwWindowHint(GLFW_STENCIL_BITS, stencilBits);
+    glfwWindowHint(GLFW_DEPTH_BITS, depthBits);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
 
@@ -119,7 +119,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
 #if defined(_WIN32)
     if (!gladInitialized) {
         gladInitialized = true;
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
             throw std::runtime_error("Could not initialize GLAD!");
         glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
     }
@@ -248,11 +248,22 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
         glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
 #endif
 
-#ifdef NDEBUG
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
-#else
-    mNVGContext = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS | NVG_DEBUG);
+    /* Detect framebuffer properties and set up compatible NanoVG context */
+    GLint nStencilBits = 0, nSamples = 0;
+    glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER,
+        GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
+    glGetIntegerv(GL_SAMPLES, &nSamples);
+
+    int flags = 0;
+    if (nStencilBits >= 8)
+       flags |= NVG_STENCIL_STROKES;
+    if (nSamples <= 1)
+       flags |= NVG_ANTIALIAS;
+#if !defined(NDEBUG)
+    flags |= NVG_DEBUG;
 #endif
+
+    mNVGContext = nvgCreateGL3(flags);
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
 

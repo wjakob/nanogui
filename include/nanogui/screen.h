@@ -25,17 +25,51 @@ class NANOGUI_EXPORT Screen : public Widget {
     friend class Widget;
     friend class Window;
 public:
-    /// Create a new screen
+    /**
+     * Create a new Screen instance
+     *
+     * \param size
+     *    Size in pixels at 96 dpi (on high-DPI screens, the actual resolution
+     *    in terms of hardware pixels may be larger by an integer factor)
+     *
+     * \param caption
+     *    Window title (in UTF-8 encoding)
+     *
+     * \param resizable
+     *    If creating a window, should it be resizable?
+     *
+     * \param fullscreen
+     *    Specifies whether to create a windowed or full-screen view
+     *
+     * \param colorBits
+     *    Number of bits per pixel dedicated to the R/G/B color components
+     *
+     * \param alphaBits
+     *    Number of bits per pixel dedicated to the alpha channel
+     *
+     * \param depthBits
+     *    Number of bits per pixel dedicated to the Z-buffer
+     *
+     * \param stencilBits
+     *    Number of bits per pixel dedicated to the stencil buffer (recommended
+     *    to set this to 8. NanoVG can draw higher-quality strokes using a
+     *    stencil buffer)
+     *
+     * \param nSamples
+     *    Number of MSAA samples (set to 0 to disable)
+     */
     Screen(const Vector2i &size, const std::string &caption,
-           bool resizable = true, bool fullscreen = false);
+           bool resizable = true, bool fullscreen = false, int colorBits = 8,
+           int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
+           int nSamples = 0);
 
     /// Release all resources
     virtual ~Screen();
 
-    /// Get the window titlebar caption
+    /// Get the window title bar caption
     const std::string &caption() const { return mCaption; }
 
-    /// Set the window titlebar caption
+    /// Set the window title bar caption
     void setCaption(const std::string &caption);
 
     /// Return the screen's background color
