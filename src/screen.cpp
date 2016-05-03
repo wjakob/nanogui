@@ -72,15 +72,16 @@ static float get_pixel_ratio(GLFWwindow *window) {
 }
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f),
+      mShutdownGLFWOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption,
                bool resizable, bool fullscreen)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mCaption(caption), mShutdownGLFWOnDestruct(false),
-      mFullscreen(fullscreen) {
+      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(caption),
+      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL 3.3 core profile context */
@@ -262,7 +263,6 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mDragActive = false;
     mLastInteraction = glfwGetTime();
     mProcessEvents = true;
-    mBackground = Vector3f(0.3f, 0.3f, 0.32f);
     __nanogui_screens[mGLFWWindow] = this;
 
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
