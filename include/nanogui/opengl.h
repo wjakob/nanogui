@@ -17,6 +17,7 @@
 #if defined(__APPLE__)
     #define GLFW_INCLUDE_GLCOREARB
 #elif defined(_WIN32)
+    #define GLAD_GLAPI_EXPORT
     #include <glad/glad.h>
 #else
     #define GL_GLEXT_PROTOTYPES
