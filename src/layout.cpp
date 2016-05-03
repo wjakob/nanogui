@@ -29,8 +29,13 @@ BoxLayout::BoxLayout(Orientation orientation, Alignment alignment,
 Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
     Vector2i size = Vector2i::Constant(2*mMargin);
 
-    if (dynamic_cast<const Window *>(widget))
-        size[1] += widget->theme()->mWindowHeaderHeight - mMargin/2;
+    int yOffset = 0;
+    if (dynamic_cast<const Window *>(widget)) {
+        if (mOrientation == Orientation::Vertical)
+            size[1] += widget->theme()->mWindowHeaderHeight - mMargin/2;
+        else
+            yOffset = widget->theme()->mWindowHeaderHeight;
+    }
 
     bool first = true;
     int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
@@ -52,7 +57,7 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
         size[axis2] = std::max(size[axis2], targetSize[axis2] + 2*mMargin);
         first = false;
     }
-    return size;
+    return size + Vector2i(0, yOffset);
 }
 
 void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
@@ -64,9 +69,16 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
     int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
     int position = mMargin;
+    int yOffset = 0;
 
-    if (dynamic_cast<Window *>(widget))
-        position += widget->theme()->mWindowHeaderHeight - mMargin/2;
+    if (dynamic_cast<Window *>(widget)) {
+        if (mOrientation == Orientation::Vertical) {
+            position += widget->theme()->mWindowHeaderHeight - mMargin/2;
+        } else {
+            yOffset = widget->theme()->mWindowHeaderHeight;
+            containerSize[1] -= yOffset;
+        }
+    }
 
     bool first = true;
     for (auto w : widget->children()) {
@@ -82,22 +94,23 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
             fs[0] ? fs[0] : ps[0],
             fs[1] ? fs[1] : ps[1]
         );
-        Vector2i pos = Vector2i::Zero();
+        Vector2i pos(0, yOffset);
+
         pos[axis1] = position;
 
         switch (mAlignment) {
             case Alignment::Minimum:
-                pos[axis2] = mMargin;
+                pos[axis2] += mMargin;
                 break;
             case Alignment::Middle:
-                pos[axis2] = (containerSize[axis2] - targetSize[axis2]) / 2;
+                pos[axis2] += (containerSize[axis2] - targetSize[axis2]) / 2;
                 break;
             case Alignment::Maximum:
-                pos[axis2] = containerSize[axis2] - targetSize[axis2] - mMargin;
+                pos[axis2] += containerSize[axis2] - targetSize[axis2] - mMargin * 2;
                 break;
             case Alignment::Fill:
-                pos[axis2] = mMargin;
-                targetSize[axis2] = fs[axis2] ? fs[axis2] : containerSize[axis2];
+                pos[axis2] += mMargin;
+                targetSize[axis2] = fs[axis2] ? fs[axis2] : (containerSize[axis2] - mMargin * 2);
                 break;
         }
 
