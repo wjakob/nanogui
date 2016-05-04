@@ -35,6 +35,10 @@ NAMESPACE_END(detail)
 
 using Eigen::Quaternionf;
 
+class GLUniformBuffer;
+
+//  ----------------------------------------------------
+
 /**
  * Helper class for compiling and linking OpenGL shaders and uploading
  * associated vertex and index buffers from Eigen matrices
@@ -198,6 +202,9 @@ public:
         glUniform4f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z(), (float) v.w());
     }
 
+    /// Initialize a uniform buffer with a uniform buffer object
+    void setUniform(const std::string &name, const GLUniformBuffer &buf, bool warn = true);
+
     /// Return the size of all registered buffers in bytes
     size_t bufferSize() const {
         size_t size = 0;
@@ -228,6 +235,35 @@ protected:
     GLuint mVertexArrayObject;
     std::map<std::string, Buffer> mBufferObjects;
     std::map<std::string, std::string> mDefinitions;
+};
+
+//  ----------------------------------------------------
+
+/// Helper class for creating OpenGL Uniform Buffer objects
+class NANOGUI_EXPORT GLUniformBuffer {
+public:
+    GLUniformBuffer() : mID(0), mBindingPoint(0) { }
+
+    /// Create a new uniform buffer
+    void init();
+
+    /// Release underlying OpenGL object
+    void free();
+
+    /// Bind the uniform buffer to a specific binding point
+    void bind(int index);
+
+    /// Release/unbind the uniform buffer
+    void release();
+
+    /// Update content on the GPU using data
+    void update(const std::vector<uint8_t> &data);
+
+    /// Return the binding point of this uniform buffer
+    int getBindingPoint() const { return mBindingPoint; }
+private:
+    GLuint mID;
+    int mBindingPoint;
 };
 
 /// Helper class for creating framebuffer objects
@@ -263,6 +299,8 @@ protected:
     Vector2i mSize;
     int mSamples;
 };
+
+//  ----------------------------------------------------
 
 /// Arcball helper class to interactively rotate objects on-screen
 struct Arcball {
@@ -346,6 +384,8 @@ protected:
     Quaternionf mQuat, mIncr;
     float mSpeedFactor;
 };
+
+//  ----------------------------------------------------
 
 extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &model,
                         const Matrix4f &proj, const Vector2i &viewportSize);

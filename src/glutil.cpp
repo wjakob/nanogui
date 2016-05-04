@@ -13,7 +13,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace nanogui {
+NAMESPACE_BEGIN(nanogui)
 
 static GLuint createShader_helper(GLint type, const std::string &name,
                                   const std::string &defines,
@@ -139,6 +139,16 @@ GLint GLShader::attrib(const std::string &name, bool warn) const {
     if (id == -1 && warn)
         std::cerr << mName << ": warning: did not find attrib " << name << std::endl;
     return id;
+}
+
+void GLShader::setUniform(const std::string &name, const GLUniformBuffer &buf, bool warn) {
+    GLuint blockIndex = glGetUniformBlockIndex(mProgramShader, name.c_str());
+    if (blockIndex == GL_INVALID_INDEX) {
+        if (warn)
+            std::cerr << mName << ": warning: did not find uniform buffer " << name << std::endl;
+        return;
+    }
+    glUniformBlockBinding(mProgramShader, blockIndex, buf.getBindingPoint());
 }
 
 GLint GLShader::uniform(const std::string &name, bool warn) const {
@@ -282,6 +292,33 @@ void GLShader::free() {
     glDeleteShader(mGeometryShader); mGeometryShader = 0;
 }
 
+//  ----------------------------------------------------
+
+void GLUniformBuffer::init() {
+    glGenBuffers(1, &mID);
+}
+
+void GLUniformBuffer::bind(int bindingPoint) {
+    mBindingPoint = bindingPoint;
+    glBindBufferBase(GL_UNIFORM_BUFFER, mBindingPoint, mID);
+}
+
+void GLUniformBuffer::release() {
+    glBindBufferBase(GL_UNIFORM_BUFFER, mBindingPoint, 0);
+}
+
+void GLUniformBuffer::free() {
+    glDeleteBuffers(1, &mID);
+}
+
+void GLUniformBuffer::update(const std::vector<uint8_t> &data) {
+    glBindBuffer(GL_UNIFORM_BUFFER, mID);
+    glBufferData(GL_UNIFORM_BUFFER, data.size(), data.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+//  ----------------------------------------------------
+
 void GLFramebuffer::init(const Vector2i &size, int nSamples) {
     mSize = size;
     mSamples = nSamples;
@@ -289,7 +326,7 @@ void GLFramebuffer::init(const Vector2i &size, int nSamples) {
     glGenRenderbuffers(1, &mColor);
     glBindRenderbuffer(GL_RENDERBUFFER, mColor);
 
-    if (nSamples == 1)
+    if (nSamples <= 1)
         glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, size.x(), size.y());
     else
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_RGBA8, size.x(), size.y());
@@ -297,7 +334,7 @@ void GLFramebuffer::init(const Vector2i &size, int nSamples) {
     glGenRenderbuffers(1, &mDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, mDepth);
 
-    if (nSamples == 1)
+    if (nSamples <= 1)
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size.x(), size.y());
     else
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, size.x(), size.y());
@@ -348,49 +385,51 @@ void GLFramebuffer::blit() {
 }
 
 void GLFramebuffer::downloadTGA(const std::string &filename) {
-	uint8_t *temp = new uint8_t[mSize.prod() * 4];
+    uint8_t *temp = new uint8_t[mSize.prod() * 4];
 
     std::cout << "Writing \"" << filename  << "\" (" << mSize.x() << "x" << mSize.y() << ") .. ";
     std::cout.flush();
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, mFramebuffer);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-	glReadPixels(0, 0, mSize.x(), mSize.y(), GL_BGRA, GL_UNSIGNED_BYTE, temp);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, mFramebuffer);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    glReadPixels(0, 0, mSize.x(), mSize.y(), GL_BGRA, GL_UNSIGNED_BYTE, temp);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-	uint32_t rowSize = mSize.x() * 4;
-	uint32_t halfHeight = mSize.y() / 2;
-	uint8_t *line = (uint8_t *) alloca(rowSize);
-	for (uint32_t i=0, j=mSize.y()-1; i<halfHeight; ++i) {
-		memcpy(line, temp + i * rowSize, rowSize);
-		memcpy(temp + i * rowSize, temp + j * rowSize, rowSize);
-		memcpy(temp + j * rowSize, line, rowSize);
-		j--;
-	}
+    uint32_t rowSize = mSize.x() * 4;
+    uint32_t halfHeight = mSize.y() / 2;
+    uint8_t *line = (uint8_t *) alloca(rowSize);
+    for (uint32_t i=0, j=mSize.y()-1; i<halfHeight; ++i) {
+        memcpy(line, temp + i * rowSize, rowSize);
+        memcpy(temp + i * rowSize, temp + j * rowSize, rowSize);
+        memcpy(temp + j * rowSize, line, rowSize);
+        j--;
+    }
 
-	FILE *tga = fopen(filename.c_str(), "wb");
-	if (tga == nullptr)
-	    throw std::runtime_error("GLFramebuffer::downloadTGA(): Could not open output file");
-	fputc(0, tga); /* ID */
-	fputc(0, tga); /* Color map */
-	fputc(2, tga); /* Image type */
-	fputc(0, tga); fputc(0, tga); /* First entry of color map (unused) */
-	fputc(0, tga); fputc(0, tga); /* Length of color map (unused) */
-	fputc(0, tga); /* Color map entry size (unused) */
-	fputc(0, tga); fputc(0, tga);  /* X offset */
-	fputc(0, tga); fputc(0, tga);  /* Y offset */
-	fputc(mSize.x() % 256, tga); /* Width */
-	fputc(mSize.x() / 256, tga); /* continued */
-	fputc(mSize.y() % 256, tga); /* Height */
-	fputc(mSize.y() / 256, tga); /* continued */
-	fputc(32, tga);   /* Bits per pixel */
-	fputc(0x20, tga); /* Scan from top left */
-	fwrite(temp, mSize.prod() * 4, 1, tga);
-	fclose(tga);
+    FILE *tga = fopen(filename.c_str(), "wb");
+    if (tga == nullptr)
+        throw std::runtime_error("GLFramebuffer::downloadTGA(): Could not open output file");
+    fputc(0, tga); /* ID */
+    fputc(0, tga); /* Color map */
+    fputc(2, tga); /* Image type */
+    fputc(0, tga); fputc(0, tga); /* First entry of color map (unused) */
+    fputc(0, tga); fputc(0, tga); /* Length of color map (unused) */
+    fputc(0, tga); /* Color map entry size (unused) */
+    fputc(0, tga); fputc(0, tga);  /* X offset */
+    fputc(0, tga); fputc(0, tga);  /* Y offset */
+    fputc(mSize.x() % 256, tga); /* Width */
+    fputc(mSize.x() / 256, tga); /* continued */
+    fputc(mSize.y() % 256, tga); /* Height */
+    fputc(mSize.y() / 256, tga); /* continued */
+    fputc(32, tga);   /* Bits per pixel */
+    fputc(0x20, tga); /* Scan from top left */
+    fwrite(temp, mSize.prod() * 4, 1, tga);
+    fclose(tga);
 
-	delete[] temp;
+    delete[] temp;
     std::cout << "done." << std::endl;
 }
+
+//  ----------------------------------------------------
 
 Eigen::Vector3f project(const Eigen::Vector3f &obj,
                         const Eigen::Matrix4f &model,
@@ -494,4 +533,4 @@ Eigen::Matrix4f translate(const Eigen::Matrix4f &m, const Eigen::Vector3f &v) {
     return Result;
 }
 
-}; /* namespace nanogui */
+NAMESPACE_END(nanogui)
