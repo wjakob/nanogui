@@ -285,18 +285,28 @@ public:
 
     template <typename Derived, typename std::enable_if<Derived::IsVectorAtCompileTime, int>::type = 0>
     void push_back(const Eigen::MatrixBase<Derived> &value) {
+        const int n = (int) value.size();
         int i;
-        for (i = 0; i < value.size(); ++i)
+        for (i = 0; i < n; ++i)
             push_back(value[i]);
-        while ((i++) % 4 != 0)
+        const int pad = n == 1 ? 1 : (n == 2 ? 2 : 4);
+        while ((i++) % pad != 0)
             push_back((typename Derived::Scalar) 0);
     }
 
     template <typename Derived, typename std::enable_if<!Derived::IsVectorAtCompileTime, int>::type = 0>
-    void push_back(const Eigen::MatrixBase<Derived> &value) {
-        for (int i = 0; i < value.cols(); ++i)
-            for (int j = 0; j < value.rows(); ++j)
-                push_back(value(j, i));
+    void push_back(const Eigen::MatrixBase<Derived> &value, bool colMajor = true) {
+        const int n = (int) (colMajor ? value.rows() : value.cols());
+        const int m = (int) (colMajor ? value.cols() : value.rows());
+        const int pad = n == 1 ? 1 : (n == 2 ? 2 : 4);
+
+        for (int i = 0; i < m; ++i) {
+            int j;
+            for (j = 0; j < n; ++j)
+                push_back(colMajor ? value(j, i) : value(i, j));
+            while ((j++) % pad != 0)
+                push_back((typename Derived::Scalar) 0);
+        }
     }
 };
 
