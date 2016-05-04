@@ -21,8 +21,9 @@ option(NANOGUI_USE_GLAD      "Build a Python plugin for NanoGUI?" ${NANOGUI_USE_
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
-# Required libraries for linking against nanogui (all targets)
+# Required libraries and flags for linking against nanogui (all targets)
 set(NANOGUI_EXTRA_LIBS "")
+set(NANOGUI_EXTRA_DEFS "")
 
 # Platform-dependent files for libnanogui
 set(LIBNANOGUI_EXTRA_SOURCE "")
@@ -59,12 +60,12 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
-  add_definitions ("-DNANOGUI_PYTHON")
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_PYTHON)
 endif()
 
 # Shared library mode: add NANOGUI_SHARED flag to all targets
 if (NANOGUI_BUILD_SHARED)
-  add_definitions ("-DNANOGUI_SHARED")
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_SHARED)
 endif()
 
 if (MSVC)
@@ -112,12 +113,16 @@ if (NANOGUI_USE_GLAD)
      "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
 	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/glad/glad.h"
 	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/KHR/khrplatform.h")
-  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_DEFINITIONS "GLAD_GLAPI_EXPORT;GLAD_GLAPI_EXPORT_BUILD")
+  if (NANOGUI_BUILD_SHARED)
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
+      PROPERTIES COMPILE_DEFINITIONS "GLAD_GLAPI_EXPORT;GLAD_GLAPI_EXPORT_BUILD")
+  endif()
   if (MSVC)
-    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_FLAGS "/wd4055 ")
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
+      PROPERTIES COMPILE_FLAGS "/wd4055 ")
   endif()
   include_directories(ext/glad/include)
-  add_definitions(-DNANOGUI_USE_GLAD)
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_GLAD)
 endif()
 
 # Required core libraries on various platforms
@@ -168,6 +173,8 @@ if (APPLE)
   include_directories(ext/coro)
   list(APPEND LIBNANOGUI_PYTHON_EXTRA_SOURCE ext/coro/coro.c)
 endif()
+
+add_definitions(${NANOGUI_EXTRA_DEFS})
 
 # Compile main NanoGUI library
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
@@ -359,6 +366,7 @@ get_directory_property(NANOGUI_HAS_PARENT PARENT_DIRECTORY)
 if(NANOGUI_HAS_PARENT)
   # This project is included from somewhere else. Export NANOGUI_EXTRA_LIBS variable
   set(NANOGUI_EXTRA_LIBS ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
+  set(NANOGUI_EXTRA_DEFS ${NANOGUI_EXTRA_DEFS} PARENT_SCOPE)
 else()
   # Create documentation for python plugin (optional target for developers)
   add_custom_target(mkdoc COMMAND

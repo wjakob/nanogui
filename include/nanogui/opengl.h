@@ -14,8 +14,10 @@
 
 #include <nanogui/common.h>
 
-#if defined(NANOGUI_USE_GLAD)
-    #define GLAD_GLAPI_EXPORT
+#if defined(NANOGUI_GLAD)
+    #if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
+        #define GLAD_GLAPI_EXPORT
+    #endif
 
     #include <glad/glad.h>
 #else
