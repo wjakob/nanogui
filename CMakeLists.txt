@@ -21,9 +21,10 @@ option(NANOGUI_USE_GLAD      "Build a Python plugin for NanoGUI?" ${NANOGUI_USE_
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
-# Required libraries and flags for linking against nanogui (all targets)
+# Required libraries, flags, and include files for compiling and linking against nanogui (all targets)
 set(NANOGUI_EXTRA_LIBS "")
 set(NANOGUI_EXTRA_DEFS "")
+set(NANOGUI_EXTRA_INCS "")
 
 # Platform-dependent files for libnanogui
 set(LIBNANOGUI_EXTRA_SOURCE "")
@@ -123,7 +124,14 @@ if (NANOGUI_USE_GLAD)
   endif()
   include_directories(ext/glad/include)
   list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_GLAD)
+  list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include")
 endif()
+
+list(APPEND NANOGUI_EXTRA_INCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
+)
 
 # Required core libraries on various platforms
 if (WIN32)
@@ -367,6 +375,7 @@ if(NANOGUI_HAS_PARENT)
   # This project is included from somewhere else. Export NANOGUI_EXTRA_LIBS variable
   set(NANOGUI_EXTRA_LIBS ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
   set(NANOGUI_EXTRA_DEFS ${NANOGUI_EXTRA_DEFS} PARENT_SCOPE)
+  set(NANOGUI_EXTRA_INCS ${NANOGUI_EXTRA_INCS} PARENT_SCOPE)
 else()
   # Create documentation for python plugin (optional target for developers)
   add_custom_target(mkdoc COMMAND
