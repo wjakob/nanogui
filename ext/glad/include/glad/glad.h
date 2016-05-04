@@ -25,8 +25,12 @@
 #endif
 #define __gl_h_
 
-#if !defined(APIENTRY) && defined(_WIN32)
-#define APIENTRY _stdcall
+#if !defined(APIENTRY)
+#  if defined(_WIN32)
+#    define APIENTRY _stdcall
+#  else
+#    define APIENTRY
+#  endif
 #endif
 
 #ifndef APIENTRYP

@@ -37,7 +37,7 @@ NAMESPACE_BEGIN(nanogui)
 
 std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
-#if defined(_WIN32)
+#if defined(NANOGUI_USE_GLAD)
 static bool gladInitialized = false;
 #endif
 
@@ -116,7 +116,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
 
     glfwMakeContextCurrent(mGLFWWindow);
 
-#if defined(_WIN32)
+#if defined(NANOGUI_USE_GLAD)
     if (!gladInitialized) {
         gladInitialized = true;
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))

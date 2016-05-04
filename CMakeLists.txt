@@ -8,9 +8,17 @@ if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
     "by calling \"git submodule update --init --recursive\"")
 endif()
 
+if (WIN32)
+  set(NANOGUI_USE_GLAD_DEFAULT ON)
+else()
+  set(NANOGUI_USE_GLAD_DEFAULT OFF)
+endif()
+
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
+option(NANOGUI_USE_GLAD      "Build a Python plugin for NanoGUI?" ${NANOGUI_USE_GLAD_DEFAULT})
+
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
 # Required libraries for linking against nanogui (all targets)
@@ -98,7 +106,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
   endif()
 endif()
 
-if (WIN32)
+if (NANOGUI_USE_GLAD)
   # Build and include GLAD on Windows
   list(APPEND LIBNANOGUI_EXTRA_SOURCE
      "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
@@ -109,6 +117,7 @@ if (WIN32)
     set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_FLAGS "/wd4055 ")
   endif()
   include_directories(ext/glad/include)
+  add_definitions(-DNANOGUI_USE_GLAD)
 endif()
 
 # Required core libraries on various platforms
