@@ -34,12 +34,12 @@ int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
     {
-        bool use_gl_4_1 = false;// set to true to create an OpenGL 4.1 context
+        bool use_gl_4_1 = false;// Set to true to create an OpenGL 4.1 context.
         Screen *screen = nullptr;
 
         if(use_gl_4_1) {
             // NanoGUI presents many options for you to utilize at your discretion.
-            // see nanogui/screen.h for what all of these represent.
+            // See include/nanogui/screen.h for what all of these represent.
             screen = new Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]",
                                 /*resizable*/true, /*fullscreen*/false, /*colorBits*/8,
                                 /*alphaBits*/8, /*depthBits*/24, /*stencilBits*/8,

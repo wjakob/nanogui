@@ -61,7 +61,7 @@ public:
      * \param glMajor
      *    The requested OpenGL Major version number.  Default is 3, if changed
      *    the value must correspond to a forward compatible core profile (for
-     *    portability reasons).  For example, set this to 4 and glMinor to 1
+     *    portability reasons).  For example, set this to 4 and \ref glMinor to 1
      *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
      *    invalid profile will result in no context (and therefore no GUI)
      *    being created.
@@ -69,7 +69,7 @@ public:
      * \param glMinor
      *    The requested OpenGL Minor version number.  Default is 3, if changed
      *    the value must correspond to a forward compatible core profile (for
-     *    portability reasons).  For example, set this to 1 and glMajor to 4
+     *    portability reasons).  For example, set this to 1 and \ref glMajor to 4
      *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
      *    invalid profile will result in no context (and therefore no GUI)
      *    being created.

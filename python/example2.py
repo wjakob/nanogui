@@ -33,7 +33,13 @@ def make_accessors(name):
 
 nanogui.init()
 
-screen = Screen(Vector2i(500, 700), "NanoGUI test")
+use_gl_4_1 = False # Set to True to create an OpenGL 4.1 context.
+if use_gl_4_1:
+    # NanoGUI presents many options for you to utilize at your discretion.
+    # See include/nanogui/screen.h for what all of the options are.
+    screen = Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]", glMajor=4, glMinor=1)
+else:
+    screen = Screen(Vector2i(500, 700), "NanoGUI test")
 
 gui = FormHelper(screen)
 window = gui.addWindow(Vector2i(10, 10), "Form helper example")
