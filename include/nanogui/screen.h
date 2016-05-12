@@ -57,11 +57,28 @@ public:
      *
      * \param nSamples
      *    Number of MSAA samples (set to 0 to disable)
+     *
+     * \param glMajor
+     *    The requested OpenGL Major version number.  Default is 3, if changed
+     *    the value must correspond to a forward compatible core profile (for
+     *    portability reasons).  For example, set this to 4 and glMinor to 1
+     *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
+     *    invalid profile will result in no context (and therefore no GUI)
+     *    being created.
+     *
+     * \param glMinor
+     *    The requested OpenGL Minor version number.  Default is 3, if changed
+     *    the value must correspond to a forward compatible core profile (for
+     *    portability reasons).  For example, set this to 1 and glMajor to 4
+     *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
+     *    invalid profile will result in no context (and therefore no GUI)
+     *    being created.
      */
     Screen(const Vector2i &size, const std::string &caption,
            bool resizable = true, bool fullscreen = false, int colorBits = 8,
            int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
-           int nSamples = 0);
+           int nSamples = 0,
+           unsigned int glMajor = 3, unsigned int glMinor = 3);
 
     /// Release all resources
     virtual ~Screen();

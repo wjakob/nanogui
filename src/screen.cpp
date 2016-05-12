@@ -79,15 +79,17 @@ Screen::Screen()
 
 Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                bool fullscreen, int colorBits, int alphaBits, int depthBits,
-               int stencilBits, int nSamples)
+               int stencilBits, int nSamples,
+               unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
-    /* Request a forward compatible OpenGL 3.3 core profile context */
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
+       Default value is an OpenGL 3.3 core profile context. */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinor);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -112,7 +114,9 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     }
 
     if (!mGLFWWindow)
-        throw std::runtime_error("Could not create an OpenGL 3.3 context!");
+        throw std::runtime_error("Could not create an OpenGL " +
+                                 std::to_string(glMajor) + "." +
+                                 std::to_string(glMinor) + " context!");
 
     glfwMakeContextCurrent(mGLFWWindow);
 
