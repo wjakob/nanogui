@@ -271,7 +271,7 @@ PYBIND11_PLUGIN(nanogui) {
             })
             .def("__init__", [](VectorXf &v, py::buffer b) {
                 py::buffer_info info = b.request();
-                if (info.format != py::format_descriptor<float>::value()) {
+                if (info.format != py::format_descriptor<float>::value) {
                     throw std::runtime_error("Incompatible buffer format!");
                 } else if (info.ndim == 1 && info.strides[0] == sizeof(float)) {
                     new (&v) VectorXf(info.shape[0]);
@@ -307,7 +307,7 @@ PYBIND11_PLUGIN(nanogui) {
                     m.data(),               /* Pointer to buffer */
                     sizeof(float),          /* Size of one scalar */
                     /* Python struct-style format descriptor */
-                    py::format_descriptor<float>::value(),
+                    py::format_descriptor<float>::value,
                     1,                      /* Number of dimensions */
                     { (size_t) m.size() },  /* Buffer dimensions */
                     { sizeof(float) }       /* Strides (in bytes) for each index */
