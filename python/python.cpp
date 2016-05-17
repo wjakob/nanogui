@@ -3,6 +3,8 @@
 #include <nanogui/nanogui.h>
 #include <nanogui/opengl.h>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "python.h"
 
 #if defined(__APPLE__)
