@@ -175,7 +175,7 @@ else()
   set(NANOGUI_LIBRARY_TYPE "STATIC")
 endif()
 
-if (APPLE)
+if (APPLE OR CMAKE_SYSTEM MATCHES "Linux")
   # Include coroutine support for running the mainloop in detached mode
   add_definitions(-DCORO_SJLJ)
   include_directories(ext/coro)

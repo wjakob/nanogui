@@ -3,9 +3,11 @@
 #include <nanogui/nanogui.h>
 #include <nanogui/opengl.h>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "python.h"
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
 #include <coro.h>
 #endif
 
@@ -48,7 +50,7 @@ DECLARE_WIDGET(ColorPicker);
 /// Make pybind aware of the ref-counted wrapper type
 PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
 namespace {
     class semaphore {
     public:
@@ -85,7 +87,7 @@ public:
     int refresh = 0;
     std::thread thread;
 
-    #if defined(__APPLE__)
+    #if defined(__APPLE__) || defined(__linux__)
         coro_context ctx_helper, ctx_main, ctx_thread;
         coro_stack stack;
         semaphore sema;
@@ -100,7 +102,7 @@ public:
         if (!detached)
             return;
 
-        #if defined(__APPLE__)
+        #if defined(__APPLE__) || defined(__linux__)
             /* Release GIL and disassociate from thread state (which was originally
                associated with the main Python thread) */
             py::gil_scoped_release thread_state(true);
@@ -118,7 +120,7 @@ public:
         thread.join();
         detached = false;
 
-        #if defined(__APPLE__)
+        #if defined(__APPLE__) || defined(__linux__)
             /* Reacquire GIL and reassociate with thread state
                [via RAII destructor in 'thread_state'] */
         #endif
@@ -142,7 +144,7 @@ PYBIND11_PLUGIN(nanogui) {
             handle->detached = true;
             handle->refresh = refresh;
 
-            #if defined(__APPLE__)
+            #if defined(__APPLE__) || defined(__linux__)
                 /* Release GIL and completely disassociate the calling thread
                    from its associated Python thread state data structure */
                 py::gil_scoped_release thread_state(true);
@@ -194,7 +196,7 @@ PYBIND11_PLUGIN(nanogui) {
                 });
             #endif
 
-            #if defined(__APPLE__)
+            #if defined(__APPLE__) || defined(__linux__)
                 /* Reacquire GIL and reassociate with thread state on newly
                    created thread [via RAII destructor in 'thread_state'] */
             #endif
