@@ -345,9 +345,8 @@ PYBIND11_PLUGIN(nanogui) {
 
     py::class_<NVGcontext> context(m, "NVGcontext");
 
-    py::class_<PyWidget, ref<PyWidget>> widget(m, "Widget", D(Widget));
+    py::class_<Widget, ref<Widget>, PyWidget> widget(m, "Widget", D(Widget));
     widget
-        .alias<Widget>()
         .def(py::init<Widget *>(), D(Widget, Widget))
         .def("parent", (Widget *(Widget::*)(void)) &Widget::parent, D(Widget, parent))
         .def("setParent", &Widget::setParent, D(Widget, setParent))
@@ -419,8 +418,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("performLayout", &Widget::performLayout, D(Widget, performLayout))
         .def("draw", &Widget::draw, D(Widget, draw));
 
-    py::class_<PyScreen, ref<PyScreen>>(m, "Screen", widget, D(Screen))
-        .alias<Screen>()
+    py::class_<Screen, ref<Screen>, PyScreen>(m, "Screen", widget, D(Screen))
         .def(py::init<const Vector2i &, const std::string &, bool, bool, int, int, int, int, int, unsigned int, unsigned int>(),
             py::arg("size"), py::arg("caption"), py::arg("resizable") = true, py::arg("fullscreen") = false,
             py::arg("colorBits") = 8, py::arg("alphaBits") = 8, py::arg("depthBits") = 24, py::arg("stencilBits") = 8,
@@ -442,9 +440,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("nvgContext", &Screen::nvgContext, D(Screen, nvgContext),
                 py::return_value_policy::reference);
 
-    py::class_<PyWindow, ref<PyWindow>> window(m, "Window", widget, D(Window));
+    py::class_<Window, ref<Window>, PyWindow> window(m, "Window", widget, D(Window));
     window
-        .alias<Window>()
         .def(py::init<Widget *, const std::string>(), py::arg("parent"),
              py::arg("title") = std::string("Untitled"), D(Window, Window))
         .def("title", &Window::title, D(Window, title))
@@ -465,14 +462,12 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
-    py::class_<PyLayout, ref<PyLayout>> layout(m, "Layout", D(Layout));
+    py::class_<Layout, ref<Layout>, PyLayout> layout(m, "Layout", D(Layout));
     layout
-        .alias<Layout>()
         .def("preferredSize", &Layout::preferredSize, D(Layout, preferredSize))
         .def("performLayout", &Layout::performLayout, D(Layout, performLayout));
 
-    py::class_<PyBoxLayout, ref<PyBoxLayout>>(m, "BoxLayout", layout, D(BoxLayout))
-        .alias<BoxLayout>()
+    py::class_<BoxLayout, ref<BoxLayout>, PyBoxLayout>(m, "BoxLayout", layout, D(BoxLayout))
         .def(py::init<Orientation, Alignment, int, int>(),
              py::arg("orientation"), py::arg("alignment") = Alignment::Middle,
              py::arg("margin") = 0, py::arg("spacing") = 0, D(BoxLayout, BoxLayout))
@@ -485,8 +480,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("spacing", &BoxLayout::spacing, D(BoxLayout, spacing))
         .def("setSpacing", &BoxLayout::setSpacing, D(BoxLayout, setSpacing));
 
-    py::class_<PyGroupLayout, ref<PyGroupLayout>>(m, "GroupLayout", layout, D(GroupLayout))
-        .alias<GroupLayout>()
+    py::class_<GroupLayout, ref<GroupLayout>, PyGroupLayout>(m, "GroupLayout", layout, D(GroupLayout))
         .def(py::init<int, int, int, int>(),
              py::arg("margin") = 15, py::arg("spacing") = 6,
              py::arg("groupSpacing") = 14, py::arg("groupIndent") = 20,
@@ -500,8 +494,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("groupSpacing", &GroupLayout::groupSpacing, D(GroupLayout, groupSpacing))
         .def("setGroupSpacing", &GroupLayout::setGroupSpacing, D(GroupLayout, setGroupSpacing));
 
-    py::class_<PyGridLayout, ref<PyGridLayout>>(m, "GridLayout", layout, D(GridLayout))
-        .alias<GridLayout>()
+    py::class_<GridLayout, ref<GridLayout>, PyGridLayout>(m, "GridLayout", layout, D(GridLayout))
         .def(py::init<Orientation, int, Alignment, int, int>(),
              py::arg("orientation") = Orientation::Horizontal,
              py::arg("resolution") = 2, py::arg("alignment") = Alignment::Middle,
@@ -522,10 +515,10 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setColAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment, 2))
         .def("setRowAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment, 2));
 
-    py::class_<PyAdvancedGridLayout, ref<PyAdvancedGridLayout>> advGridLayout(
+    py::class_<AdvancedGridLayout, ref<AdvancedGridLayout>, PyAdvancedGridLayout> advGridLayout(
         m, "AdvancedGridLayout", layout, D(AdvancedGridLayout));
 
-    advGridLayout.alias<AdvancedGridLayout>()
+    advGridLayout
         .def(py::init<const std::vector<int> &, const std::vector<int> &>(),
              py::arg("widths"), py::arg("heights"),
              D(AdvancedGridLayout, AdvancedGridLayout))
@@ -552,8 +545,7 @@ PYBIND11_PLUGIN(nanogui) {
              py::arg("horiz") = Alignment::Fill,
              py::arg("vert") = Alignment::Fill);
 
-    py::class_<PyLabel, ref<PyLabel>>(m, "Label", widget, D(Label))
-        .alias<Label>()
+    py::class_<Label, ref<Label>, PyLabel>(m, "Label", widget, D(Label))
         .def(py::init<Widget *, const std::string &, const std::string &, int>(),
              py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
              py::arg("fontSize") = -1)
@@ -564,9 +556,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("color", &Label::color, D(Label, color))
         .def("setColor", &Label::setColor, D(Label, setColor));
 
-    py::class_<PyButton, ref<PyButton>> button(m, "Button", widget, D(Button));
+    py::class_<Button, ref<Button>, PyButton> button(m, "Button", widget, D(Button));
     button
-        .alias<Button>()
         .def(py::init<Widget *, const std::string &, int>(),
              py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0)
         .def("caption", &Button::caption, D(Button, caption))
@@ -602,14 +593,12 @@ PYBIND11_PLUGIN(nanogui) {
         .value("ToggleButton", Button::Flags::ToggleButton)
         .value("PopupButton", Button::Flags::PopupButton);
 
-    py::class_<PyToolButton, ref<PyToolButton>>(m, "ToolButton", button, D(ToolButton))
-        .alias<ToolButton>()
+    py::class_<ToolButton, ref<ToolButton>, PyToolButton>(m, "ToolButton", button, D(ToolButton))
         .def(py::init<Widget *,int, const std::string &>(),
              py::arg("parent"), py::arg("icon"), py::arg("caption") = std::string(""),
              D(ToolButton, ToolButton));
 
-    py::class_<PyPopup, ref<PyPopup>>(m, "Popup", window, D(Popup))
-        .alias<Popup>()
+    py::class_<Popup, ref<Popup>, PyPopup>(m, "Popup", window, D(Popup))
         .def(py::init<Widget *, Window *>(), py::arg("parent"), py::arg("parentWindow"), D(Popup, Popup))
         .def("anchorPos", &Popup::anchorPos, D(Popup, anchorPos))
         .def("setAnchorPos", &Popup::setAnchorPos, D(Popup, setAnchorPos))
@@ -617,9 +606,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setAnchorHeight", &Popup::setAnchorHeight, D(Popup, setAnchorHeight))
         .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow));
 
-    py::class_<PyPopupButton, ref<PyPopupButton>> popupBtn(m, "PopupButton", button, D(PopupButton));
+    py::class_<PopupButton, ref<PopupButton>, PyPopupButton> popupBtn(m, "PopupButton", button, D(PopupButton));
     popupBtn
-        .alias<PopupButton>()
         .def(py::init<Widget *, const std::string&, int, int>(),
                 py::arg("parent"), py::arg("caption") = std::string("Untitled"),
                 py::arg("buttonIcon") = 0, py::arg("chevronIcon") = ENTYPO_ICON_CHEVRON_SMALL_RIGHT,
@@ -628,8 +616,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("chevronIcon", &PopupButton::chevronIcon, D(PopupButton, chevronIcon))
         .def("setChevronIcon", &PopupButton::setChevronIcon, D(PopupButton, setChevronIcon));
 
-    py::class_<PyCheckBox, ref<PyCheckBox>>(m, "CheckBox", widget, D(CheckBox))
-        .alias<CheckBox>()
+    py::class_<CheckBox, ref<CheckBox>, PyCheckBox>(m, "CheckBox", widget, D(CheckBox))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"),
              D(CheckBox, CheckBox))
@@ -645,9 +632,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &CheckBox::callback, D(CheckBox, callback))
         .def("setCallback", &CheckBox::setCallback, D(CheckBox, setCallback));
 
-    py::class_<PyMessageDialog, ref<PyMessageDialog>> mdlg(m, "MessageDialog", window, D(MessageDialog));
+    py::class_<MessageDialog, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", window, D(MessageDialog));
     mdlg
-        .alias<MessageDialog>()
         .def(py::init<Widget *, MessageDialog::Type, const std::string&,
                       const std::string&, const std::string&, const std::string&, bool>(),
             py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
@@ -662,21 +648,18 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Question", MessageDialog::Type::Question)
         .value("Warning", MessageDialog::Type::Warning);
 
-    py::class_<PyVScrollPanel, ref<PyVScrollPanel>>(m, "VScrollPanel", widget, D(VScrollPanel))
-        .alias<VScrollPanel>()
+    py::class_<VScrollPanel, ref<VScrollPanel>, PyVScrollPanel>(m, "VScrollPanel", widget, D(VScrollPanel))
         .def(py::init<Widget *>(), py::arg("parent"), D(VScrollPanel, VScrollPanel));
 
-    py::class_<PyImagePanel, ref<PyImagePanel>>(m, "ImagePanel", widget, D(ImagePanel))
-        .alias<ImagePanel>()
+    py::class_<ImagePanel, ref<ImagePanel>, PyImagePanel>(m, "ImagePanel", widget, D(ImagePanel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ImagePanel, ImagePanel))
         .def("images", &ImagePanel::images, D(ImagePanel, images))
         .def("setImages", &ImagePanel::setImages, D(ImagePanel, setImages))
         .def("callback", &ImagePanel::callback, D(ImagePanel, callback))
         .def("setCallback", &ImagePanel::setCallback, D(ImagePanel, setCallback));
 
-    py::class_<PyImageView, ref<PyImageView>> imageview(m, "ImageView", widget, D(ImageView));
+    py::class_<ImageView, ref<ImageView>, PyImageView> imageview(m, "ImageView", widget, D(ImageView));
     imageview
-        .alias<ImageView>()
         .def("image", &ImageView::image, D(ImageView, image))
         .def("setImage", &ImageView::setImage, D(ImageView, setImage))
         .def("policy", &ImageView::policy, D(ImageView, policy))
@@ -691,8 +674,7 @@ PYBIND11_PLUGIN(nanogui) {
                   py::arg("policy") = ImageView::SizePolicy::Fixed,
                   D(ImageView, ImageView));
 
-    py::class_<PyComboBox, ref<PyComboBox>>(m, "ComboBox", widget, D(ComboBox))
-        .alias<ComboBox>()
+    py::class_<ComboBox, ref<ComboBox>, PyComboBox>(m, "ComboBox", widget, D(ComboBox))
         .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
         .def(py::init<Widget *, const std::vector<std::string> &>(),
              py::arg("parent"), py::arg("items"), D(ComboBox, ComboBox, 2))
@@ -707,14 +689,12 @@ PYBIND11_PLUGIN(nanogui) {
         .def("items", &ComboBox::items, D(ComboBox, items))
         .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort));
 
-    py::class_<PyProgressBar, ref<PyProgressBar>>(m, "ProgressBar", widget, D(ProgressBar))
-        .alias<ProgressBar>()
+    py::class_<ProgressBar, ref<ProgressBar>, PyProgressBar>(m, "ProgressBar", widget, D(ProgressBar))
         .def(py::init<Widget *>(), py::arg("parent"), D(ProgressBar, ProgressBar))
         .def("value", &ProgressBar::value, D(ProgressBar, value))
         .def("setValue", &ProgressBar::setValue, D(ProgressBar, setValue));
 
-    py::class_<PySlider, ref<PySlider>>(m, "Slider", widget, D(Slider))
-        .alias<Slider>()
+    py::class_<Slider, ref<Slider>, PySlider>(m, "Slider", widget, D(Slider))
         .def(py::init<Widget *>(), py::arg("parent"), D(Slider, Slider))
         .def("value", &Slider::value, D(Slider, value))
         .def("setValue", &Slider::setValue, D(Slider, setValue))
@@ -727,9 +707,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setFinalCallback", &Slider::setFinalCallback, D(Slider, setFinalCallback))
         .def("finalCallback", &Slider::finalCallback, D(Slider, finalCallback));
 
-    py::class_<PyTextBox, ref<PyTextBox>> tbox(m, "TextBox", widget, D(TextBox));
+    py::class_<TextBox, ref<TextBox>, PyTextBox> tbox(m, "TextBox", widget, D(TextBox));
     tbox
-        .alias<TextBox>()
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
             py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
         .def("editable", &TextBox::editable, D(TextBox, editable))
@@ -754,24 +733,21 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Center", TextBox::Alignment::Center)
         .value("Right", TextBox::Alignment::Right);
 
-    py::class_<PyInt64Box, ref<PyInt64Box>>(m, "IntBox", tbox, D(IntBox))
-        .alias<IntBox<int64_t>>()
+    py::class_<Int64Box, ref<Int64Box>, PyInt64Box>(m, "IntBox", tbox, D(IntBox))
         .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0)
         .def("value", &Int64Box::value, D(IntBox, value))
         .def("setValue", (void (Int64Box::*)(int64_t)) &Int64Box::setValue, D(IntBox, setValue))
         .def("setCallback", (void (Int64Box::*)(const std::function<void(int64_t)>&))
                 &Int64Box::setCallback, D(IntBox, setCallback));
 
-    py::class_<PyDoubleBox, ref<PyDoubleBox>>(m, "FloatBox", tbox, D(FloatBox))
-        .alias<FloatBox<double>>()
+    py::class_<DoubleBox, ref<DoubleBox>, PyDoubleBox>(m, "FloatBox", tbox, D(FloatBox))
         .def(py::init<Widget *, double>(), py::arg("parent"), py::arg("value") = 0.0)
         .def("value", &DoubleBox::value, D(FloatBox, value))
         .def("setValue", (void (DoubleBox::*)(int64_t)) &DoubleBox::setValue, D(FloatBox, setValue))
         .def("setCallback", (void (DoubleBox::*)(const std::function<void(double)>&))
                 &DoubleBox::setCallback, D(FloatBox, setCallback));
 
-    py::class_<PyColorWheel, ref<PyColorWheel>>(m, "ColorWheel", widget, D(ColorWheel))
-        .alias<ColorWheel>()
+    py::class_<ColorWheel, ref<ColorWheel>, PyColorWheel>(m, "ColorWheel", widget, D(ColorWheel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorWheel, ColorWheel))
         .def(py::init<Widget *, const Color &>(), py::arg("parent"), py::arg("Color"))
         .def("color", &ColorWheel::color, D(ColorWheel, color))
@@ -779,8 +755,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ColorWheel::callback, D(ColorWheel, callback))
         .def("setCallback", &ColorWheel::setCallback, D(ColorWheel, setCallback));
 
-    py::class_<PyColorPicker, ref<PyColorPicker>>(m, "ColorPicker", popupBtn, D(ColorPicker))
-        .alias<ColorPicker>()
+    py::class_<ColorPicker, ref<ColorPicker>, PyColorPicker>(m, "ColorPicker", popupBtn, D(ColorPicker))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorPicker, ColorPicker))
         .def(py::init<Widget *, const Color &>(), py::arg("parent"), py::arg("Color"))
         .def("color", &ColorPicker::color, D(ColorPicker, color))
@@ -788,8 +763,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ColorPicker::callback, D(ColorPicker, callback))
         .def("setCallback", &ColorPicker::setCallback, D(ColorPicker, setCallback));
 
-    py::class_<PyGraph, ref<PyGraph>>(m, "Graph", widget, D(Graph))
-        .alias<Graph>()
+    py::class_<Graph, ref<Graph>, PyGraph>(m, "Graph", widget, D(Graph))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"), D(Graph, Graph))
         .def("caption", &Graph::caption, D(Graph, caption))
