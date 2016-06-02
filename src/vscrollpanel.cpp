@@ -106,7 +106,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12 + 1,
-                   mPos.x() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
+                   mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
                    scrollh - 2, 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
