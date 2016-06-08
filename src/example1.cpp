@@ -306,14 +306,17 @@ public:
 
         {
             new Label(window, "Positive integer :", "sans-bold");
-            textBox = new TextBox(window);
-            textBox->setEditable(true);
-            textBox->setFixedSize(Vector2i(100, 20));
-            textBox->setValue("50");
-            textBox->setUnits("Mhz");
-            textBox->setDefaultValue("0.0");
-            textBox->setFontSize(16);
-            textBox->setFormat("[1-9][0-9]*");
+            auto intBox = new IntBox<int>(window);
+            intBox->setEditable(true);
+            intBox->setFixedSize(Vector2i(100, 20));
+            intBox->setValue(50);
+            intBox->setUnits("Mhz");
+            intBox->setDefaultValue("0");
+            intBox->setFontSize(16);
+            intBox->setFormat("[1-9][0-9]*");
+            intBox->setSpinnable(true);
+            intBox->setMinValue(1);
+            intBox->setValueIncrement(2);
         }
 
         {

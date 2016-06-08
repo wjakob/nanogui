@@ -50,7 +50,7 @@ gui.addStringVariable("string", *make_accessors("strvar"))
 
 gui.addGroup("Validating fields")
 gui.addIntVariable("int", *make_accessors("ivar"))
-gui.addDoubleVariable("double", *make_accessors("dvar"))
+gui.addDoubleVariable("double", *make_accessors("dvar")).setSpinnable(True)
 
 gui.addGroup("Complex types")
 gui.addEnumVariable("Enumeration", *make_accessors("enumvar")) \

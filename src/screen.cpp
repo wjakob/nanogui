@@ -485,7 +485,7 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
             glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
         }
 
-        if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
+        if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
             if (mDragWidget == this)
                 mDragWidget = nullptr;
