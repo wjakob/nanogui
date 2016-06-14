@@ -191,6 +191,8 @@ class ProgressBar;
 class Screen;
 class Serializer;
 class Slider;
+class StackedWidget;
+class TabHeaderWidget;
 class TextBox;
 class Theme;
 class ToolButton;

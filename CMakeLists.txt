@@ -213,6 +213,8 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/colorpicker.h src/colorpicker.cpp
   include/nanogui/graph.h src/graph.cpp
+  include/nanogui/stackedwidget.h src/stackedwidget.cpp
+  include/nanogui/tabheaderwidget.h src/tabheaderwidget.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
@@ -288,8 +290,10 @@ endif()
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1 src/example1.cpp)
   add_executable(example2 src/example2.cpp)
+  add_executable(example3 src/example3.cpp)
   target_link_libraries(example1 nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2 nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3 nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

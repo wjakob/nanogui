@@ -129,7 +129,7 @@ public:
      * since the constructor of \ref Widget automatically
      * adds the current widget to its parent
      */
-    void addChild(Widget *widget);
+    virtual void addChild(Widget *widget);
 
     /// Remove a child widget by index
     void removeChild(int index);
