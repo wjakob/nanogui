@@ -1,6 +1,8 @@
 /*
-    nanogui/stackedwidget.h -- Widget used to stack widgets on top
-    of each other. Only the active widget is visible.   
+    nanogui/stacked.h -- Widget used to stack widgets on top
+    of each other. Only the active widget is visible.
+
+    The stacked widget was contributed by Stefan Ivanov.
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -31,7 +33,7 @@ public:
     virtual void addChild(Widget *widget) override;
 
 private:
-    unsigned int mActiveTab {};
+    unsigned int mActiveTab = 0;
 };
 
 
