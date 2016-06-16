@@ -85,7 +85,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 
     # Disable Eigen vectorization for Windows 32 bit builds (issues with unaligned access segfaults)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEIGEN_DONT_ALIGN")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNANOGUI_EIGEN_DONT_ALIGN")
   endif()
 endif()
 
@@ -129,10 +129,14 @@ if (NANOGUI_USE_GLAD)
 endif()
 
 list(APPEND NANOGUI_EXTRA_INCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen"
   "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
 )
+
+if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
+  set(NANOGUI_EIGEN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen")
+  list(APPEND NANOGUI_EXTRA_INCS "${NANOGUI_EIGEN_INCLUDE_DIR}")
+endif()
 
 # Required core libraries on various platforms
 if (WIN32)
@@ -148,7 +152,7 @@ elseif(CMAKE_SYSTEM MATCHES "Linux")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread dl rt)
 endif()
 
-include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
