@@ -18,6 +18,7 @@ option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 option(NANOGUI_USE_GLAD      "Build a Python plugin for NanoGUI?" ${NANOGUI_USE_GLAD_DEFAULT})
+option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
@@ -235,6 +236,19 @@ if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui ${NANOGUI_EXTRA_LIBS})
 endif()
 
+if (NANOGUI_INSTALL)
+  install(
+    TARGETS nanogui
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+
+  install(
+    DIRECTORY include/nanogui DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
+  )
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
     # Link-time code generation (only for shared library in release mode)
@@ -293,6 +307,13 @@ if(NANOGUI_BUILD_EXAMPLE)
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+  if (NANOGUI_INSTALL)
+    install(
+      TARGETS example1 example2
+      RUNTIME DESTINATION bin
+    )
+  endif()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
@@ -368,6 +389,14 @@ if (NANOGUI_BUILD_PYTHON)
         add_custom_command(TARGET nanogui_python POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
       endif()
     endif()
+  endif()
+
+  if (NANOGUI_INSTALL)
+    install(
+      TARGETS nanogui_python
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+    )
   endif()
 endif()
 
