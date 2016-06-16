@@ -59,6 +59,13 @@ endif()
 # Compile GLFW
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
+if(NOT EIGEN_INCLUDE_DIR)
+    set(EIGEN_INCLUDE_DIR "ext/eigen")
+    list(APPEND NANOGUI_EXTRA_INCS
+        "${CMAKE_CURRENT_SOURCE_DIR}/${EIGEN_INCLUDE_DIR}"
+    )
+endif()
+
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
   list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_PYTHON)
@@ -124,7 +131,6 @@ if (NANOGUI_USE_GLAD)
 endif()
 
 list(APPEND NANOGUI_EXTRA_INCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen"
   "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
 )
@@ -143,7 +149,7 @@ elseif(CMAKE_SYSTEM MATCHES "Linux")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread dl rt)
 endif()
 
-include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
@@ -381,7 +387,7 @@ else()
   # Create documentation for python plugin (optional target for developers)
   add_custom_target(mkdoc COMMAND
     python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
-    -Iinclude -Iext/nanovg/src -Iext/eigen -Iext/glfw/include
+    -Iinclude -Iext/nanovg/src -I${EIGEN_INCLUDE_DIR} -Iext/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
 endif()
 
