@@ -1,7 +1,8 @@
 /*
-    nanogui/tabheader.h -- Widget used to control tabs.
+    nanogui/tab.h -- A tab widget - convenience wrapper for the widgets
+    TabHeader and Stacked 
 
-    The tab header widget was contributed by Stefan Ivanov.
+    The tab widget was contributed by Stefan Ivanov.
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -21,7 +22,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-class NANOGUI_EXPORT TabHeader : public Widget {
+class NANOGUI_EXPORT TabHeaderWidget : public Widget {
 public:
     constexpr static int minButtonWidth = 20;
     constexpr static int maxButtonWidth = 200;
@@ -31,7 +32,7 @@ public:
 
     using size_type = std::vector<std::string>::size_type;
 
-    TabHeader(nanogui::Widget* parent, const std::string &font = "sans",
+    TabHeaderWidget(nanogui::Widget* parent, const std::string &font = "sans",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
 
     void setActiveTab(int tabIndex);
@@ -71,13 +72,13 @@ private:
     mutable std::vector<std::pair<int, int>> mTabLabelExtents;
     int mVisibleStart = 0;
     int mVisibleEnd = 0;
-    
+
     int mActiveTab = 0;
     bool mIsOverflowing = false;
 
     std::string mFont;
     Color mFontColor;
-    
+
     bool mInternalStateValid = false;
 };
 

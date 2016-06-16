@@ -18,12 +18,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-class NANOGUI_EXPORT StackedWidget : public Widget {
+class NANOGUI_EXPORT Stacked : public Widget {
 public:
     constexpr static int borderSize = 2;
     constexpr static int headerSize = 15;
 
-    StackedWidget(nanogui::Widget* parent);
+    Stacked(nanogui::Widget* parent);
 
     void setActiveTab(unsigned int tabIndex);
     unsigned int activeTab() const;

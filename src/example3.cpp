@@ -22,7 +22,7 @@ public:
         Window* window = new Window(this, "Tabs Buttons");
         window->setPosition({ 100, 100 });
         window->setLayout(new GroupLayout());
-        //window->setFixedSize({ 500, 300 });
+       // window->setFixedSize({ 310, 600 });
 
         // Poor man's tab header.
         new Label(window, "Tab Buttons");
@@ -32,29 +32,38 @@ public:
         button2->setFlags(Button::RadioButton);
         
         // Proper tab header.
-        auto header = new TabHeaderWidget(window, "sans", 30);
-        header->addTab("Tab 1 with a very long name");
-        header->addTab("Tab 2 with a long name");
+        auto header = new TabHeader(window, "sans", 30);
+        
+        header->addTab("Tab 1");
+        header->addTab("Tab 2");
+        header->addTab("Tab 3");
+        header->addTab("Tab 4");
+        header->addTab("Tab 5");
+        header->addTab("Tab 6");
+        
+        
 
         // The tab contents holder.
-        StackedWidget* stackedWidget = new StackedWidget(window);
+        Stacked* stackedWidget = new Stacked(window);
         // Create the first tab window.
         auto layer1 = new Widget(stackedWidget);
         layer1->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 10));
         new Label(layer1, "Color wheel", "sans-bold");
         new ColorWheel(layer1);
-        // Create the second tab window.        
-        auto layer2 = new Widget(stackedWidget);
-        layer2->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 10));
-        new Label(layer2, "Function graph", "sans-bold");
-        Graph *graph = new Graph(layer2, "Some function");
-        graph->setHeader("E = 2.35e-3");
-        graph->setFooter("Iteration 89");
-        VectorXf &func = graph->values();
-        func.resize(100);
-        for (int i = 0; i < 100; ++i)
-            func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
-                              0.5f * std::cos(i / 23.f) + 1);
+        // Create the second tab window.
+        for (int j = 0; j < 5; j++) {
+            auto layer2 = new Widget(stackedWidget);
+            layer2->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 10));
+            new Label(layer2, "Function graph", "sans-bold");
+            Graph *graph = new Graph(layer2, "Some function");
+            graph->setHeader("E = 2.35e-3");
+            graph->setFooter("Iteration 89");
+            VectorXf &func = graph->values();
+            func.resize(100);
+            for (int i = 0; i < 100; ++i)
+                func[i] = 0.5f * ((0.5f) * std::sin(i / 10.f + j) +
+                                  (0.5f) * std::cos(i / 23.f + j) + 1);
+        }
         // Connect the stacked widget with the tab header.
         header->setCallback([stackedWidget](int i) { stackedWidget->setActiveTab(i); });
         

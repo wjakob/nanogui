@@ -16,22 +16,22 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-StackedWidget::StackedWidget(nanogui::Widget * parent)
+Stacked::Stacked(nanogui::Widget * parent)
     : Widget(parent)
 {}
 
-void StackedWidget::setActiveTab(unsigned int tabIndex) {
+void Stacked::setActiveTab(unsigned int tabIndex) {
     assert(tabIndex < mChildren.size());
     mChildren[mActiveTab]->setVisible(false);
     mActiveTab = tabIndex;
     mChildren[mActiveTab]->setVisible(true);
 }
 
-unsigned int StackedWidget::activeTab() const {
+unsigned int Stacked::activeTab() const {
     return mActiveTab;
 }
 
-void StackedWidget::performLayout(NVGcontext* ctx) {
+void Stacked::performLayout(NVGcontext* ctx) {
     for (auto child : mChildren) {
         child->setPosition(Vector2i::Zero());
         child->setSize(mSize);
@@ -39,7 +39,7 @@ void StackedWidget::performLayout(NVGcontext* ctx) {
     Widget::performLayout(ctx);
 }
 
-Vector2i StackedWidget::preferredSize(NVGcontext * ctx) const {
+Vector2i Stacked::preferredSize(NVGcontext * ctx) const {
     Vector2i size = Vector2i::Zero();
     // Retrieve the maximum possible width and height among the widgets.
     for (auto child : mChildren)
@@ -48,7 +48,7 @@ Vector2i StackedWidget::preferredSize(NVGcontext * ctx) const {
 
 }
 
-void StackedWidget::addChild(Widget * widget) {
+void Stacked::addChild(Widget * widget) {
     Widget::addChild(widget);
     widget->setVisible(false);
 }

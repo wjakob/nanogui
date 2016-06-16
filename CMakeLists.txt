@@ -215,6 +215,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/graph.h src/graph.cpp
   include/nanogui/stacked.h src/stacked.cpp
   include/nanogui/tabheader.h src/tabheader.cpp
+  include/nanogui/tab.h src/tab.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
