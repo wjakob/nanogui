@@ -1,6 +1,6 @@
 /*
-    nanogui/tab.h -- A tab widget - convenience wrapper for the widgets
-    TabHeader and Stacked 
+    nanogui/tab.h -- A wrapper around the widgets TabHeader and Stacked
+    which hooks the two classes together.
 
     The tab widget was contributed by Stefan Ivanov.
 
@@ -15,71 +15,32 @@
 #pragma once
 
 #include <nanogui/widget.h>
-#include <vector>
-#include <string>
-#include <functional>
-#include <utility>
 
 NAMESPACE_BEGIN(nanogui)
 
-class NANOGUI_EXPORT TabHeaderWidget : public Widget {
+class NANOGUI_EXPORT Tab : public Widget {
 public:
-    constexpr static int minButtonWidth = 20;
-    constexpr static int maxButtonWidth = 200;
-    constexpr static int topBottomMargin = 3;
-    constexpr static int tabMargin = 10;
-    constexpr static int controlsWidth = 40;
+    constexpr static int contentBorder = 20;
 
-    using size_type = std::vector<std::string>::size_type;
-
-    TabHeaderWidget(nanogui::Widget* parent, const std::string &font = "sans",
-                    int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
+    Tab(Widget* parent);
 
     void setActiveTab(int tabIndex);
     int activeTab() const;
 
-    /// Sets the callable objects which is invoked when a tab is pressed
-    /// with the index of the tab.
-    void setCallback(const std::function<void(int)>& callback);
-    const std::function<void(int)>& callback() const;
     /// Insert a new tab button with the specified text.    
-    void addTab(const std::string& tabLabel);
-    std::string& tabLabelAt(size_type index);
-
+    void addTab(Widget* tab, const std::string& name);
+    const Widget* getTab(const std::string& tabName) const;
+    Widget* getTab(const std::string& tabName);
+    bool removeTab(const std::string& tabName);
+    
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
-
+    
     virtual void draw(NVGcontext* ctx) override;
 
 private:
-    /// Helper enumeration class for determining the direction of the controls.
-    enum class ControlsClicked {
-        Left, Right, None
-    };
-
-    void updateInternalState(NVGcontext* ctx);
-
-    void drawHitBox(NVGcontext* ctx, int index);
-    void calculateVisibleEnd();
-    void drawControls(NVGcontext* ctx);
-    ControlsClicked isInsideControls(const Vector2i& p);
-    void leftControlsClicked();
-    void rightControlsClicked();
-
-    std::function<void(int)> mCallback;
-    std::vector<std::string> mTabLabels;
-    mutable std::vector<std::pair<int, int>> mTabLabelExtents;
-    int mVisibleStart = 0;
-    int mVisibleEnd = 0;
-
-    int mActiveTab = 0;
-    bool mIsOverflowing = false;
-
-    std::string mFont;
-    Color mFontColor;
-
-    bool mInternalStateValid = false;
+    TabHeader* mHeader;
+    Stacked* mContent;
 };
 
 

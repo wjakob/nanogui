@@ -20,14 +20,14 @@ Stacked::Stacked(nanogui::Widget * parent)
     : Widget(parent)
 {}
 
-void Stacked::setActiveTab(unsigned int tabIndex) {
-    assert(tabIndex < mChildren.size());
+void Stacked::setActiveTab(int tabIndex) {
+    assert(tabIndex < (int)mChildren.size());
     mChildren[mActiveTab]->setVisible(false);
     mActiveTab = tabIndex;
     mChildren[mActiveTab]->setVisible(true);
 }
 
-unsigned int Stacked::activeTab() const {
+int Stacked::activeTab() const {
     return mActiveTab;
 }
 

@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
     constexpr static int minButtonWidth = 20;
-    constexpr static int maxButtonWidth = 200;
+    constexpr static int maxButtonWidth = 160;
     constexpr static int topBottomMargin = 3;
     constexpr static int tabMargin = 10;
     constexpr static int controlsWidth = 40;
@@ -33,17 +33,26 @@ public:
 
     TabHeader(nanogui::Widget* parent, const std::string &font = "sans",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
+    
+    void setFont(const std::string& font) { mFont = font; }
+    const std::string font() { return mFont; }
+    void setFontColor(const Color& fontColor) { mFontColor = fontColor; }
+    const Color& fontColor() { return mFontColor; }
 
     void setActiveTab(int tabIndex);
     int activeTab() const;
-
+    int labelCount() const { return mTabLabels.size();  }
     /// Sets the callable objects which is invoked when a tab is pressed
     /// with the index of the tab.
     void setCallback(const std::function<void(int)>& callback);
     const std::function<void(int)>& callback() const;
     /// Insert a new tab button with the specified text.    
-    void addTab(const std::string& tabLabel);
+    void addTabLabel(const std::string& tabLabel);
     std::string& tabLabelAt(size_type index);
+    int tabLabelIndex(const std::string& tabLabel);
+    /// Removes the tab label with the specified name and returns the index of
+    /// the label. If it does not find it returns the number of labels (labeCount).
+    int removeTabLabel(const std::string& tabLabel);
 
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;

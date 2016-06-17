@@ -41,13 +41,40 @@ const std::function<void(int)>& TabHeader::callback() const {
     return mCallback;
 }
 
-void TabHeader::addTab(const std::string& tabLable) {
+void TabHeader::addTabLabel(const std::string& tabLable) {
     mTabLabels.push_back(tabLable);
 }
 
 std::string& TabHeader::tabLabelAt(size_type index) {
     assert(index < mTabLabels.size());
     return mTabLabels[index];
+}
+
+int TabHeader::tabLabelIndex(const std::string & tabLabel)
+{
+    int i = 0;
+    for (auto currentLabel : mTabLabels) {
+        if (currentLabel == tabLabel)
+            break;
+        ++i;
+    }
+    return i;
+}
+
+int TabHeader::removeTabLabel(const std::string & tabLabel)
+{
+    int i = 0;
+    int size = mTabLabels.size();
+    while(i != size) {
+        if (tabLabel == mTabLabels[i]) {
+            mTabLabels.erase(std::next(mTabLabels.begin(), i));
+            // Set the internal state to invalid. That will take care of the extents.
+            mInternalStateValid = false;
+            return i;
+        }
+        ++i;
+    }
+    return size;
 }
 
 void TabHeader::performLayout(NVGcontext* ctx) {
@@ -98,7 +125,8 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int m
         }
 
         int index = mVisibleStart;
-        while (p.x() - mPos.x() > mTabLabelExtents[index].second) {
+        int absoluteHeaderPosition = p.x() + mTabLabelExtents[mVisibleStart].first - mPos.x() - controlsWidth;
+        while (absoluteHeaderPosition > mTabLabelExtents[index].second) {
             ++index;
             if (index == mVisibleEnd)
                 return false;
@@ -123,15 +151,12 @@ void TabHeader::updateInternalState(NVGcontext* ctx) {
         int labelWidth = nvgTextBounds(ctx, 0, 0, tabLabel.c_str(), nullptr, nullptr);
         int buttonWidth = labelWidth + 2 * tabMargin;
         // Check if the tab is too wide or narrow.
-        if (buttonWidth > maxButtonWidth) {
+        if (buttonWidth > maxButtonWidth)
             nextPosition = maxButtonWidth + currentPosition;
-        }
-        else if (buttonWidth < minButtonWidth) {
+        else if (buttonWidth < minButtonWidth)
             nextPosition = minButtonWidth + currentPosition;
-        }
-        else {
+        else
             nextPosition = buttonWidth + currentPosition;
-        }  // Remove single line if statement braces
         mTabLabelExtents.push_back({ currentPosition, nextPosition });
         currentPosition = nextPosition;
     }
@@ -142,9 +167,8 @@ void TabHeader::updateInternalState(NVGcontext* ctx) {
 void TabHeader::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
     
-    if (!mInternalStateValid) {
+    if (!mInternalStateValid)
         updateInternalState(ctx);
-    }
     nvgFillColor(ctx, mFontColor);
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
@@ -271,7 +295,7 @@ TabHeader::ControlsClicked TabHeader::isInsideControls(const Vector2i & p) {
     if (hitLeft) {
         return ControlsClicked::Left;
     }
-    auto rightDistance = (p - (mPos + mSize - Vector2i(controlsWidth, controlsWidth) )).array();
+    auto rightDistance = (p - (mPos + Vector2i(mSize.x() - controlsWidth, 0))).array();
     bool hitRight = (rightDistance >= 0).all() && (rightDistance < Vector2i(controlsWidth, mSize.y()).array()).all();
     if (hitRight) {
         return ControlsClicked::Right;
@@ -288,7 +312,7 @@ void TabHeader::leftControlsClicked() {
 }
 
 void TabHeader::rightControlsClicked() {
-    if (mVisibleStart + 1 == (int)mTabLabels.size()) {
+    if (mVisibleEnd == (int)mTabLabels.size()) {
         return;
     }
     ++mVisibleStart;

@@ -25,15 +25,15 @@ public:
 
     Stacked(nanogui::Widget* parent);
 
-    void setActiveTab(unsigned int tabIndex);
-    unsigned int activeTab() const;
+    void setActiveTab(int tabIndex);
+    int activeTab() const;
 
     virtual void performLayout(NVGcontext* /* ctx */) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void addChild(Widget *widget) override;
 
 private:
-    unsigned int mActiveTab = 0;
+    int mActiveTab = 0;
 };
 
 

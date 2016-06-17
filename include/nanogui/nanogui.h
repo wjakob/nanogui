@@ -37,3 +37,4 @@
 #include <nanogui/formhelper.h>
 #include <nanogui/stacked.h>
 #include <nanogui/tabheader.h>
+#include <nanogui/tab.h>
