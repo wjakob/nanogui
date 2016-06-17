@@ -26,8 +26,8 @@ public:
     constexpr static int minButtonWidth = 20;
     constexpr static int maxButtonWidth = 160;
     constexpr static int topBottomMargin = 3;
-    constexpr static int tabMargin = 10;
-    constexpr static int controlsWidth = 40;
+    constexpr static int tabPadding = 10;
+    constexpr static int controlsWidth = 20;
 
     using size_type = std::vector<std::string>::size_type;
 
@@ -65,6 +65,17 @@ private:
     enum class ControlsClicked {
         Left, Right, None
     };
+
+    struct TabButton {
+        std::string label;
+        int x1;
+        int x2;
+    };
+
+    std::vector<TabButton> mTabButtons;
+    
+
+    /// Old design
 
     void updateInternalState(NVGcontext* ctx);
 

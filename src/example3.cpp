@@ -40,7 +40,7 @@ public:
             for (int i = 0; i < 100; ++i)
                 func[i] = 0.5f * ((0.5f) * std::sin(i / 10.f + j) +
                                   (0.5f) * std::cos(i / 23.f + j) + 1);
-            auto layerName = "Function Tab  with a long name " + std::to_string(j);
+            auto layerName = "Tab " + std::to_string(j);
             tab->addTab(layer, layerName);
 
         }

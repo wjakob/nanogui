@@ -16,7 +16,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-
 TabHeader::TabHeader(nanogui::Widget* parent, const std::string& font,
                                  int fontSize, Color fontColor)
     : Widget(parent), mFont(font), mFontColor(fontColor) {
@@ -79,13 +78,13 @@ int TabHeader::removeTabLabel(const std::string & tabLabel)
 
 void TabHeader::performLayout(NVGcontext* ctx) {
     Widget::performLayout(ctx);
-    calculateVisibleEnd();
     if (mIsOverflowing) {
         // Update the extents to take the added controls into account.
         for (auto& extents : mTabLabelExtents) {
             extents = { extents.first + controlsWidth, extents.second + controlsWidth };
         }
     }
+    calculateVisibleEnd();
 }
 
 Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
@@ -102,7 +101,7 @@ Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
     // Calculate the height of one of the tab buttons.
     float bounds[4];
     nvgTextBounds(ctx, 0, 0, mTabLabels[0].c_str(), nullptr, bounds);
-    int height = bounds[3] - bounds[1] + topBottomMargin;
+    int height = bounds[3] - bounds[1] + 2*topBottomMargin;
 
     return Vector2i(mTabLabelExtents.back().second, height);
 }
@@ -123,7 +122,6 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int m
                 break;
             }
         }
-
         int index = mVisibleStart;
         int absoluteHeaderPosition = p.x() + mTabLabelExtents[mVisibleStart].first - mPos.x() - controlsWidth;
         while (absoluteHeaderPosition > mTabLabelExtents[index].second) {
@@ -149,7 +147,7 @@ void TabHeader::updateInternalState(NVGcontext* ctx) {
     int nextPosition = 0;
     for (const auto& tabLabel : mTabLabels) {
         int labelWidth = nvgTextBounds(ctx, 0, 0, tabLabel.c_str(), nullptr, nullptr);
-        int buttonWidth = labelWidth + 2 * tabMargin;
+        int buttonWidth = labelWidth + 2 * tabPadding;
         // Check if the tab is too wide or narrow.
         if (buttonWidth > maxButtonWidth)
             nextPosition = maxButtonWidth + currentPosition;
@@ -160,7 +158,7 @@ void TabHeader::updateInternalState(NVGcontext* ctx) {
         mTabLabelExtents.push_back({ currentPosition, nextPosition });
         currentPosition = nextPosition;
     }
-
+    //calculateVisibleEnd();
     mInternalStateValid = true;
 }
 
@@ -190,7 +188,7 @@ void TabHeader::draw(NVGcontext* ctx) {
         NVGtextRow displayedText;
         nvgTextBreakLines(ctx, tabLabel.c_str(), nullptr, maxButtonWidth, &displayedText, 1);
         
-        int xPosition = xOffSet + mTabLabelExtents[i].first + tabMargin - relativeOffset;
+        int xPosition = xOffSet + mTabLabelExtents[i].first + tabPadding - relativeOffset;
         int yPosition = yOffSet + mSize.y() * 0.5f;
         if (!displayedText.next[0]) {
             nvgText(ctx, xPosition, yPosition,
@@ -202,7 +200,7 @@ void TabHeader::draw(NVGcontext* ctx) {
             auto truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
                                                 displayedText.start, displayedText.end, nullptr);
             auto dotsWidth = nvgTextBounds(ctx, 0.0f, 0.0f,dots, nullptr, nullptr);
-            while ((truncatedWidth + dotsWidth) > (maxButtonWidth - tabMargin)) {
+            while ((truncatedWidth + dotsWidth) > (maxButtonWidth - tabPadding)) {
                 // Revert back some symbols to have space for the three dots.
                 // TODO: Add proper calculation for how much characters to revert   
                 // TODO: Loop over text and determine if the characters fit.
@@ -241,7 +239,7 @@ void TabHeader::calculateVisibleEnd() {
         // Draw controls
         // Find the index of the last visible tab given that we know the first one.
         int relativePos = mTabLabelExtents[mVisibleStart].first;  // mTabLabelExtents already takes into account the initial controls.
-        int xSize = mSize.x() - controlsWidth;
+        int xSize = mSize.x() - 2*controlsWidth;
         auto visibleEndIter = std::find_if(std::next(mTabLabelExtents.begin(), mVisibleStart),
                                            mTabLabelExtents.end(),
                                            [relativePos, xSize](const auto& extents) {
