@@ -31,11 +31,11 @@ public:
 
     using size_type = std::vector<std::string>::size_type;
 
-    TabHeader(nanogui::Widget* parent, const std::string &font = "sans",
+    TabHeader(Widget* parent, const std::string &font = "sans",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
     
     void setFont(const std::string& font) { mFont = font; }
-    const std::string font() { return mFont; }
+    const std::string& font() { return mFont; }
     void setFontColor(const Color& fontColor) { mFontColor = fontColor; }
     const Color& fontColor() { return mFontColor; }
 
@@ -66,10 +66,22 @@ private:
         Left, Right, None
     };
 
+    //friend class TabHeader;
+
     struct TabButton {
         std::string label;
-        int x1;
-        int x2;
+        // The positions of the tab button on the tab strip
+        int absoluteStart;
+        int absoluteEnd;
+
+        int realtiveStart(bool isOverflowing, int visibleStartPosition) {
+            int offSet = 0;
+            if (isOverflowing)
+                offSet = absoluteStart + controlsWidth - visibleStartPosition;
+            else
+                offSet = absoluteStart + controlsWidth - visibleStartPosition;
+            return offSet;
+        }
     };
 
     std::vector<TabButton> mTabButtons;
@@ -87,8 +99,7 @@ private:
     void rightControlsClicked();
 
     std::function<void(int)> mCallback;
-    std::vector<std::string> mTabLabels;
-    mutable std::vector<std::pair<int, int>> mTabLabelExtents;
+
     int mVisibleStart = 0;
     int mVisibleEnd = 0;
     

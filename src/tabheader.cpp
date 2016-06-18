@@ -24,7 +24,7 @@ TabHeader::TabHeader(nanogui::Widget* parent, const std::string& font,
 }
 
 void TabHeader::setActiveTab(int tabIndex) {
-    assert((size_t)tabIndex < mTabLabels.size());
+    assert(tabIndex < (int)mTabLabels.size());
     mActiveTab = tabIndex;
 }
 
