@@ -16,7 +16,68 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-TabHeader::TabHeader(nanogui::Widget* parent, const std::string& font,
+Vector2i TabButton::preferredSize(NVGcontext* ctx) const
+{
+    float bounds[4];
+    int labelWidth = nvgTextBounds(ctx, 0, 0, mLabel.c_str(), nullptr, bounds);
+    // TODO: Try using bounds array for width as well.
+    int buttonWidth = labelWidth + 2 * horizontalPadding;
+    int buttonHeight = bounds[3] - bounds[1] + 2 * verticalPadding;
+    return Vector2i(buttonWidth, buttonHeight);
+}
+
+void TabButton::performLayout(NVGcontext* ctx)
+{
+    NVGtextRow displayedText;
+    nvgTextBreakLines(ctx, mLabel.c_str(), nullptr, mSize.x(), &displayedText, 1);
+    // Check to see if the text need to be truncated.
+    if (displayedText.next[0]) {
+        auto truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
+                                            displayedText.start, displayedText.end, nullptr);
+        auto dotsWidth = nvgTextBounds(ctx, 0.0f, 0.0f, dots, nullptr, nullptr);
+        while ((truncatedWidth + dotsWidth) > mSize.x()) {
+            --displayedText.end;
+            truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
+                                           displayedText.start, displayedText.end, nullptr);
+        }
+        // Remember the truncated width because the return value of nvgText is not what we need.
+        mVisibleWidth = truncatedWidth;
+        // Set the tool tip to be the full name.
+        setTooltip(mLabel);
+    }
+    mVisibleText.first = displayedText.start;
+    mVisibleText.last = displayedText.end; 
+
+    Widget::performLayout(ctx);
+}
+
+
+bool TabButton::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
+    Widget::mouseButtonEvent(p, button, down, modifiers);
+    
+    if (visible() && button == GLFW_MOUSE_BUTTON_1 && down) {
+        return contains(p);
+    }
+    return false;
+
+}
+
+
+void TabButton::draw(NVGcontext* ctx)
+{
+    Widget::draw(ctx); 
+    
+    // TODO: Draw borders and background.
+
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    nvgText(ctx, mPos.x(), mPos.y(), mVisibleText.first, mVisibleText.last);
+    if (mVisibleText.last != nullptr)
+        nvgText(ctx, mPos.x() + mVisibleWidth, mPos.y(), dots, nullptr);
+}
+
+
+
+TabHeader::TabHeader(Widget* parent, const std::string& font,
                                  int fontSize, Color fontColor)
     : Widget(parent), mFont(font), mFontColor(fontColor) {
     if (fontSize >= 0)
@@ -24,7 +85,7 @@ TabHeader::TabHeader(nanogui::Widget* parent, const std::string& font,
 }
 
 void TabHeader::setActiveTab(int tabIndex) {
-    assert(tabIndex < (int)mTabLabels.size());
+    assert(tabIndex < (int)mChildren.size());
     mActiveTab = tabIndex;
 }
 
@@ -40,35 +101,42 @@ const std::function<void(int)>& TabHeader::callback() const {
     return mCallback;
 }
 
-void TabHeader::addTabLabel(const std::string& tabLable) {
-    mTabLabels.push_back(tabLable);
+void TabHeader::addTabLabel(const std::string& tabLabel) {
+    new TabButton(this, tabLabel);
 }
 
-std::string& TabHeader::tabLabelAt(size_type index) {
-    assert(index < mTabLabels.size());
-    return mTabLabels[index];
+const std::string& TabHeader::tabLabelAt(int index) {
+    assert(index < (int)mChildren.size());
+    auto tabButton = dynamic_cast<TabButton*>(mChildren[index]);
+    if (!tabButton)
+        throw std::runtime_error("Tab header widget contains a direct child that is not a tab button!");
+    return tabButton->label();
 }
 
-int TabHeader::tabLabelIndex(const std::string & tabLabel)
+int TabHeader::tabLabelIndex(const std::string& tabLabel)
 {
     int i = 0;
-    for (auto currentLabel : mTabLabels) {
-        if (currentLabel == tabLabel)
+    for (auto child : mChildren) {
+        auto tabButton = dynamic_cast<TabButton*>(child);
+        if (!tabButton)
+                throw std::runtime_error("Tab header widget contains a direct child that is not a tab button!");
+        if (tabButton->label() == tabLabel)
             break;
         ++i;
     }
     return i;
 }
 
-int TabHeader::removeTabLabel(const std::string & tabLabel)
+int TabHeader::removeTabLabel(const std::string& tabLabel)
 {
     int i = 0;
-    int size = mTabLabels.size();
+    int size = mChildren.size();
     while(i != size) {
-        if (tabLabel == mTabLabels[i]) {
-            mTabLabels.erase(std::next(mTabLabels.begin(), i));
-            // Set the internal state to invalid. That will take care of the extents.
-            mInternalStateValid = false;
+        auto tabButton = dynamic_cast<TabButton*>(mChildren[i]);
+        if (!tabButton)
+            throw std::runtime_error("Tab header widget contains a direct child that is not a tab button!");
+        if (tabButton->label() == tabLabel) {
+            mChildren.erase(std::next(mChildren.begin(), i));
             return i;
         }
         ++i;
@@ -77,40 +145,56 @@ int TabHeader::removeTabLabel(const std::string & tabLabel)
 }
 
 void TabHeader::performLayout(NVGcontext* ctx) {
-    Widget::performLayout(ctx);
-    if (mIsOverflowing) {
-        // Update the extents to take the added controls into account.
-        for (auto& extents : mTabLabelExtents) {
-            extents = { extents.first + controlsWidth, extents.second + controlsWidth };
-        }
+    //Widget::performLayout(ctx);
+
+    Vector2i currentPosition = Vector2i::Zero();
+    // Place the tab buttons relative to the beginning of the tab header.
+    for (auto i = 0u; i != mChildren.size(); ++i) {
+        auto child = mChildren[i];
+        auto childPreferred = child->preferredSize(ctx);
+        int width = childPreferred.x();
+        if (childPreferred.x() < minButtonWidth)
+            width = maxButtonWidth;
+        else if (childPreferred.x() > maxButtonWidth)
+            width = maxButtonWidth;
+        child->setWidth(width);
+        child->setPosition(currentPosition);
+        currentPosition.x() += width;
     }
+
+    Widget::performLayout(ctx);
+
     calculateVisibleEnd();
+    if (mOverflowing)
+        updateVisibility();
+
 }
 
 Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
-    if (!mInternalStateValid)
-        const_cast<TabHeader&>(*this).updateInternalState(ctx);
-    if (mTabLabels.empty())
-        return Vector2i::Zero();
-
-    // Set up the nvg context for measuring the text.
+    // Set up the nvg context for measuring the text inside the tab buttons.
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     
-    // Calculate the height of one of the tab buttons.
-    float bounds[4];
-    nvgTextBounds(ctx, 0, 0, mTabLabels[0].c_str(), nullptr, bounds);
-    int height = bounds[3] - bounds[1] + 2*topBottomMargin;
-
-    return Vector2i(mTabLabelExtents.back().second, height);
+    Vector2i size = Vector2i::Zero();
+    for (auto child : mChildren) {
+        auto childPreferred = child->preferredSize(ctx);
+        if (childPreferred.x() < minButtonWidth)
+            childPreferred.x() = minButtonWidth;
+        else if (childPreferred.x() > maxButtonWidth)
+            childPreferred.x() = maxButtonWidth;
+        size.x() += childPreferred.x();
+        size.y() = std::max(size.y(), childPreferred.y());
+    }
+    return size;
 }
 
-bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) {
-    Widget::mouseButtonEvent(p, button, down, modifiers);
+bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int /*modifiers*/) {
+    
     if (button == GLFW_MOUSE_BUTTON_1 && down) {
+        auto pAbsolute = p;
         // Check whether there are controls and whether they have been pressed. 
-        if (mIsOverflowing) {
+        if (mOverflowing) {
             switch (isInsideControls(p)) {
             case ControlsClicked::Left:
                 leftControlsClicked();
@@ -119,140 +203,90 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int m
                 rightControlsClicked();
                 return true;
             case ControlsClicked::None:
+                //pAbsolute.x() += controlsWidth;
                 break;
             }
         }
-        int index = mVisibleStart;
-        int absoluteHeaderPosition = p.x() + mTabLabelExtents[mVisibleStart].first - mPos.x() - controlsWidth;
-        while (absoluteHeaderPosition > mTabLabelExtents[index].second) {
-            ++index;
-            if (index == mVisibleEnd)
-                return false;
+        auto first = std::next(mChildren.begin(), mVisibleStart);
+        auto last = std::next(mChildren.begin(), mVisibleEnd);
+        // Translate the mouse press to tab header coordinates.
+        pAbsolute += Vector2i((*first)->position().x(), 0);
+        // TODO: Use a callback on the tab button.
+        while (first != last) {
+            auto child = *first;
+            if (child->contains(pAbsolute)) {
+                mCallback(std::distance(mChildren.begin(), first));
+                return true;
+            }
+            ++first;
         }
-        setActiveTab(index);
-        mCallback(index);
     }
     return false;
 }
 
-void TabHeader::updateInternalState(NVGcontext* ctx) {
-    // Set up the nvg context for measuring the text.
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
-    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-
-    // Calculate the extent of each tab header button.
-    mTabLabelExtents.clear();
-    int currentPosition = 0;
-    int nextPosition = 0;
-    for (const auto& tabLabel : mTabLabels) {
-        int labelWidth = nvgTextBounds(ctx, 0, 0, tabLabel.c_str(), nullptr, nullptr);
-        int buttonWidth = labelWidth + 2 * tabPadding;
-        // Check if the tab is too wide or narrow.
-        if (buttonWidth > maxButtonWidth)
-            nextPosition = maxButtonWidth + currentPosition;
-        else if (buttonWidth < minButtonWidth)
-            nextPosition = minButtonWidth + currentPosition;
-        else
-            nextPosition = buttonWidth + currentPosition;
-        mTabLabelExtents.push_back({ currentPosition, nextPosition });
-        currentPosition = nextPosition;
-    }
-    //calculateVisibleEnd();
-    mInternalStateValid = true;
-}
-
 void TabHeader::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
-    
-    if (!mInternalStateValid)
-        updateInternalState(ctx);
+    if (mOverflowing) {
+        drawControls(ctx);
+        nvgTranslate(ctx, controlsWidth, 0);
+    }
+    // Translate in order to place the first button in the correct position.
+    nvgTranslate(ctx, -mChildren[mVisibleStart]->position().x(), 0);
+    // Set up the text for the tab buttons
     nvgFillColor(ctx, mFontColor);
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-
-    int xOffSet = mPos.x();
-    int yOffSet = mPos.y();
-    
-    int relativeOffset = mTabLabelExtents[mVisibleStart].first;
-    // Draw the controls if necessary.
-    if (mIsOverflowing) {
-        drawControls(ctx);
-        relativeOffset -= controlsWidth;
-    }
-
-    for (int i = mVisibleStart; i != mVisibleEnd; ++i) {
-        auto& tabLabel = mTabLabels[i];
-        // Find the last character to be displayed.
-        NVGtextRow displayedText;
-        nvgTextBreakLines(ctx, tabLabel.c_str(), nullptr, maxButtonWidth, &displayedText, 1);
-        
-        int xPosition = xOffSet + mTabLabelExtents[i].first + tabPadding - relativeOffset;
-        int yPosition = yOffSet + mSize.y() * 0.5f;
-        if (!displayedText.next[0]) {
-            nvgText(ctx, xPosition, yPosition,
-                    displayedText.start, displayedText.end);
-        }
-        else {
-            // Revert back some symbols to have space for the three dots.
-            static const char* dots = "...";
-            auto truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
-                                                displayedText.start, displayedText.end, nullptr);
-            auto dotsWidth = nvgTextBounds(ctx, 0.0f, 0.0f,dots, nullptr, nullptr);
-            while ((truncatedWidth + dotsWidth) > (maxButtonWidth - tabPadding)) {
-                // Revert back some symbols to have space for the three dots.
-                // TODO: Add proper calculation for how much characters to revert   
-                // TODO: Loop over text and determine if the characters fit.
-                --displayedText.end;
-                // Update the width calculation.
-                truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
-                                               displayedText.start, displayedText.end, nullptr);
-            }
-            // TODO: Handle edge case of the last tab being too wide to fit.
-            // Finally, draw the label
-            nvgText(ctx, xPosition, yPosition, displayedText.start, displayedText.end);
-            auto dotsPosition = xPosition + truncatedWidth;
-            // Add the dots at the end.
-            nvgText(ctx, dotsPosition, yPosition, dots, nullptr);
-        }
+    Widget::draw(ctx);
+    // Reverse translations
+    nvgTranslate(ctx, mChildren[mVisibleStart]->position().x(), 0);
+    if (mOverflowing) {
+        nvgTranslate(ctx, -controlsWidth, 0);
     }
 }
 
-void TabHeader::drawHitBox(NVGcontext* ctx, int index) {
-    // Compute bounds.
-    int minX = mPos.x() + mTabLabelExtents[index].first;
-    int minY = mPos.y();
-    int maxX = mPos.x() + mTabLabelExtents[index].second;
-    int maxY = mPos.y() + mSize.y();
-    // Draw the boxes.
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, minX, minY, maxX - minX, maxY - minY, 0.5f);
-    float modifier = 1.0f / ((float)(index) + 1);
-    Color fillColor = Color(modifier, 0.1f, 0.1f, 1.0f);
-    nvgFillColor(ctx, fillColor);
-    nvgFill(ctx);
+
+void TabHeader::updateVisibility() {
+    auto current = mChildren.begin();
+    auto firstVisible = std::next(mChildren.begin(), mVisibleStart);
+    while (current != firstVisible) {
+        (*current)->setVisible(false);
+        ++current;
+    }
+    auto firstInvisible = std::next(mChildren.begin(), mVisibleEnd);
+    while (current != firstInvisible) {
+        (*current)->setVisible(true);
+        ++current;
+    }
+    auto last = mChildren.end();
+    while (current != last) {
+        (*current)->setVisible(false);
+        ++current;
+    }
 }
 
 void TabHeader::calculateVisibleEnd() {
-    if (mSize.x() < mTabLabelExtents.back().second) {
-        // Draw controls
-        // Find the index of the last visible tab given that we know the first one.
-        int relativePos = mTabLabelExtents[mVisibleStart].first;  // mTabLabelExtents already takes into account the initial controls.
-        int xSize = mSize.x() - 2*controlsWidth;
-        auto visibleEndIter = std::find_if(std::next(mTabLabelExtents.begin(), mVisibleStart),
-                                           mTabLabelExtents.end(),
-                                           [relativePos, xSize](const auto& extents) {
-            int relativeStart = extents.first - relativePos;
-            int realtiveEnd = extents.second - relativePos;
-            return (relativeStart < xSize) && (realtiveEnd > xSize);
-        });
-        mVisibleEnd = std::distance(mTabLabelExtents.begin(), visibleEndIter);
-        mIsOverflowing = true;
+    int lastChildEnd = mChildren.back()->position().x() + mChildren.back()->size().x();
+    if (mSize.x() < lastChildEnd) {
+        auto first = std::next(mChildren.begin(), mVisibleStart);
+        auto last = mChildren.end();
+        // The offset must take into account both of the controls on either end.
+        int offset = (*first)->position().x() + controlsWidth;
+        int relativeEnd = (*first)->position().x() + mSize.x() - controlsWidth;
+        //++first
+        while (first != last) {
+            Widget* child = *first;
+            offset += child->size().x();
+            if (offset > relativeEnd) {
+                break;
+            }
+            ++first;
+        }
+        mVisibleEnd = std::distance(mChildren.begin(), first);
+        mOverflowing = true;
     }
     else {
-        mVisibleEnd = mTabLabels.size();
-        mIsOverflowing = false;
+        mVisibleEnd = mChildren.size();
+        mOverflowing = false;
     }
 }
 
@@ -265,7 +299,7 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     // Draw the background.
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, minX, minY, maxX - minX, maxY - minY, 0.5f);
-    Color fillColor = Color(1.0f, 0.1f, 0.1f, 1.0f);
+    Color fillColor = Color(0.5f, 0.3f, 0.1f, 1.0f);
     nvgFillColor(ctx, fillColor);
     nvgFill(ctx);
     // TODO: Draw the arrow.
@@ -279,7 +313,7 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     // Draw the background.
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, minX, minY, maxX - minX, maxY - minY, 0.5f);
-    fillColor = Color(1.0f, 0.1f, 0.1f, 1.0f);
+    fillColor = Color(0.5f, 0.3f, 0.1f, 1.0f);
     nvgFillColor(ctx, fillColor);
     nvgFill(ctx);
     // TODO: Draw the arrow.
@@ -307,14 +341,16 @@ void TabHeader::leftControlsClicked() {
     }
     --mVisibleStart;
     calculateVisibleEnd();
+    updateVisibility();
 }
 
 void TabHeader::rightControlsClicked() {
-    if (mVisibleEnd == (int)mTabLabels.size()) {
+    if (mVisibleEnd == (int)mChildren.size()) {
         return;
     }
     ++mVisibleStart;
     calculateVisibleEnd();
+    updateVisibility();
 }
 
 NAMESPACE_END(nanogui)

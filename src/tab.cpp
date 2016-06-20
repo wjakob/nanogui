@@ -37,8 +37,8 @@ int Tab::activeTab() const {
 }
 
 void Tab::addTab(Widget* tab, const std::string& name) {
+    // Automatically sets the parent.
     mContent->addChild(tab);
-    tab->setParent(mContent);
     mHeader->addTabLabel(name);
     assert(mHeader->labelCount() == mContent->childCount());
 }

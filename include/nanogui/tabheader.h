@@ -21,6 +21,39 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+
+class NANOGUI_EXPORT TabButton : public Widget {
+public:
+    constexpr static int horizontalPadding = 10;
+    constexpr static int verticalPadding = 2;
+    constexpr static char* dots = "...";
+
+
+    TabButton(Widget* header, const std::string& label)
+        : Widget(header), mLabel(label)
+    {}
+
+    void setLabel(const std::string& label) { mLabel = label; }
+    const std::string& label() const { return mLabel; }
+    
+    virtual Vector2i preferredSize(NVGcontext* ctx) const override;
+    virtual void performLayout(NVGcontext* ctx) override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual void draw(NVGcontext* ctx) override;
+
+private:
+    std::string mLabel;
+
+    struct StringView {
+        const char* first = nullptr;
+        const char* last = nullptr;
+    };
+    
+    StringView mVisibleText;
+    int mVisibleWidth;
+};
+
+
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
     constexpr static int minButtonWidth = 20;
@@ -28,8 +61,6 @@ public:
     constexpr static int topBottomMargin = 3;
     constexpr static int tabPadding = 10;
     constexpr static int controlsWidth = 20;
-
-    using size_type = std::vector<std::string>::size_type;
 
     TabHeader(Widget* parent, const std::string &font = "sans",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
@@ -41,17 +72,17 @@ public:
 
     void setActiveTab(int tabIndex);
     int activeTab() const;
-    int labelCount() const { return mTabLabels.size();  }
+    int labelCount() const { return mChildren.size();  }
     /// Sets the callable objects which is invoked when a tab is pressed
     /// with the index of the tab.
     void setCallback(const std::function<void(int)>& callback);
     const std::function<void(int)>& callback() const;
     /// Insert a new tab button with the specified text.    
     void addTabLabel(const std::string& tabLabel);
-    std::string& tabLabelAt(size_type index);
+    const std::string& tabLabelAt(int index);
     int tabLabelIndex(const std::string& tabLabel);
     /// Removes the tab label with the specified name and returns the index of
-    /// the label. If it does not find it returns the number of labels (labeCount).
+    /// the label. If it does not find it returns the number of labels (labelCount).
     int removeTabLabel(const std::string& tabLabel);
 
     virtual void performLayout(NVGcontext* ctx) override;
@@ -61,55 +92,30 @@ public:
     virtual void draw(NVGcontext* ctx) override;
 
 private:
-    /// Helper enumeration class for determining the direction of the controls.
+
     enum class ControlsClicked {
         Left, Right, None
     };
 
-    //friend class TabHeader;
-
-    struct TabButton {
-        std::string label;
-        // The positions of the tab button on the tab strip
-        int absoluteStart;
-        int absoluteEnd;
-
-        int realtiveStart(bool isOverflowing, int visibleStartPosition) {
-            int offSet = 0;
-            if (isOverflowing)
-                offSet = absoluteStart + controlsWidth - visibleStartPosition;
-            else
-                offSet = absoluteStart + controlsWidth - visibleStartPosition;
-            return offSet;
-        }
-    };
-
-    std::vector<TabButton> mTabButtons;
-    
-
-    /// Old design
-
-    void updateInternalState(NVGcontext* ctx);
-
-    void drawHitBox(NVGcontext* ctx, int index);
     void calculateVisibleEnd();
+    void updateVisibility();
+
+
     void drawControls(NVGcontext* ctx);
     ControlsClicked isInsideControls(const Vector2i& p);
     void leftControlsClicked();
     void rightControlsClicked();
 
     std::function<void(int)> mCallback;
-
+    
     int mVisibleStart = 0;
     int mVisibleEnd = 0;
     
     int mActiveTab = 0;
-    bool mIsOverflowing = false;
+    bool mOverflowing = false;
 
     std::string mFont;
     Color mFontColor;
-    
-    bool mInternalStateValid = false;
 };
 
 

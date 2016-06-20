@@ -28,7 +28,7 @@ public:
     void setActiveTab(int tabIndex);
     int activeTab() const;
 
-    virtual void performLayout(NVGcontext* /* ctx */) override;
+    virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void addChild(Widget *widget) override;
 
