@@ -176,8 +176,9 @@ Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
     return size;
 }
 
-bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int /*modifiers*/) {
-    
+bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) {
+    Widget::mouseButtonEvent(p, button, down, modifiers);
+
     if (button == GLFW_MOUSE_BUTTON_1 && down) {
         switch (locateClick(p)) {
         case ClickLocation::LeftControls:
@@ -190,14 +191,16 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int /
             auto first = std::next(mTabButtons.begin(), mVisibleStart);
             auto last = std::next(mTabButtons.begin(), mVisibleEnd);
             int currentPosition = controlsWidth;
-            int endPosition = mSize.x() - controlsWidth;
+            int endPosition = p.x();
             auto firstInvisible = std::find_if(first, last,
                                                [&currentPosition, endPosition](const auto& tb)
             {
                 currentPosition += tb.size().x();
-                return currentPosition < endPosition;
+                return currentPosition > endPosition;
             });
             int index = std::distance(mTabButtons.begin(), firstInvisible);
+            if (index == mTabButtons.size())
+                return true;
             mCallback(index);
             return true;
         }
@@ -291,14 +294,14 @@ void TabHeader::calculateVisibleEnd() {
     auto first = std::next(mTabButtons.begin(), mVisibleStart);
     auto last = mTabButtons.end();
     int currentPosition = controlsWidth;
+    int lastPosition = mSize.x() - controlsWidth;
     auto firstInvisible = std::find_if(first, last,
-                                       [&currentPosition, this](const auto& tb)
+                                       [&currentPosition, lastPosition](const auto& tb)
     {
         currentPosition += tb.size().x();
-        return currentPosition < (mSize.x() - controlsWidth);
+        return currentPosition > lastPosition;
     });
     mVisibleEnd = std::distance(mTabButtons.begin(), firstInvisible);
-
 }
 
 void TabHeader::drawControls(NVGcontext* ctx) {
