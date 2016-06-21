@@ -30,8 +30,8 @@ public:
         // Create the second tab window.
         for (int j = 0; j < 8; j++) {
             auto layer = new Widget(nullptr);
-            layer->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 10));
-            new Label(layer, "Function graph", "sans-bold");
+            layer->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Middle, 0, 20));
+            auto label = new Label(layer, "Function graph", "sans-bold");
             Graph *graph = new Graph(layer, "Some function");
             graph->setHeader("Function Tab " + std::to_string(j));
             graph->setForegroundColor(Color(0.7f, 0.2f, 0.2f, 1.0f));
@@ -40,7 +40,7 @@ public:
             for (int i = 0; i < 100; ++i)
                 func[i] = 0.5f * ((0.5f) * std::sin(i / 10.f + j) +
                                   (0.5f) * std::cos(i / 23.f + j) + 1);
-            auto layerName = "Tab " + std::to_string(j);
+            auto layerName = "Some tab " + std::to_string(j);
             tab->addTab(layer, layerName);
 
         }
@@ -52,11 +52,7 @@ public:
         Layout* layout = new GroupLayout();
         window->setLayout(layout);                      
 
-        new TabButton(window, "Some tab button with a long name that should overflow");
-
-
-
-
+        //new TabButton(window, "Some tab button with a long", 10);
 
 
         //// Advanced Layout experimentation

@@ -21,7 +21,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-
 class NANOGUI_EXPORT TabButton : public Widget {
 public:
     constexpr static int horizontalPadding = 10;
@@ -29,12 +28,12 @@ public:
     constexpr static char* dots = "...";
 
 
-    TabButton(Widget* header, const std::string& label)
-        : Widget(header), mLabel(label)
-    {}
+    TabButton(Widget* header, const std::string& label, int index);
 
     void setLabel(const std::string& label) { mLabel = label; }
     const std::string& label() const { return mLabel; }
+    void setActive(bool active) { mActive = active; }
+    bool active() const { return mActive; }
     
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void performLayout(NVGcontext* ctx) override;
@@ -51,6 +50,9 @@ private:
     
     StringView mVisibleText;
     int mVisibleWidth;
+    bool mActive = false;
+
+    int mIndex;
 };
 
 
@@ -61,8 +63,9 @@ public:
     constexpr static int topBottomMargin = 3;
     constexpr static int tabPadding = 10;
     constexpr static int controlsWidth = 20;
+    constexpr static int controlsContentWidth = 15;
 
-    TabHeader(Widget* parent, const std::string &font = "sans",
+    TabHeader(Widget* parent, const std::string &font = "sans-bold",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
     
     void setFont(const std::string& font) { mFont = font; }
