@@ -40,7 +40,7 @@ int Tab::activeTab() const {
 void Tab::addTab(Widget* tab, const std::string& name) {
     // Automatically sets the parent.
     mContent->addChild(tab);
-    mHeader->addTabLabel(name);
+    mHeader->addTabButton(name);
     assert(mHeader->labelCount() == mContent->childCount());
 }
 
@@ -59,7 +59,7 @@ Widget* Tab::getTab(const std::string& tabName) {
 }
 
 bool Tab::removeTab(const std::string& tabName) {
-    int index = mHeader->removeTabLabel(tabName);
+    int index = mHeader->removeTabButton(tabName);
     if (index == mHeader->labelCount())
         return false;
     mContent->removeChild(index);
