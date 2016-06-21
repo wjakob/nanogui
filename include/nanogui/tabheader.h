@@ -29,7 +29,7 @@ public:
     constexpr static int tabPadding = 10;
     constexpr static int controlsWidth = 20;
 
-    using size_type = std::vector<std::string>::size_type;
+    using size_type = size_t;
 
     TabHeader(nanogui::Widget* parent, const std::string &font = "sans",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
@@ -65,17 +65,6 @@ private:
     enum class ControlsClicked {
         Left, Right, None
     };
-
-    struct TabButton {
-        std::string label;
-        int x1;
-        int x2;
-    };
-
-    std::vector<TabButton> mTabButtons;
-    
-
-    /// Old design
 
     void updateInternalState(NVGcontext* ctx);
 
