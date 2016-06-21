@@ -68,8 +68,10 @@ bool Tab::removeTab(const std::string& tabName) {
 
 void Tab::performLayout(NVGcontext* ctx) {
     mHeader->setFixedWidth(mSize.x());
-    mContents->setPosition(mBorderWidth, mBorderWidth);
     Widget::performLayout(ctx);
+    mHeader->setPosition({ 0, 0 });
+    mContent->setPosition({contentBorder, mHeader->size().y() + contentBorder});
+   
 }
 
 Vector2i Tab::preferredSize(NVGcontext* ctx) const {
@@ -82,22 +84,24 @@ Vector2i Tab::preferredSize(NVGcontext* ctx) const {
 
 void Tab::draw(NVGcontext* ctx) {  
     Widget::draw(ctx);
+    // Draw a border around the content
+    int xBorder = mPos.x();
+    int yBorder = mPos.y() + mHeader->size().y();
+    int wBorder = mSize.x();
+    int hBorder = mContent->size().y() + contentBorder;
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, xBorder, yBorder, wBorder, hBorder, mTheme->mWindowCornerRadius);
+    nvgStrokeColor(ctx, mTheme->mBorderDark);
+    nvgStroke(ctx);
+    // Remove the border separating the tab header from the contents.
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, xBorder, yBorder);
+    nvgLineTo(ctx, xBorder + wBorder, yBorder);
+    nvgStrokeColor(ctx,  mTheme->mWindowFillFocused);
+    nvgStroke(ctx);
 
-    nvgTranslate(ctx, mPos.x(), mPos.y());
-    mHeader->draw(ctx);
-    // Draw the content border.
-    nvgTranslate(ctx, 0, mHeader->size().y());
-
-    nvgTranslate(ctx, contentBorder, contentBorder);
-    
-    //auto contentSizeWithBorder = mSize - mHeader->size();
-    //nvgBeginPath(ctx);
-    //nvgRoundedRect(ctx, 0, 0, mSize.x() - , mSize.y(), mTheme->mWindowCornerRadius);
-    //nvgStrokeColor(ctx, mTheme->mB)
-
-//    mContent->draw(ctx);
- //   nvgTranslate(ctx, -(mPos.x() + contentBorder),
-  //               -(mPos.y() + mHeader->size().y() + contentBorder));
 }
 
 NAMESPACE_END(nanogui)
+
+//Color(1.0f, 0.0f, 0.0f, 1.0f)

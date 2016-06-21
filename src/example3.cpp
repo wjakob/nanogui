@@ -15,7 +15,6 @@
 
 using namespace nanogui;
 
-
 class TabApplication : public nanogui::Screen {
 public:
     TabApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "Tab Simulation Test") {
@@ -40,46 +39,11 @@ public:
             for (int i = 0; i < 100; ++i)
                 func[i] = 0.5f * ((0.5f) * std::sin(i / 10.f + j) +
                                   (0.5f) * std::cos(i / 23.f + j) + 1);
-            auto layerName = "Some" + std::to_string(j);
+            auto layerName = "Some " + std::to_string(j);
             tab->addTab(layer, layerName);
 
         }
         tab->setActiveTab(0);
-        
-        window = new Window(this, "Tab Buttons");
-        window->setPosition({ 700, 100 });
-        window->setFixedSize({ 200, 100 });
-        Layout* layout = new GroupLayout();
-        window->setLayout(layout);                      
-
-        //new TabButton(window, "Some tab button with a long", 10);
-
-
-        //// Advanced Layout experimentation
-        //window = new Window(this, "Advanced Layout Experimentation");
-        //window->setPosition({ 700, 100 });
-        ////Layout* layout = new GroupLayout();
-        //AdvancedGridLayout* layout = new AdvancedGridLayout({100, 100, 100}, { 0 });
-        //layout->setMargin(10);
-        ////layout->setColStretch(2, 1);
-        ////layout->appendCol(200);
-        ////layout->appendCol(200);
-        ////layout->appendCol(200);
-        //
-        //window->setLayout(layout);
-        //
-        //
-        //Label *label = new Label(window, "Label 1");
-        //layout->setAnchor(label, AdvancedGridLayout::Anchor(0, 0, 1, 1, Alignment::Middle, Alignment::Middle));
-        //
-        //
-        //label = new Label(window, "Label 2");
-        //layout->setAnchor(label, AdvancedGridLayout::Anchor(1, 0, 1, 1, Alignment::Middle, Alignment::Middle));
-        //
-        //label = new Label(window, "Label 3");
-        //layout->setAnchor(label, AdvancedGridLayout::Anchor(2, 0, 1, 1, Alignment::Middle, Alignment::Middle));
-
-        
 
 
         performLayout();

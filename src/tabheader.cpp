@@ -17,22 +17,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-namespace {
-
-    void drawArrow(NVGcontext* ctx, int xPos, int yPos, int width, int height, Theme* theme) {
-        // Draw the arrow.
-        nvgBeginPath(ctx);
-        nvgMoveTo(ctx, xPos + 2.0f / 3.0f * width, yPos + 1.0f / 3.0f * height);
-        nvgLineTo(ctx, xPos + 1.0f / 3.0f * width, yPos + 0.5f * height);
-        nvgLineTo(ctx, xPos + 2.0f / 3.0f * width, yPos + 2.0f / 3.0f * height);
-        nvgStrokeWidth(ctx, 3.0f);
-        nvgStrokeColor(ctx, theme->mBorderDark);
-        nvgStroke(ctx);
-    }
-
-}
-
-
 TabButton::TabButton(Widget* header, const std::string& label, int index)
     : Widget(header), mLabel(label), mIndex(index)
 {}
@@ -95,12 +79,11 @@ void TabButton::draw(NVGcontext* ctx)
     NVGcolor gradTop = mTheme->mButtonGradientTopPushed;
     NVGcolor gradBot = mTheme->mButtonGradientBotPushed;
     // Check if this is the active tab.
-
-    // Draw the background.
     if (mActive) {
-        gradTop = mTheme->mButtonGradientTopUnfocused;
-        gradBot = mTheme->mButtonGradientBotUnfocused;
+        gradTop = mTheme->mWindowFillFocused;
+        gradBot = mTheme->mWindowFillFocused;
     }
+    // Draw the background.
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, xPos+1, yPos+1, width-1, height-1, 1.0f);
     NVGpaint backgroundColor = nvgLinearGradient(ctx, xPos, yPos, xPos, yPos + height,
@@ -109,13 +92,14 @@ void TabButton::draw(NVGcontext* ctx)
     nvgFill(ctx);
     nvgStrokeColor(ctx, mTheme->mBorderMedium);
     nvgStroke(ctx);
-    if (mActive) {
-        nvgBeginPath(ctx);
-        nvgMoveTo(ctx, xPos + 2, yPos + 2);
-        nvgLineTo(ctx, xPos + width - 2, yPos + 2);
-        nvgStrokeColor(ctx, mTheme->mBorderLight);
-        nvgStroke(ctx);
-    }
+    // White top border.
+    //if (mActive) {
+    //    nvgBeginPath(ctx);
+    //    nvgMoveTo(ctx, xPos + 2, yPos + 2);
+    //    nvgLineTo(ctx, xPos + width - 2, yPos + 2);
+    //    nvgStrokeColor(ctx, mTheme->mBorderLight);
+    //    nvgStroke(ctx);
+    //}
 
     // Add initial text padding
     int textX = xPos + horizontalPadding;
@@ -127,8 +111,6 @@ void TabButton::draw(NVGcontext* ctx)
     if (mVisibleText.last != nullptr)
         nvgText(ctx, textX + mVisibleWidth, textY, dots, nullptr);
 }
-
-
 
 TabHeader::TabHeader(Widget* parent, const std::string& font,
                                  int fontSize, Color fontColor)
@@ -261,6 +243,7 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int /
                 rightControlsClicked();
                 return true;
             case ControlsClicked::None:
+                pAbsolute = p - Vector2i(controlsContentWidth, 0);
                 break;
             }
         }
@@ -299,17 +282,19 @@ void TabHeader::draw(NVGcontext* ctx) {
     nvgFillPaint(ctx, backgroundColor);
     nvgFill(ctx);
 
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, xPos + 1.0f, yPos + 1.0f, width - 1.0f, height, mTheme->mButtonCornerRadius);
-    //nvgStrokeWidth(ctx, 3.0f);
-    nvgStrokeColor(ctx, mTheme->mBorderLight);
-    nvgStroke(ctx);
+    // White bottom border.
+    //nvgBeginPath(ctx);
+    //nvgRoundedRect(ctx, xPos + 1.0f, yPos + 1.0f, width - 1.0f, height, mTheme->mButtonCornerRadius);
+    ////nvgStrokeWidth(ctx, 3.0f);
+    //nvgStrokeColor(ctx, mTheme->mBorderLight);
+    //nvgStroke(ctx);
 
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, xPos, yPos, width, height, mTheme->mButtonCornerRadius);
-    //nvgStrokeWidth(ctx, 3.0f);
-    nvgStrokeColor(ctx, mTheme->mBorderDark);
-    nvgStroke(ctx);
+    // Dark border
+    //nvgBeginPath(ctx);
+    //nvgRoundedRect(ctx, xPos, yPos, width, height, mTheme->mButtonCornerRadius);
+    ////nvgStrokeWidth(ctx, 3.0f);
+    //nvgStrokeColor(ctx, mTheme->mBorderDark);
+    //nvgStroke(ctx);
 
     if (mOverflowing) {
         drawControls(ctx);
