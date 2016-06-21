@@ -15,6 +15,7 @@
 #include <nanogui/tab.h>
 #include <nanogui/tabheader.h>
 #include <nanogui/stacked.h>
+#include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <algorithm>
 
@@ -67,6 +68,7 @@ bool Tab::removeTab(const std::string& tabName) {
 
 void Tab::performLayout(NVGcontext* ctx) {
     mHeader->setFixedWidth(mSize.x());
+    mContents->setPosition(mBorderWidth, mBorderWidth);
     Widget::performLayout(ctx);
 }
 
@@ -79,11 +81,23 @@ Vector2i Tab::preferredSize(NVGcontext* ctx) const {
 }
 
 void Tab::draw(NVGcontext* ctx) {  
+    Widget::draw(ctx);
+
     nvgTranslate(ctx, mPos.x(), mPos.y());
     mHeader->draw(ctx);
-    nvgTranslate(ctx, contentBorder, mHeader->size().y());
-    mContent->draw(ctx);
-    nvgTranslate(ctx, -(mPos.x() + contentBorder), -(mPos.y() + mHeader->size().y()));
+    // Draw the content border.
+    nvgTranslate(ctx, 0, mHeader->size().y());
+
+    nvgTranslate(ctx, contentBorder, contentBorder);
+    
+    //auto contentSizeWithBorder = mSize - mHeader->size();
+    //nvgBeginPath(ctx);
+    //nvgRoundedRect(ctx, 0, 0, mSize.x() - , mSize.y(), mTheme->mWindowCornerRadius);
+    //nvgStrokeColor(ctx, mTheme->mB)
+
+//    mContent->draw(ctx);
+ //   nvgTranslate(ctx, -(mPos.x() + contentBorder),
+  //               -(mPos.y() + mHeader->size().y() + contentBorder));
 }
 
 NAMESPACE_END(nanogui)

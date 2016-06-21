@@ -20,7 +20,8 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT Tab : public Widget {
 public:
-    constexpr static int contentBorder = 20;
+    constexpr static int contentBorder = 5;
+    
 
     Tab(Widget* parent);
 

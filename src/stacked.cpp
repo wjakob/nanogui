@@ -44,7 +44,7 @@ Vector2i Stacked::preferredSize(NVGcontext * ctx) const {
     // Retrieve the maximum possible width and height among the widgets.
     for (auto child : mChildren)
         size = size.cwiseMax(child->preferredSize(ctx));
-    return size + Vector2i(2 * borderSize, headerSize + 2 * borderSize);
+    return size + Vector2i(2 * borderSize, 2 * borderSize);
 
 }
 

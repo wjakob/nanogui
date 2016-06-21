@@ -21,7 +21,6 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT Stacked : public Widget {
 public:
     constexpr static int borderSize = 2;
-    constexpr static int headerSize = 15;
 
     Stacked(nanogui::Widget* parent);
 
