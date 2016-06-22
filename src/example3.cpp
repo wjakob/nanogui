@@ -27,10 +27,10 @@ public:
         Tab* tab = new Tab(window);
         
         // Create the second tab window.
-        for (int j = 0; j < 8; j++) {
+        for (int j = 0; j < 3; ++j) {
             auto layer = new Widget(nullptr);
             layer->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
-            auto label = new Label(layer, "Function graph", "sans-bold");
+            new Label(layer, "Function graph", "sans-bold");
             Graph *graph = new Graph(layer, "Some function");
             graph->setHeader("Function Tab " + std::to_string(j));
             graph->setForegroundColor(Color(0.7f, 0.2f, 0.2f, 1.0f));

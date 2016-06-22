@@ -30,8 +30,6 @@ public:
 
     void setLabel(const std::string& label) { mLabel = label; }
     const std::string& label() const { return mLabel; }
-    //void setPosition(const Vector2i& position) { mPos = position; }
-    //const Vector2i& position() const { return mPos; }
     void setSize(const Vector2i& size) { mSize = size; }
     const Vector2i& size() const { return mSize; }
 
@@ -42,7 +40,6 @@ private:
     TabHeader* mHeader;
     std::string mLabel;
     Vector2i mSize;
-    //Vector2i mPos;
     struct StringView {
         const char* first = nullptr;
         const char* last = nullptr;
@@ -67,6 +64,7 @@ public:
     const std::string& font() const { return mFont; }
     void setFontColor(const Color& fontColor) { mFontColor = fontColor; }
     const Color& fontColor() const { return mFontColor; }
+    bool overflowing() const { return mOverflowing; }
     /// Sets the callable objects which is invoked when a tab button is pressed.
     /// The argument provided to the call back is the index of the tab.
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
@@ -92,13 +90,14 @@ public:
     virtual void draw(NVGcontext* ctx) override;
 
 private:
-
+    using TabIterator = std::vector<TabButton>::iterator;
     enum class ClickLocation {
         LeftControls, RightControls, TabButtons
     };
 
+    TabIterator visibleBegin() { return std::next(mTabButtons.begin(), mVisibleStart); }
+    TabIterator visibleEnd() { return std::next(mTabButtons.begin(), mVisibleEnd); }
     void calculateVisibleEnd();
-
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);
     void leftControlsClicked();
