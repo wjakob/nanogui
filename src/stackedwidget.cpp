@@ -92,7 +92,6 @@ Vector2i StackedWidget::preferredSize(NVGcontext * ctx) const {
 void StackedWidget::addChild(Widget * widget) {
     Widget::addChild(widget);
     widget->setVisible(false);
-    // TODO: Remove this call so as not to mess with pop up buttons.
     setSelectedIndex(childCount()-1);
 }
 

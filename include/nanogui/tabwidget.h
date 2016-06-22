@@ -30,8 +30,6 @@ public:
     int tabCount() const;
 
     /// TODO: combine with new construction add operation (added by Wenzel in a bit ;))
-
-    /// TODO: insertTab, appendTab, prependTab, tabIndex(), setTabIndex()
     
     /// Forward functions for tabLabelAt() etc.
 
@@ -63,6 +61,10 @@ public:
 
     /// TODO: add callback for tab activation
 private:
+    /// Draws a border around the content that is indented by the offset provided.
+    /// A larger offset means a "tighter" border.
+    void drawBorder(NVGcontext* ctx, float offset, const Color& borderColor);
+
     TabHeader* mHeader;
     StackedWidget* mContent;
 };

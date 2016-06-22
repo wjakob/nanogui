@@ -124,22 +124,49 @@ void TabWidget::draw(NVGcontext* ctx) {
     int yBorder = mPos.y() + mHeader->size().y();
     int wBorder = mSize.x();
     int hBorder = mContent->size().y() + contentBorder;
-    nvgBeginPath(ctx);
-    nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder);
-    nvgLineTo(ctx, xBorder, yBorder);
-    nvgLineTo(ctx, xBorder, yBorder + hBorder);
-    nvgLineTo(ctx, xBorder + wBorder, yBorder + hBorder);
-    nvgLineTo(ctx, xBorder + wBorder, yBorder);
-    nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlWidth, yBorder);
-    auto tabButtonsArea = mHeader->visibleButtonArea();
-    nvgLineTo(ctx, xBorder + tabButtonsArea.second.x(), yBorder);
-    nvgStrokeColor(ctx, mTheme->mBorderDark);
-    /// TODO: fix stroke width, and make Button more resistant to stroke width changes
-    nvgStrokeWidth(ctx, 0.5f * 1);
-    nvgStroke(ctx);
+    // Draw dark border.
+    // Draw light border.
+    float darkOffset = 0.0f;
+    float lightOffset = 1.0f;
+    drawBorder(ctx, darkOffset, mTheme->mBorderDark);
+    drawBorder(ctx, lightOffset, mTheme->mBorderLight);
+
+    //nvgBeginPath(ctx);
+    //nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder);
+    //nvgLineTo(ctx, xBorder, yBorder);
+    //nvgLineTo(ctx, xBorder, yBorder + hBorder);
+    //nvgLineTo(ctx, xBorder + wBorder, yBorder + hBorder);
+    //nvgLineTo(ctx, xBorder + wBorder, yBorder);
+    //nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlWidth, yBorder);
+    //auto tabButtonsArea = mHeader->visibleButtonArea();
+    //nvgLineTo(ctx, xBorder + tabButtonsArea.second.x(), yBorder);
+    //nvgStrokeColor(ctx, mTheme->mBorderDark);
+    ///// TODO: fix stroke width, and make Button more resistant to stroke width changes
+    //nvgStrokeWidth(ctx, 0.3f * contentBorder);
+    //nvgStroke(ctx);
 
 }
 
-NAMESPACE_END(nanogui)
+void TabWidget::drawBorder(NVGcontext* ctx, float offset, const Color& borderColor) {
+    // Draw a border around the content.
+    int xBorder = mPos.x();
+    int yBorder = mPos.y() + mHeader->size().y();
+    int wBorder = mSize.x();
+    int hBorder = mContent->size().y() + contentBorder;
 
-//Color(1.0f, 0.0f, 0.0f, 1.0f)
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder + offset);
+    nvgLineTo(ctx, xBorder + offset, yBorder + offset);
+    nvgLineTo(ctx, xBorder + offset, yBorder + hBorder - offset);
+    nvgLineTo(ctx, xBorder + wBorder - offset, yBorder + hBorder - offset);
+    nvgLineTo(ctx, xBorder + wBorder - offset, yBorder + offset);
+    nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlWidth - offset, yBorder + offset);
+    auto tabButtonsArea = mHeader->visibleButtonArea();
+    nvgLineTo(ctx, xBorder + tabButtonsArea.second.x() - offset, yBorder + offset);
+    nvgStrokeColor(ctx, borderColor);
+    /// TODO: fix stroke width, and make Button more resistant to stroke width changes
+    nvgStrokeWidth(ctx, 1.0f);
+    nvgStroke(ctx);
+}
+
+NAMESPACE_END(nanogui)
