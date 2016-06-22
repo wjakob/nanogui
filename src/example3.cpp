@@ -19,20 +19,22 @@ using std::endl;
 
 class TabApplication : public nanogui::Screen {
 public:
-    TabApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "Tab Test") {
+    TabApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "TabWidget Test") {
         using namespace nanogui;
         Window* tabWindow = new Window(this, "Tabs Window");
         tabWindow->setPosition({ 100, 100 });
         tabWindow->setLayout(new GroupLayout());
         
-        Tab* tab = new Tab(tabWindow);
+        TabWidget* tab = new TabWidget(tabWindow);
 
         //--------------------------------------------------------------//
         //                         FIRST TAB                            //
         //--------------------------------------------------------------//
 
         Widget* window = new Widget(nullptr);
+        
         window->setLayout(new GroupLayout());
+        tab->appendTab(window, "Button demo");
 
         new Label(window, "Push buttons", "sans-bold");
 
@@ -64,17 +66,15 @@ public:
         b = new ToolButton(tools, ENTYPO_ICON_INSTALL);
 
         new Label(window, "Popup buttons", "sans-bold");
-        //PopupButton *popupBtn = new PopupButton(window, "Popup", ENTYPO_ICON_EXPORT);
-        //Popup *popup = popupBtn->popup();
-        //popup->setLayout(new GroupLayout());
-        //new Label(popup, "Arbitrary widgets can be placed here");
-        //new CheckBox(popup, "A check box");
-        //popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
-        //popup = popupBtn->popup();
-        //popup->setLayout(new GroupLayout());
-        //new CheckBox(popup, "Another check box");
-
-        tab->addTab(window, "Button demo");
+        PopupButton *popupBtn = new PopupButton(window, "Popup", ENTYPO_ICON_EXPORT);
+        Popup *popup = popupBtn->popup();
+        popup->setLayout(new GroupLayout());
+        new Label(popup, "Arbitrary widgets can be placed here");
+        new CheckBox(popup, "A check box");
+        popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
+        popup = popupBtn->popup();
+        popup->setLayout(new GroupLayout());
+        new CheckBox(popup, "Another check box");
 
         //--------------------------------------------------------------//
         //                         SECOND TAB                           //
@@ -82,6 +82,7 @@ public:
 
         window = new Widget(nullptr);
         window->setLayout(new GroupLayout());
+        tab->appendTab(window, "Basic widgets");
 
         new Label(window, "Message dialog", "sans-bold");
         tools = new Widget(window);
@@ -102,35 +103,40 @@ public:
             auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
+        b = new Button(tools, "Ask 2");
+        b->setCallback([&] {
+            auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is another question message", "Yes", "No", true);
+            dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+        });
 
         std::vector<std::pair<int, std::string>>
             icons = loadImageDirectory(mNVGContext, "icons");
 
         new Label(window, "Image panel & scroll panel", "sans-bold");
-        //PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
-        //imagePanelBtn->setIcon(ENTYPO_ICON_FOLDER);
-        //Popup* popup = imagePanelBtn->popup();
-        //VScrollPanel *vscroll = new VScrollPanel(popup);
-        //ImagePanel *imgPanel = new ImagePanel(vscroll);
-        //imgPanel->setImages(icons);
-        //popup->setFixedSize(Vector2i(245, 150));
-        //
-        //auto img_window = new Window(this, "Selected image");
-        //img_window->setPosition(Vector2i(675, 15));
-        //img_window->setLayout(new GroupLayout());
-        //
-        //auto img = new ImageView(img_window);
-        //img->setPolicy(ImageView::SizePolicy::Expand);
-        //img->setFixedSize(Vector2i(300, 300));
-        //img->setImage(icons[0].first);
-        //imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
-        //    img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
-        //});
-        //auto img_cb = new CheckBox(img_window, "Expand",
-        //                           [img](bool state) { if (state) img->setPolicy(ImageView::SizePolicy::Expand);
-        //                           else       img->setPolicy(ImageView::SizePolicy::Fixed); });
-        //img_cb->setChecked(true);
-        //
+        PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
+        imagePanelBtn->setIcon(ENTYPO_ICON_FOLDER);
+        popup = imagePanelBtn->popup();
+        VScrollPanel *vscroll = new VScrollPanel(popup);
+        ImagePanel *imgPanel = new ImagePanel(vscroll);
+        imgPanel->setImages(icons);
+        popup->setFixedSize(Vector2i(245, 150));
+        
+        auto img_window = new Window(this, "Selected image");
+        img_window->setPosition(Vector2i(675, 15));
+        img_window->setLayout(new GroupLayout());
+        
+        auto img = new ImageView(img_window);
+        img->setPolicy(ImageView::SizePolicy::Expand);
+        img->setFixedSize(Vector2i(300, 300));
+        img->setImage(icons[0].first);
+        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
+            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
+        });
+        auto img_cb = new CheckBox(img_window, "Expand",
+                                   [img](bool state) { if (state) img->setPolicy(ImageView::SizePolicy::Expand);
+                                   else       img->setPolicy(ImageView::SizePolicy::Fixed); });
+        img_cb->setChecked(true);
+        
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
@@ -183,16 +189,14 @@ public:
         textBox->setFontSize(20);
         textBox->setAlignment(TextBox::Alignment::Right);
 
-        tab->addTab(window, "Basic widgets");
-
-        
-
         //--------------------------------------------------------------//
         //                         THIRD TAB                            //
         //--------------------------------------------------------------//
 
         window = new Widget(nullptr);
         window->setLayout(new GroupLayout());
+        tab->appendTab(window, "Misc. widgets");
+
         new Label(window, "Color wheel", "sans-bold");
         new ColorWheel(window);
         new Label(window, "Function graph", "sans-bold");
@@ -205,8 +209,6 @@ public:
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                               0.5f * std::cos(i / 23.f) + 1);
 
-        tab->addTab(window, "Misc. widgets");
-
         //--------------------------------------------------------------//
         //                         FORTH TAB                            //
         //--------------------------------------------------------------//
@@ -215,6 +217,9 @@ public:
         GridLayout *layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
+
+        tab->appendTab(window, "Grid of small widgets");
+
         layout->setColAlignment(
         { Alignment::Maximum, Alignment::Fill });
         layout->setSpacing(0, 10);
@@ -253,62 +258,41 @@ public:
         }
 
         new Label(window, "Combo box :", "sans-bold");
-        //ComboBox *cobo =
-        //    new ComboBox(window, { "Item 1", "Item 2", "Item 3" });
-        //cobo->setFontSize(16);
-        //cobo->setFixedSize(Vector2i(100, 20));
+        ComboBox *cobo =
+            new ComboBox(window, { "Item 1", "Item 2", "Item 3" });
+        cobo->setFontSize(16);
+        cobo->setFixedSize(Vector2i(100, 20));
 
         new Label(window, "Color button :", "sans-bold");
-        //popupBtn = new PopupButton(window, "", 0);
-        //popupBtn->setBackgroundColor(Color(255, 120, 0, 255));
-        //popupBtn->setFontSize(16);
-        //popupBtn->setFixedSize(Vector2i(100, 20));
-        //popup = popupBtn->popup();
-        //popup->setLayout(new GroupLayout());
+        popupBtn = new PopupButton(window, "", 0);
+        popupBtn->setBackgroundColor(Color(255, 120, 0, 255));
+        popupBtn->setFontSize(16);
+        popupBtn->setFixedSize(Vector2i(100, 20));
+        popup = popupBtn->popup();
+        popup->setLayout(new GroupLayout());
 
-        //ColorWheel *colorwheel = new ColorWheel(popup);
-        //colorwheel->setColor(popupBtn->backgroundColor());
-        //
-        //Button *colorBtn = new Button(popup, "Pick");
-        //colorBtn->setFixedSize(Vector2i(100, 25));
-        //Color c = colorwheel->color();
-        //colorBtn->setBackgroundColor(c);
-        //
-        //colorwheel->setCallback([colorBtn](const Color &value) {
-        //    colorBtn->setBackgroundColor(value);
-        //});
-        //
-        //colorBtn->setChangeCallback([colorBtn, popupBtn](bool pushed) {
-        //    if (pushed) {
-        //        popupBtn->setBackgroundColor(colorBtn->backgroundColor());
-        //        popupBtn->setPushed(false);
-        //    }
-        //});
+        ColorWheel *colorwheel = new ColorWheel(popup);
+        colorwheel->setColor(popupBtn->backgroundColor());
+        
+        Button *colorBtn = new Button(popup, "Pick");
+        colorBtn->setFixedSize(Vector2i(100, 25));
+        Color c = colorwheel->color();
+        colorBtn->setBackgroundColor(c);
+        
+        colorwheel->setCallback([colorBtn](const Color &value) {
+            colorBtn->setBackgroundColor(value);
+        });
+        
+        colorBtn->setChangeCallback([colorBtn, popupBtn](bool pushed) {
+            if (pushed) {
+                popupBtn->setBackgroundColor(colorBtn->backgroundColor());
+                popupBtn->setPushed(false);
+            }
+        });
 
-        tab->addTab(window, "Grid of small widgets");
+        tab->setActiveTab(0);
 
-
-        // Create the second tab window.
-        //for (int j = 0; j < 8; ++j) {
-        //    auto window = new Widget(nullptr);
-        //    window->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
-        //    new Label(window, "Function graph", "sans-bold");
-        //    Graph *graph = new Graph(window, "Some function");
-        //    graph->setHeader("Function Tab " + std::to_string(j));
-        //    graph->setForegroundColor(Color(0.7f, 0.2f, 0.2f, 1.0f));
-        //    VectorXf &func = graph->values();
-        //    func.resize(100);
-        //    for (int i = 0; i < 100; ++i)
-        //        func[i] = 0.5f * ((0.5f) * std::sin(i / 10.f + j) +
-        //                          (0.5f) * std::cos(i / 23.f + j) + 1);
-        //    auto layerName = "Tab " + std::to_string(j);
-        //    tab->addTab(window, layerName);
-        //
-        //}
-        //tab->setActiveTab(0);
-
-
-        performLayout();
+        performLayout(mNVGContext);
     }
 private:
     nanogui::ProgressBar* mProgress;

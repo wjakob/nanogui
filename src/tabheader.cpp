@@ -21,21 +21,20 @@ NAMESPACE_BEGIN(nanogui)
 
 static const Color debugColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 
-TabButton::TabButton(TabHeader& header, const std::string& label)
+TabHeader::TabButton::TabButton(TabHeader& header, const std::string& label)
     : mHeader(&header),  mLabel(label)
 {}
 
-Vector2i TabButton::preferredSize(NVGcontext* ctx) const
-{
+Vector2i TabHeader::TabButton::preferredSize(NVGcontext* ctx) const {
     float bounds[4];
+    /* nvgFontFace/etc. called at this point */
     int labelWidth = nvgTextBounds(ctx, 0, 0, mLabel.c_str(), nullptr, bounds);
     int buttonWidth = labelWidth + 2 * horizontalPadding;
     int buttonHeight = bounds[3] - bounds[1] + 2 * verticalPadding;
     return Vector2i(buttonWidth, buttonHeight);
 }
 
-void TabButton::calculateVisibleString(NVGcontext* ctx)
-{
+void TabHeader::TabButton::calculateVisibleString(NVGcontext* ctx) {
     // The size must have been set in by the enclosing tab header.
     NVGtextRow displayedText;
     nvgTextBreakLines(ctx, mLabel.c_str(), nullptr, mSize.x(), &displayedText, 1);
@@ -44,7 +43,7 @@ void TabButton::calculateVisibleString(NVGcontext* ctx)
         auto truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
                                             displayedText.start, displayedText.end, nullptr);
         auto dotsWidth = nvgTextBounds(ctx, 0.0f, 0.0f, dots, nullptr, nullptr);
-        while ((truncatedWidth + dotsWidth + horizontalPadding) > mSize.x()) {
+        while ((truncatedWidth + dotsWidth + horizontalPadding) > mSize.x() && displayedText.end != displayedText.start) {
             --displayedText.end;
             truncatedWidth = nvgTextBounds(ctx, 0.0f, 0.0f,
                                            displayedText.start, displayedText.end, nullptr);
@@ -52,12 +51,14 @@ void TabButton::calculateVisibleString(NVGcontext* ctx)
         // Remember the truncated to know where to display the dots.
         mVisibleWidth = truncatedWidth;
         mVisibleText.last = displayedText.end;
+    } else {
+        mVisibleText.last = nullptr;
+        mVisibleWidth = 0;
     }
     mVisibleText.first = displayedText.start;
 }
 
-void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active)
-{
+void TabHeader::TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active) {
     int xPos = position.x();
     int yPos = position.y();
     int width = mSize.x();
@@ -112,26 +113,37 @@ void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool a
 
 
 TabHeader::TabHeader(Widget* parent, const std::string& font,
-                                 int fontSize, Color fontColor)
+                     int fontSize, Color fontColor)
     : Widget(parent), mFont(font), mFontColor(fontColor) {
     if (fontSize >= 0)
         mFontSize = fontSize;
 }
 
 void TabHeader::setActiveTab(int tabIndex) {
-    assert(tabIndex < (int)mTabButtons.size());
+    assert(tabIndex < tabCount());
     mActiveTab = tabIndex;
+    mCallback(tabIndex);
 }
 
 int TabHeader::activeTab() const {
     return mActiveTab;
 }
 
-void TabHeader::addTabButton(const std::string& tabLabel) {
+void TabHeader::appendTab(const std::string & tabLabel) {
     mTabButtons.push_back(TabButton(*this, tabLabel));
 }
 
-int TabHeader::removeTabButton(const std::string& tabLabel) {
+void TabHeader::prependTab(const std::string & tabLabel) {
+    mTabButtons.insert(mTabButtons.begin(), TabButton(*this, tabLabel));
+}
+
+void TabHeader::insertTab(int index, const std::string & tabLabel)
+{
+    assert(index <= tabCount());
+    mTabButtons.insert(std::next(mTabButtons.begin(), index), TabButton(*this, tabLabel));
+}
+
+int TabHeader::removeTab(const std::string& tabLabel) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(),
                                 [&](const auto& tb) { return tabLabel == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
@@ -140,24 +152,29 @@ int TabHeader::removeTabButton(const std::string& tabLabel) {
     return index;
 }
 
+void TabHeader::removeTab(int index)
+{
+    assert(index < tabCount());
+    mTabButtons.erase(std::next(mTabButtons.begin(), index));
+}
+
 const std::string& TabHeader::tabLabelAt(int index) const {
-    assert(index < (int)mTabButtons.size());
+    assert(index < tabCount());
     return mTabButtons[index].label();
 }
 
-int TabHeader::tabLabelIndex(const std::string& tabLabel) {
+int TabHeader::tabIndex(const std::string& tabLabel) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(), 
                                 [&](const auto& tb) { return tabLabel == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
     return index;
 }
 
-std::pair<Vector2i, Vector2i> TabHeader::visibleButtonsArea() const
-{
+std::pair<Vector2i, Vector2i> TabHeader::visibleButtonArea() const {
     if (mVisibleStart == mVisibleEnd)
         return { Vector2i::Zero(), Vector2i::Zero() };
-    auto topLeft = mPos + Vector2i(controlsWidth, 0);
-    auto width = std::accumulate(visibleBegin(), visibleEnd(), controlsWidth,
+    auto topLeft = mPos + Vector2i(controlWidth, 0);
+    auto width = std::accumulate(visibleBegin(), visibleEnd(), controlWidth,
                                  [](auto acc, auto& tb) {
                                     return acc + tb.size().x();
                                  });
@@ -181,7 +198,7 @@ void TabHeader::performLayout(NVGcontext* ctx) {
         currentPosition.x() += tabPreferred.x();
     }
     calculateVisibleEnd();
-    if (mVisibleStart != 0 || mVisibleEnd != (int)mTabButtons.size())
+    if (mVisibleStart != 0 || mVisibleEnd != tabCount())
         mOverflowing = true;
 }
 
@@ -190,7 +207,7 @@ Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    Vector2i size = Vector2i(2*controlsWidth, 0);
+    Vector2i size = Vector2i(2*controlWidth, 0);
     for (auto& tab : mTabButtons) {
         auto tabPreferred = tab.preferredSize(ctx);
         if (tabPreferred.x() < minButtonWidth)
@@ -209,15 +226,15 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int m
     if (button == GLFW_MOUSE_BUTTON_1 && down) {
         switch (locateClick(p)) {
         case ClickLocation::LeftControls:
-            leftControlsClicked();
+            onArrowLeft();
             return true;
         case ClickLocation::RightControls:
-            rightControlsClicked();
+            onArrowRight();
             return true;
         case ClickLocation::TabButtons:
             auto first = visibleBegin();
             auto last = visibleEnd();
-            int currentPosition = controlsWidth;
+            int currentPosition = controlWidth;
             int endPosition = p.x();
             auto firstInvisible = std::find_if(first, last,
                                                [&currentPosition, endPosition](const auto& tb)
@@ -225,18 +242,19 @@ bool TabHeader::mouseButtonEvent(const Vector2i& p, int button, bool down, int m
                 currentPosition += tb.size().x();
                 return currentPosition > endPosition;
             });
-            int index = std::distance(mTabButtons.begin(), firstInvisible);
             // Clicked outside of all of the tab buttons.
-            if (index == (int)mTabButtons.size())
+            if (firstInvisible == last)
                 return true;
+            int index = std::distance(mTabButtons.begin(), firstInvisible);
             // Update the active tab and invoke the callback.
             setActiveTab(index);
-            mCallback(activeTab());
             return true;
         }
     }
     return false;
 }
+
+// TODO: add buttons dynamically
 
 void TabHeader::draw(NVGcontext* ctx) {
 
@@ -252,6 +270,9 @@ void TabHeader::draw(NVGcontext* ctx) {
     if (mOverflowing)
         drawControls(ctx);
 
+    // TODO: border around tab widget seems too large (maybe 1 or 2 instead of 3 px)
+    // TODO: try combination of 2 shading colors for raised border
+
     // Set up common text drawing settings.
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
@@ -260,7 +281,7 @@ void TabHeader::draw(NVGcontext* ctx) {
     auto current = visibleBegin();
     auto last = visibleEnd();
     auto active = std::next(mTabButtons.begin(), mActiveTab);
-    Vector2i currentPosition = mPos + Vector2i(controlsWidth, 0);
+    Vector2i currentPosition = mPos + Vector2i(controlWidth, 0);
     while (current != last) {
         current->drawAtPosition(ctx, currentPosition, current == active);
         currentPosition.x() += current->size().x();
@@ -271,8 +292,8 @@ void TabHeader::draw(NVGcontext* ctx) {
 void TabHeader::calculateVisibleEnd() {
     auto first = visibleBegin();
     auto last = mTabButtons.end();
-    int currentPosition = controlsWidth;
-    int lastPosition = mSize.x() - controlsWidth;
+    int currentPosition = controlWidth;
+    int lastPosition = mSize.x() - controlWidth;
     auto firstInvisible = std::find_if(first, last,
                                        [&currentPosition, lastPosition](const auto& tb)
     {
@@ -286,7 +307,7 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     // Compute bounds for the first button.
     int xPos = mPos.x();
     int yPos = mPos.y();
-    int width = controlsWidth;
+    int width = controlWidth;
     int height = mSize.y();
     bool active = mVisibleStart != 0;
     // Background gradients
@@ -301,14 +322,6 @@ void TabHeader::drawControls(NVGcontext* ctx) {
         gradTop = mTheme->mButtonGradientTopPushed;
         gradBot = mTheme->mButtonGradientBotPushed;
     }
-    // Draw the background.
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, xPos + 1, yPos + 1, width - 1, height - 1,
-                   mTheme->mButtonCornerRadius);
-    NVGpaint backgroundColor = nvgLinearGradient(ctx, xPos, yPos, xPos, yPos + height,
-                                                 gradTop, gradBot);
-    nvgFillPaint(ctx, backgroundColor);
-    nvgFill(ctx);
     // Draw the arrow.
     nvgBeginPath(ctx);
     auto iconLeft = utf8(ENTYPO_ICON_LEFT_BOLD);
@@ -324,15 +337,15 @@ void TabHeader::drawControls(NVGcontext* ctx) {
         arrowColor = mTheme->mButtonGradientBotPushed;
     nvgFillColor(ctx, arrowColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    Vector2f iconPos = mPos.cast<float>() + 0.5f*Vector2f(0.5f*controlsWidth, mSize.cast<float>().y()); 
+    Vector2f iconPos = mPos.cast<float>() + 0.5f*Vector2f(0.5f*controlWidth, mSize.cast<float>().y()); 
     nvgText(ctx, iconPos.x(), iconPos.y() + 1, iconLeft.data(), nullptr);
 
     // Compute bounds for the second button.
-    xPos = mPos.x() + mSize.x() - controlsWidth;
+    xPos = mPos.x() + mSize.x() - controlWidth;
     yPos = mPos.y();
-    width = controlsWidth;
+    width = controlWidth;
     height = mSize.y();
-    active = mVisibleEnd != (int)mTabButtons.size();
+    active = mVisibleEnd != tabCount();
     // Background gradients
     gradTop = mTheme->mButtonGradientTopUnfocused;
     gradBot = mTheme->mButtonGradientBotUnfocused;
@@ -342,13 +355,6 @@ void TabHeader::drawControls(NVGcontext* ctx) {
         gradTop = mTheme->mButtonGradientTopPushed;
         gradBot = mTheme->mButtonGradientBotPushed;
     }
-    // Draw the background.
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, xPos + 1, yPos + 1, width - 1, height - 1, mTheme->mButtonCornerRadius);
-    backgroundColor = nvgLinearGradient(ctx, xPos, yPos, xPos, yPos + height,
-                                                 gradTop, gradBot);
-    nvgFillPaint(ctx, backgroundColor);
-    nvgFill(ctx);
     // Draw the arrow.
     nvgBeginPath(ctx);
     auto iconRight = utf8(ENTYPO_ICON_RIGHT_BOLD);
@@ -364,8 +370,8 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     nvgFillColor(ctx, arrowColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 
-    auto leftControlsPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x() - controlsWidth, 0);
-    iconPos = leftControlsPos + 0.5f*Vector2f(0.5f*controlsWidth, mSize.cast<float>().y());
+    auto leftControlsPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x() - controlWidth, 0);
+    iconPos = leftControlsPos + 0.5f*Vector2f(0.5f*controlWidth, mSize.cast<float>().y());
 
     nvgText(ctx, iconPos.x(), iconPos.y() + 1, iconRight.data(), nullptr);
 
@@ -374,30 +380,26 @@ void TabHeader::drawControls(NVGcontext* ctx) {
 
 TabHeader::ClickLocation TabHeader::locateClick(const Vector2i& p) {
     auto leftDistance = (p - mPos).array();                                                                             
-    bool hitLeft = (leftDistance >= 0).all() && (leftDistance < Vector2i(controlsWidth, mSize.y()).array()).all();
-    if (hitLeft) {
+    bool hitLeft = (leftDistance >= 0).all() && (leftDistance < Vector2i(controlWidth, mSize.y()).array()).all();
+    if (hitLeft)
         return ClickLocation::LeftControls;
-    }
-    auto rightDistance = (p - (mPos + Vector2i(mSize.x() - controlsWidth, 0))).array();
-    bool hitRight = (rightDistance >= 0).all() && (rightDistance < Vector2i(controlsWidth, mSize.y()).array()).all();
-    if (hitRight) {
+    auto rightDistance = (p - (mPos + Vector2i(mSize.x() - controlWidth, 0))).array();
+    bool hitRight = (rightDistance >= 0).all() && (rightDistance < Vector2i(controlWidth, mSize.y()).array()).all();
+    if (hitRight)
         return ClickLocation::RightControls;
-    }
     return ClickLocation::TabButtons;
 }
                                                       
-void TabHeader::leftControlsClicked() {
-    if (mVisibleStart == 0) {
+void TabHeader::onArrowLeft() {
+    if (mVisibleStart == 0)
         return;
-    }
     --mVisibleStart;
     calculateVisibleEnd();
 }
 
-void TabHeader::rightControlsClicked() {
-    if (mVisibleEnd == (int)mTabButtons.size()) {
+void TabHeader::onArrowRight() {
+    if (mVisibleEnd == tabCount())
         return;
-    }
     ++mVisibleStart;
     calculateVisibleEnd();;
 }

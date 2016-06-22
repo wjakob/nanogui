@@ -21,42 +21,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-class TabButton {
-public:
-    constexpr static int horizontalPadding = 10;
-    constexpr static int verticalPadding = 2;
-    constexpr static char* dots = "...";
-
-    TabButton(TabHeader& header, const std::string& label);
-
-    void setLabel(const std::string& label) { mLabel = label; }
-    const std::string& label() const { return mLabel; }
-    void setSize(const Vector2i& size) { mSize = size; }
-    const Vector2i& size() const { return mSize; }
-
-    Vector2i preferredSize(NVGcontext* ctx) const;
-    void calculateVisibleString(NVGcontext* ctx);
-    void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active);
-private:
-    TabHeader* mHeader;
-    std::string mLabel;
-    Vector2i mSize;
-    struct StringView {
-        const char* first = nullptr;
-        const char* last = nullptr;
-    };
-    StringView mVisibleText;
-    int mVisibleWidth = 0;
-};
-
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
     constexpr static int minButtonWidth = 20;
     constexpr static int maxButtonWidth = 160;
-    constexpr static int topBottomMargin = 3;
-    constexpr static int tabPadding = 10;
-    constexpr static int controlsWidth = 20;
-    constexpr static int controlsContentWidth = 15;
+    constexpr static int controlWidth = 20;
 
     TabHeader(Widget* parent, const std::string &font = "sans-bold",
                     int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
@@ -70,19 +39,30 @@ public:
     /// The argument provided to the call back is the index of the tab.
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
     const std::function<void(int)>& callback() const { return mCallback; }
-
+    // TODO: Make the callback fire in this method.
     void setActiveTab(int tabIndex);
     int activeTab() const;
-    int labelCount() const { return mTabButtons.size();  }
+    int tabCount() const { return mTabButtons.size();  }
 
-    /// Insert a new tab button with the specified text.    
-    void addTabButton(const std::string& tabLabel);
-    /// Removes the tab label with the specified name and returns the index of
-    /// the label. If it does not find it returns the number of labels (labelCount).
-    int removeTabButton(const std::string& tabLabel);
+    /// Inserts a tab at the end of the tabs collection.
+    void appendTab(const std::string& tabLabel);
+    /// Inserts a tab at the beginning of the tabs collection.
+    void prependTab(const std::string& tabLabel);
+    /// Inserts a tab into the tabs collection at the specified index.
+    void insertTab(int index, const std::string& tablabel);
+    /// Removes the tab with the specified label and returns the index of the label. 
+    /// Returns the number of tabs (tabsCount) if there is no such tab.
+    int removeTab(const std::string& tabLabel);
+    /// Removes the tab with the specified index.
+    void removeTab(int index);
+    /// Retrieves the label of the tab at a specific index.
     const std::string& tabLabelAt(int index) const;
-    int tabLabelIndex(const std::string& tabLabel);
-    std::pair<Vector2i, Vector2i> visibleButtonsArea() const;
+    /// Retrieves the index of a specific tab label. 
+    /// Returns the number of tabs (tabsCount) if there is no such tab.
+    int tabIndex(const std::string& tabLabel);
+    /// Returns a pair of Vectors describing the top left (pair.first) and the 
+    /// bottom right (pair.second) positions of the rectangle containing the visible tab buttons.
+    std::pair<Vector2i, Vector2i> visibleButtonArea() const;
 
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
@@ -91,6 +71,37 @@ public:
     virtual void draw(NVGcontext* ctx) override;
 
 private:
+    /// Implementation class of the actual tab buttons.
+    class TabButton {
+    public:
+        /// TODO -> THEME
+        constexpr static int horizontalPadding = 10;
+        constexpr static int verticalPadding = 2;
+        constexpr static char* dots = "...";
+
+        TabButton(TabHeader& header, const std::string& label);
+
+        void setLabel(const std::string& label) { mLabel = label; }
+        const std::string& label() const { return mLabel; }
+        void setSize(const Vector2i& size) { mSize = size; }
+        const Vector2i& size() const { return mSize; }
+
+        Vector2i preferredSize(NVGcontext* ctx) const;
+        void calculateVisibleString(NVGcontext* ctx);
+        void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active);
+    private:
+        TabHeader* mHeader;
+        std::string mLabel;
+        Vector2i mSize;
+        struct StringView {
+            const char* first = nullptr;
+            const char* last = nullptr;
+        };
+        StringView mVisibleText;
+        int mVisibleWidth = 0;
+    };
+
+
     using TabIterator = std::vector<TabButton>::iterator;
     using ConstTabIterator = std::vector<TabButton>::const_iterator;
     enum class ClickLocation {
@@ -104,8 +115,9 @@ private:
     void calculateVisibleEnd();
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);
-    void leftControlsClicked();
-    void rightControlsClicked();
+
+    void onArrowLeft();
+    void onArrowRight();
 
     std::function<void(int)> mCallback;
     std::vector<TabButton> mTabButtons;
@@ -115,7 +127,7 @@ private:
     bool mOverflowing = false;
 
     std::string mFont;
-    Color mFontColor;
+    Color mFontColor; /// TODO: remove, use default color (i.e. white) from theme
 };
 
 NAMESPACE_END(nanogui)
