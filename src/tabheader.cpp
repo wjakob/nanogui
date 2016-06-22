@@ -29,7 +29,6 @@ Vector2i TabButton::preferredSize(NVGcontext* ctx) const
 {
     float bounds[4];
     int labelWidth = nvgTextBounds(ctx, 0, 0, mLabel.c_str(), nullptr, bounds);
-    // TODO: Try using bounds array for width as well.
     int buttonWidth = labelWidth + 2 * horizontalPadding;
     int buttonHeight = bounds[3] - bounds[1] + 2 * verticalPadding;
     return Vector2i(buttonWidth, buttonHeight);
@@ -254,73 +253,6 @@ void TabHeader::draw(NVGcontext* ctx) {
         currentPosition.x() += current->size().x();
         ++current;
     }
-
-
-
-    /* PREVIOUS DESIGN
-
-
-    // Draw the tab header border.
-    int xPos = mPos.x();
-    int yPos = mPos.y();
-    int width = mSize.x();
-    int height = mSize.y();
-    NVGcolor gradTop = mTheme->mButtonGradientTopPushed;
-    NVGcolor gradBot = mTheme->mButtonGradientBotPushed;
-    NVGpaint backgroundColor = nvgLinearGradient(ctx, xPos, yPos, xPos, yPos + height,
-                                                 gradTop, gradBot);
-
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, xPos + 1.0f, yPos + 1.0f, width - 1.0f, height - 2.0f, mTheme->mButtonCornerRadius);
-    nvgFillPaint(ctx, backgroundColor);
-    nvgFill(ctx);
-
-    // White bottom border.
-    //nvgBeginPath(ctx);
-    //nvgRoundedRect(ctx, xPos + 1.0f, yPos + 1.0f, width - 1.0f, height, mTheme->mButtonCornerRadius);
-    ////nvgStrokeWidth(ctx, 3.0f);
-    //nvgStrokeColor(ctx, mTheme->mBorderLight);
-    //nvgStroke(ctx);
-
-    // Dark border
-    //nvgBeginPath(ctx);
-    //nvgRoundedRect(ctx, xPos, yPos, width, height, mTheme->mButtonCornerRadius);
-    ////nvgStrokeWidth(ctx, 3.0f);
-    //nvgStrokeColor(ctx, mTheme->mBorderDark);
-    //nvgStroke(ctx);
-
-    if (mOverflowing) {
-        drawControls(ctx);
-        nvgTranslate(ctx, controlsWidth, 0);
-    }
-   
-
-    // Translate in order to place the first button in the correct position.
-    nvgTranslate(ctx, -mChildren[mVisibleStart]->position().x(), 0);
-    // Set up the text for the tab buttons
-    nvgFillColor(ctx, mFontColor);
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
-    Widget::draw(ctx);
-    // Reverse translations
-    
-    // Fix up the space after the last button.
-    nvgTranslate(ctx, mChildren[mVisibleStart]->position().x(), 0);
-
-    nvgBeginPath(ctx);
-    if (mVisibleEnd != 0) {
-        int lastVisibleXPos = mChildren[mVisibleEnd - 1]->position().x() - mChildren[mVisibleStart]->position().x();
-        int lastVisibleWidth = mChildren[mVisibleEnd - 1]->size().x();
-        nvgMoveTo(ctx, lastVisibleXPos + lastVisibleWidth, yPos + 1);
-        nvgLineTo(ctx, width - (mOverflowing ? 2*controlsWidth : 0), yPos + 1);
-        nvgStrokeColor(ctx, gradTop);
-        nvgStroke(ctx);
-    }
-    if (mOverflowing) {
-        nvgTranslate(ctx, -controlsWidth, 0);
-    }
-
-    */
 }
 
 void TabHeader::calculateVisibleEnd() {
