@@ -15,7 +15,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/entypo.h>
-#include <utility>
+#include <numeric>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -150,6 +150,19 @@ int TabHeader::tabLabelIndex(const std::string& tabLabel) {
                                 [&](const auto& tb) { return tabLabel == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
     return index;
+}
+
+std::pair<Vector2i, Vector2i> TabHeader::visibleButtonsArea() const
+{
+    if (mVisibleStart == mVisibleEnd)
+        return { Vector2i::Zero(), Vector2i::Zero() };
+    auto topLeft = mPos + Vector2i(controlsWidth, 0);
+    auto width = std::accumulate(visibleBegin(), visibleEnd(), controlsWidth,
+                                 [](auto acc, auto& tb) {
+                                    return acc + tb.size().x();
+                                 });
+    auto bottomRigth = mPos + Vector2i(width, mSize.y());
+    return { topLeft, bottomRigth };
 }
 
 void TabHeader::performLayout(NVGcontext* ctx) {

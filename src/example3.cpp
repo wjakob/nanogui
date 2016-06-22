@@ -27,7 +27,7 @@ public:
         Tab* tab = new Tab(window);
         
         // Create the second tab window.
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < 8; ++j) {
             auto layer = new Widget(nullptr);
             layer->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 20));
             new Label(layer, "Function graph", "sans-bold");

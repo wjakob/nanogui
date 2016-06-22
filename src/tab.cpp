@@ -83,22 +83,27 @@ Vector2i Tab::preferredSize(NVGcontext* ctx) const {
 }
 
 void Tab::draw(NVGcontext* ctx) {  
-    Widget::draw(ctx);
-    // Draw a border around the content
-    //int xBorder = mPos.x();
-    //int yBorder = mPos.y() + mHeader->size().y();
-    //int wBorder = mSize.x();
-    //int hBorder = mContent->size().y() + contentBorder;
-    //nvgBeginPath(ctx);
-    //nvgRoundedRect(ctx, xBorder, yBorder, wBorder, hBorder, mTheme->mWindowCornerRadius);
-    //nvgStrokeColor(ctx, mTheme->mBorderDark);
-    //nvgStroke(ctx);
-    //// Remove the border separating the tab header from the contents.
-    //nvgBeginPath(ctx);
-    //nvgMoveTo(ctx, xBorder, yBorder);
-    //nvgLineTo(ctx, xBorder + wBorder, yBorder);
-    //nvgStrokeColor(ctx,  mTheme->mWindowFillFocused);
-    //nvgStroke(ctx);
+    Widget::draw(ctx);   
+    // Draw a border around the content.
+    int xBorder = mPos.x();
+    int yBorder = mPos.y() + mHeader->size().y();
+    int wBorder = mSize.x();
+    int hBorder = mContent->size().y() + contentBorder;
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, xBorder + TabHeader::controlsWidth, yBorder);
+    nvgLineTo(ctx, xBorder, yBorder);
+    nvgLineTo(ctx, xBorder, yBorder + hBorder);
+    nvgLineTo(ctx, xBorder + wBorder, yBorder + hBorder);
+    nvgLineTo(ctx, xBorder + wBorder, yBorder);
+    nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlsWidth, yBorder);
+    if (!mHeader->overflowing()) {
+        auto tabButtonsArea = mHeader->visibleButtonsArea();
+        auto hSize = mHeader->size().x();
+        nvgLineTo(ctx, xBorder + tabButtonsArea.second.x(), yBorder);
+    }
+    nvgStrokeColor(ctx, mTheme->mBorderDark);
+    nvgStrokeWidth(ctx, 0.5f * contentBorder);
+    nvgStroke(ctx);
 
 }
 

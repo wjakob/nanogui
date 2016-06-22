@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <utility>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -81,7 +82,7 @@ public:
     int removeTabButton(const std::string& tabLabel);
     const std::string& tabLabelAt(int index) const;
     int tabLabelIndex(const std::string& tabLabel);
-    
+    std::pair<Vector2i, Vector2i> visibleButtonsArea() const;
 
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
@@ -91,12 +92,15 @@ public:
 
 private:
     using TabIterator = std::vector<TabButton>::iterator;
+    using ConstTabIterator = std::vector<TabButton>::const_iterator;
     enum class ClickLocation {
         LeftControls, RightControls, TabButtons
     };
 
     TabIterator visibleBegin() { return std::next(mTabButtons.begin(), mVisibleStart); }
     TabIterator visibleEnd() { return std::next(mTabButtons.begin(), mVisibleEnd); }
+    ConstTabIterator visibleBegin() const { return std::next(mTabButtons.begin(), mVisibleStart); }
+    ConstTabIterator visibleEnd() const { return std::next(mTabButtons.begin(), mVisibleEnd); }
     void calculateVisibleEnd();
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);
