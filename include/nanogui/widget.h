@@ -137,6 +137,12 @@ public:
     /// Remove a child widget by value
     void removeChild(const Widget *widget);
 
+    /// Variadic shorthand notation to construct and add a child widget
+    template<typename WidgetClass, typename... Args>
+    WidgetClass* add(const Args&... args) {
+        return new WidgetClass(this, args...);
+    }
+
     // Walk up the hierarchy and return the parent window
     Window *window();
 
