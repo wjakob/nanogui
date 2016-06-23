@@ -28,28 +28,23 @@ public:
     constexpr static int controlWidth = 20;
 
     TabHeader(Widget* parent, const std::string &font = "sans-bold",
-                    int fontSize = -1, Color fontColor = Color(1.f, 1.f, 1.f, 1.f));
+                    int fontSize = -1);
     
     void setFont(const std::string& font) { mFont = font; }
     const std::string& font() const { return mFont; }
-    void setFontColor(const Color& fontColor) { mFontColor = fontColor; }
-    const Color& fontColor() const { return mFontColor; }
     bool overflowing() const { return mOverflowing; }
     /// Sets the callable objects which is invoked when a tab button is pressed.
     /// The argument provided to the call back is the index of the tab.
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
     const std::function<void(int)>& callback() const { return mCallback; }
-    // TODO: Make the callback fire in this method.
     void setActiveTab(int tabIndex);
     int activeTab() const;
     int tabCount() const { return mTabButtons.size();  }
 
     /// Inserts a tab at the end of the tabs collection.
-    void appendTab(const std::string& tabLabel);
-    /// Inserts a tab at the beginning of the tabs collection.
-    void prependTab(const std::string& tabLabel);
+    void addTab(const std::string& tabLabel);
     /// Inserts a tab into the tabs collection at the specified index.
-    void insertTab(int index, const std::string& tablabel);
+    void addTab(int index, const std::string& tablabel);
     /// Removes the tab with the specified label and returns the index of the label. 
     /// Returns the number of tabs (tabsCount) if there is no such tab.
     int removeTab(const std::string& tabLabel);
@@ -127,7 +122,6 @@ private:
     bool mOverflowing = false;
 
     std::string mFont;
-    Color mFontColor; /// TODO: remove, use default color (i.e. white) from theme
 };
 
 NAMESPACE_END(nanogui)

@@ -113,8 +113,8 @@ void TabHeader::TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& posit
 
 
 TabHeader::TabHeader(Widget* parent, const std::string& font,
-                     int fontSize, Color fontColor)
-    : Widget(parent), mFont(font), mFontColor(fontColor) {
+                     int fontSize)
+    : Widget(parent), mFont(font) {
     if (fontSize >= 0)
         mFontSize = fontSize;
 }
@@ -129,15 +129,11 @@ int TabHeader::activeTab() const {
     return mActiveTab;
 }
 
-void TabHeader::appendTab(const std::string & tabLabel) {
+void TabHeader::addTab(const std::string & tabLabel) {
     mTabButtons.push_back(TabButton(*this, tabLabel));
 }
 
-void TabHeader::prependTab(const std::string & tabLabel) {
-    mTabButtons.insert(mTabButtons.begin(), TabButton(*this, tabLabel));
-}
-
-void TabHeader::insertTab(int index, const std::string & tabLabel)
+void TabHeader::addTab(int index, const std::string & tabLabel)
 {
     assert(index <= tabCount());
     mTabButtons.insert(std::next(mTabButtons.begin(), index), TabButton(*this, tabLabel));

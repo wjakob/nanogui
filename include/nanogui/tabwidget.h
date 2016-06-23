@@ -20,9 +20,6 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
-    /// TODO: Make configurable property, default in Theme. ("tabInnerMargin")
-    constexpr static int contentBorder = 5;
- 
     TabWidget(Widget* parent);
 
     void setActiveTab(int tabIndex);
@@ -34,11 +31,9 @@ public:
     /// Forward functions for tabLabelAt() etc.
 
     /// Inserts a tab at the end of the tabs collection and associates it with the provided widget.
-    void appendTab(Widget* tab, const std::string& name);
-    /// Inserts a tab at the beginning of the tabs collection and associates it with the provided widget.
-    void prependTab(Widget* tab, const std::string& tabLabel);
+    void addTab(Widget* tab, const std::string& name);
     /// Inserts a tab into the tabs collection at the specified index and associates it with the provided widget.
-    void insertTab(int index, Widget* tab, const std::string& tablabel);
+    void addTab(int index, Widget* tab, const std::string& tablabel);
     /// Removes the tab with the specified label and returns the index of the label. 
     /// Returns whether the removal was successful.
     bool removeTab(const std::string& tabLabel);

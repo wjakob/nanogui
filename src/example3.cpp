@@ -34,7 +34,7 @@ public:
         Widget* window = new Widget(nullptr);
         
         window->setLayout(new GroupLayout());
-        tab->appendTab(window, "Button demo");
+        tab->addTab(window, "Button demo");
 
         new Label(window, "Push buttons", "sans-bold");
 
@@ -82,7 +82,7 @@ public:
 
         window = new Widget(nullptr);
         window->setLayout(new GroupLayout());
-        tab->appendTab(window, "Basic widgets");
+        tab->addTab(window, "Basic widgets");
 
         new Label(window, "Message dialog", "sans-bold");
         tools = new Widget(window);
@@ -195,7 +195,7 @@ public:
 
         window = new Widget(nullptr);
         window->setLayout(new GroupLayout());
-        tab->appendTab(window, "Misc. widgets");
+        tab->addTab(window, "Misc. widgets");
 
         new Label(window, "Color wheel", "sans-bold");
         new ColorWheel(window);
@@ -218,7 +218,7 @@ public:
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
 
-        tab->appendTab(window, "Grid of small widgets");
+        tab->addTab(window, "Grid of small widgets");
 
         layout->setColAlignment(
         { Alignment::Maximum, Alignment::Fill });

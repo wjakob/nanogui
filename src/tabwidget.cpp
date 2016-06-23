@@ -43,21 +43,15 @@ int TabWidget::tabCount() const {
     return mHeader->tabCount(); 
 }
 
-void TabWidget::appendTab(Widget* tab, const std::string& name) {
+void TabWidget::addTab(Widget* tab, const std::string& name) {
+    mHeader->addTab(name);
     mContent->addChild(tab);
-    mHeader->appendTab(name);
     assert(mHeader->tabCount() == mContent->childCount());
 }
 
-void TabWidget::prependTab(Widget * tab, const std::string & tabLabel) {
-    mHeader->prependTab(tabLabel);
-    mContent->prependChild(tab);
-    assert(mHeader->tabCount() == mContent->childCount());
-}
-
-void TabWidget::insertTab(int index, Widget *tab, const std::string & tablabel) {
-    mHeader->insertTab(index, tablabel);
-    mContent->insertChild(index, tab);
+void TabWidget::addTab(int index, Widget *tab, const std::string & tablabel) {
+    mHeader->addTab(index, tablabel);
+    mContent->addChild(index, tab);
     assert(mHeader->tabCount() == mContent->childCount());
 }
 
@@ -89,57 +83,43 @@ bool TabWidget::removeTab(const std::string& tabName) {
 }
 
 void TabWidget::removeTab(int index) {
-    assert(mHeader->tabCount() == mContent->childCount() && mContent->childCount() < index);
+    assert(mContent->childCount() < index);
     mHeader->removeTab(index);
     mContent->removeChild(index);
 }
 
-const std::string & TabWidget::tabLabelAt(int index) const
+const std::string& TabWidget::tabLabelAt(int index) const
 {
     return mHeader->tabLabelAt(index);
 }
 
 void TabWidget::performLayout(NVGcontext* ctx) {
     int headerHeight = mHeader->preferredSize(ctx).y();
+    int margin = mTheme->mTabInnerMargin;
     mHeader->setPosition({ 0, 0 });
     mHeader->setSize({ mSize.x(), headerHeight });
     mHeader->performLayout(ctx);
-    mContent->setPosition({ contentBorder, headerHeight + contentBorder });
-    mContent->setSize({ mSize.x() - 2 * contentBorder, mSize.y() - 2*contentBorder - headerHeight });
+    mContent->setPosition({ margin, headerHeight + margin });
+    mContent->setSize({ mSize.x() - 2 * margin, mSize.y() - 2*margin - headerHeight });
     mContent->performLayout(ctx);
 }
 
 Vector2i TabWidget::preferredSize(NVGcontext* ctx) const {
     auto contentSize = mContent->preferredSize(ctx);
     auto headerSize = mHeader->preferredSize(ctx);
-    auto borderSize = Vector2i(2 * contentBorder, 2 * contentBorder);
+    int margin = mTheme->mTabInnerMargin;
+    auto borderSize = Vector2i(2 * margin, 2 * margin);
     Vector2i tabPreferredSize = contentSize + borderSize + Vector2i(0, headerSize.y());
     return tabPreferredSize;
 }
 
 void TabWidget::draw(NVGcontext* ctx) {  
     Widget::draw(ctx);   
-    // Draw dark border.
-    // Draw light border.
+    // Draw a dark and light borders for a elevated look.
     float darkOffset = 0.0f;
     float lightOffset = 1.0f;
     drawBorder(ctx, darkOffset, mTheme->mBorderDark);
     drawBorder(ctx, lightOffset, mTheme->mBorderLight);
-
-    //nvgBeginPath(ctx);
-    //nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder);
-    //nvgLineTo(ctx, xBorder, yBorder);
-    //nvgLineTo(ctx, xBorder, yBorder + hBorder);
-    //nvgLineTo(ctx, xBorder + wBorder, yBorder + hBorder);
-    //nvgLineTo(ctx, xBorder + wBorder, yBorder);
-    //nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlWidth, yBorder);
-    //auto tabButtonsArea = mHeader->visibleButtonArea();
-    //nvgLineTo(ctx, xBorder + tabButtonsArea.second.x(), yBorder);
-    //nvgStrokeColor(ctx, mTheme->mBorderDark);
-    ///// TODO: fix stroke width, and make Button more resistant to stroke width changes
-    //nvgStrokeWidth(ctx, 0.3f * contentBorder);
-    //nvgStroke(ctx);
-
 }
 
 void TabWidget::drawBorder(NVGcontext* ctx, float offset, const Color& borderColor) {
@@ -147,7 +127,7 @@ void TabWidget::drawBorder(NVGcontext* ctx, float offset, const Color& borderCol
     int xBorder = mPos.x();
     int yBorder = mPos.y() + mHeader->size().y();
     int wBorder = mSize.x();
-    int hBorder = mContent->size().y() + contentBorder;
+    int hBorder = mContent->size().y() + mTheme->mTabInnerMargin;
 
     nvgBeginPath(ctx);
     nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder + offset);

@@ -16,6 +16,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/screen.h>
 #include <nanogui/serializer/core.h>
+#include <iterator>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -139,7 +140,15 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
-void Widget::addChild(Widget *widget) {
+void Widget::addChild(int index, Widget * widget) {
+    assert(index <= childCount());
+    mChildren.insert(std::next(mChildren.begin(), index), widget);
+    widget->incRef();
+    widget->setParent(this);
+    widget->setTheme(mTheme);
+}
+
+void Widget::addChild(Widget * widget) {
     mChildren.push_back(widget);
     widget->incRef();
     widget->setParent(this);

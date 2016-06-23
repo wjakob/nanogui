@@ -123,12 +123,15 @@ public:
     const std::vector<Widget *> &children() const { return mChildren; }
 
     /**
-     * \brief Add a child widget to the current widget
+     * \brief Add a child widget to the current widget at 
+     * the specified index.
      *
      * This function almost never needs to be called by hand,
      * since the constructor of \ref Widget automatically
      * adds the current widget to its parent
      */
+    virtual void addChild(int index, Widget *widget);
+
     virtual void addChild(Widget *widget);
 
     /// Remove a child widget by index

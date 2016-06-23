@@ -26,20 +26,13 @@ public:
     void setSelectedIndex(int tabIndex);
     int selectedIndex() const;
 
-    /// Inserts a child at the end of the child collection.
-    void appendChild(Widget* widget);
-    /// Inserts a child at the beginning of the child collection.
-    void prependChild(Widget* widget);
-    /// Inserts a child into the child collection at the specific index.
-    void insertChild(int index, Widget* widget);
-    /// Removes the child with the specified index in the children vector.
-    void removeChild(int index);
     /// Retrieves the child at the specific position in the child array.
     const Widget* childAt(int index) const;
     
     
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
+    virtual void addChild(int index, Widget* widget) override;
     virtual void addChild(Widget* widget) override;
 
 private:
