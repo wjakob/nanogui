@@ -119,11 +119,6 @@ Vector2i TabWidget::preferredSize(NVGcontext* ctx) const {
 
 void TabWidget::draw(NVGcontext* ctx) {  
     Widget::draw(ctx);   
-    // Draw a border around the content.
-    int xBorder = mPos.x();
-    int yBorder = mPos.y() + mHeader->size().y();
-    int wBorder = mSize.x();
-    int hBorder = mContent->size().y() + contentBorder;
     // Draw dark border.
     // Draw light border.
     float darkOffset = 0.0f;
