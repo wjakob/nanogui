@@ -36,9 +36,28 @@ public:
         window->setLayout(new GroupLayout());
         tab->addTab(window, "Button demo");
 
+        tab->add<Label>("Button demo", "Plain Label", "sans-bold");
+
+        Button* dynamic = tab->add<Button>("Button demo", "Add new Tab dynamically");
+
+        dynamic->setCallback([tab, this] {
+            Widget* newLayer = tab->createTab("Dynamic Tab");
+            new Label(newLayer, "Function graph", "sans-bold");
+            Graph *graph = new Graph(newLayer, "Some function");
+            graph->setHeader("E = 2.35e-3");
+            graph->setFooter("Iteration 89");
+            VectorXf &func = graph->values();
+            func.resize(100);
+            for (int i = 0; i < 100; ++i)
+                func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
+                                  0.5f * std::cos(i / 23.f) + 1);
+            performLayout();
+        });
+
+
         new Label(window, "Push buttons", "sans-bold");
 
-        Button *b = new Button(window, "Plain button");
+        Button *b = new Button(window, "Plain button 2");
         b->setCallback([] { cout << "pushed!" << endl; });
         b = new Button(window, "Styled", ENTYPO_ICON_ROCKET);
         b->setBackgroundColor(Color(0, 0, 255, 25));

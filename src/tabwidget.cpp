@@ -17,14 +17,18 @@
 #include <nanogui/stackedwidget.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/window.h>
+#include <nanogui/screen.h>
 #include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 
 TabWidget::TabWidget(Widget* parent)
     : Widget(parent), mHeader(new TabHeader(this)), mContent(new StackedWidget(this)) {
-    mHeader->setCallback([this](int i) { mContent->setSelectedIndex(i); 
-    /// TODO: if (mCallback) mCallback(i); 
+    mHeader->setCallback([this](int i) { 
+        mContent->setSelectedIndex(i); 
+        if (mCallback) 
+            mCallback(i); 
     });
 }
 
@@ -43,20 +47,29 @@ int TabWidget::tabCount() const {
     return mHeader->tabCount(); 
 }
 
+Widget* TabWidget::createTab(const std::string & tabLabel) {
+    Widget* layer = new Widget(nullptr);
+    addTab(layer, tabLabel);
+    return layer;
+}
+
 void TabWidget::addTab(Widget* tab, const std::string& name) {
     mHeader->addTab(name);
     mContent->addChild(tab);
+    setActiveTab(tabCount() - 1);
     assert(mHeader->tabCount() == mContent->childCount());
+    //requestPerformLayout();
 }
 
 void TabWidget::addTab(int index, Widget *tab, const std::string & tablabel) {
     mHeader->addTab(index, tablabel);
     mContent->addChild(index, tab);
+    setActiveTab(index);
     assert(mHeader->tabCount() == mContent->childCount());
+    //requestPerformLayout();
 }
 
-int TabWidget::tabLabelIndex(const std::string& tabLabel)
-{
+int TabWidget::tabLabelIndex(const std::string& tabLabel) {
     return mHeader->tabIndex(tabLabel);
 }
 
@@ -79,6 +92,9 @@ bool TabWidget::removeTab(const std::string& tabName) {
     if (index == mHeader->tabCount())
         return false;
     mContent->removeChild(index);
+    if (activeTab() == tabCount())
+        setActiveTab(tabCount() - 1);
+    //requestPerformLayout();
     return true;
 }
 
@@ -86,10 +102,12 @@ void TabWidget::removeTab(int index) {
     assert(mContent->childCount() < index);
     mHeader->removeTab(index);
     mContent->removeChild(index);
+    if (activeTab() == index)
+        setActiveTab(index == (index - 1) ? index - 1 : 0);
+    //requestPerformLayout();
 }
 
-const std::string& TabWidget::tabLabelAt(int index) const
-{
+const std::string& TabWidget::tabLabelAt(int index) const {
     return mHeader->tabLabelAt(index);
 }
 
@@ -116,8 +134,8 @@ Vector2i TabWidget::preferredSize(NVGcontext* ctx) const {
 void TabWidget::draw(NVGcontext* ctx) {  
     Widget::draw(ctx);   
     // Draw a dark and light borders for a elevated look.
-    float darkOffset = 0.0f;
-    float lightOffset = 1.0f;
+    float darkOffset = 1.0f;
+    float lightOffset = 0.0f;
     drawBorder(ctx, darkOffset, mTheme->mBorderDark);
     drawBorder(ctx, lightOffset, mTheme->mBorderLight);
 }
@@ -128,20 +146,31 @@ void TabWidget::drawBorder(NVGcontext* ctx, float offset, const Color& borderCol
     int yBorder = mPos.y() + mHeader->size().y();
     int wBorder = mSize.x();
     int hBorder = mContent->size().y() + mTheme->mTabInnerMargin;
+    auto activeButtonArea = mHeader->activeButtonArea();
 
     nvgBeginPath(ctx);
-    nvgMoveTo(ctx, xBorder + TabHeader::controlWidth, yBorder + offset);
+    nvgLineJoin(ctx, NVG_ROUND);
+    nvgMoveTo(ctx, xBorder + activeButtonArea.first.x() + offset, yBorder + offset);
     nvgLineTo(ctx, xBorder + offset, yBorder + offset);
     nvgLineTo(ctx, xBorder + offset, yBorder + hBorder - offset);
     nvgLineTo(ctx, xBorder + wBorder - offset, yBorder + hBorder - offset);
     nvgLineTo(ctx, xBorder + wBorder - offset, yBorder + offset);
-    nvgLineTo(ctx, xBorder + wBorder - TabHeader::controlWidth - offset, yBorder + offset);
-    auto tabButtonsArea = mHeader->visibleButtonArea();
-    nvgLineTo(ctx, xBorder + tabButtonsArea.second.x() - offset, yBorder + offset);
+    nvgLineTo(ctx, xBorder + activeButtonArea.second.x() - offset, yBorder + offset);
     nvgStrokeColor(ctx, borderColor);
-    /// TODO: fix stroke width, and make Button more resistant to stroke width changes
     nvgStrokeWidth(ctx, 1.0f);
     nvgStroke(ctx);
+}
+
+void TabWidget::requestPerformLayout() {
+    Window* containingWindow = parent()->window();
+    Widget* screenCandidate = containingWindow->parent();
+    while (screenCandidate->parent())
+        screenCandidate = screenCandidate->parent();
+    Screen* containingScreen = dynamic_cast<Screen*>(screenCandidate);
+    if (containingScreen)
+        throw std::runtime_error(
+            "TabHeader:internal error (could not find containing screen)");
+    containingScreen->performLayout();
 }
 
 NAMESPACE_END(nanogui)

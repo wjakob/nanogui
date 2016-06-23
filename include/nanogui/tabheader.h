@@ -18,11 +18,14 @@
 #include <string>
 #include <functional>
 #include <utility>
+#include <iterator>
 
 NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
+    //TODO: Consistency with add tabs.
+    /// TODO: -> theme
     constexpr static int minButtonWidth = 20;
     constexpr static int maxButtonWidth = 160;
     constexpr static int controlWidth = 20;
@@ -34,7 +37,7 @@ public:
     const std::string& font() const { return mFont; }
     bool overflowing() const { return mOverflowing; }
     /// Sets the callable objects which is invoked when a tab button is pressed.
-    /// The argument provided to the call back is the index of the tab.
+    /// The argument provided to the callback is the index of the tab.
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
     const std::function<void(int)>& callback() const { return mCallback; }
     void setActiveTab(int tabIndex);
@@ -58,6 +61,10 @@ public:
     /// Returns a pair of Vectors describing the top left (pair.first) and the 
     /// bottom right (pair.second) positions of the rectangle containing the visible tab buttons.
     std::pair<Vector2i, Vector2i> visibleButtonArea() const;
+    /// Returns a pair of Vectors describing the top left (pair.first) and the 
+    /// bottom right (pair.second) positions of the rectangle containing the active tab button.
+    /// Returns two zero vectors if the active button is not visible.
+    std::pair<Vector2i, Vector2i> activeButtonArea() const;
 
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
@@ -84,6 +91,9 @@ private:
         Vector2i preferredSize(NVGcontext* ctx) const;
         void calculateVisibleString(NVGcontext* ctx);
         void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active);
+        void drawActiveBorderAt(NVGcontext * ctx, const Vector2i& position, float offset, const Color& color);
+        void drawInactiveBorderAt(NVGcontext * ctx, const Vector2i& position, float offset, const Color& color);
+        
     private:
         TabHeader* mHeader;
         std::string mLabel;
@@ -105,12 +115,13 @@ private:
 
     TabIterator visibleBegin() { return std::next(mTabButtons.begin(), mVisibleStart); }
     TabIterator visibleEnd() { return std::next(mTabButtons.begin(), mVisibleEnd); }
+    TabIterator activePosition() { return std::next(mTabButtons.begin(), mActiveTab); }
     ConstTabIterator visibleBegin() const { return std::next(mTabButtons.begin(), mVisibleStart); }
     ConstTabIterator visibleEnd() const { return std::next(mTabButtons.begin(), mVisibleEnd); }
+    ConstTabIterator activePosition() const { return std::next(mTabButtons.begin(), mActiveTab); }
     void calculateVisibleEnd();
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);
-
     void onArrowLeft();
     void onArrowRight();
 

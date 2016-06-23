@@ -15,6 +15,7 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <functional>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -26,10 +27,23 @@ public:
     int activeTab() const;
     int tabCount() const;
 
-    /// TODO: combine with new construction add operation (added by Wenzel in a bit ;))
-    
-    /// Forward functions for tabLabelAt() etc.
+    /// Overloads the add function in the base class widget to add widgets to
+    /// the tab with the specified label. If no such tab exists, it creates one, constructs
+    /// a widget of the provided type and returns a pointer tot eh newly constructed widget.
+    template<typename WidgetClass, typename... Args>
+    WidgetClass* add(const std::string& tabLabel , const Args&... args) {
+        Widget* tab = getTab(tabLabel);
+        if (tab == nullptr)
+            tab = createTab(tabLabel);
+        return tab->add<WidgetClass>(args...);
+    }
 
+    /// Sets the callable objects which is invoked when a tab is changed.
+    /// The argument provided to the callback is the index of the new active tab.
+    void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
+    const std::function<void(int)>& callback() const { return mCallback; }
+    /// Creates a new tab with the specified name and returns a pointer to the layer.
+    Widget* createTab(const std::string& tabLabel);
     /// Inserts a tab at the end of the tabs collection and associates it with the provided widget.
     void addTab(Widget* tab, const std::string& name);
     /// Inserts a tab into the tabs collection at the specified index and associates it with the provided widget.
@@ -51,17 +65,17 @@ public:
     
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
-    
     virtual void draw(NVGcontext* ctx) override;
 
-    /// TODO: add callback for tab activation
 private:
     /// Draws a border around the content that is indented by the offset provided.
     /// A larger offset means a "tighter" border.
     void drawBorder(NVGcontext* ctx, float offset, const Color& borderColor);
+    void requestPerformLayout();
 
     TabHeader* mHeader;
     StackedWidget* mContent;
+    std::function<void(int)> mCallback;
 };
 
 

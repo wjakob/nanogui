@@ -132,7 +132,7 @@ public:
      */
     virtual void addChild(int index, Widget *widget);
 
-    virtual void addChild(Widget *widget);
+    void addChild(Widget *widget);
 
     /// Remove a child widget by index
     void removeChild(int index);

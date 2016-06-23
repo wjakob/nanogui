@@ -140,6 +140,9 @@ void Button::draw(NVGcontext *ctx) {
     nvgFill(ctx);
 
     nvgBeginPath(ctx);
+    // Set the correct stroke width for shading effects.
+    // Adds resistance to changes of the stroke width in other code.
+    nvgStrokeWidth(ctx, 1.0f);
     nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + (mPushed ? 0.5f : 1.5f), mSize.x() - 1,
                    mSize.y() - 1 - (mPushed ? 0.0f : 1.0f), mTheme->mButtonCornerRadius);
     nvgStrokeColor(ctx, mTheme->mBorderLight);

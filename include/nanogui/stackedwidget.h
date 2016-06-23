@@ -18,7 +18,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-/* TODO Rename Stacked -> StackedWidget ;) */
 class NANOGUI_EXPORT StackedWidget : public Widget {
 public:
     StackedWidget(Widget* parent);
@@ -33,7 +32,7 @@ public:
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void addChild(int index, Widget* widget) override;
-    virtual void addChild(Widget* widget) override;
+    void addChild(Widget* widget);
 
 private:
     int mSelectedIndex = 0;
