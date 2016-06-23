@@ -58,12 +58,4 @@ void StackedWidget::addChild(int index, Widget* widget) {
     setSelectedIndex(index);
 }
 
-void StackedWidget::addChild(Widget* widget) {
-    Widget::addChild(widget);
-    widget->setVisible(false);
-    setSelectedIndex(childCount() - 1);
-}
-
-
-
 NAMESPACE_END(nanogui)

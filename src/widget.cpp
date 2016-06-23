@@ -149,10 +149,7 @@ void Widget::addChild(int index, Widget * widget) {
 }
 
 void Widget::addChild(Widget * widget) {
-    mChildren.push_back(widget);
-    widget->incRef();
-    widget->setParent(this);
-    widget->setTheme(mTheme);
+    addChild(childCount(), widget);
 }
 
 void Widget::removeChild(const Widget *widget) {

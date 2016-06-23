@@ -52,6 +52,7 @@ public:
                 func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                                   0.5f * std::cos(i / 23.f) + 1);
             performLayout();
+            tab->trackActiveTab();
         });
 
 

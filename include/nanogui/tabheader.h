@@ -24,12 +24,6 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
-    //TODO: Consistency with add tabs.
-    /// TODO: -> theme
-    constexpr static int minButtonWidth = 20;
-    constexpr static int maxButtonWidth = 160;
-    constexpr static int controlWidth = 20;
-
     TabHeader(Widget* parent, const std::string &font = "sans-bold",
                     int fontSize = -1);
     
@@ -42,6 +36,7 @@ public:
     const std::function<void(int)>& callback() const { return mCallback; }
     void setActiveTab(int tabIndex);
     int activeTab() const;
+    bool isActiveVisible() const;
     int tabCount() const { return mTabButtons.size();  }
 
     /// Inserts a tab at the end of the tabs collection.
@@ -58,6 +53,10 @@ public:
     /// Retrieves the index of a specific tab label. 
     /// Returns the number of tabs (tabsCount) if there is no such tab.
     int tabIndex(const std::string& tabLabel);
+    /// After an active tab has been set, this function can be invoked to recalculate
+    /// the visible range of buttons using the active tab as the last visible one.
+    void recalculateVisibleRangeFromActive();
+
     /// Returns a pair of Vectors describing the top left (pair.first) and the 
     /// bottom right (pair.second) positions of the rectangle containing the visible tab buttons.
     std::pair<Vector2i, Vector2i> visibleButtonArea() const;
@@ -76,9 +75,6 @@ private:
     /// Implementation class of the actual tab buttons.
     class TabButton {
     public:
-        /// TODO -> THEME
-        constexpr static int horizontalPadding = 10;
-        constexpr static int verticalPadding = 2;
         constexpr static char* dots = "...";
 
         TabButton(TabHeader& header, const std::string& label);
@@ -109,6 +105,9 @@ private:
 
     using TabIterator = std::vector<TabButton>::iterator;
     using ConstTabIterator = std::vector<TabButton>::const_iterator;
+    using ReverseTabIterator = std::vector<TabButton>::reverse_iterator;
+    //using ConstReverseTabIterator = std::vector<TabButton>::reverse_iterator;
+
     enum class ClickLocation {
         LeftControls, RightControls, TabButtons
     };
@@ -116,9 +115,16 @@ private:
     TabIterator visibleBegin() { return std::next(mTabButtons.begin(), mVisibleStart); }
     TabIterator visibleEnd() { return std::next(mTabButtons.begin(), mVisibleEnd); }
     TabIterator activePosition() { return std::next(mTabButtons.begin(), mActiveTab); }
+    ReverseTabIterator rVisibleBegin() { return std::next(mTabButtons.rbegin(), (tabCount() - mVisibleEnd)); }
+    ReverseTabIterator rVisibleEnd() { return std::next(mTabButtons.rbegin(), (tabCount() - mVisibleStart)); }
+
     ConstTabIterator visibleBegin() const { return std::next(mTabButtons.begin(), mVisibleStart); }
     ConstTabIterator visibleEnd() const { return std::next(mTabButtons.begin(), mVisibleEnd); }
     ConstTabIterator activePosition() const { return std::next(mTabButtons.begin(), mActiveTab); }
+    
+    /// Given the end of the visible tabs, calculate the beginning. 
+    void calculateVisibleBegin();
+    /// Given the beginning of the visible tabs, calculate the end. 
     void calculateVisibleEnd();
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);

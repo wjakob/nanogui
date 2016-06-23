@@ -47,30 +47,36 @@ int TabWidget::tabCount() const {
     return mHeader->tabCount(); 
 }
 
-Widget* TabWidget::createTab(const std::string & tabLabel) {
+Widget* TabWidget::createTab(int index, const std::string & tabLabel) {
     Widget* layer = new Widget(nullptr);
-    addTab(layer, tabLabel);
+    addTab(index, layer, tabLabel);
     return layer;
 }
 
+Widget* TabWidget::createTab(const std::string & tabLabel) {
+    return createTab(tabCount(), tabLabel);
+}
+
 void TabWidget::addTab(Widget* tab, const std::string& name) {
-    mHeader->addTab(name);
-    mContent->addChild(tab);
-    setActiveTab(tabCount() - 1);
-    assert(mHeader->tabCount() == mContent->childCount());
-    //requestPerformLayout();
+    addTab(tabCount(), tab, name);
 }
 
 void TabWidget::addTab(int index, Widget *tab, const std::string & tablabel) {
-    mHeader->addTab(index, tablabel);
+    assert(index <= tabCount());
+    // It is important to add the content first since the callback 
+    // of the header will automatically fire when a new tab is added.
     mContent->addChild(index, tab);
-    setActiveTab(index);
+    mHeader->addTab(index, tablabel);
     assert(mHeader->tabCount() == mContent->childCount());
-    //requestPerformLayout();
 }
 
 int TabWidget::tabLabelIndex(const std::string& tabLabel) {
     return mHeader->tabIndex(tabLabel);
+}
+
+void TabWidget::trackActiveTab() {
+    if(!mHeader->isActiveVisible())
+        mHeader->recalculateVisibleRangeFromActive();
 }
 
 const Widget * TabWidget::getTab(const std::string& tabName) const {
@@ -92,9 +98,6 @@ bool TabWidget::removeTab(const std::string& tabName) {
     if (index == mHeader->tabCount())
         return false;
     mContent->removeChild(index);
-    if (activeTab() == tabCount())
-        setActiveTab(tabCount() - 1);
-    //requestPerformLayout();
     return true;
 }
 
@@ -104,7 +107,6 @@ void TabWidget::removeTab(int index) {
     mContent->removeChild(index);
     if (activeTab() == index)
         setActiveTab(index == (index - 1) ? index - 1 : 0);
-    //requestPerformLayout();
 }
 
 const std::string& TabWidget::tabLabelAt(int index) const {
@@ -134,7 +136,7 @@ Vector2i TabWidget::preferredSize(NVGcontext* ctx) const {
 void TabWidget::draw(NVGcontext* ctx) {  
     Widget::draw(ctx);   
     // Draw a dark and light borders for a elevated look.
-    float darkOffset = 1.0f;
+    float darkOffset = 0.5f;
     float lightOffset = 0.0f;
     drawBorder(ctx, darkOffset, mTheme->mBorderDark);
     drawBorder(ctx, lightOffset, mTheme->mBorderLight);
@@ -157,20 +159,8 @@ void TabWidget::drawBorder(NVGcontext* ctx, float offset, const Color& borderCol
     nvgLineTo(ctx, xBorder + wBorder - offset, yBorder + offset);
     nvgLineTo(ctx, xBorder + activeButtonArea.second.x() - offset, yBorder + offset);
     nvgStrokeColor(ctx, borderColor);
-    nvgStrokeWidth(ctx, 1.0f);
+    nvgStrokeWidth(ctx, mTheme->mTabBorderWidth);
     nvgStroke(ctx);
-}
-
-void TabWidget::requestPerformLayout() {
-    Window* containingWindow = parent()->window();
-    Widget* screenCandidate = containingWindow->parent();
-    while (screenCandidate->parent())
-        screenCandidate = screenCandidate->parent();
-    Screen* containingScreen = dynamic_cast<Screen*>(screenCandidate);
-    if (containingScreen)
-        throw std::runtime_error(
-            "TabHeader:internal error (could not find containing screen)");
-    containingScreen->performLayout();
 }
 
 NAMESPACE_END(nanogui)

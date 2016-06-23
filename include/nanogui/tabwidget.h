@@ -44,6 +44,7 @@ public:
     const std::function<void(int)>& callback() const { return mCallback; }
     /// Creates a new tab with the specified name and returns a pointer to the layer.
     Widget* createTab(const std::string& tabLabel);
+    Widget* createTab(int index, const std::string & tabLabel);
     /// Inserts a tab at the end of the tabs collection and associates it with the provided widget.
     void addTab(Widget* tab, const std::string& name);
     /// Inserts a tab into the tabs collection at the specified index and associates it with the provided widget.
@@ -58,6 +59,12 @@ public:
     /// Retrieves the index of a specific tab using its tab label. 
     /// Returns the number of tabs (tabsCount) if there is no such tab.
     int tabLabelIndex(const std::string& tabLabel);
+    /// After an active tab has been set, this function can be invoked to recalculate
+    /// the visible range of buttons using the active tab as the last visible one.
+    /// Forwards to the tab header widget. This function should be used whenever the client
+    /// wishes to make the tab header follow a newly added tab or when a explicit call
+    /// to set active is given.
+    void trackActiveTab();
 
     const Widget* getTab(const std::string& tabName) const;
     Widget* getTab(const std::string& tabName);
@@ -71,7 +78,6 @@ private:
     /// Draws a border around the content that is indented by the offset provided.
     /// A larger offset means a "tighter" border.
     void drawBorder(NVGcontext* ctx, float offset, const Color& borderColor);
-    void requestPerformLayout();
 
     TabHeader* mHeader;
     StackedWidget* mContent;

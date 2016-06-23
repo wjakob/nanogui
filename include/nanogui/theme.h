@@ -35,7 +35,13 @@ public:
     int mWindowHeaderHeight;
     int mWindowDropShadowSize;
     int mButtonCornerRadius;
+    float mTabBorderWidth;
     int mTabInnerMargin;
+    int mTabMinButtonWidth;
+    int mTabMaxButtonWidth;
+    int mTabControlWidth;
+    int mTabButtonHorizontalPadding;
+    int mTabButtonVerticalPadding;
 
     /* Generic colors */
     Color mDropShadow;

@@ -32,7 +32,6 @@ public:
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void addChild(int index, Widget* widget) override;
-    void addChild(Widget* widget);
 
 private:
     int mSelectedIndex = 0;
