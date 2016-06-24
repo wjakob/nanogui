@@ -35,8 +35,8 @@ public:
     const std::function<void(int)>& callback() const { return mCallback; }
 
     /// Creates a new tab with the specified name and returns a pointer to the layer.
-    Widget* createTab(const std::string& tabLabel);
-    Widget* createTab(int index, const std::string & tabLabel);
+    Widget* createTab(const std::string& label);
+    Widget* createTab(int index, const std::string & label);
 
     /// Inserts a tab at the end of the tabs collection and associates it with the provided widget.
     void addTab(Widget* tab, const std::string& label);
@@ -60,7 +60,13 @@ public:
      * Retrieves the index of a specific tab using its tab label. 
      * Returns the number of tabs (tabsCount) if there is no such tab.
      */
-    int tabLabelIndex(const std::string& tabLabel);
+    int tabLabelIndex(const std::string& label);
+
+    /**
+     * Retrieves the index of a specific tab using a widget pointer.
+     * Returns the number of tabs (tabsCount) if there is no such tab.
+     */
+    int tabIndex(Widget* tab);
 
     /** 
      * This function can be invoked to ensure that the tab with the provided index
@@ -71,11 +77,9 @@ public:
      */
     void ensureTabVisible(int index);
     
-
     const Widget* getTab(const std::string& label) const;
     Widget* getTab(const std::string& label);
 
-    
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void draw(NVGcontext* ctx) override;

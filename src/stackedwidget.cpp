@@ -20,10 +20,10 @@ StackedWidget::StackedWidget(nanogui::Widget * parent)
     : Widget(parent)
 {}
 
-void StackedWidget::setSelectedIndex(int tabIndex) {
-    assert(tabIndex < childCount());
+void StackedWidget::setSelectedIndex(int index) {
+    assert(index < childCount());
     mChildren[mSelectedIndex]->setVisible(false);
-    mSelectedIndex = tabIndex;
+    mSelectedIndex = index;
     mChildren[mSelectedIndex]->setVisible(true);
 }
 
@@ -34,6 +34,18 @@ int StackedWidget::selectedIndex() const {
 const Widget* StackedWidget::childAt(int index) const {
     assert(index < childCount());
     return mChildren[index];
+}
+
+int StackedWidget::childIndex(Widget * widget)
+{
+    auto first = mChildren.begin();
+    auto last = mChildren.end();
+    while (first != last) {
+        if (widget == *first)
+            return first - mChildren.begin();
+        ++first;
+    }
+    return childCount();
 }
 
 void StackedWidget::performLayout(NVGcontext* ctx) {

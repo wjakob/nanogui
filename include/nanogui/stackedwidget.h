@@ -22,11 +22,17 @@ class NANOGUI_EXPORT StackedWidget : public Widget {
 public:
     StackedWidget(Widget* parent);
 
-    void setSelectedIndex(int tabIndex);
+    void setSelectedIndex(int index);
     int selectedIndex() const;
 
-    /// Retrieves the child at the specific position in the child array.
+    /// Retrieves the child at the specific position in the child collection.
     const Widget* childAt(int index) const;
+
+    /**
+    * Retrieves the index of a specific child using a widget pointer.
+    * Returns the number of children (childCount) if there is no such widget.
+    */
+    int childIndex(Widget* widget);
     
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;

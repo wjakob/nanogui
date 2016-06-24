@@ -156,19 +156,19 @@ bool TabHeader::isTabVisible(int index) const {
     return index >= mVisibleStart && index < mVisibleEnd;
 }
 
-void TabHeader::addTab(const std::string & tabLabel) {
-    addTab(tabCount(), tabLabel);
+void TabHeader::addTab(const std::string & label) {
+    addTab(tabCount(), label);
 }
 
-void TabHeader::addTab(int index, const std::string & tabLabel) {
+void TabHeader::addTab(int index, const std::string & label) {
     assert(index <= tabCount());
-    mTabButtons.insert(std::next(mTabButtons.begin(), index), TabButton(*this, tabLabel));
+    mTabButtons.insert(std::next(mTabButtons.begin(), index), TabButton(*this, label));
     setActiveTab(index);
 }
 
-int TabHeader::removeTab(const std::string& tabLabel) {
+int TabHeader::removeTab(const std::string& label) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(),
-                                [&](const TabButton& tb) { return tabLabel == tb.label(); });
+                                [&](const TabButton& tb) { return label == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
     if (element != mTabButtons.end()) {
         mTabButtons.erase(element);
@@ -190,9 +190,9 @@ const std::string& TabHeader::tabLabelAt(int index) const {
     return mTabButtons[index].label();
 }
 
-int TabHeader::tabIndex(const std::string& tabLabel) {
+int TabHeader::tabIndex(const std::string& label) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(), 
-                                [&](const TabButton& tb) { return tabLabel == tb.label(); });
+                                [&](const TabButton& tb) { return label == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
     return index;
 }

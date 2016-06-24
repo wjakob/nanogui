@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
-    TabHeader(Widget* parent, const std::string &font = "sans-bold",
+    TabHeader(Widget* parent, const std::string& font = "sans-bold",
                     int fontSize = -1);
     
     void setFont(const std::string& font) { mFont = font; }
@@ -44,16 +44,16 @@ public:
     int tabCount() const { return mTabButtons.size();  }
 
     /// Inserts a tab at the end of the tabs collection.
-    void addTab(const std::string& tabLabel);
+    void addTab(const std::string& label);
     
     /// Inserts a tab into the tabs collection at the specified index.
-    void addTab(int index, const std::string& tablabel);
+    void addTab(int index, const std::string& label);
     
     /**
      * Removes the tab with the specified label and returns the index of the label. 
      * Returns the number of tabs (tabsCount) if there is no such tab.
      */
-    int removeTab(const std::string& tabLabel);
+    int removeTab(const std::string& label);
     
     /// Removes the tab with the specified index.
     void removeTab(int index);
@@ -65,7 +65,7 @@ public:
      * Retrieves the index of a specific tab label. 
      * Returns the number of tabs (tabsCount) if there is no such tab.
      */
-    int tabIndex(const std::string& tabLabel);
+    int tabIndex(const std::string& label);
     
     /**
      * Recalculate the visible range of tabs so that the tab with the specified
