@@ -104,8 +104,7 @@ void TabHeader::TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& posit
 }
 
 void TabHeader::TabButton::drawActiveBorderAt(NVGcontext * ctx, const Vector2i& position,
-                                              float offset, const Color& color)
-{
+                                              float offset, const Color& color) {
     int xPos = position.x();
     int yPos = position.y();
     int width = mSize.x();
@@ -122,8 +121,7 @@ void TabHeader::TabButton::drawActiveBorderAt(NVGcontext * ctx, const Vector2i& 
 }
 
 void TabHeader::TabButton::drawInactiveBorderAt(NVGcontext * ctx, const Vector2i& position, 
-                                                float offset, const Color& color)
-{
+                                                float offset, const Color& color) {
     int xPos = position.x();
     int yPos = position.y();
     int width = mSize.x();
@@ -154,8 +152,7 @@ int TabHeader::activeTab() const {
     return mActiveTab;
 }
 
-bool TabHeader::isTabVisible(int index) const
-{
+bool TabHeader::isTabVisible(int index) const {
     return index >= mVisibleStart && index < mVisibleEnd;
 }
 
@@ -163,8 +160,7 @@ void TabHeader::addTab(const std::string & tabLabel) {
     addTab(tabCount(), tabLabel);
 }
 
-void TabHeader::addTab(int index, const std::string & tabLabel)
-{
+void TabHeader::addTab(int index, const std::string & tabLabel) {
     assert(index <= tabCount());
     mTabButtons.insert(std::next(mTabButtons.begin(), index), TabButton(*this, tabLabel));
     setActiveTab(index);
@@ -182,8 +178,7 @@ int TabHeader::removeTab(const std::string& tabLabel) {
     return index;
 }
 
-void TabHeader::removeTab(int index)
-{
+void TabHeader::removeTab(int index) {
     assert(index < tabCount());
     mTabButtons.erase(std::next(mTabButtons.begin(), index));
     if (index == mActiveTab && index != 0)
@@ -263,8 +258,7 @@ std::pair<Vector2i, Vector2i> TabHeader::visibleButtonArea() const {
     return { topLeft, bottomRigth };
 }
 
-std::pair<Vector2i, Vector2i> TabHeader::activeButtonArea() const
-{
+std::pair<Vector2i, Vector2i> TabHeader::activeButtonArea() const {
     if (mVisibleStart == mVisibleEnd || mActiveTab < mVisibleStart || mActiveTab >= mVisibleEnd)
         return { Vector2i::Zero(), Vector2i::Zero() };
     auto width = std::accumulate(visibleBegin(), activeIterator(), theme()->mTabControlWidth,
@@ -390,8 +384,7 @@ void TabHeader::calculateVisibleEnd() {
     int currentPosition = theme()->mTabControlWidth;
     int lastPosition = mSize.x() - theme()->mTabControlWidth;
     auto firstInvisible = std::find_if(first, last,
-                                       [&currentPosition, lastPosition](const TabButton& tb)
-    {
+                                       [&currentPosition, lastPosition](const TabButton& tb) {
         currentPosition += tb.size().x();
         return currentPosition > lastPosition;
     });

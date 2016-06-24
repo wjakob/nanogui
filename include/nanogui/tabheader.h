@@ -98,7 +98,7 @@ private:
     /// Implementation class of the actual tab buttons.
     class TabButton {
     public:
-        constexpr static char* dots = "...";
+        constexpr static const char* dots = "...";
 
         TabButton(TabHeader& header, const std::string& label);
 
@@ -109,7 +109,7 @@ private:
 
         Vector2i preferredSize(NVGcontext* ctx) const;
         void calculateVisibleString(NVGcontext* ctx);
-        void TabButton::drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active);
+        void drawAtPosition(NVGcontext* ctx, const Vector2i& position, bool active);
         void drawActiveBorderAt(NVGcontext * ctx, const Vector2i& position, float offset, const Color& color);
         void drawInactiveBorderAt(NVGcontext * ctx, const Vector2i& position, float offset, const Color& color);
         
