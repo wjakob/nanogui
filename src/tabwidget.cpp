@@ -42,13 +42,22 @@ int TabWidget::activeTab() const {
     return mContent->selectedIndex();
 }
 
-int TabWidget::tabCount() const {
+void TabWidget::setDefaultTabLayout(Layout* layout) {
+    mDefaultTabLayout = layout;
+}
+
+Layout* TabWidget::defaultTabLayout() {
+    return mDefaultTabLayout;
+}
+
+    int TabWidget::tabCount() const {
     assert(mContent->childCount() == mHeader->tabCount());
     return mHeader->tabCount(); 
 }
 
 Widget* TabWidget::createTab(int index, const std::string & tabLabel) {
     Widget* layer = new Widget(nullptr);
+    layer->setLayout(mDefaultTabLayout);
     addTab(index, layer, tabLabel);
     return layer;
 }

@@ -30,15 +30,19 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
+#include <nanogui/tabwidget.h>
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <nanogui/glutil.h>
 #include <iostream>
+#include <string>
 
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
+using std::to_string;
 
 class ExampleApplication : public nanogui::Screen {
 public:
@@ -200,10 +204,16 @@ public:
         window = new Window(this,"Misc. widgets");
         window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
-        new Label(window,"Color wheel","sans-bold");
-        new ColorWheel(window);
-        new Label(window, "Function graph", "sans-bold");
-        Graph *graph = new Graph(window, "Some function");
+        
+        TabWidget* tabWidget = window->add<TabWidget>();
+        tabWidget->setDefaultTabLayout(new GroupLayout());
+        // Use overloaded variadic add to fill the tab widget with Different tabs.
+        tabWidget->add<Label>("Color Wheel", "Color Wheel tab", "sans-bold");
+        tabWidget->add<ColorWheel>("Color Wheel");
+        tabWidget->add<Label>("Function Graph", "Function graph", "sans-bold");
+
+        Graph *graph = tabWidget->add<Graph>("Function Graph", "Some function");
+
         graph->setHeader("E = 2.35e-3");
         graph->setFooter("Iteration 89");
         VectorXf &func = graph->values();
@@ -211,6 +221,37 @@ public:
         for (int i = 0; i < 100; ++i)
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                               0.5f * std::cos(i / 23.f) + 1);
+
+        tabWidget->createTab("+");
+        // A simple counter.
+        int counter = 1;
+        tabWidget->setCallback([tabWidget, this, counter] (int index) mutable {
+            // Check if the "+" tab has been clicked. Simply add a new tab.
+            // Here we use the callback on the tab header to decide on what to do with
+            // specific clicks. The other cases, of displaying the given tab are handled by
+            // the default callback.
+            if(index == (tabWidget->tabCount()-1)) {
+                string tabName = "Dynamic Tab" + to_string(counter);
+                tabWidget->createTab(index, tabName);
+                tabWidget->add<Label>(tabName, "Function graph");
+                Graph *graphDyn = tabWidget->add<Graph>(tabName, "Some Dynamic function");
+
+                graphDyn->setHeader("E = 2.35e-3");
+                graphDyn->setFooter("Iteration " + to_string(index*counter));
+                VectorXf &funcDyn = graphDyn->values();
+                funcDyn.resize(100);
+                for (int i = 0; i < 100; ++i)
+                    funcDyn[i] = 0.5f * (0.5f * std::sin(i / 10.f + counter) +
+                                         0.5f * std::cos(i / 23.f + 1 + counter));
+                ++counter;
+                // We must invoke perform layout from the scree instance to keep evrything in order.
+                performLayout();
+                // This is required if we wish to make the header move automatically
+                // to the newly added header.
+                tabWidget->trackActiveTab();
+            }
+        });
+        tabWidget->setActiveTab(0);
 
         window = new Window(this, "Grid of small widgets");
         window->setPosition(Vector2i(425, 288));

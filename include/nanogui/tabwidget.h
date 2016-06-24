@@ -26,6 +26,8 @@ public:
     void setActiveTab(int tabIndex);
     int activeTab() const;
     int tabCount() const;
+    void setDefaultTabLayout(Layout* layout);
+    Layout* defaultTabLayout();
 
     /// Overloads the add function in the base class widget to add widgets to
     /// the tab with the specified label. If no such tab exists, it creates one, constructs
@@ -81,6 +83,7 @@ private:
 
     TabHeader* mHeader;
     StackedWidget* mContent;
+    ref<Layout> mDefaultTabLayout;
     std::function<void(int)> mCallback;
 };
 
