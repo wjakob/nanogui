@@ -27,7 +27,7 @@ TabWidget::TabWidget(Widget* parent)
     : Widget(parent), mHeader(new TabHeader(this)), mContent(new StackedWidget(this)) {
     mHeader->setCallback([this](int i) { 
         mContent->setSelectedIndex(i); 
-        if (mCallback) 
+        if (mCallback)
             mCallback(i); 
     });
 }
@@ -42,22 +42,13 @@ int TabWidget::activeTab() const {
     return mContent->selectedIndex();
 }
 
-void TabWidget::setDefaultTabLayout(Layout* layout) {
-    mDefaultTabLayout = layout;
-}
-
-Layout* TabWidget::defaultTabLayout() {
-    return mDefaultTabLayout;
-}
-
-    int TabWidget::tabCount() const {
+int TabWidget::tabCount() const {
     assert(mContent->childCount() == mHeader->tabCount());
     return mHeader->tabCount(); 
 }
 
 Widget* TabWidget::createTab(int index, const std::string & tabLabel) {
     Widget* layer = new Widget(nullptr);
-    layer->setLayout(mDefaultTabLayout);
     addTab(index, layer, tabLabel);
     return layer;
 }
@@ -83,9 +74,9 @@ int TabWidget::tabLabelIndex(const std::string& tabLabel) {
     return mHeader->tabIndex(tabLabel);
 }
 
-void TabWidget::trackActiveTab() {
-    if(!mHeader->isActiveVisible())
-        mHeader->recalculateVisibleRangeFromActive();
+void TabWidget::ensureTabVisible(int index) {
+    if(!mHeader->isTabVisible(index))
+        mHeader->ensureTabVisible(index);
 }
 
 const Widget * TabWidget::getTab(const std::string& tabName) const {

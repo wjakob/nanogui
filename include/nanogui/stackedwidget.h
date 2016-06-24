@@ -28,7 +28,6 @@ public:
     /// Retrieves the child at the specific position in the child array.
     const Widget* childAt(int index) const;
     
-    
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void addChild(int index, Widget* widget) override;

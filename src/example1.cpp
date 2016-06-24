@@ -134,12 +134,12 @@ public:
         popup->setFixedSize(Vector2i(245, 150));
 
         auto img_window = new Window(this, "Selected image");
-        img_window->setPosition(Vector2i(675, 15));
+        img_window->setPosition(Vector2i(710, 15));
         img_window->setLayout(new GroupLayout());
 
         auto img = new ImageView(img_window);
         img->setPolicy(ImageView::SizePolicy::Expand);
-        img->setFixedSize(Vector2i(300, 300));
+        img->setFixedSize(Vector2i(275, 275));
         img->setImage(icons[0].first);
         imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
             img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
@@ -206,13 +206,21 @@ public:
         window->setLayout(new GroupLayout());
         
         TabWidget* tabWidget = window->add<TabWidget>();
-        tabWidget->setDefaultTabLayout(new GroupLayout());
-        // Use overloaded variadic add to fill the tab widget with Different tabs.
-        tabWidget->add<Label>("Color Wheel", "Color Wheel tab", "sans-bold");
-        tabWidget->add<ColorWheel>("Color Wheel");
-        tabWidget->add<Label>("Function Graph", "Function graph", "sans-bold");
 
-        Graph *graph = tabWidget->add<Graph>("Function Graph", "Some function");
+        Widget* layer = tabWidget->createTab("Color Wheel");
+        layer->setLayout(new GroupLayout());
+
+        
+        // Use overloaded variadic add to fill the tab widget with Different tabs.
+        layer->add<Label>("Color Wheel Tab", "sans-bold");
+        layer->add<ColorWheel>();
+
+        layer = tabWidget->createTab("Function Graph");
+        layer->setLayout(new GroupLayout());
+
+        layer->add<Label>("Function Graph Tab", "sans-bold");
+
+        Graph *graph = layer->add<Graph>("Some Function");
 
         graph->setHeader("E = 2.35e-3");
         graph->setFooter("Iteration 89");
@@ -222,6 +230,7 @@ public:
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                               0.5f * std::cos(i / 23.f) + 1);
 
+        // Dummy tab used to represent the last tab button.
         tabWidget->createTab("+");
         // A simple counter.
         int counter = 1;
@@ -231,10 +240,11 @@ public:
             // specific clicks. The other cases, of displaying the given tab are handled by
             // the default callback.
             if(index == (tabWidget->tabCount()-1)) {
-                string tabName = "Dynamic Tab" + to_string(counter);
-                tabWidget->createTab(index, tabName);
-                tabWidget->add<Label>(tabName, "Function graph");
-                Graph *graphDyn = tabWidget->add<Graph>(tabName, "Some Dynamic function");
+                string tabName = "Dynamic " + to_string(counter);
+                Widget* layerDyn = tabWidget->createTab(index, tabName);
+                layerDyn->setLayout(new GroupLayout());
+                layerDyn->add<Label>("Function graph");
+                Graph *graphDyn = layerDyn->add<Graph>("Some Dynamic Function");
 
                 graphDyn->setHeader("E = 2.35e-3");
                 graphDyn->setFooter("Iteration " + to_string(index*counter));
@@ -244,14 +254,24 @@ public:
                     funcDyn[i] = 0.5f * (0.5f * std::sin(i / 10.f + counter) +
                                          0.5f * std::cos(i / 23.f + 1 + counter));
                 ++counter;
-                // We must invoke perform layout from the scree instance to keep evrything in order.
+                // We must invoke perform layout from the screen instance to keep everything in order.
+                // This is essential when creating tabs dynamically.
                 performLayout();
                 // This is required if we wish to make the header move automatically
                 // to the newly added header.
-                tabWidget->trackActiveTab();
+                tabWidget->ensureTabVisible(index);
+       
             }
         });
         tabWidget->setActiveTab(0);
+
+        // A button to go back to the first tab and scroll the window.
+        b = window->add<Button>("Go Back to First Tab");
+        b->setCallback([tabWidget] { 
+            tabWidget->setActiveTab(0);
+            tabWidget->ensureTabVisible(0);
+        });
+
 
         window = new Window(this, "Grid of small widgets");
         window->setPosition(Vector2i(425, 288));

@@ -30,39 +30,62 @@ public:
     void setFont(const std::string& font) { mFont = font; }
     const std::string& font() const { return mFont; }
     bool overflowing() const { return mOverflowing; }
-    /// Sets the callable objects which is invoked when a tab button is pressed.
-    /// The argument provided to the callback is the index of the tab.
+    
+    /**
+     * Sets the callable objects which is invoked when a tab button is pressed.
+     *  The argument provided to the callback is the index of the tab.
+     */
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
+    
     const std::function<void(int)>& callback() const { return mCallback; }
     void setActiveTab(int tabIndex);
     int activeTab() const;
-    bool isActiveVisible() const;
+    bool isTabVisible(int index) const;
     int tabCount() const { return mTabButtons.size();  }
 
     /// Inserts a tab at the end of the tabs collection.
     void addTab(const std::string& tabLabel);
+    
     /// Inserts a tab into the tabs collection at the specified index.
     void addTab(int index, const std::string& tablabel);
-    /// Removes the tab with the specified label and returns the index of the label. 
-    /// Returns the number of tabs (tabsCount) if there is no such tab.
+    
+    /**
+     * Removes the tab with the specified label and returns the index of the label. 
+     * Returns the number of tabs (tabsCount) if there is no such tab.
+     */
     int removeTab(const std::string& tabLabel);
+    
     /// Removes the tab with the specified index.
     void removeTab(int index);
+    
     /// Retrieves the label of the tab at a specific index.
     const std::string& tabLabelAt(int index) const;
-    /// Retrieves the index of a specific tab label. 
-    /// Returns the number of tabs (tabsCount) if there is no such tab.
+    
+    /**
+     * Retrieves the index of a specific tab label. 
+     * Returns the number of tabs (tabsCount) if there is no such tab.
+     */
     int tabIndex(const std::string& tabLabel);
-    /// After an active tab has been set, this function can be invoked to recalculate
-    /// the visible range of buttons using the active tab as the last visible one.
-    void recalculateVisibleRangeFromActive();
+    
+    /**
+     * Recalculate the visible range of tabs so that the tab with the specified
+     * index is visible. The tab with the specified index will either be the 
+     * first or last visible one depending on the position relative to the 
+     * old visible range.
+     */
+    void ensureTabVisible(int index);
 
-    /// Returns a pair of Vectors describing the top left (pair.first) and the 
-    /// bottom right (pair.second) positions of the rectangle containing the visible tab buttons.
+    /**
+     * Returns a pair of Vectors describing the top left (pair.first) and the 
+     * bottom right (pair.second) positions of the rectangle containing the visible tab buttons.
+     */
     std::pair<Vector2i, Vector2i> visibleButtonArea() const;
-    /// Returns a pair of Vectors describing the top left (pair.first) and the 
-    /// bottom right (pair.second) positions of the rectangle containing the active tab button.
-    /// Returns two zero vectors if the active button is not visible.
+    
+    /**
+     * Returns a pair of Vectors describing the top left (pair.first) and the 
+     * bottom right (pair.second) positions of the rectangle containing the active tab button.
+     * Returns two zero vectors if the active button is not visible.
+     */
     std::pair<Vector2i, Vector2i> activeButtonArea() const;
 
     virtual void performLayout(NVGcontext* ctx) override;
@@ -102,11 +125,8 @@ private:
         int mVisibleWidth = 0;
     };
 
-
     using TabIterator = std::vector<TabButton>::iterator;
     using ConstTabIterator = std::vector<TabButton>::const_iterator;
-    using ReverseTabIterator = std::vector<TabButton>::reverse_iterator;
-    //using ConstReverseTabIterator = std::vector<TabButton>::reverse_iterator;
 
     enum class ClickLocation {
         LeftControls, RightControls, TabButtons
@@ -114,18 +134,17 @@ private:
 
     TabIterator visibleBegin() { return std::next(mTabButtons.begin(), mVisibleStart); }
     TabIterator visibleEnd() { return std::next(mTabButtons.begin(), mVisibleEnd); }
-    TabIterator activePosition() { return std::next(mTabButtons.begin(), mActiveTab); }
-    ReverseTabIterator rVisibleBegin() { return std::next(mTabButtons.rbegin(), (tabCount() - mVisibleEnd)); }
-    ReverseTabIterator rVisibleEnd() { return std::next(mTabButtons.rbegin(), (tabCount() - mVisibleStart)); }
+    TabIterator activeIterator() { return std::next(mTabButtons.begin(), mActiveTab); }
+    TabIterator tabIterator(int index) { return std::next(mTabButtons.begin(), index); }
 
     ConstTabIterator visibleBegin() const { return std::next(mTabButtons.begin(), mVisibleStart); }
     ConstTabIterator visibleEnd() const { return std::next(mTabButtons.begin(), mVisibleEnd); }
-    ConstTabIterator activePosition() const { return std::next(mTabButtons.begin(), mActiveTab); }
+    ConstTabIterator activeIterator() const { return std::next(mTabButtons.begin(), mActiveTab); }
+    ConstTabIterator tabIterator(int index) const { return std::next(mTabButtons.begin(), index); }
     
-    /// Given the end of the visible tabs, calculate the beginning. 
-    void calculateVisibleBegin();
     /// Given the beginning of the visible tabs, calculate the end. 
     void calculateVisibleEnd();
+    
     void drawControls(NVGcontext* ctx);
     ClickLocation locateClick(const Vector2i& p);
     void onArrowLeft();
