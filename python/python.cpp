@@ -8,7 +8,7 @@
 #include "python.h"
 
 #if defined(__APPLE__) || defined(__linux__)
-#include <coro.h>
+#  include <coro.h>
 #endif
 
 using namespace nanogui;
@@ -46,6 +46,8 @@ DECLARE_WIDGET(Graph);
 DECLARE_WIDGET(DoubleBox);
 DECLARE_WIDGET(Int64Box);
 DECLARE_WIDGET(ColorPicker);
+DECLARE_WIDGET(StackedWidget);
+DECLARE_WIDGET(TabHeader);
 
 /// Make pybind aware of the ref-counted wrapper type
 PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
@@ -785,6 +787,27 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setTextColor", &Graph::setTextColor, D(Graph, setTextColor))
         .def("values", (VectorXf &(Graph::*)(void)) &Graph::values, D(Graph, values))
         .def("setValues", &Graph::setValues, D(Graph, setValues));
+
+    py::class_<StackedWidget, ref<StackedWidget>, PyStackedWidget>(m, "StackedWidget", widget, D(StackedWidget))
+        .def("selectedIndex", &StackedWidget::selectedIndex, D(StackedWidget, selectedIndex))
+        .def("setSelectedIndex", &StackedWidget::setSelectedIndex, D(StackedWidget, setSelectedIndex));
+
+    py::class_<TabHeader, ref<TabHeader>, PyTabHeader>(m, "TabHeader", widget, D(TabHeader))
+        .def(py::init<Widget *, const std::string &>(), D(TabHeader, TabHeader))
+        .def("setFont", &TabHeader::setFont, D(TabHeader, setFont))
+        .def("font", &TabHeader::font, D(TabHeader, font))
+        .def("overflowing", &TabHeader::overflowing, D(TabHeader, overflowing))
+        .def("callback", &TabHeader::callback, D(TabHeader, callback))
+        .def("setCallback", &TabHeader::setCallback, D(TabHeader, setCallback))
+        .def("activeTab", &TabHeader::activeTab, D(TabHeader, activeTab))
+        .def("setActiveTab", &TabHeader::setActiveTab, D(TabHeader, setActiveTab))
+        .def("addTab", (void (TabHeader::*)(const std::string &)) &TabHeader::addTab, D(TabHeader, addTab))
+        .def("addTab", (void (TabHeader::*)(int index, const std::string &)) &TabHeader::addTab, D(TabHeader, addTab, 2))
+        .def("removeTab", (int (TabHeader::*)(const std::string &)) &TabHeader::removeTab, D(TabHeader, removeTab))
+        .def("removeTab", (void (TabHeader::*)(int index)) &TabHeader::removeTab, D(TabHeader, removeTab, 2))
+        .def("tabLabelAt", &TabHeader::tabLabelAt, D(TabHeader, tabLabelAt))
+        .def("tabIndex", &TabHeader::tabIndex, D(TabHeader, tabIndex))
+        .def("ensureTabVisible", &TabHeader::ensureTabVisible, D(TabHeader, ensureTabVisible));
 
     enum DummyEnum { };
 

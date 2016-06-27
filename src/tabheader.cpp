@@ -145,12 +145,8 @@ void TabHeader::TabButton::drawInactiveBorderAt(NVGcontext *ctx, const Vector2i 
 }
 
 
-TabHeader::TabHeader(Widget* parent, const std::string& font,
-                     int fontSize)
-    : Widget(parent), mFont(font) {
-    if (fontSize >= 0)
-        mFontSize = fontSize;
-}
+TabHeader::TabHeader(Widget* parent, const std::string& font)
+    : Widget(parent), mFont(font) { }
 
 void TabHeader::setActiveTab(int tabIndex) {
     assert(tabIndex < tabCount());
@@ -181,11 +177,11 @@ int TabHeader::removeTab(const std::string &label) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(),
                                 [&](const TabButton& tb) { return label == tb.label(); });
     int index = std::distance(mTabButtons.begin(), element);
-    if (element != mTabButtons.end()) {
-        mTabButtons.erase(element);
-        if (index == mActiveTab && index != 0)
-            setActiveTab(index - 1);
-    }
+    if (element == mTabButtons.end())
+        return -1;
+    mTabButtons.erase(element);
+    if (index == mActiveTab && index != 0)
+        setActiveTab(index - 1);
     return index;
 }
 

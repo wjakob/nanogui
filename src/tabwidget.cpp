@@ -99,7 +99,7 @@ Widget* TabWidget::getTab(const std::string& tabName) {
 
 bool TabWidget::removeTab(const std::string& tabName) {
     int index = mHeader->removeTab(tabName);
-    if (index == mHeader->tabCount())
+    if (index == -1)
         return false;
     mContent->removeChild(index);
     return true;

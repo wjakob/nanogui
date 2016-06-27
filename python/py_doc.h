@@ -1397,6 +1397,244 @@ static const char *__doc_nanogui_Slider_setValue = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_value = R"doc()doc";
 
+static const char *__doc_nanogui_StackedWidget = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_StackedWidget = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_addChild = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_mSelectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_selectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_setSelectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_ClickLocation = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_ClickLocation_LeftControls = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_ClickLocation_RightControls = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_ClickLocation_TabButtons = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton = R"doc(Implementation class of the actual tab buttons.)doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_StringView = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_StringView_first = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_StringView_last = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_TabButton = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_calculateVisibleString = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_drawActiveBorderAt = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_drawAtPosition = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_drawInactiveBorderAt = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_label = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_mHeader = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_mLabel = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_mSize = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_mVisibleText = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_mVisibleWidth = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_setLabel = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_setSize = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabButton_size = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_TabHeader = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_activeButtonArea =
+R"doc(Returns a pair of Vectors describing the top left (pair.first) and the
+bottom right (pair.second) positions of the rectangle containing the
+active tab button. Returns two zero vectors if the active button is
+not visible.)doc";
+
+static const char *__doc_nanogui_TabHeader_activeIterator = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_activeIterator_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_activeTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_addTab = R"doc(Inserts a tab at the end of the tabs collection.)doc";
+
+static const char *__doc_nanogui_TabHeader_addTab_2 = R"doc(Inserts a tab into the tabs collection at the specified index.)doc";
+
+static const char *__doc_nanogui_TabHeader_calculateVisibleEnd = R"doc(Given the beginning of the visible tabs, calculate the end.)doc";
+
+static const char *__doc_nanogui_TabHeader_callback = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_draw = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_drawControls = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_ensureTabVisible =
+R"doc(Recalculate the visible range of tabs so that the tab with the
+specified index is visible. The tab with the specified index will
+either be the first or last visible one depending on the position
+relative to the old visible range.)doc";
+
+static const char *__doc_nanogui_TabHeader_font = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_isTabVisible = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_locateClick = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mActiveTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mCallback = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mFont = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mOverflowing = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mTabButtons = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mVisibleEnd = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mVisibleStart = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_mouseButtonEvent = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_onArrowLeft = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_onArrowRight = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_overflowing = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_removeTab =
+R"doc(Removes the tab with the specified label and returns the index of the
+label. Returns the number of tabs (tabsCount) if there is no such tab.)doc";
+
+static const char *__doc_nanogui_TabHeader_removeTab_2 = R"doc(Removes the tab with the specified index.)doc";
+
+static const char *__doc_nanogui_TabHeader_setActiveTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_setCallback =
+R"doc(Sets the callable objects which is invoked when a tab button is
+pressed. The argument provided to the callback is the index of the
+tab.)doc";
+
+static const char *__doc_nanogui_TabHeader_setFont = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_tabCount = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_tabIndex =
+R"doc(Retrieves the index of a specific tab label. Returns the number of
+tabs (tabsCount) if there is no such tab.)doc";
+
+static const char *__doc_nanogui_TabHeader_tabIterator = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_tabIterator_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_tabLabelAt = R"doc(Retrieves the label of the tab at a specific index.)doc";
+
+static const char *__doc_nanogui_TabHeader_visibleBegin = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_visibleBegin_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_visibleButtonArea =
+R"doc(Returns a pair of Vectors describing the top left (pair.first) and the
+bottom right (pair.second) positions of the rectangle containing the
+visible tab buttons.)doc";
+
+static const char *__doc_nanogui_TabHeader_visibleEnd = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_visibleEnd_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_TabWidget = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_activeTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_addTab =
+R"doc(Inserts a tab at the end of the tabs collection and associates it with
+the provided widget.)doc";
+
+static const char *__doc_nanogui_TabWidget_addTab_2 =
+R"doc(Inserts a tab into the tabs collection at the specified index and
+associates it with the provided widget.)doc";
+
+static const char *__doc_nanogui_TabWidget_callback = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_createTab =
+R"doc(Creates a new tab with the specified name and returns a pointer to the
+layer.)doc";
+
+static const char *__doc_nanogui_TabWidget_createTab_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_draw = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_ensureTabVisible =
+R"doc(This function can be invoked to ensure that the tab with the provided
+index the is visible, i.e to track the given tab. Forwards to the tab
+header widget. This function should be used whenever the client wishes
+to make the tab header follow a newly added tab, as the content of the
+new tab is made visible but the tab header does not track it by
+default.)doc";
+
+static const char *__doc_nanogui_TabWidget_getTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_getTab_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_mCallback = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_mContent = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_mHeader = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_removeTab =
+R"doc(Removes the tab with the specified label and returns the index of the
+label. Returns whether the removal was successful.)doc";
+
+static const char *__doc_nanogui_TabWidget_removeTab_2 = R"doc(Removes the tab with the specified index.)doc";
+
+static const char *__doc_nanogui_TabWidget_setActiveTab = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_setCallback =
+R"doc(Sets the callable objects which is invoked when a tab is changed. The
+argument provided to the callback is the index of the new active tab.)doc";
+
+static const char *__doc_nanogui_TabWidget_tabCount = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_tabIndex =
+R"doc(Retrieves the index of a specific tab using a widget pointer. Returns
+-1 if there is no such tab.)doc";
+
+static const char *__doc_nanogui_TabWidget_tabLabelAt = R"doc(Retrieves the label of the tab at a specific index.)doc";
+
+static const char *__doc_nanogui_TabWidget_tabLabelIndex =
+R"doc(Retrieves the index of a specific tab using its tab label. Returns -1
+if there is no such tab.)doc";
+
 static const char *__doc_nanogui_TextBox = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_Alignment = R"doc()doc";
@@ -1556,6 +1794,20 @@ static const char *__doc_nanogui_Theme_mFontNormal = R"doc()doc";
 static const char *__doc_nanogui_Theme_mIconColor = R"doc()doc";
 
 static const char *__doc_nanogui_Theme_mStandardFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabBorderWidth = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabButtonHorizontalPadding = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabButtonVerticalPadding = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabControlWidth = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabInnerMargin = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabMaxButtonWidth = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_mTabMinButtonWidth = R"doc()doc";
 
 static const char *__doc_nanogui_Theme_mTextBoxFontSize = R"doc()doc";
 
