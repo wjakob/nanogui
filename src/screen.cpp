@@ -16,8 +16,8 @@
 #include <nanogui/opengl.h>
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
-#include <iostream>
 #include <map>
+#include <iostream>
 
 #if defined(_WIN32)
 #define NOMINMAX

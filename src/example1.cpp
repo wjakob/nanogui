@@ -1,5 +1,5 @@
 /*
-    src/example1.cpp -- C++ version of an example application that shows 
+    src/example1.cpp -- C++ version of an example application that shows
     how to use the various widget classes. For a Python implementation, see
     '../python/example1.py'.
 
@@ -30,15 +30,19 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
+#include <nanogui/tabwidget.h>
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <nanogui/glutil.h>
 #include <iostream>
+#include <string>
 
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
+using std::to_string;
 
 class ExampleApplication : public nanogui::Screen {
 public:
@@ -130,12 +134,12 @@ public:
         popup->setFixedSize(Vector2i(245, 150));
 
         auto img_window = new Window(this, "Selected image");
-        img_window->setPosition(Vector2i(675, 15));
+        img_window->setPosition(Vector2i(710, 15));
         img_window->setLayout(new GroupLayout());
 
         auto img = new ImageView(img_window);
         img->setPolicy(ImageView::SizePolicy::Expand);
-        img->setFixedSize(Vector2i(300, 300));
+        img->setFixedSize(Vector2i(275, 275));
         img->setImage(icons[0].first);
         imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
             img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
@@ -200,10 +204,23 @@ public:
         window = new Window(this,"Misc. widgets");
         window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
-        new Label(window,"Color wheel","sans-bold");
-        new ColorWheel(window);
-        new Label(window, "Function graph", "sans-bold");
-        Graph *graph = new Graph(window, "Some function");
+
+        TabWidget* tabWidget = window->add<TabWidget>();
+
+        Widget* layer = tabWidget->createTab("Color Wheel");
+        layer->setLayout(new GroupLayout());
+
+        // Use overloaded variadic add to fill the tab widget with Different tabs.
+        layer->add<Label>("Color wheel widget", "sans-bold");
+        layer->add<ColorWheel>();
+
+        layer = tabWidget->createTab("Function Graph");
+        layer->setLayout(new GroupLayout());
+
+        layer->add<Label>("Function graph widget", "sans-bold");
+
+        Graph *graph = layer->add<Graph>("Some Function");
+
         graph->setHeader("E = 2.35e-3");
         graph->setFooter("Iteration 89");
         VectorXf &func = graph->values();
@@ -212,8 +229,62 @@ public:
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                               0.5f * std::cos(i / 23.f) + 1);
 
+        // Dummy tab used to represent the last tab button.
+        tabWidget->createTab("+");
+
+        // A simple counter.
+        int counter = 1;
+        tabWidget->setCallback([tabWidget, this, counter] (int index) mutable {
+            if (index == (tabWidget->tabCount()-1)) {
+                // When the "+" tab has been clicked, simply add a new tab.
+                string tabName = "Dynamic " + to_string(counter);
+                Widget* layerDyn = tabWidget->createTab(index, tabName);
+                layerDyn->setLayout(new GroupLayout());
+                layerDyn->add<Label>("Function graph widget", "sans-bold");
+                Graph *graphDyn = layerDyn->add<Graph>("Dynamic function");
+
+                graphDyn->setHeader("E = 2.35e-3");
+                graphDyn->setFooter("Iteration " + to_string(index*counter));
+                VectorXf &funcDyn = graphDyn->values();
+                funcDyn.resize(100);
+                for (int i = 0; i < 100; ++i)
+                    funcDyn[i] = 0.5f *
+                        std::abs((0.5f * std::sin(i / 10.f + counter) +
+                                  0.5f * std::cos(i / 23.f + 1 + counter)));
+                ++counter;
+                // We must invoke perform layout from the screen instance to keep everything in order.
+                // This is essential when creating tabs dynamically.
+                performLayout();
+                // Ensure that the newly added header is visible on screen
+                tabWidget->ensureTabVisible(index);
+
+            }
+        });
+        tabWidget->setActiveTab(0);
+
+        // A button to go back to the first tab and scroll the window.
+        panel = window->add<Widget>();
+        panel->add<Label>("Jump to tab: ");
+        panel->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 6));
+
+        auto ib = panel->add<IntBox<int>>();
+        ib->setEditable(true);
+
+        b = panel->add<Button>("", ENTYPO_ICON_FORWARD);
+        b->setFixedSize(Vector2i(22, 22));
+        ib->setFixedHeight(22);
+        b->setCallback([tabWidget, ib] {
+            int value = ib->value();
+            if (value >= 0 && value < tabWidget->tabCount()) {
+                tabWidget->setActiveTab(value);
+                tabWidget->ensureTabVisible(value);
+            }
+        });
+
+
         window = new Window(this, "Grid of small widgets");
-        window->setPosition(Vector2i(425, 288));
+        window->setPosition(Vector2i(425, 300));
         GridLayout *layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
@@ -287,7 +358,7 @@ public:
             }
         });
 
-        performLayout(mNVGContext);
+        performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now
            create an OpenGL shader to draw the main window contents.
