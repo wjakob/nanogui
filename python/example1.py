@@ -19,7 +19,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation
+                    Alignment, Orientation, TabWidget
 
 from nanogui import glfw, entypo
 
@@ -133,12 +133,12 @@ class TestApp(Screen):
         popup.setFixedSize(Vector2i(245, 150))
 
         img_window = Window(self, "Selected image")
-        img_window.setPosition(Vector2i(675, 15))
-        img_window.setLayout(GroupLayout());
+        img_window.setPosition(Vector2i(710, 15))
+        img_window.setLayout(GroupLayout())
 
         img = ImageView(img_window)
         img.setPolicy(ImageView.SizePolicy.Expand)
-        img.setFixedSize(Vector2i(300, 300))
+        img.setFixedSize(Vector2i(275, 275))
         img.setImage(icons[0][0])
 
         def cb(i):
@@ -219,10 +219,19 @@ class TestApp(Screen):
         window = Window(self, "Misc. widgets")
         window.setPosition(Vector2i(425, 15))
         window.setLayout(GroupLayout())
-        Label(window, "Color wheel", "sans-bold")
-        ColorWheel(window)
-        Label(window, "Function graph", "sans-bold")
-        graph = Graph(window, "Some function")
+
+        tabWidget = TabWidget(window)
+        layer = tabWidget.createTab("Color Wheel")
+        layer.setLayout(GroupLayout())
+
+        Label(layer, "Color wheel widget", "sans-bold")
+        ColorWheel(layer)
+
+        layer = tabWidget.createTab("Function Graph")
+        layer.setLayout(GroupLayout())
+        Label(layer, "Function graph widget", "sans-bold")
+
+        graph = Graph(layer, "Some function")
         graph.setHeader("E = 2.35e-3")
         graph.setFooter("Iteration 89")
         values = VectorXf(100)
@@ -230,9 +239,10 @@ class TestApp(Screen):
             values[i] = 0.5 * (0.5 * math.sin(i / 10.0) +
                                0.5 * math.cos(i / 23.0) + 1)
         graph.setValues(values)
+        tabWidget.setActiveTab(0)
 
         window = Window(self, "Grid of small widgets")
-        window.setPosition(Vector2i(425, 288))
+        window.setPosition(Vector2i(425, 300))
         layout = GridLayout(Orientation.Horizontal, 2,
                             Alignment.Middle, 15, 5)
         layout.setColAlignment(

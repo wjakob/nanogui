@@ -47,21 +47,21 @@ int TabWidget::tabCount() const {
     return mHeader->tabCount();
 }
 
-Widget* TabWidget::createTab(int index, const std::string & label) {
-    Widget* layer = new Widget(nullptr);
-    addTab(index, layer, label);
-    return layer;
+Widget* TabWidget::createTab(int index, const std::string &label) {
+    Widget* tab = new Widget(nullptr);
+    addTab(index, label, tab);
+    return tab;
 }
 
-Widget* TabWidget::createTab(const std::string & label) {
+Widget* TabWidget::createTab(const std::string &label) {
     return createTab(tabCount(), label);
 }
 
-void TabWidget::addTab(Widget* tab, const std::string& name) {
-    addTab(tabCount(), tab, name);
+void TabWidget::addTab(const std::string &name, Widget *tab) {
+    addTab(tabCount(), name, tab);
 }
 
-void TabWidget::addTab(int index, Widget *tab, const std::string & label) {
+void TabWidget::addTab(int index, const std::string &label, Widget *tab) {
     assert(index <= tabCount());
     // It is important to add the content first since the callback
     // of the header will automatically fire when a new tab is added.
@@ -70,7 +70,7 @@ void TabWidget::addTab(int index, Widget *tab, const std::string & label) {
     assert(mHeader->tabCount() == mContent->childCount());
 }
 
-int TabWidget::tabLabelIndex(const std::string& label) {
+int TabWidget::tabLabelIndex(const std::string &label) {
     return mHeader->tabIndex(label);
 }
 
@@ -83,21 +83,21 @@ void TabWidget::ensureTabVisible(int index) {
         mHeader->ensureTabVisible(index);
 }
 
-const Widget * TabWidget::getTab(const std::string& tabName) const {
+const Widget *TabWidget::tab(const std::string &tabName) const {
     int index = mHeader->tabIndex(tabName);
     if (index == mContent->childCount())
         return nullptr;
     return mContent->children()[index];
 }
 
-Widget* TabWidget::getTab(const std::string& tabName) {
+Widget *TabWidget::tab(const std::string &tabName) {
     int index = mHeader->tabIndex(tabName);
     if (index == mContent->childCount())
         return nullptr;
     return mContent->children()[index];
 }
 
-bool TabWidget::removeTab(const std::string& tabName) {
+bool TabWidget::removeTab(const std::string &tabName) {
     int index = mHeader->removeTab(tabName);
     if (index == -1)
         return false;
@@ -113,7 +113,7 @@ void TabWidget::removeTab(int index) {
         setActiveTab(index == (index - 1) ? index - 1 : 0);
 }
 
-const std::string& TabWidget::tabLabelAt(int index) const {
+const std::string &TabWidget::tabLabelAt(int index) const {
     return mHeader->tabLabelAt(index);
 }
 

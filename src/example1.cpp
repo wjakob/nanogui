@@ -201,7 +201,7 @@ public:
         textBox->setFontSize(20);
         textBox->setAlignment(TextBox::Alignment::Right);
 
-        window = new Window(this,"Misc. widgets");
+        window = new Window(this, "Misc. widgets");
         window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
 
@@ -281,7 +281,6 @@ public:
                 tabWidget->ensureTabVisible(value);
             }
         });
-
 
         window = new Window(this, "Grid of small widgets");
         window->setPosition(Vector2i(425, 300));

@@ -1527,7 +1527,7 @@ static const char *__doc_nanogui_TabHeader_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_removeTab =
 R"doc(Removes the tab with the specified label and returns the index of the
-label. Returns the number of tabs (tabsCount) if there is no such tab.)doc";
+label. Returns -1 if there was no such tab)doc";
 
 static const char *__doc_nanogui_TabHeader_removeTab_2 = R"doc(Removes the tab with the specified index.)doc";
 
@@ -1597,10 +1597,6 @@ to make the tab header follow a newly added tab, as the content of the
 new tab is made visible but the tab header does not track it by
 default.)doc";
 
-static const char *__doc_nanogui_TabWidget_getTab = R"doc()doc";
-
-static const char *__doc_nanogui_TabWidget_getTab_2 = R"doc()doc";
-
 static const char *__doc_nanogui_TabWidget_mCallback = R"doc()doc";
 
 static const char *__doc_nanogui_TabWidget_mContent = R"doc()doc";
@@ -1623,6 +1619,8 @@ static const char *__doc_nanogui_TabWidget_setCallback =
 R"doc(Sets the callable objects which is invoked when a tab is changed. The
 argument provided to the callback is the index of the new active tab.)doc";
 
+static const char *__doc_nanogui_TabWidget_tab = R"doc()doc";
+
 static const char *__doc_nanogui_TabWidget_tabCount = R"doc()doc";
 
 static const char *__doc_nanogui_TabWidget_tabIndex =
@@ -1634,6 +1632,8 @@ static const char *__doc_nanogui_TabWidget_tabLabelAt = R"doc(Retrieves the labe
 static const char *__doc_nanogui_TabWidget_tabLabelIndex =
 R"doc(Retrieves the index of a specific tab using its tab label. Returns -1
 if there is no such tab.)doc";
+
+static const char *__doc_nanogui_TabWidget_tab_2 = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox = R"doc()doc";
 
