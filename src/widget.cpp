@@ -139,11 +139,16 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
-void Widget::addChild(Widget *widget) {
-    mChildren.push_back(widget);
+void Widget::addChild(int index, Widget * widget) {
+    assert(index <= childCount());
+    mChildren.insert(mChildren.begin() + index, widget);
     widget->incRef();
     widget->setParent(this);
     widget->setTheme(mTheme);
+}
+
+void Widget::addChild(Widget * widget) {
+    addChild(childCount(), widget);
 }
 
 void Widget::removeChild(const Widget *widget) {
@@ -155,6 +160,13 @@ void Widget::removeChild(int index) {
     Widget *widget = mChildren[index];
     mChildren.erase(mChildren.begin() + index);
     widget->decRef();
+}
+
+int Widget::childIndex(Widget *widget) const {
+    auto it = std::find(mChildren.begin(), mChildren.end(), widget);
+    if (it == mChildren.end())
+        return -1;
+    return it - mChildren.begin();
 }
 
 Window *Widget::window() {

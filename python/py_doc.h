@@ -1650,14 +1650,24 @@ static const char *__doc_nanogui_Widget_Widget = R"doc(Construct a new widget wi
 
 static const char *__doc_nanogui_Widget_absolutePosition = R"doc(Return the absolute position on screen)doc";
 
+static const char *__doc_nanogui_Widget_add = R"doc(Variadic shorthand notation to construct and add a child widget)doc";
+
 static const char *__doc_nanogui_Widget_addChild =
-R"doc(Add a child widget to the current widget
+R"doc(Add a child widget to the current widget at the specified index.
 
 This function almost never needs to be called by hand, since the
 constructor of Widget automatically adds the current widget to its
 parent)doc";
 
+static const char *__doc_nanogui_Widget_addChild_2 = R"doc(Convenience function which appends a widget at the end)doc";
+
+static const char *__doc_nanogui_Widget_childAt = R"doc(Retrieves the child at the specific position)doc";
+
+static const char *__doc_nanogui_Widget_childAt_2 = R"doc(Retrieves the child at the specific position)doc";
+
 static const char *__doc_nanogui_Widget_childCount = R"doc(Return the number of child widgets)doc";
+
+static const char *__doc_nanogui_Widget_childIndex = R"doc(Returns the index of a specific child or -1 if not found)doc";
 
 static const char *__doc_nanogui_Widget_children = R"doc(Return the list of child widgets of the current widget)doc";
 
