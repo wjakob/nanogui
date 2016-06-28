@@ -41,6 +41,8 @@ public:
     const std::vector<std::string> &items() const { return mItems; }
     const std::vector<std::string> &itemsShort() const { return mItemsShort; }
 
+    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
+
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:

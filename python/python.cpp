@@ -721,6 +721,8 @@ PYBIND11_PLUGIN(nanogui) {
             py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
         .def("editable", &TextBox::editable, D(TextBox, editable))
         .def("setEditable", &TextBox::setEditable, D(TextBox, setEditable))
+        .def("spinnable", &TextBox::spinnable/*, D(TextBox, spinnable)*/)
+        .def("setSpinnable", &TextBox::setSpinnable/*, D(TextBox, setSpinnable)*/)
         .def("value", &TextBox::value, D(TextBox, value))
         .def("setValue", &TextBox::setValue, D(TextBox, setValue))
         .def("defaultValue", &TextBox::defaultValue, D(TextBox, defaultValue))
@@ -746,14 +748,22 @@ PYBIND11_PLUGIN(nanogui) {
         .def("value", &Int64Box::value, D(IntBox, value))
         .def("setValue", (void (Int64Box::*)(int64_t)) &Int64Box::setValue, D(IntBox, setValue))
         .def("setCallback", (void (Int64Box::*)(const std::function<void(int64_t)>&))
-                &Int64Box::setCallback, D(IntBox, setCallback));
+                &Int64Box::setCallback, D(IntBox, setCallback))
+        .def("setValueIncrement", &Int64Box::setValueIncrement/*, D(IntBox, setValueIncrement)*/)
+        .def("setMinValue", &Int64Box::setMinValue/*, D(IntBox, setMinValue)*/)
+        .def("setMaxValue", &Int64Box::setMaxValue/*, D(IntBox, setMaxValue)*/)
+        .def("setMinValue", &Int64Box::setMinMaxValues/*, D(IntBox, setMinMaxValues)*/);
 
     py::class_<DoubleBox, ref<DoubleBox>, PyDoubleBox>(m, "FloatBox", tbox, D(FloatBox))
         .def(py::init<Widget *, double>(), py::arg("parent"), py::arg("value") = 0.0)
         .def("value", &DoubleBox::value, D(FloatBox, value))
-        .def("setValue", (void (DoubleBox::*)(int64_t)) &DoubleBox::setValue, D(FloatBox, setValue))
+        .def("setValue", (void (DoubleBox::*)(double)) &DoubleBox::setValue, D(FloatBox, setValue))
         .def("setCallback", (void (DoubleBox::*)(const std::function<void(double)>&))
-                &DoubleBox::setCallback, D(FloatBox, setCallback));
+                &DoubleBox::setCallback, D(FloatBox, setCallback))
+        .def("setValueIncrement", &DoubleBox::setValueIncrement/*, D(FloatBox, setValueIncrement)*/)
+        .def("setMinValue", &DoubleBox::setMinValue/*, D(FloatBox, setMinValue)*/)
+        .def("setMaxValue", &DoubleBox::setMaxValue/*, D(FloatBox, setMaxValue)*/)
+        .def("setMinValue", &DoubleBox::setMinMaxValues/*, D(FloatBox, setMinMaxValues)*/);
 
     py::class_<ColorWheel, ref<ColorWheel>, PyColorWheel>(m, "ColorWheel", widget, D(ColorWheel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorWheel, ColorWheel))
