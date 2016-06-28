@@ -125,10 +125,9 @@ public:
     }
 
     Scalar value() const {
-        Scalar value;
         std::istringstream iss(TextBox::value());
-        if (!(iss >> value))
-            throw std::invalid_argument("Could not parse integer value!");
+        Scalar value = 0;
+        iss >> value;
         return value;
     }
 
@@ -141,9 +140,8 @@ public:
         TextBox::setCallback(
             [cb, this](const std::string &str) {
                 std::istringstream iss(str);
-                Scalar value;
-                if (!(iss >> value))
-                    throw std::invalid_argument("Could not parse integer value!");
+                Scalar value = 0;
+                iss >> value;
                 setValue(value);
                 cb(value);
                 return true;
