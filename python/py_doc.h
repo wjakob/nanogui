@@ -476,6 +476,8 @@ static const char *__doc_nanogui_ComboBox_mSelectedIndex = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_save = R"doc()doc";
 
+static const char *__doc_nanogui_ComboBox_scrollEvent = R"doc()doc";
+
 static const char *__doc_nanogui_ComboBox_selectedIndex = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setCallback = R"doc()doc";
@@ -506,15 +508,37 @@ static const char *__doc_nanogui_FloatBox = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_FloatBox = R"doc()doc";
 
+static const char *__doc_nanogui_FloatBox_mMaxValue = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_mMinValue = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_mMouseDownValue = R"doc()doc";
+
 static const char *__doc_nanogui_FloatBox_mNumberFormat = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_mValueIncrement = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_mouseButtonEvent = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_mouseDragEvent = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_numberFormat = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_numberFormat_2 = R"doc()doc";
 
+static const char *__doc_nanogui_FloatBox_scrollEvent = R"doc()doc";
+
 static const char *__doc_nanogui_FloatBox_setCallback = R"doc()doc";
 
+static const char *__doc_nanogui_FloatBox_setMaxValue = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_setMinMaxValues = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_setMinValue = R"doc()doc";
+
 static const char *__doc_nanogui_FloatBox_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_setValueIncrement = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_value = R"doc()doc";
 
@@ -997,9 +1021,31 @@ static const char *__doc_nanogui_IntBox = R"doc()doc";
 
 static const char *__doc_nanogui_IntBox_IntBox = R"doc()doc";
 
+static const char *__doc_nanogui_IntBox_mMaxValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_mMinValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_mMouseDownValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_mValueIncrement = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_mouseButtonEvent = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_mouseDragEvent = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_scrollEvent = R"doc()doc";
+
 static const char *__doc_nanogui_IntBox_setCallback = R"doc()doc";
 
+static const char *__doc_nanogui_IntBox_setMaxValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_setMinMaxValues = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_setMinValue = R"doc()doc";
+
 static const char *__doc_nanogui_IntBox_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_setValueIncrement = R"doc()doc";
 
 static const char *__doc_nanogui_IntBox_value = R"doc()doc";
 
@@ -1645,6 +1691,14 @@ static const char *__doc_nanogui_TextBox_Alignment_Left = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_Alignment_Right = R"doc()doc";
 
+static const char *__doc_nanogui_TextBox_SpinArea = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_SpinArea_Bottom = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_SpinArea_None = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_SpinArea_Top = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox_TextBox = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_alignment = R"doc()doc";
@@ -1701,6 +1755,8 @@ static const char *__doc_nanogui_TextBox_mMousePos = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mSelectionPos = R"doc()doc";
 
+static const char *__doc_nanogui_TextBox_mSpinnable = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox_mTextOffset = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mUnits = R"doc()doc";
@@ -1716,8 +1772,6 @@ static const char *__doc_nanogui_TextBox_mValueTemp = R"doc()doc";
 static const char *__doc_nanogui_TextBox_mouseButtonEvent = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mouseDragEvent = R"doc()doc";
-
-static const char *__doc_nanogui_TextBox_mouseEnterEvent = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mouseMotionEvent = R"doc()doc";
 
@@ -1739,6 +1793,8 @@ static const char *__doc_nanogui_TextBox_setEditable = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_setFormat = R"doc(Specify a regular expression specifying valid formats)doc";
 
+static const char *__doc_nanogui_TextBox_setSpinnable = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox_setTheme = R"doc(Set the Theme used to draw this widget)doc";
 
 static const char *__doc_nanogui_TextBox_setUnits = R"doc()doc";
@@ -1746,6 +1802,10 @@ static const char *__doc_nanogui_TextBox_setUnits = R"doc()doc";
 static const char *__doc_nanogui_TextBox_setUnitsImage = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_setValue = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_spinArea = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_spinnable = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_units = R"doc()doc";
 

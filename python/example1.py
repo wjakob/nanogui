@@ -19,7 +19,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation, TabWidget
+                    Alignment, Orientation, TabWidget, IntBox
 
 from nanogui import glfw, entypo
 
@@ -261,14 +261,17 @@ class TestApp(Screen):
         floatBox.setFormat("[-]?[0-9]*\\.?[0-9]+")
 
         Label(window, "Positive integer :", "sans-bold")
-        intBox = TextBox(window)
+        intBox = IntBox(window)
         intBox.setEditable(True)
         intBox.setFixedSize(Vector2i(100, 20))
-        intBox.setValue("50")
+        intBox.setValue(50)
         intBox.setUnits("Mhz")
-        intBox.setDefaultValue("0.0")
+        intBox.setDefaultValue("0")
         intBox.setFontSize(16)
         intBox.setFormat("[1-9][0-9]*")
+        intBox.setSpinnable(True)
+        intBox.setMinValue(1)
+        intBox.setValueIncrement(2)
 
         Label(window, "Checkbox :", "sans-bold")
 
