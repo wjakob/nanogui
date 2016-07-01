@@ -19,7 +19,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation, TabWidget
+                    Alignment, Orientation, TabWidget, IntBox
 
 from nanogui import glfw, entypo
 

@@ -14,8 +14,6 @@
 using namespace nanogui;
 namespace py = pybind11;
 
-struct NVGcontext { };
-struct GLFWwindow { };
 typedef FloatBox<double> DoubleBox;
 typedef IntBox<int64_t> Int64Box;
 
