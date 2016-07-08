@@ -57,9 +57,9 @@ int main(int /* argc */, char ** /* argv */) {
         gui->addVariable("string", strval);
 
         gui->addGroup("Validating fields");
-        gui->addVariable("int", ivar);
+        gui->addVariable("int", ivar)->setSpinnable(true);
         gui->addVariable("float", fvar);
-        gui->addVariable("double", dvar);
+        gui->addVariable("double", dvar)->setSpinnable(true);
 
         gui->addGroup("Complex types");
         gui->addVariable("Enumeration", enumval, enabled)

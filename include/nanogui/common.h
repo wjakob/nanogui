@@ -63,10 +63,11 @@
 #pragma warning(disable : 4714) // warning C4714: funtion X marked as __forceinline not inlined
 #endif
 
-struct NVGcontext;
+struct NVGcontext { /* Opaque handle type, never de-referenced within NanoGUI */ };
+struct GLFWwindow { /* Opaque handle type, never de-referenced within NanoGUI */ };
+
 struct NVGcolor;
 struct NVGglyphPosition;
-struct GLFWwindow;
 struct GLFWcursor;
 
 // Define command key for windows/mac/linux
