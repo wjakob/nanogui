@@ -87,7 +87,11 @@ void mainloop(int refresh) {
                     screen->setVisible(false);
                     continue;
                 }
+
+                screen->setupFrameState();
                 screen->drawAll();
+                screen->finalizeFrameState();
+
                 numScreens++;
             }
 

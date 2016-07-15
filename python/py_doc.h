@@ -1311,9 +1311,13 @@ static const char *__doc_nanogui_Screen_cursorPosCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_disposeWindow = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_setupFrameState = R"doc(Perform any per-frame non-OpenGL setup needed before `drawAll` is called)doc";
+
 static const char *__doc_nanogui_Screen_drawAll = R"doc(Draw the Screen contents)doc";
 
 static const char *__doc_nanogui_Screen_drawContents = R"doc(Draw the window contents -- put your OpenGL draw calls here)doc";
+
+static const char *__doc_nanogui_Screen_finalizeFrameState = R"doc(Perform any per-frame non-OpenGL finalizations needed after `drawAll` is called)doc";
 
 static const char *__doc_nanogui_Screen_drawWidgets = R"doc()doc";
 

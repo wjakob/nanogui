@@ -58,11 +58,17 @@
     }
 
 #define NANOGUI_SCREEN_OVERLOADS(Parent) \
+    virtual void setupFrameState() { \
+        PYBIND11_OVERLOAD(void, Parent, setupFrameState); \
+    } \
     virtual void drawAll() { \
         PYBIND11_OVERLOAD(void, Parent, drawAll); \
     } \
     virtual void drawContents() { \
         PYBIND11_OVERLOAD(void, Parent, drawContents); \
+    } \
+    virtual void finalizeFrameState() { \
+        PYBIND11_OVERLOAD(void, Parent, finalizeFrameState); \
     } \
     virtual bool dropEvent(const std::vector<std::string> &filenames) { \
         PYBIND11_OVERLOAD(bool, Parent, dropEvent, filenames); \
