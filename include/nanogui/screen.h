@@ -101,11 +101,17 @@ public:
     /// Set window size
     void setSize(const Vector2i& size);
 
+    /// Perform any per-frame non-OpenGL setup needed before `drawAll` is called
+    virtual void setupFrameState() { /* To be overridden if needed */ }
+
     /// Draw the Screen contents
     virtual void drawAll();
 
     /// Draw the window contents -- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }
+
+    /// Perform any per-frame non-OpenGL finalizations needed after `drawAll` is called
+    virtual void finalizeFrameState() { /* To be overridden if needed */ }
 
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
