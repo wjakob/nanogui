@@ -21,7 +21,7 @@ endif()
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
-option(NANOGUI_USE_GLAD      "Build a Python plugin for NanoGUI?" ${NANOGUI_USE_GLAD_DEFAULT})
+option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
 option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
@@ -313,15 +313,17 @@ endif()
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1 src/example1.cpp)
   add_executable(example2 src/example2.cpp)
+  add_executable(example3 src/example3.cpp)
   target_link_libraries(example1 nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2 nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3 nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
   if (NANOGUI_INSTALL)
     install(
-      TARGETS example1 example2
+      TARGETS example1 example2 example3
       RUNTIME DESTINATION bin
     )
   endif()
