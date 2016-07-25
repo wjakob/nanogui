@@ -252,6 +252,15 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
         glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
 #endif
 
+#if defined(NANOGUI_GLAD)
+    if (!gladInitialized) {
+        gladInitialized = true;
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+            throw std::runtime_error("Could not initialize GLAD!");
+        glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
+    }
+#endif
+
     /* Detect framebuffer properties and set up compatible NanoVG context */
     GLint nStencilBits = 0, nSamples = 0;
     glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER,
