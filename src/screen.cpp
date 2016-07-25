@@ -72,7 +72,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
 }
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(""),
+      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f),
       mShutdownGLFWOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
