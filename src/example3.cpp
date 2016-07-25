@@ -11,6 +11,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <glad/glad.h>
+
 // GLFW
 #include <GLFW/glfw3.h>
 
@@ -49,9 +51,14 @@ int main(int /* argc */, char ** /* argv */) {
 	}
 	glfwMakeContextCurrent(window);
 
+	// init glad
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
+	glfwSwapInterval(0);
+	glfwSwapBuffers(window);
 
 	// Create a nanogui screen and pass the glfw pointer to initialize
 	Screen *screen = new Screen();
