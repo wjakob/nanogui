@@ -313,15 +313,17 @@ endif()
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1 src/example1.cpp)
   add_executable(example2 src/example2.cpp)
+  add_executable(example3 src/example3.cpp)
   target_link_libraries(example1 nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2 nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3 nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
   if (NANOGUI_INSTALL)
     install(
-      TARGETS example1 example2
+      TARGETS example1 example2 example3
       RUNTIME DESTINATION bin
     )
   endif()
