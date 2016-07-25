@@ -19,6 +19,20 @@
 
 using namespace nanogui;
 
+enum test_enum {
+	Item1 = 0,
+	Item2,
+	Item3
+};
+
+bool bvar = true;
+int ivar = 12345678;
+double dvar = 3.1415926;
+float fvar = (float)dvar;
+std::string strval = "A string";
+test_enum enumval = Item2;
+Color colval(0.5f, 0.5f, 0.7f, 1.f);
+
 int main(int /* argc */, char ** /* argv */) {
 
 	glfwInit();
@@ -58,6 +72,31 @@ int main(int /* argc */, char ** /* argv */) {
 	Screen *screen = new Screen();
 	screen->initialize(window, true);
 
+	// Create nanogui gui
+	bool enabled = true;
+	FormHelper *gui = new FormHelper(screen);
+	ref<Window> nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
+	gui->addGroup("Basic types");
+	gui->addVariable("bool", bvar);
+	gui->addVariable("string", strval);
+
+	gui->addGroup("Validating fields");
+	gui->addVariable("int", ivar)->setSpinnable(true);
+	gui->addVariable("float", fvar);
+	gui->addVariable("double", dvar)->setSpinnable(true);
+
+	gui->addGroup("Complex types");
+	gui->addVariable("Enumeration", enumval, enabled)->setItems({ "Item 1", "Item 2", "Item 3" });
+	gui->addVariable("Color", colval);
+
+	gui->addGroup("Other widgets");
+	gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; });
+
+	screen->setVisible(true);
+	screen->performLayout();
+	nanoguiWindow->center();
+
+
 	// Game loop
 	while (!glfwWindowShouldClose(window)) {
 		// Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -65,6 +104,10 @@ int main(int /* argc */, char ** /* argv */) {
 
 		glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Draw nanogui
+		screen->drawContents();
+		screen->drawWidgets();
 
 		glfwSwapBuffers(window);
 	}
