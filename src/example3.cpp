@@ -60,6 +60,12 @@ int main(int /* argc */, char ** /* argv */) {
 	glfwSwapInterval(0);
 	glfwSwapBuffers(window);
 
+	// Add this as a test to prove that GLAD is inited and working fine.
+	GLint nStencilBits = 0, nSamples = 0;
+	glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER,
+		GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
+	glGetIntegerv(GL_SAMPLES, &nSamples);
+
 	// Create a nanogui screen and pass the glfw pointer to initialize
 	Screen *screen = new Screen();
 	screen->initialize(window, true);
