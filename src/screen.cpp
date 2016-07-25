@@ -72,7 +72,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
 }
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f),
+      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(""),
       mShutdownGLFWOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
@@ -250,6 +250,15 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 #if defined(_WIN32)
     if (mPixelRatio != 1 && !mFullscreen)
         glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
+#endif
+
+#if defined(NANOGUI_GLAD)
+	if (!gladInitialized) {
+		gladInitialized = true;
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			throw std::runtime_error("Could not initialize GLAD!");
+		glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
+	}
 #endif
 
     /* Detect framebuffer properties and set up compatible NanoVG context */
