@@ -11,8 +11,6 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#include <glad/glad.h>
-
 // GLFW
 #include <GLFW/glfw3.h>
 
@@ -50,22 +48,11 @@ int main(int /* argc */, char ** /* argv */) {
 	}
 	glfwMakeContextCurrent(window);
 
-	// init glad
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		throw std::runtime_error("Could not initialize GLAD!");
-	}
-	glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
-
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 	glfwSwapInterval(0);
 	glfwSwapBuffers(window);
-
-	// Add this as a test to prove that GLAD is inited and working fine.
-	GLint nStencilBits = 0, nSamples = 0;
-	glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
-	glGetIntegerv(GL_SAMPLES, &nSamples);
 
 	// Create a nanogui screen and pass the glfw pointer to initialize
 	Screen *screen = new Screen();
