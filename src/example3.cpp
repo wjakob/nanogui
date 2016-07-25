@@ -33,6 +33,8 @@ std::string strval = "A string";
 test_enum enumval = Item2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
 
+Screen *screen = nullptr;
+
 int main(int /* argc */, char ** /* argv */) {
 
 	glfwInit();
@@ -69,7 +71,7 @@ int main(int /* argc */, char ** /* argv */) {
 	glfwSwapBuffers(window);
 
 	// Create a nanogui screen and pass the glfw pointer to initialize
-	Screen *screen = new Screen();
+	screen = new Screen();
 	screen->initialize(window, true);
 
 	// Create nanogui gui
@@ -96,6 +98,48 @@ int main(int /* argc */, char ** /* argv */) {
 	screen->performLayout();
 	nanoguiWindow->center();
 
+
+	glfwSetCursorPosCallback(window,
+		[](GLFWwindow *w, double x, double y) {
+		screen->cursorPosCallbackEvent(x, y);
+	}
+	);
+
+	glfwSetMouseButtonCallback(window,
+		[](GLFWwindow *w, int button, int action, int modifiers) {
+		screen->mouseButtonCallbackEvent(button, action, modifiers);
+	}
+	);
+
+	glfwSetKeyCallback(window,
+		[](GLFWwindow *w, int key, int scancode, int action, int mods) {
+		screen->keyCallbackEvent(key, scancode, action, mods);
+	}
+	);
+
+	glfwSetCharCallback(window,
+		[](GLFWwindow *w, unsigned int codepoint) {
+		screen->charCallbackEvent(codepoint);
+	}
+	);
+
+	glfwSetDropCallback(window,
+		[](GLFWwindow *w, int count, const char **filenames) {
+		screen->dropCallbackEvent(count, filenames);
+	}
+	);
+
+	glfwSetScrollCallback(window,
+		[](GLFWwindow *w, double x, double y) {
+		screen->scrollCallbackEvent(x, y);
+	}
+	);
+
+	glfwSetFramebufferSizeCallback(window,
+		[](GLFWwindow* w, int width, int height) {
+		screen->resizeCallbackEvent(width, height);
+	}
+	);
 
 	// Game loop
 	while (!glfwWindowShouldClose(window)) {
