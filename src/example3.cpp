@@ -43,8 +43,7 @@ int main(int /* argc */, char ** /* argv */) {
 
 	// Create a GLFWwindow object
 	GLFWwindow* window = glfwCreateWindow(800, 800, "example3", nullptr, nullptr);
-	if (window == nullptr)
-	{
+	if (window == nullptr) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
@@ -52,8 +51,9 @@ int main(int /* argc */, char ** /* argv */) {
 	glfwMakeContextCurrent(window);
 
 	// init glad
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		throw std::runtime_error("Could not initialize GLAD!");
+	}
 	glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
 
 	int width, height;
@@ -64,8 +64,7 @@ int main(int /* argc */, char ** /* argv */) {
 
 	// Add this as a test to prove that GLAD is inited and working fine.
 	GLint nStencilBits = 0, nSamples = 0;
-	glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER,
-		GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
+	glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
 	glGetIntegerv(GL_SAMPLES, &nSamples);
 
 	// Create a nanogui screen and pass the glfw pointer to initialize
@@ -73,8 +72,7 @@ int main(int /* argc */, char ** /* argv */) {
 	screen->initialize(window, true);
 
 	// Game loop
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)) {
 		// Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 
