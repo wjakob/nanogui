@@ -79,12 +79,12 @@ int main(int /* argc */, char ** /* argv */) {
     FormHelper *gui = new FormHelper(screen);
     ref<Window> nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
     gui->addGroup("Basic types");
-    gui->addVariable("bool", bvar);
+    gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
     gui->addVariable("string", strval);
 
     gui->addGroup("Validating fields");
     gui->addVariable("int", ivar)->setSpinnable(true);
-    gui->addVariable("float", fvar);
+    gui->addVariable("float", fvar)->setTooltip("Test.");
     gui->addVariable("double", dvar)->setSpinnable(true);
 
     gui->addGroup("Complex types");
@@ -92,7 +92,7 @@ int main(int /* argc */, char ** /* argv */) {
     gui->addVariable("Color", colval);
 
     gui->addGroup("Other widgets");
-    gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; });
+    gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
 
     screen->setVisible(true);
     screen->performLayout();
