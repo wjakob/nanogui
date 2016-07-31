@@ -73,7 +73,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f),
-      mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+      mShutdownGLFWOnDestruct(false), mFullscreen(false), mOwningGLFWContext(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
@@ -83,7 +83,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f), mCaption(caption),
-      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
+      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen), mOwningGLFWContext(true) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
@@ -309,10 +309,12 @@ void Screen::setVisible(bool visible) {
     if (mVisible != visible) {
         mVisible = visible;
 
-        if (visible)
-            glfwShowWindow(mGLFWWindow);
-        else
-            glfwHideWindow(mGLFWWindow);
+		if (mOwningGLFWContext) {
+			if (visible)
+				glfwShowWindow(mGLFWWindow);
+			else
+				glfwHideWindow(mGLFWWindow);
+		}
     }
 }
 
