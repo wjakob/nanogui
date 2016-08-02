@@ -107,38 +107,38 @@ int main(int /* argc */, char ** /* argv */) {
 
     glfwSetMouseButtonCallback(window,
         [](GLFWwindow *w, int button, int action, int modifiers) {
-        screen->mouseButtonCallbackEvent(button, action, modifiers);
-    }
+            screen->mouseButtonCallbackEvent(button, action, modifiers);
+        }
     );
 
     glfwSetKeyCallback(window,
         [](GLFWwindow *w, int key, int scancode, int action, int mods) {
-        screen->keyCallbackEvent(key, scancode, action, mods);
-    }
+            screen->keyCallbackEvent(key, scancode, action, mods);
+        }
     );
 
     glfwSetCharCallback(window,
         [](GLFWwindow *w, unsigned int codepoint) {
-        screen->charCallbackEvent(codepoint);
-    }
+            screen->charCallbackEvent(codepoint);
+        }
     );
 
     glfwSetDropCallback(window,
         [](GLFWwindow *w, int count, const char **filenames) {
-        screen->dropCallbackEvent(count, filenames);
-    }
+            screen->dropCallbackEvent(count, filenames);
+        }
     );
 
     glfwSetScrollCallback(window,
         [](GLFWwindow *w, double x, double y) {
-        screen->scrollCallbackEvent(x, y);
-    }
+            screen->scrollCallbackEvent(x, y);
+       }
     );
 
     glfwSetFramebufferSizeCallback(window,
         [](GLFWwindow* w, int width, int height) {
-        screen->resizeCallbackEvent(width, height);
-    }
+            screen->resizeCallbackEvent(width, height);
+        }
     );
 
     // Game loop
