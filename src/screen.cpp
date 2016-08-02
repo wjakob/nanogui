@@ -391,7 +391,7 @@ void Screen::drawWidgets() {
 			{
 				nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
 				nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
-					widget->tooltip().c_str(), nullptr, bounds);
+                    widget->tooltip().c_str(), nullptr, bounds);
 
 				h = (bounds[2] - bounds[0]) / 2;
 			}
