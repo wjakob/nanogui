@@ -309,12 +309,12 @@ void Screen::setVisible(bool visible) {
     if (mVisible != visible) {
         mVisible = visible;
 
-		if (mOwningGLFWContext) {
-			if (visible)
-				glfwShowWindow(mGLFWWindow);
-			else
-				glfwHideWindow(mGLFWWindow);
-		}
+        if (mOwningGLFWContext) {
+            if (visible)
+                glfwShowWindow(mGLFWWindow);
+            else
+                glfwHideWindow(mGLFWWindow);
+        }
     }
 }
 
@@ -384,17 +384,17 @@ void Screen::drawWidgets() {
             Vector2i pos = widget->absolutePosition() +
                            Vector2i(widget->width() / 2, widget->height() + 10);
 
-			nvgTextBounds(mNVGContext, pos.x(), pos.y(),
-                             widget->tooltip().c_str(), nullptr, bounds);
-			int h = (bounds[2] - bounds[0]) / 2;
-			if (h > tooltipWidth / 2)
-			{
-				nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-				nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
-                    widget->tooltip().c_str(), nullptr, bounds);
+            nvgTextBounds(mNVGContext, pos.x(), pos.y(),
+                            widget->tooltip().c_str(), nullptr, bounds);
+            int h = (bounds[2] - bounds[0]) / 2;
+            if (h > tooltipWidth / 2)
+            {
+                nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+                nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
+                                widget->tooltip().c_str(), nullptr, bounds);
 
-				h = (bounds[2] - bounds[0]) / 2;
-			}
+                h = (bounds[2] - bounds[0]) / 2;
+            }
             nvgGlobalAlpha(mNVGContext,
                            std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
 
