@@ -53,7 +53,6 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::to_string;
-using namespace std::string_literals;
 
 
 class GLTexture {
@@ -91,7 +90,6 @@ public:
     *  Returns a handle type (an std::unique_ptr) to the loaded pixels.
     */
     handleType load(const std::string& fileName) {
-        using namespace std::string_literals;
         if (mTextureId) {
             glDeleteTextures(1, &mTextureId);
             mTextureId = 0;
@@ -228,7 +226,7 @@ public:
         // Load all of the images by creating a GLTexture object and saving the pixel data.
         for (auto& icon : icons) {
             GLTexture texture(icon.second);
-            auto data = texture.load(resourcesFolderPath + icon.second + ".png"s);
+            auto data = texture.load(resourcesFolderPath + icon.second + ".png");
             mImagesData.emplace_back(std::move(texture), std::move(data));
         }
         
@@ -253,7 +251,7 @@ public:
             for(int i = 0; i != 4; ++i) {
                 auto& channelData = imageData[4*index.y()*textureSize.x() + 4*index.x() + i];
                 channelSum += channelData;
-                stringData += (to_string(static_cast<int>(channelData)) + "\n"s);
+                stringData += (to_string(static_cast<int>(channelData)) + "\n");
             }
             float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
             float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
