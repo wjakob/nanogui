@@ -22,3 +22,4 @@ nanogui.so
 nanogui.pyd
 libnanogui.so
 libnanogui.dylib
+.vscode/
