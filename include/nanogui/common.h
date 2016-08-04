@@ -182,6 +182,7 @@ class GLShader;
 class GridLayout;
 class GroupLayout;
 class ImagePanel;
+class ImageView;
 class Label;
 class Layout;
 class MessageDialog;

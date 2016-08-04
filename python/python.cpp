@@ -48,6 +48,7 @@ DECLARE_WIDGET(StackedWidget);
 DECLARE_WIDGET(TabHeader);
 DECLARE_WIDGET(TabWidget);
 
+
 /// Make pybind aware of the ref-counted wrapper type
 PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
 
@@ -662,22 +663,6 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ImagePanel::callback, D(ImagePanel, callback))
         .def("setCallback", &ImagePanel::setCallback, D(ImagePanel, setCallback));
 
-    py::class_<ImageView, ref<ImageView>, PyImageView> imageview(m, "ImageView", widget, D(ImageView));
-    imageview
-        .def("image", &ImageView::image, D(ImageView, image))
-        .def("setImage", &ImageView::setImage, D(ImageView, setImage))
-        .def("policy", &ImageView::policy, D(ImageView, policy))
-        .def("setPolicy", &ImageView::setPolicy, D(ImageView, setPolicy));
-
-    py::enum_<ImageView::SizePolicy>(imageview, "SizePolicy")
-        .value("Fixed", ImageView::SizePolicy::Fixed)
-        .value("Expand", ImageView::SizePolicy::Expand);
-
-    imageview.def(py::init<Widget *, int, ImageView::SizePolicy>(),
-                  py::arg("parent"), py::arg("image") = 0,
-                  py::arg("policy") = ImageView::SizePolicy::Fixed,
-                  D(ImageView, ImageView));
-
     py::class_<ComboBox, ref<ComboBox>, PyComboBox>(m, "ComboBox", widget, D(ComboBox))
         .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
         .def(py::init<Widget *, const std::vector<std::string> &>(),
@@ -836,6 +821,41 @@ PYBIND11_PLUGIN(nanogui) {
         .def("tabIndex", &TabWidget::tabIndex, D(TabWidget, tabIndex))
         .def("tab", (Widget * (TabWidget::*)(const std::string &)) &TabWidget::tab, D(TabWidget, tab))
         .def("ensureTabVisible", &TabWidget::ensureTabVisible, D(TabWidget, ensureTabVisible));
+
+    py::class_<ImageView, ref<ImageView>, PyImageView>(m, "ImageView", widget/*, D(ImageView)*/)
+        .def(py::init<Widget *, GLuint>()/*, D(ImageView, ImageView)*/)
+        .def("bindImage", &ImageView::bindImage/*, D(ImageView, bindImage)*/)
+        .def("imageShader", &ImageView::imageShader/*, D(ImageView, imageShader)*/)
+        .def("scaledImageSize", &ImageView::scaledImageSize/*, D(ImageView, scaledImageSize)*/)
+        .def("offset", &ImageView::offset/*, D(ImageView, offset)*/)
+        .def("setOffset", &ImageView::setOffset/*, D(ImageView, setOffset)*/)
+        .def("scale", &ImageView::scale/*, D(ImageView, scale)*/)
+        .def("fixedOffset", &ImageView::fixedOffset/*, D(ImageView, fixedOffset)*/)
+        .def("setFixedOffset", &ImageView::setFixedOffset/*, D(ImageView, setFixedOffset)*/)
+        .def("fixedScale", &ImageView::fixedScale/*, D(ImageView, fixedScale)*/)
+        .def("setFixedScale", &ImageView::setFixedScale/*, D(ImageView, setFixedScale)*/)
+        .def("zoomSensitivity", &ImageView::zoomSensitivity/*, D(ImageView, zoomSensitivity)*/)
+        .def("setZoomSensitivity", &ImageView::setZoomSensitivity/*, D(ImageView, setZoomSensitivity)*/)
+        .def("gridThreshold", &ImageView::gridThreshold/*, D(ImageView, gridThreshold)*/)
+        .def("setGridThreshold", &ImageView::setGridThreshold/*, D(ImageView, setGridThreshold)*/)
+        .def("pixelInfoThreshold", &ImageView::pixelInfoThreshold/*, D(ImageView, pixelInfoThreshold)*/)
+        .def("setPixelInfoThreshold", &ImageView::setPixelInfoThreshold/*, D(ImageView, setPixelInfoThreshold)*/)
+        .def("setPixelInfoCallback", &ImageView::setPixelInfoCallback/*, D(ImageView, setPixelInfoCallback)*/)
+        .def("pixelInfoCallback", &ImageView::pixelInfoCallback/*, D(ImageView, pixelInfoCallback)*/)
+        .def("setFontScaleFactor", &ImageView::setFontScaleFactor/*, D(ImageView, setFontScaleFactor)*/)
+        .def("fontScaleFactor", &ImageView::fontScaleFactor/*, D(ImageView, fontScaleFactor)*/)
+        .def("imageCoordinateAt", &ImageView::imageCoordinateAt/*, D(ImageView, imageCoordinateAt)*/)
+        .def("clampedImageCoordinateAt", &ImageView::clampedImageCoordinateAt/*, D(ImageView, clampedImageCoordinateAt)*/)
+        .def("positionForCoordinate", &ImageView::positionForCoordinate/*, D(ImageView, positionForCoordinate)*/)
+        .def("setImageCoordinateAt", &ImageView::setImageCoordinateAt/*, D(ImageView, setImageCoordinateAt)*/)
+        .def("center",&ImageView::center/*, D(ImageView, center)*/)
+        .def("fit", &ImageView::fit/*, D(ImageView, fit)*/)
+        .def("setScaleCentered", &ImageView::setScaleCentered/*, D(ImageView, setScaleCentered)*/)
+        .def("moveOffset", &ImageView::moveOffset/*, D(ImageView, moveOffset)*/)
+        .def("zoom", &ImageView::zoom/*, D(ImageView, zoom)*/)
+        .def("gridVisible", &ImageView::gridVisible/*, D(ImageView, gridVisible)*/)
+        .def("pixelInfoVisible", &ImageView::pixelInfoVisible/*, D(ImageView, pixelInfoVisible)*/)
+        .def("helpersVisible", &ImageView::helpersVisible/*, D(ImageView, helpersVisible)*/);
 
     enum DummyEnum { };
 
