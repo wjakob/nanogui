@@ -1,5 +1,5 @@
 /*
-    nanogui/tabheader.h -- Widget used to control tabs.
+    nanogui/tabheader.cpp -- Widget used to control tabs.
 
     The tab header widget was contributed by Stefan Ivanov.
 

@@ -1,5 +1,5 @@
 /*
-    nanogui/tabwidget.h -- A wrapper around the widgets TabHeader and StackedWidget
+    nanogui/tabwidget.cpp -- A wrapper around the widgets TabHeader and StackedWidget
     which hooks the two classes together.
 
     The tab widget was contributed by Stefan Ivanov.

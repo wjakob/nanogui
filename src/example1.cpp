@@ -38,11 +38,96 @@
 #include <iostream>
 #include <string>
 
+// Includes for the GLTexture class.
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
+using std::vector;
+using std::pair;
 using std::to_string;
+
+
+class GLTexture {
+public:
+    using handleType = std::unique_ptr<uint8_t[], void(*)(void*)>;
+    GLTexture() = default;
+    GLTexture(const std::string& textureName)
+        : mTextureName(textureName), mTextureId(0) {}
+
+    GLTexture(const std::string& textureName, GLint textureId)
+        : mTextureName(textureName), mTextureId(textureId) {}
+
+    GLTexture(const GLTexture& other) = delete;
+    GLTexture(GLTexture&& other) noexcept
+        : mTextureName(std::move(other.mTextureName)),
+        mTextureId(other.mTextureId) {
+        other.mTextureId = 0;
+    }
+    GLTexture& operator=(const GLTexture& other) = delete;
+    GLTexture& operator=(GLTexture&& other) noexcept {
+        mTextureName = std::move(other.mTextureName);
+        std::swap(mTextureId, other.mTextureId);
+        return *this;
+    }
+    ~GLTexture() noexcept {
+        if (mTextureId)
+            glDeleteTextures(1, &mTextureId);
+    }
+
+    GLuint texture() const { return mTextureId; }
+    const std::string& textureName() const { return mTextureName; }
+    
+    /**
+    *  Load a file in memory and create an OpenGL texture.
+    *  Returns a handle type (an std::unique_ptr) to the loaded pixels.
+    */
+    handleType load(const std::string& fileName) {
+        if (mTextureId) {
+            glDeleteTextures(1, &mTextureId);
+            mTextureId = 0;
+        }
+        int force_channels = 0;
+        int x, y, n;
+        handleType textureData(stbi_load(fileName.c_str(), &x, &y, &n, force_channels), stbi_image_free);
+        if (!textureData)
+            throw std::invalid_argument("Could not load texture data from file " + fileName);
+        glGenTextures(1, &mTextureId);
+        glBindTexture(GL_TEXTURE_2D, mTextureId);
+        GLint internalFormat;
+        GLint format;
+        switch (n) {
+        case 1:
+            internalFormat = GL_R8; format = GL_RED; break;
+        case 2:
+            internalFormat = GL_RG8; format = GL_RG; break;
+        case 3:
+            internalFormat = GL_RGB8; format = GL_RGB; break;
+        case 4:
+            internalFormat = GL_RGBA8; format = GL_RGBA; break;
+        default:
+            internalFormat = 0; format = 0; break;
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, x, y, 0, format, GL_UNSIGNED_BYTE, textureData.get());
+        // Clamp to the edge of the texture though this will probably be not needed.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        return textureData;
+    }
+
+private:
+    std::string mTextureName;
+    GLuint mTextureId;
+};
 
 class ExampleApplication : public nanogui::Screen {
 public:
@@ -121,8 +206,9 @@ public:
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
 
-        std::vector<std::pair<int, std::string>>
+        vector<pair<int, string>>
             icons = loadImageDirectory(mNVGContext, "icons");
+        string resourcesFolderPath(R"(../resources/)");
 
         new Label(window, "Image panel & scroll panel", "sans-bold");
         PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
@@ -133,21 +219,45 @@ public:
         imgPanel->setImages(icons);
         popup->setFixedSize(Vector2i(245, 150));
 
-        auto img_window = new Window(this, "Selected image");
-        img_window->setPosition(Vector2i(710, 15));
-        img_window->setLayout(new GroupLayout());
+        auto imageWindow = new Window(this, "Selected image");
+        imageWindow->setPosition(Vector2i(710, 15));
+        imageWindow->setLayout(new GroupLayout());
 
-        auto img = new ImageView(img_window);
-        img->setPolicy(ImageView::SizePolicy::Expand);
-        img->setFixedSize(Vector2i(275, 275));
-        img->setImage(icons[0].first);
-        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
-            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
+        // Load all of the images by creating a GLTexture object and saving the pixel data.
+        for (auto& icon : icons) {
+            GLTexture texture(icon.second);
+            auto data = texture.load(resourcesFolderPath + icon.second + ".png");
+            mImagesData.emplace_back(std::move(texture), std::move(data));
+        }
+        
+        // Set the first texture
+        auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
+        mCurrentImage = 0;
+        // Change the active textures.
+        imgPanel->setCallback([this, imageView, imgPanel](int i) {
+            imageView->bindImage(mImagesData[i].first.texture());
+            mCurrentImage = i;
+            cout << "Selected item " << i << '\n';
         });
-        auto img_cb = new CheckBox(img_window, "Expand",
-            [img](bool state) { if (state) img->setPolicy(ImageView::SizePolicy::Expand);
-                                else       img->setPolicy(ImageView::SizePolicy::Fixed); });
-        img_cb->setChecked(true);
+        imageView->setGridThreshold(3);
+        imageView->setPixelInfoThreshold(20);
+        imageView->setPixelInfoCallback(
+            [this, imageView](const Vector2i& index) -> pair<string, Color> {
+            // TODO: Add proper pixel information display.
+            auto& imageData = mImagesData[mCurrentImage].second;
+            auto& textureSize = imageView->imageSize();
+            string stringData;
+            uint16_t channelSum = 0;
+            for(int i = 0; i != 4; ++i) {
+                auto& channelData = imageData[4*index.y()*textureSize.x() + 4*index.x() + i];
+                channelSum += channelData;
+                stringData += (to_string(static_cast<int>(channelData)) + "\n");
+            }
+            float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
+            float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
+            Color textColor = Color(colorScale, 1.0f); 
+            return { stringData, textColor };
+        });
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
@@ -449,6 +559,10 @@ public:
 private:
     nanogui::ProgressBar *mProgress;
     nanogui::GLShader mShader;
+
+    using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
+    imagesDataType mImagesData;
+    int mCurrentImage;
 };
 
 int main(int /* argc */, char ** /* argv */) {

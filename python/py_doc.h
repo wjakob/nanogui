@@ -991,32 +991,6 @@ static const char *__doc_nanogui_ImagePanel_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ImagePanel_setImages = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_ImageView = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_SizePolicy = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_SizePolicy_Expand = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_SizePolicy_Fixed = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_draw = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_image = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_mImage = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_mPolicy = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_policy = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_preferredSize = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_setImage = R"doc()doc";
-
-static const char *__doc_nanogui_ImageView_setPolicy = R"doc()doc";
-
 static const char *__doc_nanogui_IntBox = R"doc()doc";
 
 static const char *__doc_nanogui_IntBox_IntBox = R"doc()doc";
