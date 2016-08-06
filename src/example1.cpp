@@ -32,7 +32,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #if defined(_WIN32)
-#include <windows.h>
+#  include <windows.h>
 #endif
 #include <nanogui/glutil.h>
 #include <nanogui/opengl.h>
@@ -208,7 +208,11 @@ public:
 
         vector<pair<int, string>>
             icons = loadImageDirectory(mNVGContext, "icons");
-        string resourcesFolderPath(R"(../resources/)");
+        #if defined(_WIN32)
+            string resourcesFolderPath("../resources/");
+        #else
+            string resourcesFolderPath("./");
+        #endif
 
         new Label(window, "Image panel & scroll panel", "sans-bold");
         PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
@@ -239,11 +243,10 @@ public:
             mCurrentImage = i;
             cout << "Selected item " << i << '\n';
         });
-        imageView->setGridThreshold(3);
+        imageView->setGridThreshold(20);
         imageView->setPixelInfoThreshold(20);
         imageView->setPixelInfoCallback(
             [this, imageView](const Vector2i& index) -> pair<string, Color> {
-            // TODO: Add proper pixel information display.
             auto& imageData = mImagesData[mCurrentImage].second;
             auto& textureSize = imageView->imageSize();
             string stringData;

@@ -20,9 +20,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-namespace
-{
-
+namespace {
     std::vector<std::string> splitString(const std::string& text, const std::string& delimiter) {
         using std::string; using std::vector;
         vector<string> strings;
@@ -44,7 +42,7 @@ namespace
         out vec2 uv;
         void main() {
             uv = vertex;
-            vec2 scaledVertex = (vertex * scaleFactor) + position; 
+            vec2 scaledVertex = (vertex * scaleFactor) + position;
             gl_Position  = vec4(2.0*scaledVertex.x - 1.0f,
                                 1.0 - 2.0*scaledVertex.y,
                                 0.0, 1.0);
@@ -53,11 +51,11 @@ namespace
 
     constexpr char const *const defaultImageViewFragmentShader =
         R"(#version 330
-        uniform sampler2D texture;
+        uniform sampler2D tex;
         out vec4 color;
         in vec2 uv;
         void main() {
-            color= texture2D(texture, uv);
+            color = texture(tex, uv);
         })";
 
 }
@@ -66,7 +64,7 @@ ImageView::ImageView(Widget* parent, GLuint imageID)
     : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2i::Zero()),
     mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {
     updateImageParameters();
-    mShader.init("Default_Image_View_Shader", defaultImageViewVertexShader,
+    mShader.init("ImageViewShader", defaultImageViewVertexShader,
                  defaultImageViewFragmentShader);
 
     MatrixXu indices(3, 2);
@@ -82,7 +80,7 @@ ImageView::ImageView(Widget* parent, GLuint imageID)
     mShader.bind();
     mShader.uploadIndices(indices);
     mShader.uploadAttrib("vertex", vertices);
-    mShader.setUniform("texture", 0);
+    mShader.setUniform("tex", 0);
 }
 
 ImageView::~ImageView() {
@@ -159,7 +157,7 @@ void ImageView::zoom(int amount, const Vector2i& focusPixel) {
 }
 
 bool ImageView::mouseDragEvent(const Vector2i& p, const Vector2i& rel, int button, int /*modifiers*/) {
-    // The bellow macro, for the left button, corresponds to, confusingly enough, 
+    // The bellow macro, for the left button, corresponds to, confusingly enough,
     // the right button on my computer. /*GLFW_MOUSE_BUTTON_LEFT*/
     if (button == GLFW_MOUSE_BUTTON_2 && !mFixedOffset) {
         setImageCoordinateAt(p + rel, imageCoordinateAt(p));
@@ -302,7 +300,7 @@ void ImageView::draw(NVGcontext* ctx) {
     mShader.bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mImageID);
-    mShader.setUniform("texture", 0);
+    mShader.setUniform("tex", 0);
     mShader.setUniform("scaleFactor", scaleFactor);
     mShader.setUniform("position", imagePosition);
     mShader.drawIndexed(GL_TRIANGLES, 0, 2);

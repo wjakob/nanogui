@@ -15,7 +15,7 @@ Python bindings of all functionality are provided using
 
 ## Description
 NanoGUI builds on [GLFW](http://www.glfw.org/) for cross-platform OpenGL context
-creation and event handling, [GLEW](http://glew.sourceforge.net/) to use OpenGL
+creation and event handling, [GLAD](https://github.com/Dav1dde/glad) to use OpenGL
 3.x Windows, [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for
 basic vector types, and [NanoVG](https://github.com/memononen/NanoVG) to draw
 2D primitives.
