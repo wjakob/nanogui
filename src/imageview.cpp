@@ -157,9 +157,7 @@ void ImageView::zoom(int amount, const Vector2i& focusPixel) {
 }
 
 bool ImageView::mouseDragEvent(const Vector2i& p, const Vector2i& rel, int button, int /*modifiers*/) {
-    // The bellow macro, for the left button, corresponds to, confusingly enough,
-    // the right button on my computer. /*GLFW_MOUSE_BUTTON_LEFT*/
-    if (button == GLFW_MOUSE_BUTTON_2 && !mFixedOffset) {
+    if ((button & (1 << GLFW_MOUSE_BUTTON_LEFT)) != 0 && !mFixedOffset) {
         setImageCoordinateAt(p + rel, imageCoordinateAt(p));
         return true;
     }
