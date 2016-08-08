@@ -11,6 +11,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <nanogui/opengl.h>
+#include <nanogui/glutil.h>
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/layout.h>
@@ -31,11 +33,6 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
-#if defined(_WIN32)
-#  include <windows.h>
-#endif
-#include <nanogui/glutil.h>
-#include <nanogui/opengl.h>
 #include <iostream>
 #include <string>
 
@@ -47,9 +44,23 @@
 #if defined(__GNUC__)
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
+#if defined(_WIN32)
+#  pragma warning(push)
+#  pragma warning(disable: 4457 4456 4005 4312)
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#if defined(_WIN32)
+#  pragma warning(pop)
+#endif
+#if defined(_WIN32)
+#  if defined(APIENTRY)
+#    undef APIENTRY
+#  endif
+#  include <windows.h>
+#endif
 
 using std::cout;
 using std::cerr;

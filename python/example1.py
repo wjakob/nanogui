@@ -121,7 +121,11 @@ class TestApp(Screen):
         try:
             icons = nanogui.loadImageDirectory(self.nvgContext(), "icons")
         except:
-            icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
+            try:
+                icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
+            except:
+                icons = nanogui.loadImageDirectory(self.nvgContext(), "../resources/icons")
+            
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
@@ -137,7 +141,7 @@ class TestApp(Screen):
         img_window.setLayout(GroupLayout())
 
         
-        imgView = ImageView(img_window, icons[0][0]))
+        imgView = ImageView(img_window, icons[0][0])
 
         def cb(i):
             print("Selected item %i" % i)

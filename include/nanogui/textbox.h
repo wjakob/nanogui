@@ -221,7 +221,7 @@ public:
         mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
-        setValueIncrement(0.1);
+        setValueIncrement((Scalar) 0.1);
         setMinMaxValues(std::numeric_limits<Scalar>::lowest(), std::numeric_limits<Scalar>::max());
         setValue(value);
         setSpinnable(false);
