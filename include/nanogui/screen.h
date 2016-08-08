@@ -192,6 +192,7 @@ protected:
     std::string mCaption;
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
+    bool mOwningGLFWContext;
 };
 
 NAMESPACE_END(nanogui)
