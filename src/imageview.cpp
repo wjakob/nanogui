@@ -15,8 +15,8 @@
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
 #include <nanogui/theme.h>
-#include <string>
-#include <vector>
+#include <cmath>
+#include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -43,7 +43,7 @@ namespace {
         void main() {
             uv = vertex;
             vec2 scaledVertex = (vertex * scaleFactor) + position;
-            gl_Position  = vec4(2.0*scaledVertex.x - 1.0f,
+            gl_Position  = vec4(2.0*scaledVertex.x - 1.0,
                                 1.0 - 2.0*scaledVertex.y,
                                 0.0, 1.0);
 
@@ -51,11 +51,11 @@ namespace {
 
     constexpr char const *const defaultImageViewFragmentShader =
         R"(#version 330
-        uniform sampler2D tex;
+        uniform sampler2D image;
         out vec4 color;
         in vec2 uv;
         void main() {
-            color = texture(tex, uv);
+            color = texture(image, uv);
         })";
 
 }
@@ -80,7 +80,6 @@ ImageView::ImageView(Widget* parent, GLuint imageID)
     mShader.bind();
     mShader.uploadIndices(indices);
     mShader.uploadAttrib("vertex", vertices);
-    mShader.setUniform("tex", 0);
 }
 
 ImageView::~ImageView() {
@@ -114,8 +113,6 @@ void ImageView::setImageCoordinateAt(const Vector2i& position, const Vector2f& i
 }
 
 void ImageView::center() {
-    // In order to center the image we need to fulfill the following equation
-    // mOffset + scalledImageSize() / 2 == mSize / 2
     mOffset = (mSize - scaledImageSize()) / 2;
 }
 
@@ -135,6 +132,7 @@ void ImageView::setScaleCentered(float scale) {
 void ImageView::moveOffset(const Vector2i& delta) {
     // Apply the delta to the offset.
     mOffset += delta;
+
     // Prevent the image from going too much out of bounds.
     Vector2i scaledSize = scaledImageSize();
     if (mOffset.x() + scaledSize.x() < 0)
@@ -149,10 +147,8 @@ void ImageView::moveOffset(const Vector2i& delta) {
 
 void ImageView::zoom(int amount, const Vector2i& focusPixel) {
     Vector2f focusedCoordinate = imageCoordinateAt(focusPixel);
-    auto scaleFactor = std::pow(mZoomSensitivity, amount);
-    mScale *= scaleFactor;
-    if (mScale < 0.01f)
-        mScale = 0.01f;
+    float scaleFactor = std::pow(mZoomSensitivity, amount);
+    mScale = std::max(0.01f, scaleFactor * mScale);
     setImageCoordinateAt(focusPixel, focusedCoordinate);
 }
 
@@ -177,10 +173,15 @@ bool ImageView::helpersVisible() const {
 }
 
 bool ImageView::scrollEvent(const Vector2i& p, const Vector2f& rel) {
-    if (mFixedScale) {
+    const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
+    float r = screen->pixelRatio();
+
+    if (mFixedScale)
         return false;
-    }
-    zoom(rel.y(), p);
+    float v = rel.y();
+    if (std::abs(v) < 1)
+        v = std::copysign(1.f, v);
+    zoom(v, p);
     return true;
 }
 
@@ -257,7 +258,7 @@ bool ImageView::keyboardCharacterEvent(unsigned int codepoint) {
     case '1': case '2': case '3': case '4': case '5':
     case '6': case '7': case '8': case '9':
         if (!mFixedScale) {
-            setScaleCentered(codepoint - '0');
+            setScaleCentered(1 << (codepoint - '1'));
             return true;
         }
         break;
@@ -285,20 +286,21 @@ void ImageView::draw(NVGcontext* ctx) {
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be
     // properly displayed inside the widget.
-    Screen* containingScreen = dynamic_cast<Screen*>(this->window()->parent());
-    assert(containingScreen);
-    Vector2i screenSize = containingScreen->size();
+    const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
+    assert(screen);
+    Vector2i screenSize = screen->size();
     Vector2f scaleFactor = mScale * imageSize().cast<float>().cwiseQuotient(screenSize.cast<float>());
     Vector2i positionInScreen = absolutePosition();
     Vector2i positionAfterOffset = positionInScreen + mOffset;
     Vector2f imagePosition = positionAfterOffset.cast<float>().cwiseQuotient(screenSize.cast<float>());
     glEnable(GL_SCISSOR_TEST);
-    glScissor(positionInScreen.x(), screenSize.y() - positionInScreen.y() - size().y(),
-              size().x(), size().y());
+    float r = screen->pixelRatio();
+    glScissor(positionInScreen.x() * r, (screenSize.y() - positionInScreen.y() - size().y()) * r,
+              size().x()*r, size().y()*r);
     mShader.bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mImageID);
-    mShader.setUniform("tex", 0);
+    mShader.setUniform("image", 0);
     mShader.setUniform("scaleFactor", scaleFactor);
     mShader.setUniform("position", imagePosition);
     mShader.drawIndexed(GL_TRIANGLES, 0, 2);
@@ -360,7 +362,6 @@ void ImageView::drawHelpers(NVGcontext* ctx) const {
         drawPixelGrid(ctx, upperLeftCorner, lowerRightCorner, mScale);
     if (pixelInfoVisible())
         drawPixelInfo(ctx, mScale);
-    nvgResetScissor(ctx);
     nvgRestore(ctx);
 }
 
@@ -402,7 +403,6 @@ void ImageView::drawPixelInfo(NVGcontext* ctx, const float stride) const {
     float xInitialPosition = currentCellPosition.x();
     int xInitialIndex = currentPixel.x();
 
-
     // Properly scale the pixel information for the given stride.
     auto fontSize = stride * mFontScaleFactor;
     static constexpr float maxFontSize = 30.0f;
@@ -411,7 +411,6 @@ void ImageView::drawPixelInfo(NVGcontext* ctx, const float stride) const {
     nvgBeginPath(ctx);
     nvgFontSize(ctx, fontSize);
     nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    // TODO: The font face can disappear without the line below.
     nvgFontFace(ctx, "sans");
     while (currentPixel.y() != lastPixel.y()) {
         while (currentPixel.x() != lastPixel.x()) {
@@ -431,30 +430,34 @@ void ImageView::writePixelInfo(NVGcontext* ctx, const Vector2f& cellPosition,
                                const Vector2i& pixel, const float stride) const {
     auto pixelData = mPixelInfoCallback(pixel);
     auto pixelDataRows = splitString(pixelData.first, "\n");
+
     // If no data is provided for this pixel then simply return.
     if (pixelDataRows.empty())
         return;
+
     nvgFillColor(ctx, pixelData.second);
     auto padding = stride / 10;
     auto maxSize = stride - 2 * padding;
+
     // Measure the size of a single line of text.
     float bounds[4];
     nvgTextBoxBounds(ctx, 0.0f, 0.0f, maxSize, pixelDataRows.front().data(), nullptr, bounds);
     auto rowHeight = bounds[3] - bounds[1];
     auto totalRowsHeight = rowHeight * pixelDataRows.size();
+
     // Choose the initial y offset and the index for the past the last visible row.
     auto yOffset = 0.0f;
     auto lastIndex = 0;
-    // Structured bindings would have been so nice here...
+
     if (totalRowsHeight > maxSize) {
         yOffset = padding;
-        lastIndex = static_cast<int>(maxSize / rowHeight);
+        lastIndex = (int) (maxSize / rowHeight);
     } else {
         yOffset = (stride - totalRowsHeight) / 2;
-        lastIndex = static_cast<int>(pixelDataRows.size());
+        lastIndex = (int) pixelDataRows.size();
     }
+
     for (int i = 0; i != lastIndex; ++i) {
-        // TODO: Limit the width of the rows - probably like in the tab header.
         nvgText(ctx, cellPosition.x() + stride / 2, cellPosition.y() + yOffset,
                 pixelDataRows[i].data(), nullptr);
         yOffset += rowHeight;

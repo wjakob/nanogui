@@ -20,13 +20,15 @@
 #include <iostream>
 
 #if defined(_WIN32)
-#define NOMINMAX
-#undef APIENTRY
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#define GLFW_EXPOSE_NATIVE_WGL
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+#  define NOMINMAX
+#  undef APIENTRY
+
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+
+#  define GLFW_EXPOSE_NATIVE_WGL
+#  define GLFW_EXPOSE_NATIVE_WIN32
+#  include <GLFW/glfw3native.h>
 #endif
 
 /* Allow enforcing the GL2 implementation of NanoVG */
@@ -70,6 +72,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
     return (float)fbSize[0] / (float)size[0];
 #endif
 }
+
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f),

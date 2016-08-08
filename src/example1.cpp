@@ -44,6 +44,10 @@
 #include <memory>
 #include <utility>
 
+#if defined(__GNUC__)
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -95,8 +99,8 @@ public:
             mTextureId = 0;
         }
         int force_channels = 0;
-        int x, y, n;
-        handleType textureData(stbi_load(fileName.c_str(), &x, &y, &n, force_channels), stbi_image_free);
+        int w, h, n;
+        handleType textureData(stbi_load(fileName.c_str(), &w, &h, &n, force_channels), stbi_image_free);
         if (!textureData)
             throw std::invalid_argument("Could not load texture data from file " + fileName);
         glGenTextures(1, &mTextureId);
@@ -104,19 +108,13 @@ public:
         GLint internalFormat;
         GLint format;
         switch (n) {
-        case 1:
-            internalFormat = GL_R8; format = GL_RED; break;
-        case 2:
-            internalFormat = GL_RG8; format = GL_RG; break;
-        case 3:
-            internalFormat = GL_RGB8; format = GL_RGB; break;
-        case 4:
-            internalFormat = GL_RGBA8; format = GL_RGBA; break;
-        default:
-            internalFormat = 0; format = 0; break;
+            case 1: internalFormat = GL_R8; format = GL_RED; break;
+            case 2: internalFormat = GL_RG8; format = GL_RG; break;
+            case 3: internalFormat = GL_RGB8; format = GL_RGB; break;
+            case 4: internalFormat = GL_RGBA8; format = GL_RGBA; break;
+            default: internalFormat = 0; format = 0; break;
         }
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, x, y, 0, format, GL_UNSIGNED_BYTE, textureData.get());
-        // Clamp to the edge of the texture though this will probably be not needed.
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, GL_UNSIGNED_BYTE, textureData.get());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -144,11 +142,14 @@ public:
 
         Button *b = new Button(window, "Plain button");
         b->setCallback([] { cout << "pushed!" << endl; });
+        b->setTooltip("short tooltip");
 
         /* Alternative construction notation using variadic template */
         b = window->add<Button>("Styled", ENTYPO_ICON_ROCKET);
         b->setBackgroundColor(Color(0, 0, 255, 25));
         b->setCallback([] { cout << "pushed!" << endl; });
+        b->setTooltip("This button has a fairly long tooltip. It is so long, in "
+                "fact, that the shown text will span several lines.");
 
         new Label(window, "Toggle buttons", "sans-bold");
         b = new Button(window, "Toggle me");

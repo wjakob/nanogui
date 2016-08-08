@@ -107,6 +107,9 @@ public:
     /// Draw the window contents -- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }
 
+    /// Return the ratio between pixel and device coordinates (e.g. >= 2 on Mac Retina displays)
+    float pixelRatio() const { return mPixelRatio; }
+
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
 
