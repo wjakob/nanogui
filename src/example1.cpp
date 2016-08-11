@@ -208,7 +208,7 @@ public:
         });
 
         vector<pair<int, string>>
-            icons = loadImageDirectory(mNVGContext, resourcesFolderPath + "icons");
+            icons = loadImageDirectory(mNVGContext, "icons");
         #if defined(_WIN32)
             string resourcesFolderPath("../resources/");
         #else
