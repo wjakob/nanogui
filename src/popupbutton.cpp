@@ -24,7 +24,7 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption,
     setFlags(Flags::ToggleButton | Flags::PopupButton);
 
     Window *parentWindow = window();
-    mPopup = new Popup(parentWindow->parent(), window());
+    mPopup = new Popup(parentWindow->parent(), parentWindow);
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
 }
