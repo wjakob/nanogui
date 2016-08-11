@@ -131,6 +131,10 @@ void VScrollPanel::save(Serializer &s) const {
     s.set("scroll", mScroll);
 }
 
+float VScrollPanel::getOffset(){
+    return -mScroll*(mChildPreferredHeight - mSize.y());
+}
+
 bool VScrollPanel::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("childPreferredHeight", mChildPreferredHeight)) return false;
