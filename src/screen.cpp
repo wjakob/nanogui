@@ -369,7 +369,8 @@ void Screen::drawWidgets() {
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
 
     /* Calculate pixel ratio for hi-dpi devices. */
-    mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
+    if (mSize[0])
+        mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
