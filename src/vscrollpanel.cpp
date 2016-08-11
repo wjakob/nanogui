@@ -84,7 +84,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
-    nvgScissor(ctx, 0, 0, mSize.x(), mSize.y());
+    nvgIntersectScissor(ctx, 0, 0, mSize.x(), mSize.y());
     nvgTranslate(ctx, 0, -mScroll*(mChildPreferredHeight - mSize.y()));
     if (child->visible())
         child->draw(ctx);
