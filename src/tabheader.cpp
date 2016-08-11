@@ -65,7 +65,8 @@ void TabHeader::TabButton::drawAtPosition(NVGcontext *ctx, const Vector2i& posit
     int height = mSize.y();
     auto theme = mHeader->theme();
 
-    nvgScissor(ctx, xPos, yPos, width+1, height);
+    nvgSave(ctx);
+    nvgIntersectScissor(ctx, xPos, yPos, width+1, height);
     if (!active) {
         // Background gradients
         NVGcolor gradTop = theme->mButtonGradientTopPushed;
@@ -102,6 +103,7 @@ void TabHeader::TabButton::drawAtPosition(NVGcontext *ctx, const Vector2i& posit
         nvgStroke(ctx);
     }
     nvgResetScissor(ctx);
+    nvgRestore(ctx);
 
     // Draw the text with some padding
     int textX = xPos + mHeader->theme()->mTabButtonHorizontalPadding;
