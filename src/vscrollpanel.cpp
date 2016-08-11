@@ -64,14 +64,14 @@ bool VScrollPanel::mouseButtonEvent(const Vector2i &p, int button, bool down, in
     if (mChildren.empty())
         return false;
     int shift = (int) (mScroll*(mChildPreferredHeight - mSize.y()));
-    return mChildren[0]->mouseButtonEvent(p + Vector2i(0, shift), button, down, modifiers);
+    return mChildren[0]->mouseButtonEvent(p - mPos + Vector2i(0, shift), button, down, modifiers);
 }
 
 bool VScrollPanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
     if (mChildren.empty())
         return false;
     int shift = (int) (mScroll*(mChildPreferredHeight - mSize.y()));
-    return mChildren[0]->mouseMotionEvent(p + Vector2i(0, shift), rel, button, modifiers);
+    return mChildren[0]->mouseMotionEvent(p - mPos + Vector2i(0, shift), rel, button, modifiers);
 }
 
 void VScrollPanel::draw(NVGcontext *ctx) {
