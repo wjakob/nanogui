@@ -207,14 +207,13 @@ public:
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
 
+        vector<pair<int, string>>
+            icons = loadImageDirectory(mNVGContext, resourcesFolderPath + "icons");
         #if defined(_WIN32)
             string resourcesFolderPath("../resources/");
         #else
             string resourcesFolderPath("./");
         #endif
-
-		vector<pair<int, string>>
-			icons = loadImageDirectory(mNVGContext, resourcesFolderPath + "icons");
 
         new Label(window, "Image panel & scroll panel", "sans-bold");
         PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");

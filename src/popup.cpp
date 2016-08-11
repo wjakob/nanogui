@@ -51,10 +51,10 @@ void Popup::draw(NVGcontext* ctx) {
         ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
 
-	if (mParentPanel){
-		nvgTranslate(ctx, 0, mParentPanel->getOffset());
-	}
-	
+    if (mParentPanel){
+        nvgTranslate(ctx, 0, mParentPanel->getOffset());
+    }
+    
     nvgBeginPath(ctx);
     nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
@@ -66,17 +66,17 @@ void Popup::draw(NVGcontext* ctx) {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
 
-    nvgMoveTo(ctx, mPos.x()-15,mPos.y()+30);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+30-15);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+30+15);
+    nvgMoveTo(ctx, mPos.x()-15, mPos.y()+mAnchorHeight);
+    nvgLineTo(ctx, mPos.x()+1, mPos.y()+mAnchorHeight-15);
+    nvgLineTo(ctx, mPos.x()+1, mPos.y()+mAnchorHeight+15);
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
 
     Widget::draw(ctx);
-	if (mParentPanel){
-		nvgTranslate(ctx, 0, -mParentPanel->getOffset());
-	}
+    if (mParentPanel){
+        nvgTranslate(ctx, 0, -mParentPanel->getOffset());
+    }
 }
 
 void Popup::save(Serializer &s) const {

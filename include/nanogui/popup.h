@@ -52,10 +52,10 @@ public:
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 
-	/// Set the parent vscroll if there is one.
-	void setParentPanel(VScrollPanel *panel){
-		mParentPanel = panel;
-	}
+    /// Set the parent vscroll if there is one.
+    void setParentPanel(VScrollPanel *panel){
+        mParentPanel = panel;
+    }
 protected:
     /// Internal helper function to maintain nested window position values
     virtual void refreshRelativePlacement() override;
@@ -64,7 +64,7 @@ protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
     int mAnchorHeight;
-	VScrollPanel *mParentPanel;
+    VScrollPanel *mParentPanel;
 };
 
 NAMESPACE_END(nanogui)
