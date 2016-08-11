@@ -89,16 +89,6 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgIntersectScissor(ctx, 0, 0, mSize.x(), mSize.y());
     nvgTranslate(ctx, 0, offset);
 
-
-    Widget *parentWindow = (Widget*)window();
-    for (auto widgets : parentWindow->parent()->children()){
-        if (Popup* derived = dynamic_cast<Popup*>(widgets)){
-            if (derived->parentWindow() == parentWindow && derived->visible()){
-                derived->setAnchorHeight(30 - offset);
-            }
-        }
-    }
-
     if (child->visible())
         child->draw(ctx);
     nvgRestore(ctx);
