@@ -328,7 +328,12 @@ void Screen::setCaption(const std::string &caption) {
 
 void Screen::setSize(const Vector2i &size) {
     Widget::setSize(size);
+
+#if defined(_WIN32)
+    glfwSetWindowSize(mGLFWWindow, size.x() * mPixelRatio, size.y() * mPixelRatio);
+#else
     glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
+#endif
 }
 
 void Screen::drawAll() {
