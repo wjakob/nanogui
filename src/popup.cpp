@@ -35,7 +35,10 @@ void Popup::performLayout(NVGcontext *ctx) {
 void Popup::refreshRelativePlacement() {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
-    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight - mParentPanel->getOffset());
+    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+	if (mParentPanel){
+		mPos += Vector2i(0, mParentPanel->getOffset());
+	}
 }
 
 void Popup::draw(NVGcontext* ctx) {
