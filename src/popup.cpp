@@ -35,7 +35,7 @@ void Popup::performLayout(NVGcontext *ctx) {
 void Popup::refreshRelativePlacement() {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
-    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight - mParentPanel->getOffset());
 }
 
 void Popup::draw(NVGcontext* ctx) {
@@ -50,10 +50,6 @@ void Popup::draw(NVGcontext* ctx) {
     NVGpaint shadowPaint = nvgBoxGradient(
         ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
-
-    if (mParentPanel){
-        nvgTranslate(ctx, 0, mParentPanel->getOffset());
-    }
     
     nvgBeginPath(ctx);
     nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
@@ -74,9 +70,6 @@ void Popup::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 
     Widget::draw(ctx);
-    if (mParentPanel){
-        nvgTranslate(ctx, 0, -mParentPanel->getOffset());
-    }
 }
 
 void Popup::save(Serializer &s) const {
