@@ -248,7 +248,7 @@ public:
         }
     };
 
-    AdvancedGridLayout(const std::vector<int> &cols = {}, const std::vector<int> &rows = {});
+    AdvancedGridLayout(const std::vector<int> &cols = {}, const std::vector<int> &rows = {}, int margin = 0);
 
     int margin() const { return mMargin; }
     void setMargin(int margin) { mMargin = margin; }
