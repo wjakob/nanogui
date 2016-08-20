@@ -16,6 +16,10 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+enum class PopupSide{
+    LEFTSIDE=0, RIGHTSIDE
+};
+
 /**
  * \brief Popup window for combo boxes, popup buttons, nested dialogs etc.
  *
@@ -36,6 +40,11 @@ public:
     void setAnchorHeight(int anchorHeight) { mAnchorHeight = anchorHeight; }
     /// Return the anchor height; this determines the vertical shift relative to the anchor position
     int anchorHeight() const { return mAnchorHeight; }
+
+    /// Set the popup side; this determines at what side of the parent window popup will appear
+    void setPopupSide(PopupSide popupSide) { mPopupSide = popupSide; }
+    /// Return the popup side; this determines at what side of the parent window popup will appear
+    PopupSide popupSide() const { return mPopupSide; }
 
     /// Return the parent window of the popup
     Window *parentWindow() { return mParentWindow; }
@@ -58,6 +67,7 @@ protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
     int mAnchorHeight;
+    PopupSide mPopupSide;
 };
 
 NAMESPACE_END(nanogui)

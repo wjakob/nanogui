@@ -19,7 +19,7 @@ NAMESPACE_BEGIN(nanogui)
     
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30) {
+      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mPopupSide(PopupSide::RIGHTSIDE) {
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
@@ -29,6 +29,9 @@ void Popup::performLayout(NVGcontext *ctx) {
         mChildren[0]->setPosition(Vector2i::Zero());
         mChildren[0]->setSize(mSize);
         mChildren[0]->performLayout(ctx);
+    }
+    if(mPopupSide == PopupSide::LEFTSIDE){
+        mAnchorPos[0] -= size()[0];
     }
 }
 
@@ -62,9 +65,15 @@ void Popup::draw(NVGcontext* ctx) {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
 
-    nvgMoveTo(ctx, mPos.x()-15,mPos.y()+mAnchorHeight);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight-15);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight+15);
+    if(mPopupSide == PopupSide::RIGHTSIDE){
+        nvgMoveTo(ctx, mPos.x()-15,mPos.y()+mAnchorHeight);
+        nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight-15);
+        nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight+15);
+    }else{
+        nvgMoveTo(ctx, mPos.x()+mSize.x()+15,mPos.y()+mAnchorHeight);
+        nvgLineTo(ctx, mPos.x()+mSize.x()-1,mPos.y()+mAnchorHeight-15);
+        nvgLineTo(ctx, mPos.x()+mSize.x()-1,mPos.y()+mAnchorHeight+15);
+    }
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
@@ -76,12 +85,16 @@ void Popup::save(Serializer &s) const {
     Window::save(s);
     s.set("anchorPos", mAnchorPos);
     s.set("anchorHeight", mAnchorHeight);
+    s.set("popupSide", (int)mPopupSide);
 }
 
 bool Popup::load(Serializer &s) {
     if (!Window::load(s)) return false;
     if (!s.get("anchorPos", mAnchorPos)) return false;
     if (!s.get("anchorHeight", mAnchorHeight)) return false;
+    int dummy;
+    if (!s.get("popupSide", dummy)) return false;
+    mPopupSide = (PopupSide)dummy;
     return true;
 }
 

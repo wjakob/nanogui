@@ -26,6 +26,9 @@ public:
     void setChevronIcon(int icon) { mChevronIcon = icon; }
     int chevronIcon() const { return mChevronIcon; }
 
+    void setPopupSide(PopupSide popupSide);
+    PopupSide popupSide() const { return mPopup->popupSide(); }
+
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
 
