@@ -381,6 +381,7 @@ void Screen::drawWidgets() {
         /* Draw tooltips */
         const Widget *widget = findWidget(mMousePos);
         if (widget && !widget->tooltip().empty()) {
+			nvgSave(mNVGContext);
             int tooltipWidth = 150;
 
             float bounds[4];
@@ -420,6 +421,7 @@ void Screen::drawWidgets() {
             nvgFontBlur(mNVGContext, 0.0f);
             nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
                        widget->tooltip().c_str(), nullptr);
+			nvgRestore(mNVGContext);
         }
     }
 
