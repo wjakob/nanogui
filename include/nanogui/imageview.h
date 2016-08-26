@@ -28,11 +28,16 @@ public:
 
     GLShader& imageShader() { return mShader; }
 
+    Vector2f positionF() const { return mPos.cast<float>(); }
+    Vector2f sizeF() const { return mSize.cast<float>(); }
+
     const Vector2i& imageSize() const { return mImageSize; }
     Vector2i scaledImageSize() const { return (mScale * mImageSize.cast<float>()).cast<int>(); }
+    Vector2f imageSizeF() const { return mImageSize.cast<float>(); }
+    Vector2f scaledImageSizeF() const { return (mScale * mImageSize.cast<float>()); }
 
-    const Vector2i& offset() const { return mOffset; }
-    void setOffset(const Vector2i& offset) { mOffset = offset; }
+    const Vector2f& offset() const { return mOffset; }
+    void setOffset(const Vector2f& offset) { mOffset = offset; }
     float scale() const { return mScale; }
     void setScale(float scale) { mScale = scale > 0.01f ? scale : 0.01f; }
 
@@ -63,23 +68,24 @@ public:
     /// Image transformation functions.
 
     /// Calculates the image coordinates of the given pixel position on the widget.
-    Vector2f imageCoordinateAt(const Vector2i& position) const;
+    Vector2f imageCoordinateAt(const Vector2f& position) const;
 
     /**
     *  Calculates the image coordinates of the given pixel position on the widget.
     *  If the position provided corresponds to a coordinate outside the range of
     *  the image, the coordinates are clamped to edges of the image.
     */
-    Vector2f clampedImageCoordinateAt(const Vector2i& position) const;
+    Vector2f clampedImageCoordinateAt(const Vector2f& position) const;
 
     /// Calculates the position inside the widget for the given image coordinate.
-    Vector2i positionForCoordinate(const Vector2f& imageCoordinate) const;
+    Vector2f positionForCoordinate(const Vector2f& imageCoordinate) const;
 
     /**
     *  Modifies the internal state of the image viewer widget so that the pixel at the provided
-    *  position on the widget has the specified image coordinate.
+    *  position on the widget has the specified image coordinate. Also clamps the values of offset
+    *  to the sides of the widget.
     */
-    void setImageCoordinateAt(const Vector2i& position, const Vector2f& imageCoordinate);
+    void setImageCoordinateAt(const Vector2f& position, const Vector2f& imageCoordinate);
 
     /// Centers the image without affecting the scaling factor.
     void center();
@@ -91,14 +97,14 @@ public:
     void setScaleCentered(float scale);
 
     /// Moves the offset by the specified amount. Does bound checking.
-    void moveOffset(const Vector2i& delta);
+    void moveOffset(const Vector2f& delta);
 
     /**
     *  Changes the scale factor by the provided amount modified by the zoom sensitivity member variable.
-    *  The scaling occurs such that the image coordinate under the focused pixel remains in
+    *  The scaling occurs such that the image coordinate under the focused position remains in
     *  the same position before and after the scaling.
     */
-    void zoom(int amount, const Vector2i& focusPixel);
+    void zoom(int amount, const Vector2f& focusPosition);
 
     bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
     bool keyboardCharacterEvent(unsigned int codepoint) override;
@@ -139,7 +145,7 @@ private:
 
     // Image display parameters.
     float mScale;
-    Vector2i mOffset;
+    Vector2f mOffset;
     bool mFixedScale;
     bool mFixedOffset;
 
