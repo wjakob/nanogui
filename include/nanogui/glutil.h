@@ -271,9 +271,8 @@ private:
 // Helper class for accumulating uniform buffer data following the 'std140' packing format
 class UniformBufferStd140 : public std::vector<uint8_t> {
 public:
-    typedef std::vector<uint8_t> Parent;
+    using Parent = std::vector<uint8_t>;
 
-    using Parent::vector;
     using Parent::push_back;
 
     template <typename T, typename std::enable_if<std::is_pod<T>::value, int>::type = 0>
