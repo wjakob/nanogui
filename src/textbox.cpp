@@ -520,8 +520,7 @@ void TextBox::pasteFromClipboard() {
     Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
     const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
     if (cbstr){
-        std::string str(cbstr);
-        mValueTemp.insert(mCursorPos, str);
+        mValueTemp.insert(mCursorPos, std::string(cbstr));
     }
 }
 
