@@ -263,7 +263,7 @@ public:
             auto& textureSize = imageView->imageSize();
             string stringData;
             uint16_t channelSum = 0;
-            for(int i = 0; i != 4; ++i) {
+            for (int i = 0; i != 4; ++i) {
                 auto& channelData = imageData[4*index.y()*textureSize.x() + 4*index.x() + i];
                 channelSum += channelData;
                 stringData += (to_string(static_cast<int>(channelData)) + "\n");

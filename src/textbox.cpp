@@ -85,11 +85,11 @@ void TextBox::draw(NVGcontext* ctx) {
 
     NVGpaint bg = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(255, 32), Color(32, 32)); 
+        3, 4, Color(255, 32), Color(32, 32));
     NVGpaint fg1 = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
         3, 4, Color(150, 32), Color(32, 32));
-    NVGpaint fg2 = nvgBoxGradient(ctx, 
+    NVGpaint fg2 = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
         3, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
 
@@ -145,10 +145,10 @@ void TextBox::draw(NVGcontext* ctx) {
     }
 
     float spinArrowsWidth = 0.f;
-    
+
     if (mSpinnable && !focused()) {
         spinArrowsWidth = 14.f;
-    
+
         nvgFontFace(ctx, "icons");
         nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * 1.2f);
 
@@ -201,7 +201,7 @@ void TextBox::draw(NVGcontext* ctx) {
     float clipWidth = mSize.x() - unitWidth - spinArrowsWidth - 2 * xSpacing + 2.0f;
     float clipHeight = mSize.y() - 3.0f;
 
-	nvgSave(ctx);
+    nvgSave(ctx);
     nvgIntersectScissor(ctx, clipX, clipY, clipWidth, clipHeight);
 
     Vector2i oldDrawPos(drawPos);
@@ -274,7 +274,7 @@ void TextBox::draw(NVGcontext* ctx) {
             nvgStroke(ctx);
         }
     }
-	nvgRestore(ctx);
+    nvgRestore(ctx);
 }
 
 bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
@@ -303,7 +303,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             mMouseDragPos = Vector2i(-1, -1);
         }
         return true;
-    } else if(mSpinnable && !focused()) {
+    } else if (mSpinnable && !focused()) {
         if (down) {
             if (spinArea(p) == SpinArea::None) {
                 mMouseDownPos = p;
