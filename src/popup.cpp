@@ -2,7 +2,7 @@
     src/popup.cpp -- Simple popup widget which is attached to another given
     window (can be nested)
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -13,6 +13,7 @@
 #include <nanogui/popup.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
     
@@ -69,6 +70,19 @@ void Popup::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 
     Widget::draw(ctx);
+}
+
+void Popup::save(Serializer &s) const {
+    Window::save(s);
+    s.set("anchorPos", mAnchorPos);
+    s.set("anchorHeight", mAnchorHeight);
+}
+
+bool Popup::load(Serializer &s) {
+    if (!Window::load(s)) return false;
+    if (!s.get("anchorPos", mAnchorPos)) return false;
+    if (!s.get("anchorHeight", mAnchorHeight)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

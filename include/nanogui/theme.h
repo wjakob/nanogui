@@ -3,7 +3,7 @@
 
     The text box widget was contributed by Christian Schueller.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -35,6 +35,13 @@ public:
     int mWindowHeaderHeight;
     int mWindowDropShadowSize;
     int mButtonCornerRadius;
+    float mTabBorderWidth;
+    int mTabInnerMargin;
+    int mTabMinButtonWidth;
+    int mTabMaxButtonWidth;
+    int mTabControlWidth;
+    int mTabButtonHorizontalPadding;
+    int mTabButtonVerticalPadding;
 
     /* Generic colors */
     Color mDropShadow;

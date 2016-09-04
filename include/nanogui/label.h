@@ -1,7 +1,7 @@
 /*
     nanogui/label.h -- Text label with an arbitrary font, color, and size
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -41,10 +41,17 @@ public:
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
 
+    /// Set the \ref Theme used to draw this widget
+    virtual void setTheme(Theme *theme) override;
+
     /// Compute the size needed to fully display the label
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+
     /// Draw the label
-    virtual void draw(NVGcontext *ctx);
+    virtual void draw(NVGcontext *ctx) override;
+
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::string mCaption;
     std::string mFont;

@@ -1,7 +1,7 @@
 /*
     nanogui/glutil.h -- Convenience classes for accessing OpenGL >= 3.x
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -19,8 +19,7 @@ namespace half_float { class half; }
 
 NAMESPACE_BEGIN(nanogui)
 
-using Eigen::Quaternionf;
-
+NAMESPACE_BEGIN(detail)
 template <typename T> struct type_traits;
 template <> struct type_traits<uint32_t> { enum { type = GL_UNSIGNED_INT, integral = 1 }; };
 template <> struct type_traits<int32_t> { enum { type = GL_INT, integral = 1 }; };
@@ -31,12 +30,21 @@ template <> struct type_traits<int8_t> { enum { type = GL_BYTE, integral = 1 }; 
 template <> struct type_traits<double> { enum { type = GL_DOUBLE, integral = 0 }; };
 template <> struct type_traits<float> { enum { type = GL_FLOAT, integral = 0 }; };
 template <> struct type_traits<half_float::half> { enum { type = GL_HALF_FLOAT, integral = 0 }; };
+template <typename T> struct serialization_helper;
+NAMESPACE_END(detail)
+
+using Eigen::Quaternionf;
+
+class GLUniformBuffer;
+
+//  ----------------------------------------------------
 
 /**
  * Helper class for compiling and linking OpenGL shaders and uploading
  * associated vertex and index buffers from Eigen matrices
  */
 class NANOGUI_EXPORT GLShader {
+    template <typename T> friend struct detail::serialization_helper;
 public:
     /// Create an unitialized OpenGL shader
     GLShader()
@@ -75,8 +83,8 @@ public:
     /// Upload an Eigen matrix as a vertex buffer object (refreshing it as needed)
     template <typename Matrix> void uploadAttrib(const std::string &name, const Matrix &M, int version = -1) {
         uint32_t compSize = sizeof(typename Matrix::Scalar);
-        GLuint glType = (GLuint) type_traits<typename Matrix::Scalar>::type;
-        bool integral = (bool) type_traits<typename Matrix::Scalar>::integral;
+        GLuint glType = (GLuint) detail::type_traits<typename Matrix::Scalar>::type;
+        bool integral = (bool) detail::type_traits<typename Matrix::Scalar>::integral;
 
         uploadAttrib(name, (uint32_t) M.size(), (int) M.rows(), compSize,
                      glType, integral, (const uint8_t *) M.data(), version);
@@ -85,7 +93,7 @@ public:
     /// Download a vertex buffer object into an Eigen matrix
     template <typename Matrix> void downloadAttrib(const std::string &name, Matrix &M) {
         uint32_t compSize = sizeof(typename Matrix::Scalar);
-        GLuint glType = (GLuint) type_traits<typename Matrix::Scalar>::type;
+        GLuint glType = (GLuint) detail::type_traits<typename Matrix::Scalar>::type;
 
         auto it = mBufferObjects.find(name);
         if (it == mBufferObjects.end())
@@ -140,35 +148,62 @@ public:
     /// Draw a sequence of primitives using a previously uploaded index buffer
     void drawIndexed(int type, uint32_t offset, uint32_t count);
 
-    /// Initialize a uniform parameter with a 4x4 matrix
-    void setUniform(const std::string &name, const Matrix4f &mat, bool warn = true) {
-        glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.data());
+    /// Initialize a uniform parameter with a 4x4 matrix (float)
+    template <typename T>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 4> &mat, bool warn = true) {
+        glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.template cast<float>().data());
     }
 
     /// Initialize a uniform parameter with an integer value
-    void setUniform(const std::string &name, int value, bool warn = true) {
-        glUniform1i(uniform(name, warn), value);
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, T value, bool warn = true) {
+        glUniform1i(uniform(name, warn), (int) value);
     }
 
-    /// Initialize a uniform parameter with a float value
-    void setUniform(const std::string &name, float value, bool warn = true) {
-        glUniform1f(uniform(name, warn), value);
+    /// Initialize a uniform parameter with a floating point value
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, T value, bool warn = true) {
+        glUniform1f(uniform(name, warn), (float) value);
     }
 
-    /// Initialize a uniform parameter with a 2D vector
-    void setUniform(const std::string &name, const Vector2f &v, bool warn = true) {
-        glUniform2f(uniform(name, warn), v.x(), v.y());
+    /// Initialize a uniform parameter with a 2D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 2, 1>  &v, bool warn = true) {
+        glUniform2i(uniform(name, warn), (int) v.x(), (int) v.y());
     }
 
-    /// Initialize a uniform parameter with a 3D vector
-    void setUniform(const std::string &name, const Vector3f &v, bool warn = true) {
-        glUniform3f(uniform(name, warn), v.x(), v.y(), v.z());
+    /// Initialize a uniform parameter with a 2D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 2, 1>  &v, bool warn = true) {
+        glUniform2f(uniform(name, warn), (float) v.x(), (float) v.y());
     }
 
-    /// Initialize a uniform parameter with a 4D vector
-    void setUniform(const std::string &name, const Vector4f &v, bool warn = true) {
-        glUniform4f(uniform(name, warn), v.x(), v.y(), v.z(), v.w());
+    /// Initialize a uniform parameter with a 3D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 3, 1>  &v, bool warn = true) {
+        glUniform3i(uniform(name, warn), (int) v.x(), (int) v.y(), (int) v.z());
     }
+
+    /// Initialize a uniform parameter with a 3D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 3, 1>  &v, bool warn = true) {
+        glUniform3f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z());
+    }
+
+    /// Initialize a uniform parameter with a 4D vector (int)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 1>  &v, bool warn = true) {
+        glUniform4i(uniform(name, warn), (int) v.x(), (int) v.y(), (int) v.z(), (int) v.w());
+    }
+
+    /// Initialize a uniform parameter with a 4D vector (float)
+    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 1>  &v, bool warn = true) {
+        glUniform4f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z(), (float) v.w());
+    }
+
+    /// Initialize a uniform buffer with a uniform buffer object
+    void setUniform(const std::string &name, const GLUniformBuffer &buf, bool warn = true);
 
     /// Return the size of all registered buffers in bytes
     size_t bufferSize() const {
@@ -201,6 +236,80 @@ protected:
     std::map<std::string, Buffer> mBufferObjects;
     std::map<std::string, std::string> mDefinitions;
 };
+
+//  ----------------------------------------------------
+
+/// Helper class for creating OpenGL Uniform Buffer objects
+class NANOGUI_EXPORT GLUniformBuffer {
+public:
+    GLUniformBuffer() : mID(0), mBindingPoint(0) { }
+
+    /// Create a new uniform buffer
+    void init();
+
+    /// Release underlying OpenGL object
+    void free();
+
+    /// Bind the uniform buffer to a specific binding point
+    void bind(int index);
+
+    /// Release/unbind the uniform buffer
+    void release();
+
+    /// Update content on the GPU using data
+    void update(const std::vector<uint8_t> &data);
+
+    /// Return the binding point of this uniform buffer
+    int getBindingPoint() const { return mBindingPoint; }
+private:
+    GLuint mID;
+    int mBindingPoint;
+};
+
+//  ----------------------------------------------------
+
+// Helper class for accumulating uniform buffer data following the 'std140' packing format
+class UniformBufferStd140 : public std::vector<uint8_t> {
+public:
+    using Parent = std::vector<uint8_t>;
+
+    using Parent::push_back;
+
+    template <typename T, typename std::enable_if<std::is_pod<T>::value, int>::type = 0>
+    void push_back(T value) {
+        uint8_t *tmp = (uint8_t*) &value;
+        for (int i = 0; i < sizeof(T); i++)
+            Parent::push_back(tmp[i]);
+    }
+
+    template <typename Derived, typename std::enable_if<Derived::IsVectorAtCompileTime, int>::type = 0>
+    void push_back(const Eigen::MatrixBase<Derived> &value) {
+        const int n = (int) value.size();
+        int i;
+        for (i = 0; i < n; ++i)
+            push_back(value[i]);
+        const int pad = n == 1 ? 1 : (n == 2 ? 2 : 4);
+        while ((i++) % pad != 0)
+            push_back((typename Derived::Scalar) 0);
+    }
+
+    template <typename Derived, typename std::enable_if<!Derived::IsVectorAtCompileTime, int>::type = 0>
+    void push_back(const Eigen::MatrixBase<Derived> &value, bool colMajor = true) {
+        const int n = (int) (colMajor ? value.rows() : value.cols());
+        const int m = (int) (colMajor ? value.cols() : value.rows());
+        const int pad = n == 1 ? 1 : (n == 2 ? 2 : 4);
+
+        for (int i = 0; i < m; ++i) {
+            int j;
+            for (j = 0; j < n; ++j)
+                push_back(colMajor ? value(j, i) : value(i, j));
+            while ((j++) % pad != 0)
+                push_back((typename Derived::Scalar) 0);
+        }
+    }
+};
+
+//  ----------------------------------------------------
 
 /// Helper class for creating framebuffer objects
 class NANOGUI_EXPORT GLFramebuffer {
@@ -235,6 +344,8 @@ protected:
     Vector2i mSize;
     int mSamples;
 };
+
+//  ----------------------------------------------------
 
 /// Arcball helper class to interactively rotate objects on-screen
 struct Arcball {
@@ -318,6 +429,8 @@ protected:
     Quaternionf mQuat, mIncr;
     float mSpeedFactor;
 };
+
+//  ----------------------------------------------------
 
 extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &model,
                         const Matrix4f &proj, const Vector2i &viewportSize);

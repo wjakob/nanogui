@@ -1,7 +1,7 @@
 /*
     nanogui/window.h -- Top-level window widget
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -40,18 +40,19 @@ public:
     void center();
 
     /// Draw the window
-    virtual void draw(NVGcontext *ctx);
-
+    virtual void draw(NVGcontext *ctx) override;
     /// Handle window drag events
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     /// Handle mouse events recursively and bring the current window to the top
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
     /// Accept scroll events and propagate them to the widget under the mouse cursor
-    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel);
+    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     /// Compute the preferred size of the widget
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     /// Invoke the associated layout generator to properly place child widgets, if any
-    virtual void performLayout(NVGcontext *ctx);
+    virtual void performLayout(NVGcontext *ctx) override;
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();

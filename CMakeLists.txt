@@ -1,6 +1,10 @@
-cmake_minimum_required (VERSION 2.8.3)
+cmake_minimum_required (VERSION 2.8.12)
 
 project("NanoGUI")
+
+if(POLICY CMP0058)
+  cmake_policy(SET CMP0058 NEW)
+endif()
 
 if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
   message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
@@ -8,16 +12,28 @@ if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
     "by calling \"git submodule update --init --recursive\"")
 endif()
 
+if (WIN32)
+  set(NANOGUI_USE_GLAD_DEFAULT ON)
+else()
+  set(NANOGUI_USE_GLAD_DEFAULT OFF)
+endif()
+
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
+option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
+option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
+
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
-# Required libraries for linking against nanogui (all targets)
+# Required libraries, flags, and include files for compiling and linking against nanogui (all targets)
 set(NANOGUI_EXTRA_LIBS "")
+set(NANOGUI_EXTRA_DEFS "")
+set(NANOGUI_EXTRA_INCS "")
 
 # Platform-dependent files for libnanogui
 set(LIBNANOGUI_EXTRA_SOURCE "")
+set(LIBNANOGUI_PYTHON_EXTRA_SOURCE "")
 
 if(APPLE AND NANOGUI_BUILD_SHARED)
   set(CMAKE_MACOSX_RPATH ON)
@@ -50,12 +66,12 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
-  add_definitions ("-DNANOGUI_PYTHON")
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_PYTHON)
 endif()
 
 # Shared library mode: add NANOGUI_SHARED flag to all targets
 if (NANOGUI_BUILD_SHARED)
-  add_definitions ("-DNANOGUI_SHARED")
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_SHARED)
 endif()
 
 if (MSVC)
@@ -69,7 +85,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 
     # Disable Eigen vectorization for Windows 32 bit builds (issues with unaligned access segfaults)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEIGEN_DONT_ALIGN")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNANOGUI_EIGEN_DONT_ALIGN")
   endif()
 endif()
 
@@ -84,16 +100,42 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  # Enable C++11 mode on GCC / Clang
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|Intel)$")
+  CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
+
+  if (HAS_CPP14_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+  elseif (HAS_CPP11_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  else()
+    message(FATAL_ERROR "Unsupported compiler -- pybind11 requires C++11 support!")
+  endif()
 endif()
 
-if(WIN32)
-  # Build and include GLEW on Windows
-  list(APPEND LIBNANOGUI_EXTRA_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c")
-  set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glew/src/glew.c" PROPERTIES COMPILE_DEFINITIONS GLEW_BUILD)
-  include_directories(ext/glew/include)
+if (NANOGUI_USE_GLAD)
+  # Build and include GLAD on Windows
+  list(APPEND LIBNANOGUI_EXTRA_SOURCE
+     "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
+	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/glad/glad.h"
+	 "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/KHR/khrplatform.h")
+  if (MSVC)
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
+      PROPERTIES COMPILE_FLAGS "/wd4055 ")
+  endif()
+  include_directories(ext/glad/include)
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_GLAD)
+  list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include")
+endif()
+
+list(APPEND NANOGUI_EXTRA_INCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
+)
+
+if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
+  set(NANOGUI_EIGEN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen")
+  list(APPEND NANOGUI_EXTRA_INCS "${NANOGUI_EIGEN_INCLUDE_DIR}")
 endif()
 
 # Required core libraries on various platforms
@@ -110,7 +152,7 @@ elseif(CMAKE_SYSTEM MATCHES "Linux")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread dl rt)
 endif()
 
-include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
@@ -132,11 +174,20 @@ add_custom_command(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Set library type
-if(NANOGUI_BUILD_SHARED)
+if (NANOGUI_BUILD_SHARED)
   set(NANOGUI_LIBRARY_TYPE "SHARED")
 else()
   set(NANOGUI_LIBRARY_TYPE "STATIC")
 endif()
+
+if (APPLE OR CMAKE_SYSTEM MATCHES "Linux")
+  # Include coroutine support for running the mainloop in detached mode
+  add_definitions(-DCORO_SJLJ)
+  include_directories(ext/coro)
+  list(APPEND LIBNANOGUI_PYTHON_EXTRA_SOURCE ext/coro/coro.c)
+endif()
+
+add_definitions(${NANOGUI_EXTRA_DEFS})
 
 # Compile main NanoGUI library
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
@@ -144,7 +195,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   $<TARGET_OBJECTS:glfw_objects>
   # Merge NanoVG into the NanoGUI library
   ext/nanovg/src/nanovg.c
-  # Merge GLEW into the NanoGUI library (only if needed)
+  # Merge GLAD into the NanoGUI library (only if needed)
   ${LIBNANOGUI_EXTRA_SOURCE}
   # Fonts etc.
   nanogui_resources.cpp
@@ -171,25 +222,47 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/colorpicker.h src/colorpicker.cpp
   include/nanogui/graph.h src/graph.cpp
+  include/nanogui/stackedwidget.h src/stackedwidget.cpp
+  include/nanogui/tabheader.h src/tabheader.cpp
+  include/nanogui/tabwidget.h src/tabwidget.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
   include/nanogui/nanogui.h
+  include/nanogui/serializer/core.h
+  include/nanogui/serializer/opengl.h
+  include/nanogui/serializer/sparse.h
+  src/serializer.cpp
 )
 
 # Compile/link flags for NanoGUI
-set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD ")
+set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "NANOGUI_BUILD")
+
+if (NANOGUI_USE_GLAD AND NANOGUI_BUILD_SHARED)
+  set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS
+    "GLAD_GLAPI_EXPORT;GLAD_GLAPI_EXPORT_BUILD")
+endif()
 
 if (NANOGUI_BUILD_SHARED)
   target_link_libraries(nanogui ${NANOGUI_EXTRA_LIBS})
 endif()
 
-if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
-  # Link-time code generation (only for shared library)
-  if (MSVC)
-    set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS "/LTCG ")
-    set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "/GL ")
-  elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (NANOGUI_INSTALL)
+  install(
+    TARGETS nanogui
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+
+  install(
+    DIRECTORY include/nanogui DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
+  )
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
+    # Link-time code generation (only for shared library in release mode)
     set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-fvisibility=hidden ")
 
     # Check for Link Time Optimization support
@@ -198,20 +271,28 @@ if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
       set_property(TARGET nanogui APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
     endif()
   endif()
+elseif (MSVC AND NANOGUI_BUILD_SHARED)
+  # Link-time code generation (only for shared library in release mode)
+  set_property(TARGET nanogui APPEND PROPERTY COMPILE_OPTIONS
+    "$<$<CONFIG:Release>:/GL>" "$<$<CONFIG:MinSizeRel>:/GL>" "$<$<CONFIG:RelWithDebInfo>:/GL>")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "/LTCG ")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL "/LTCG ")
+  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO "/LTCG ")
 endif()
 
 if (NANOGUI_BUILD_SHARED)
   # When GLFW is merged into the NanoGUI library, this flag must be specified
-  set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL ")
+  set_property(TARGET nanogui APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL")
 endif()
 
 if (NANOGUI_BUILD_SHARED AND NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+  # Platform-specific strip flags for reducing the library size.
   if (APPLE)
     # Strip .dylib library on OSX
-    add_custom_command(TARGET nanogui POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/libnanogui.dylib)
+    add_custom_command(TARGET nanogui POST_BUILD COMMAND strip -u -r "$<TARGET_FILE_DIR:nanogui>/$<TARGET_FILE_NAME:nanogui>")
   elseif(UNIX)
     # Strip .so library on Linux
-    add_custom_command(TARGET nanogui POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/libnanogui.so)
+    add_custom_command(TARGET nanogui POST_BUILD COMMAND strip "$<TARGET_FILE_DIR:nanogui>/$<TARGET_FILE_NAME:nanogui>")
   endif()
 endif()
 
@@ -233,16 +314,25 @@ endif()
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1 src/example1.cpp)
   add_executable(example2 src/example2.cpp)
+  add_executable(example3 src/example3.cpp)
   target_link_libraries(example1 nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2 nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3 nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+  if (NANOGUI_INSTALL)
+    install(
+      TARGETS example1 example2 example3
+      RUNTIME DESTINATION bin
+    )
+  endif()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
   # Detect Python
-  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
   find_package(PythonLibs ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
@@ -256,7 +346,8 @@ if (NANOGUI_BUILD_PYTHON)
   set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
-  add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h)
+  add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h
+                                    ${LIBNANOGUI_PYTHON_EXTRA_SOURCE})
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
   target_link_libraries(nanogui_python nanogui ${NANOGUI_EXTRA_LIBS})
 
@@ -287,7 +378,8 @@ if (NANOGUI_BUILD_PYTHON)
 
     if (MSVC)
       # Optimize size, /bigobj is needed for due to the heavy template metaprogramming in pybind11
-      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "/Os /bigobj")
+      set_property(TARGET nanogui_python APPEND PROPERTY COMPILE_OPTIONS
+        "/bigobj" "$<$<CONFIG:Release>:/Os>" "$<$<CONFIG:MinSizeRel>:/Os>" "$<$<CONFIG:RelWithDebInfo>:/Os>")
     endif()
   elseif(UNIX)
     # .SO file extension on Linux/Mac OS
@@ -295,13 +387,13 @@ if (NANOGUI_BUILD_PYTHON)
 
     # Optimize for a small binary size
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "-Os")
+      set_target_properties(nanogui_python PROPERTIES COMPILE_FLAGS "-Os -fvisibility=hidden ")
     endif()
 
     # Strip unnecessary sections of the binary on Linux/Mac OS
     if(APPLE)
       set_target_properties(nanogui_python PROPERTIES MACOSX_RPATH ".")
-      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+      set_target_properties(nanogui_python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup ")
 
       if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
         add_custom_command(TARGET nanogui_python POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
@@ -312,18 +404,43 @@ if (NANOGUI_BUILD_PYTHON)
       endif()
     endif()
   endif()
+
+  if (NANOGUI_INSTALL)
+    install(
+      TARGETS nanogui_python
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+    )
+  endif()
 endif()
 
 get_directory_property(NANOGUI_HAS_PARENT PARENT_DIRECTORY)
 if(NANOGUI_HAS_PARENT)
   # This project is included from somewhere else. Export NANOGUI_EXTRA_LIBS variable
   set(NANOGUI_EXTRA_LIBS ${NANOGUI_EXTRA_LIBS} PARENT_SCOPE)
+  set(NANOGUI_EXTRA_DEFS ${NANOGUI_EXTRA_DEFS} PARENT_SCOPE)
+  set(NANOGUI_EXTRA_INCS ${NANOGUI_EXTRA_INCS} PARENT_SCOPE)
 else()
   # Create documentation for python plugin (optional target for developers)
+
+  string(REPLACE " " ";" MKDOC_CXX_FLAGS_LIST ${CMAKE_CXX_FLAGS})
+  get_property(MKDOC_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+  get_property(MKDOC_COMPILE_DEFINITIONS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+
+  foreach (value ${MKDOC_INCLUDE_DIRECTORIES})
+    list(APPEND MKDOC_CXX_FLAGS_LIST -I${value})
+  endforeach()
+
+  foreach (value ${MKDOC_COMPILE_DEFINITIONS})
+    list(APPEND MKDOC_CXX_FLAGS_LIST -D${value})
+  endforeach()
+
   add_custom_target(mkdoc COMMAND
-    python3 ${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
-    -Iinclude -Iext/nanovg/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/nanogui/*.h > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
+    python3 ${PROJECT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
+      ${MKDOC_CXX_FLAGS_LIST}
+      ${PROJECT_SOURCE_DIR}/include/nanogui/*.h
+      > ${CMAKE_CURRENT_SOURCE_DIR}/python/py_doc.h)
+
 endif()
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:

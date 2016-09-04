@@ -3,7 +3,7 @@
 
     This widget was contributed by Dmitriy Morozov.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -30,11 +30,13 @@ public:
     /// Set the current color
     void setColor(const Color& color);
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const;
-    virtual void draw(NVGcontext *ctx);
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
+    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    virtual void draw(NVGcontext *ctx) override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
 
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 private:
     enum Region {
         None = 0,

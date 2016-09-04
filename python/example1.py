@@ -12,13 +12,14 @@
 import nanogui
 import math
 import time
+import gc
 
 from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     ToolButton, Vector2i, Label, Button, Widget, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
-                    Alignment, Orientation
+                    Alignment, Orientation, TabWidget, IntBox
 
 from nanogui import glfw, entypo
 
@@ -120,7 +121,11 @@ class TestApp(Screen):
         try:
             icons = nanogui.loadImageDirectory(self.nvgContext(), "icons")
         except:
-            icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
+            try:
+                icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
+            except:
+                icons = nanogui.loadImageDirectory(self.nvgContext(), "../resources/icons")
+            
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
@@ -132,26 +137,18 @@ class TestApp(Screen):
         popup.setFixedSize(Vector2i(245, 150))
 
         img_window = Window(self, "Selected image")
-        img_window.setPosition(Vector2i(675, 15))
-        img_window.setLayout(GroupLayout());
+        img_window.setPosition(Vector2i(710, 15))
+        img_window.setLayout(GroupLayout())
 
-        img = ImageView(img_window)
-        img.setPolicy(ImageView.SizePolicy.Expand)
-        img.setFixedSize(Vector2i(300, 300))
-        img.setImage(icons[0][0])
+        
+        imgView = ImageView(img_window, icons[0][0])
 
         def cb(i):
             print("Selected item %i" % i)
-            img.setImage(icons[i][0])
+            imgView.bindImage(icons[i][0])
         imgPanel.setCallback(cb)
 
-        def cb(s):
-            if s:
-                img.setPolicy(ImageView.SizePolicy.Expand)
-            else:
-                img.setPolicy(ImageView.SizePolicy.Fixed)
-        img_cb = CheckBox(img_window, "Expand", cb)
-        img_cb.setChecked(True)
+        imgView.setGridThreshold(3)
 
         Label(window, "File dialog", "sans-bold")
         tools = Widget(window)
@@ -218,10 +215,19 @@ class TestApp(Screen):
         window = Window(self, "Misc. widgets")
         window.setPosition(Vector2i(425, 15))
         window.setLayout(GroupLayout())
-        Label(window, "Color wheel", "sans-bold")
-        ColorWheel(window)
-        Label(window, "Function graph", "sans-bold")
-        graph = Graph(window, "Some function")
+
+        tabWidget = TabWidget(window)
+        layer = tabWidget.createTab("Color Wheel")
+        layer.setLayout(GroupLayout())
+
+        Label(layer, "Color wheel widget", "sans-bold")
+        ColorWheel(layer)
+
+        layer = tabWidget.createTab("Function Graph")
+        layer.setLayout(GroupLayout())
+        Label(layer, "Function graph widget", "sans-bold")
+
+        graph = Graph(layer, "Some function")
         graph.setHeader("E = 2.35e-3")
         graph.setFooter("Iteration 89")
         values = VectorXf(100)
@@ -229,9 +235,10 @@ class TestApp(Screen):
             values[i] = 0.5 * (0.5 * math.sin(i / 10.0) +
                                0.5 * math.cos(i / 23.0) + 1)
         graph.setValues(values)
+        tabWidget.setActiveTab(0)
 
         window = Window(self, "Grid of small widgets")
-        window.setPosition(Vector2i(425, 288))
+        window.setPosition(Vector2i(425, 300))
         layout = GridLayout(Orientation.Horizontal, 2,
                             Alignment.Middle, 15, 5)
         layout.setColAlignment(
@@ -250,14 +257,17 @@ class TestApp(Screen):
         floatBox.setFormat("[-]?[0-9]*\\.?[0-9]+")
 
         Label(window, "Positive integer :", "sans-bold")
-        intBox = TextBox(window)
+        intBox = IntBox(window)
         intBox.setEditable(True)
         intBox.setFixedSize(Vector2i(100, 20))
-        intBox.setValue("50")
+        intBox.setValue(50)
         intBox.setUnits("Mhz")
-        intBox.setDefaultValue("0.0")
+        intBox.setDefaultValue("0")
         intBox.setFontSize(16)
         intBox.setFormat("[1-9][0-9]*")
+        intBox.setSpinnable(True)
+        intBox.setMinValue(1)
+        intBox.setValueIncrement(2)
 
         Label(window, "Checkbox :", "sans-bold")
 
@@ -318,4 +328,5 @@ if __name__ == "__main__":
     test.drawAll()
     test.setVisible(True)
     nanogui.mainloop()
+    gc.collect()
     nanogui.shutdown()

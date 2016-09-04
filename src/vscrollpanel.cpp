@@ -2,7 +2,7 @@
     src/vscrollpanel.cpp -- Adds a vertical scrollbar around a widget
     that is too big to fit into a certain area
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -13,6 +13,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -63,14 +64,14 @@ bool VScrollPanel::mouseButtonEvent(const Vector2i &p, int button, bool down, in
     if (mChildren.empty())
         return false;
     int shift = (int) (mScroll*(mChildPreferredHeight - mSize.y()));
-    return mChildren[0]->mouseButtonEvent(p + Vector2i(0, shift), button, down, modifiers);
+    return mChildren[0]->mouseButtonEvent(p - mPos + Vector2i(0, shift), button, down, modifiers);
 }
 
 bool VScrollPanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
     if (mChildren.empty())
         return false;
     int shift = (int) (mScroll*(mChildPreferredHeight - mSize.y()));
-    return mChildren[0]->mouseMotionEvent(p + Vector2i(0, shift), rel, button, modifiers);
+    return mChildren[0]->mouseMotionEvent(p - mPos + Vector2i(0, shift), rel, button, modifiers);
 }
 
 void VScrollPanel::draw(NVGcontext *ctx) {
@@ -83,7 +84,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
-    nvgScissor(ctx, 0, 0, mSize.x(), mSize.y());
+    nvgIntersectScissor(ctx, 0, 0, mSize.x(), mSize.y());
     nvgTranslate(ctx, 0, -mScroll*(mChildPreferredHeight - mSize.y()));
     if (child->visible())
         child->draw(ctx);
@@ -105,10 +106,23 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12 + 1,
-                   mPos.x() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
+                   mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
                    scrollh - 2, 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
+}
+
+void VScrollPanel::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("childPreferredHeight", mChildPreferredHeight);
+    s.set("scroll", mScroll);
+}
+
+bool VScrollPanel::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("childPreferredHeight", mChildPreferredHeight)) return false;
+    if (!s.get("scroll", mScroll)) return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

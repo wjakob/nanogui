@@ -2,13 +2,18 @@
 
 #include <nanogui/nanogui.h>
 #include <nanogui/opengl.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "python.h"
+
+#if defined(__APPLE__) || defined(__linux__)
+#  include <coro.h>
+#endif
 
 using namespace nanogui;
 namespace py = pybind11;
 
-struct NVGcontext { };
-struct GLFWwindow { };
 typedef FloatBox<double> DoubleBox;
 typedef IntBox<int64_t> Int64Box;
 
@@ -39,33 +44,223 @@ DECLARE_WIDGET(Graph);
 DECLARE_WIDGET(DoubleBox);
 DECLARE_WIDGET(Int64Box);
 DECLARE_WIDGET(ColorPicker);
+DECLARE_WIDGET(StackedWidget);
+DECLARE_WIDGET(TabHeader);
+DECLARE_WIDGET(TabWidget);
+
 
 /// Make pybind aware of the ref-counted wrapper type
 PYBIND11_DECLARE_HOLDER_TYPE(T, ref<T>);
 
+#if defined(__APPLE__) || defined(__linux__)
+namespace {
+    class semaphore {
+    public:
+        semaphore(int count = 0) : count(count) { }
+
+        void notify() {
+            std::unique_lock<std::mutex> lck(mtx);
+            ++count;
+            cv.notify_one();
+        }
+
+        void wait() {
+            std::unique_lock<std::mutex> lck(mtx);
+            while (count == 0)
+                cv.wait(lck);
+            --count;
+        }
+
+    private:
+        std::mutex mtx;
+        std::condition_variable cv;
+        int count;
+    };
+}
+#endif
+
+class MainloopHandle;
+static MainloopHandle *handle = nullptr;
+
+class MainloopHandle {
+public:
+    bool active = false;
+    bool detached = false;
+    int refresh = 0;
+    std::thread thread;
+
+    #if defined(__APPLE__) || defined(__linux__)
+        coro_context ctx_helper, ctx_main, ctx_thread;
+        coro_stack stack;
+        semaphore sema;
+    #endif
+
+    ~MainloopHandle() {
+        join();
+        handle = nullptr;
+    }
+
+    void join() {
+        if (!detached)
+            return;
+
+        #if defined(__APPLE__) || defined(__linux__)
+            /* Release GIL and disassociate from thread state (which was originally
+               associated with the main Python thread) */
+            py::gil_scoped_release thread_state(true);
+
+            coro_transfer(&ctx_main, &ctx_thread);
+            coro_stack_free(&stack);
+
+            /* Destroy the thread state that was created in mainloop() */
+            {
+                py::gil_scoped_acquire acquire;
+                acquire.dec_ref();
+            }
+        #endif
+
+        thread.join();
+        detached = false;
+
+        #if defined(__APPLE__) || defined(__linux__)
+            /* Reacquire GIL and reassociate with thread state
+               [via RAII destructor in 'thread_state'] */
+        #endif
+    }
+};
+
 PYBIND11_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
-    m.def("init", &nanogui::init);
-    m.def("shutdown", &nanogui::init);
-    m.def("mainloop", &nanogui::mainloop);
-    m.def("leave", &nanogui::leave);
-    m.def("file_dialog", &nanogui::file_dialog);
+    py::class_<MainloopHandle>(m, "MainloopHandle")
+        .def("join", &MainloopHandle::join);
+
+    m.def("init", &nanogui::init, D(init));
+    m.def("shutdown", &nanogui::shutdown, D(shutdown));
+    m.def("mainloop", [](int refresh, py::object detach) -> MainloopHandle* {
+        if (detach != py::none()) {
+            if (handle)
+                throw std::runtime_error("Main loop is already running!");
+
+            handle = new MainloopHandle();
+            handle->detached = true;
+            handle->refresh = refresh;
+
+            #if defined(__APPLE__) || defined(__linux__)
+                /* Release GIL and completely disassociate the calling thread
+                   from its associated Python thread state data structure */
+                py::gil_scoped_release thread_state(true);
+
+                /* Create a new thread state for the nanogui main loop
+                   and reference it once (to keep it from being constructed and
+                   destructed at every callback invocation) */
+                {
+                    py::gil_scoped_acquire acquire;
+                    acquire.inc_ref();
+                }
+
+                handle->thread = std::thread([]{
+                    /* Handshake 1: wait for signal from detach_helper */
+                    handle->sema.wait();
+
+                    /* Swap context with main thread */
+                    coro_transfer(&handle->ctx_thread, &handle->ctx_main);
+
+                    /* Handshake 2: wait for signal from detach_helper */
+                    handle->sema.notify();
+                });
+
+                void (*detach_helper)(void *) = [](void *ptr) -> void {
+                    MainloopHandle *handle = (MainloopHandle *) ptr;
+
+                    /* Handshake 1: Send signal to new thread  */
+                    handle->sema.notify();
+
+                    /* Enter main loop */
+                    mainloop(handle->refresh);
+
+                    /* Handshake 2: Wait for signal from new thread */
+                    handle->sema.wait();
+
+                    /* Return back to Python */
+                    coro_transfer(&handle->ctx_helper, &handle->ctx_main);
+                };
+
+                /* Allocate an 8MB stack and transfer context to the
+                   detach_helper function */
+                coro_stack_alloc(&handle->stack, 8 * 1024 * 1024);
+                coro_create(&handle->ctx_helper, detach_helper, handle,
+                            handle->stack.sptr, handle->stack.ssze);
+                coro_transfer(&handle->ctx_main, &handle->ctx_helper);
+            #else
+                handle->thread = std::thread([]{
+                    mainloop(handle->refresh);
+                });
+            #endif
+
+            #if defined(__APPLE__) || defined(__linux__)
+                /* Reacquire GIL and reassociate with thread state on newly
+                   created thread [via RAII destructor in 'thread_state'] */
+            #endif
+
+            return handle;
+        } else {
+            mainloop(refresh);
+            return nullptr;
+        }
+    }, py::arg("refresh") = 50, py::arg("detach") = py::none(),
+       D(mainloop), py::keep_alive<0, 2>());
+
+    m.def("leave", &nanogui::leave, D(leave));
+    m.def("file_dialog", &nanogui::file_dialog, D(file_dialog));
     #if defined(__APPLE__)
         m.def("chdir_to_bundle_parent", &nanogui::chdir_to_bundle_parent);
     #endif
-    m.def("file_dialog", &nanogui::file_dialog);
-    m.def("utf8", [](int c) { return std::string(utf8(c).data()); });
-    m.def("loadImageDirectory", &nanogui::loadImageDirectory);
+    m.def("utf8", [](int c) { return std::string(utf8(c).data()); }, D(utf8));
+    m.def("loadImageDirectory", &nanogui::loadImageDirectory, D(loadImageDirectory));
 
     py::handle vector2i = py::detail::get_type_handle(typeid(Vector2i));
     if (!vector2i) {
         py::class_<Vector2i>(m, "Vector2i")
-            .def(py::init<int, int>());
+            .def(py::init<int, int>())
+            .def_property("x", [](const Vector2i &v) { return v.x();}, [](Vector2i &v, int x) { v.x() = x; })
+            .def_property("y", [](const Vector2i &v) { return v.y();}, [](Vector2i &v, int y) { v.y() = y; })
+            .def("__getitem__", [](const Vector2i &m, size_t i) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                return m[i];
+             })
+            .def("__setitem__", [](Vector2i &m, size_t i, int v) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                m[i] = v;
+             });
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
         m.attr("Vector2i") = vector2i;
+    }
+
+    py::handle vector2f = py::detail::get_type_handle(typeid(Vector2f));
+    if (!vector2f) {
+        py::class_<Vector2f>(m, "Vector2f")
+            .def(py::init<int, int>())
+            .def_property("x", [](const Vector2f &v) { return v.x();}, [](Vector2f &v, float x) { v.x() = x; })
+            .def_property("y", [](const Vector2f &v) { return v.y();}, [](Vector2f &v, float y) { v.y() = y; })
+            .def("__getitem__", [](const Vector2f &m, size_t i) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                return m[i];
+             })
+            .def("__setitem__", [](Vector2f &m, size_t i, float v) {
+                if (i >= (size_t) m.size())
+                    throw py::index_error();
+                m[i] = v;
+             });
+    } else {
+        /* Don't create a new type if some other library has already
+           exposed (potentially much fancier) Eigen Python bindings */
+        m.attr("Vector2f") = vector2f;
     }
 
     py::handle vectorXf = py::detail::get_type_handle(typeid(VectorXf));
@@ -80,7 +275,7 @@ PYBIND11_PLUGIN(nanogui) {
             })
             .def("__init__", [](VectorXf &v, py::buffer b) {
                 py::buffer_info info = b.request();
-                if (info.format != py::format_descriptor<float>::value()) {
+                if (info.format != py::format_descriptor<float>::value) {
                     throw std::runtime_error("Incompatible buffer format!");
                 } else if (info.ndim == 1 && info.strides[0] == sizeof(float)) {
                     new (&v) VectorXf(info.shape[0]);
@@ -113,12 +308,12 @@ PYBIND11_PLUGIN(nanogui) {
             /* Buffer access for interacting with NumPy */
             .def_buffer([](VectorXf &m) -> py::buffer_info {
                 return py::buffer_info(
-                    m.data(),                /* Pointer to buffer */
+                    m.data(),               /* Pointer to buffer */
                     sizeof(float),          /* Size of one scalar */
                     /* Python struct-style format descriptor */
-                    py::format_descriptor<float>::value(),
-                    1,                       /* Number of dimensions */
-                    { (size_t) m.size() },   /* Buffer dimensions */
+                    py::format_descriptor<float>::value,
+                    1,                      /* Number of dimensions */
+                    { (size_t) m.size() },  /* Buffer dimensions */
                     { sizeof(float) }       /* Strides (in bytes) for each index */
                 );
              });
@@ -152,9 +347,8 @@ PYBIND11_PLUGIN(nanogui) {
 
     py::class_<NVGcontext> context(m, "NVGcontext");
 
-    py::class_<PyWidget, ref<PyWidget>> widget(m, "Widget", D(Widget));
+    py::class_<Widget, ref<Widget>, PyWidget> widget(m, "Widget", D(Widget));
     widget
-        .alias<Widget>()
         .def(py::init<Widget *>(), D(Widget, Widget))
         .def("parent", (Widget *(Widget::*)(void)) &Widget::parent, D(Widget, parent))
         .def("setParent", &Widget::setParent, D(Widget, setParent))
@@ -182,8 +376,15 @@ PYBIND11_PLUGIN(nanogui) {
         .def("visibleRecursive", &Widget::visibleRecursive, D(Widget, visibleRecursive))
         .def("children", (std::vector<Widget *>&(Widget::*)(void)) &Widget::children,
              D(Widget, children), py::return_value_policy::reference)
-        .def("addChild", &Widget::addChild, D(Widget, addChild))
+        .def("addChild", (void (Widget::*) (int, Widget *)) &Widget::addChild, D(Widget, addChild))
+        .def("addChild", (void (Widget::*) (Widget *)) &Widget::addChild, D(Widget, addChild, 2))
         .def("childCount", &Widget::childCount, D(Widget, childCount))
+        .def("__len__", &Widget::childCount, D(Widget, childCount))
+        .def("__iter__", [](const Widget &w) {
+                return py::make_iterator(w.children().begin(), w.children().end());
+            }, py::keep_alive<0, 1>())
+        .def("childIndex", &Widget::childIndex, D(Widget, childIndex))
+        .def("__getitem__", (Widget* (Widget::*)(int)) &Widget::childAt, D(Widget, childAt))
         .def("removeChild", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild))
         .def("removeChild", (void(Widget::*)(const Widget *)) &Widget::removeChild, D(Widget, removeChild, 2))
         .def("window", &Widget::window, D(Widget, window))
@@ -222,11 +423,11 @@ PYBIND11_PLUGIN(nanogui) {
         .def("performLayout", &Widget::performLayout, D(Widget, performLayout))
         .def("draw", &Widget::draw, D(Widget, draw));
 
-    py::class_<PyScreen, ref<PyScreen>>(m, "Screen", widget, D(Screen))
-        .alias<Screen>()
-        .def(py::init<const Vector2i &, const std::string &, bool, bool>(),
+    py::class_<Screen, ref<Screen>, PyScreen>(m, "Screen", widget, D(Screen))
+        .def(py::init<const Vector2i &, const std::string &, bool, bool, int, int, int, int, int, unsigned int, unsigned int>(),
             py::arg("size"), py::arg("caption"), py::arg("resizable") = true, py::arg("fullscreen") = false,
-            D(Screen, Screen))
+            py::arg("colorBits") = 8, py::arg("alphaBits") = 8, py::arg("depthBits") = 24, py::arg("stencilBits") = 8,
+            py::arg("nSamples") = 0, py::arg("glMajor") = 3, py::arg("glMinor") = 3, D(Screen, Screen))
         .def("caption", &Screen::caption, D(Screen, caption))
         .def("setCaption", &Screen::setCaption, D(Screen, setCaption))
         .def("background", &Screen::background, D(Screen, background))
@@ -244,9 +445,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("nvgContext", &Screen::nvgContext, D(Screen, nvgContext),
                 py::return_value_policy::reference);
 
-    py::class_<PyWindow, ref<PyWindow>> window(m, "Window", widget, D(Window));
+    py::class_<Window, ref<Window>, PyWindow> window(m, "Window", widget, D(Window));
     window
-        .alias<Window>()
         .def(py::init<Widget *, const std::string>(), py::arg("parent"),
              py::arg("title") = std::string("Untitled"), D(Window, Window))
         .def("title", &Window::title, D(Window, title))
@@ -254,6 +454,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("modal", &Window::modal, D(Window, modal))
         .def("setModal", &Window::setModal, D(Window, setModal))
         .def("dispose", &Window::dispose, D(Window, dispose))
+        .def("buttonPanel", &Window::buttonPanel, D(Window, buttonPanel))
         .def("center", &Window::center, D(Window, center));
 
     py::enum_<Alignment>(m, "Alignment")
@@ -266,14 +467,12 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
-    py::class_<PyLayout, ref<PyLayout>> layout(m, "Layout", D(Layout));
+    py::class_<Layout, ref<Layout>, PyLayout> layout(m, "Layout", D(Layout));
     layout
-        .alias<Layout>()
         .def("preferredSize", &Layout::preferredSize, D(Layout, preferredSize))
         .def("performLayout", &Layout::performLayout, D(Layout, performLayout));
 
-    py::class_<PyBoxLayout, ref<PyBoxLayout>>(m, "BoxLayout", layout, D(BoxLayout))
-        .alias<BoxLayout>()
+    py::class_<BoxLayout, ref<BoxLayout>, PyBoxLayout>(m, "BoxLayout", layout, D(BoxLayout))
         .def(py::init<Orientation, Alignment, int, int>(),
              py::arg("orientation"), py::arg("alignment") = Alignment::Middle,
              py::arg("margin") = 0, py::arg("spacing") = 0, D(BoxLayout, BoxLayout))
@@ -286,8 +485,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("spacing", &BoxLayout::spacing, D(BoxLayout, spacing))
         .def("setSpacing", &BoxLayout::setSpacing, D(BoxLayout, setSpacing));
 
-    py::class_<PyGroupLayout, ref<PyGroupLayout>>(m, "GroupLayout", layout, D(GroupLayout))
-        .alias<GroupLayout>()
+    py::class_<GroupLayout, ref<GroupLayout>, PyGroupLayout>(m, "GroupLayout", layout, D(GroupLayout))
         .def(py::init<int, int, int, int>(),
              py::arg("margin") = 15, py::arg("spacing") = 6,
              py::arg("groupSpacing") = 14, py::arg("groupIndent") = 20,
@@ -301,8 +499,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("groupSpacing", &GroupLayout::groupSpacing, D(GroupLayout, groupSpacing))
         .def("setGroupSpacing", &GroupLayout::setGroupSpacing, D(GroupLayout, setGroupSpacing));
 
-    py::class_<PyGridLayout, ref<PyGridLayout>>(m, "GridLayout", layout, D(GridLayout))
-        .alias<GridLayout>()
+    py::class_<GridLayout, ref<GridLayout>, PyGridLayout>(m, "GridLayout", layout, D(GridLayout))
         .def(py::init<Orientation, int, Alignment, int, int>(),
              py::arg("orientation") = Orientation::Horizontal,
              py::arg("resolution") = 2, py::arg("alignment") = Alignment::Middle,
@@ -323,10 +520,10 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setColAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment, 2))
         .def("setRowAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment, 2));
 
-    py::class_<PyAdvancedGridLayout, ref<PyAdvancedGridLayout>> advGridLayout(
+    py::class_<AdvancedGridLayout, ref<AdvancedGridLayout>, PyAdvancedGridLayout> advGridLayout(
         m, "AdvancedGridLayout", layout, D(AdvancedGridLayout));
 
-    advGridLayout.alias<AdvancedGridLayout>()
+    advGridLayout
         .def(py::init<const std::vector<int> &, const std::vector<int> &>(),
              py::arg("widths"), py::arg("heights"),
              D(AdvancedGridLayout, AdvancedGridLayout))
@@ -353,8 +550,7 @@ PYBIND11_PLUGIN(nanogui) {
              py::arg("horiz") = Alignment::Fill,
              py::arg("vert") = Alignment::Fill);
 
-    py::class_<PyLabel, ref<PyLabel>>(m, "Label", widget, D(Label))
-        .alias<Label>()
+    py::class_<Label, ref<Label>, PyLabel>(m, "Label", widget, D(Label))
         .def(py::init<Widget *, const std::string &, const std::string &, int>(),
              py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
              py::arg("fontSize") = -1)
@@ -365,9 +561,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("color", &Label::color, D(Label, color))
         .def("setColor", &Label::setColor, D(Label, setColor));
 
-    py::class_<PyButton, ref<PyButton>> button(m, "Button", widget, D(Button));
+    py::class_<Button, ref<Button>, PyButton> button(m, "Button", widget, D(Button));
     button
-        .alias<Button>()
         .def(py::init<Widget *, const std::string &, int>(),
              py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0)
         .def("caption", &Button::caption, D(Button, caption))
@@ -403,14 +598,12 @@ PYBIND11_PLUGIN(nanogui) {
         .value("ToggleButton", Button::Flags::ToggleButton)
         .value("PopupButton", Button::Flags::PopupButton);
 
-    py::class_<PyToolButton, ref<PyToolButton>>(m, "ToolButton", button, D(ToolButton))
-        .alias<ToolButton>()
+    py::class_<ToolButton, ref<ToolButton>, PyToolButton>(m, "ToolButton", button, D(ToolButton))
         .def(py::init<Widget *,int, const std::string &>(),
              py::arg("parent"), py::arg("icon"), py::arg("caption") = std::string(""),
              D(ToolButton, ToolButton));
 
-    py::class_<PyPopup, ref<PyPopup>>(m, "Popup", window, D(Popup))
-        .alias<Popup>()
+    py::class_<Popup, ref<Popup>, PyPopup>(m, "Popup", window, D(Popup))
         .def(py::init<Widget *, Window *>(), py::arg("parent"), py::arg("parentWindow"), D(Popup, Popup))
         .def("anchorPos", &Popup::anchorPos, D(Popup, anchorPos))
         .def("setAnchorPos", &Popup::setAnchorPos, D(Popup, setAnchorPos))
@@ -418,9 +611,8 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setAnchorHeight", &Popup::setAnchorHeight, D(Popup, setAnchorHeight))
         .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow));
 
-    py::class_<PyPopupButton, ref<PyPopupButton>> popupBtn(m, "PopupButton", button, D(PopupButton));
+    py::class_<PopupButton, ref<PopupButton>, PyPopupButton> popupBtn(m, "PopupButton", button, D(PopupButton));
     popupBtn
-        .alias<PopupButton>()
         .def(py::init<Widget *, const std::string&, int, int>(),
                 py::arg("parent"), py::arg("caption") = std::string("Untitled"),
                 py::arg("buttonIcon") = 0, py::arg("chevronIcon") = ENTYPO_ICON_CHEVRON_SMALL_RIGHT,
@@ -429,8 +621,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("chevronIcon", &PopupButton::chevronIcon, D(PopupButton, chevronIcon))
         .def("setChevronIcon", &PopupButton::setChevronIcon, D(PopupButton, setChevronIcon));
 
-    py::class_<PyCheckBox, ref<PyCheckBox>>(m, "CheckBox", widget, D(CheckBox))
-        .alias<CheckBox>()
+    py::class_<CheckBox, ref<CheckBox>, PyCheckBox>(m, "CheckBox", widget, D(CheckBox))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"),
              D(CheckBox, CheckBox))
@@ -446,14 +637,14 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &CheckBox::callback, D(CheckBox, callback))
         .def("setCallback", &CheckBox::setCallback, D(CheckBox, setCallback));
 
-    py::class_<PyMessageDialog, ref<PyMessageDialog>> mdlg(m, "MessageDialog", window, D(MessageDialog));
+    py::class_<MessageDialog, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", window, D(MessageDialog));
     mdlg
-        .alias<MessageDialog>()
         .def(py::init<Widget *, MessageDialog::Type, const std::string&,
                       const std::string&, const std::string&, const std::string&, bool>(),
             py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
             py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
             py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false)
+        .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
         .def("setCallback", &MessageDialog::setCallback, D(MessageDialog, setCallback));
 
@@ -462,33 +653,17 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Question", MessageDialog::Type::Question)
         .value("Warning", MessageDialog::Type::Warning);
 
-    py::class_<PyVScrollPanel, ref<PyVScrollPanel>>(m, "VScrollPanel", widget, D(VScrollPanel))
-        .alias<VScrollPanel>()
+    py::class_<VScrollPanel, ref<VScrollPanel>, PyVScrollPanel>(m, "VScrollPanel", widget, D(VScrollPanel))
         .def(py::init<Widget *>(), py::arg("parent"), D(VScrollPanel, VScrollPanel));
 
-    py::class_<PyImagePanel, ref<PyImagePanel>>(m, "ImagePanel", widget, D(ImagePanel))
-        .alias<ImagePanel>()
+    py::class_<ImagePanel, ref<ImagePanel>, PyImagePanel>(m, "ImagePanel", widget, D(ImagePanel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ImagePanel, ImagePanel))
         .def("images", &ImagePanel::images, D(ImagePanel, images))
         .def("setImages", &ImagePanel::setImages, D(ImagePanel, setImages))
         .def("callback", &ImagePanel::callback, D(ImagePanel, callback))
         .def("setCallback", &ImagePanel::setCallback, D(ImagePanel, setCallback));
 
-    py::class_<PyImageView, ref<PyImageView>> imageview(m, "ImageView", widget, D(ImageView));
-    imageview
-        .alias<ImageView>()
-        .def(py::init<Widget *, int, ImageView::SizePolicy>(), py::arg("parent"), py::arg("image") = 0, py::arg("policy") = ImageView::SizePolicy::Fixed, D(ImageView, ImageView))
-        .def("image", &ImageView::image, D(ImageView, image))
-        .def("setImage", &ImageView::setImage, D(ImageView, setImage))
-        .def("policy", &ImageView::policy, D(ImageView, policy))
-        .def("setPolicy", &ImageView::setPolicy, D(ImageView, setPolicy));
-
-    py::enum_<ImageView::SizePolicy>(imageview, "SizePolicy")
-        .value("Fixed", ImageView::SizePolicy::Fixed)
-        .value("Expand", ImageView::SizePolicy::Expand);
-
-    py::class_<PyComboBox, ref<PyComboBox>>(m, "ComboBox", widget, D(ComboBox))
-        .alias<ComboBox>()
+    py::class_<ComboBox, ref<ComboBox>, PyComboBox>(m, "ComboBox", widget, D(ComboBox))
         .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
         .def(py::init<Widget *, const std::vector<std::string> &>(),
              py::arg("parent"), py::arg("items"), D(ComboBox, ComboBox, 2))
@@ -497,20 +672,20 @@ PYBIND11_PLUGIN(nanogui) {
              py::arg("parent"), py::arg("items"), py::arg("itemsShort"), D(ComboBox, ComboBox, 3))
         .def("callback", &ComboBox::callback, D(ComboBox, callback))
         .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
+        .def("selectedIndex", &ComboBox::selectedIndex, D(ComboBox, selectedIndex))
+        .def("setSelectedIndex", &ComboBox::setSelectedIndex, D(ComboBox, setSelectedIndex))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&,
                           const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems, 2))
         .def("items", &ComboBox::items, D(ComboBox, items))
         .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort));
 
-    py::class_<PyProgressBar, ref<PyProgressBar>>(m, "ProgressBar", widget, D(ProgressBar))
-        .alias<ProgressBar>()
+    py::class_<ProgressBar, ref<ProgressBar>, PyProgressBar>(m, "ProgressBar", widget, D(ProgressBar))
         .def(py::init<Widget *>(), py::arg("parent"), D(ProgressBar, ProgressBar))
         .def("value", &ProgressBar::value, D(ProgressBar, value))
         .def("setValue", &ProgressBar::setValue, D(ProgressBar, setValue));
 
-    py::class_<PySlider, ref<PySlider>>(m, "Slider", widget, D(Slider))
-        .alias<Slider>()
+    py::class_<Slider, ref<Slider>, PySlider>(m, "Slider", widget, D(Slider))
         .def(py::init<Widget *>(), py::arg("parent"), D(Slider, Slider))
         .def("value", &Slider::value, D(Slider, value))
         .def("setValue", &Slider::setValue, D(Slider, setValue))
@@ -523,13 +698,14 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setFinalCallback", &Slider::setFinalCallback, D(Slider, setFinalCallback))
         .def("finalCallback", &Slider::finalCallback, D(Slider, finalCallback));
 
-    py::class_<PyTextBox, ref<PyTextBox>> tbox(m, "TextBox", widget, D(TextBox));
+    py::class_<TextBox, ref<TextBox>, PyTextBox> tbox(m, "TextBox", widget, D(TextBox));
     tbox
-        .alias<TextBox>()
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
             py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
         .def("editable", &TextBox::editable, D(TextBox, editable))
         .def("setEditable", &TextBox::setEditable, D(TextBox, setEditable))
+        .def("spinnable", &TextBox::spinnable, D(TextBox, spinnable))
+        .def("setSpinnable", &TextBox::setSpinnable, D(TextBox, setSpinnable))
         .def("value", &TextBox::value, D(TextBox, value))
         .def("setValue", &TextBox::setValue, D(TextBox, setValue))
         .def("defaultValue", &TextBox::defaultValue, D(TextBox, defaultValue))
@@ -550,24 +726,29 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Center", TextBox::Alignment::Center)
         .value("Right", TextBox::Alignment::Right);
 
-    py::class_<PyInt64Box, ref<PyInt64Box>>(m, "IntBox", tbox, D(IntBox))
-        .alias<IntBox<int64_t>>()
+    py::class_<Int64Box, ref<Int64Box>, PyInt64Box>(m, "IntBox", tbox, D(IntBox))
         .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0)
         .def("value", &Int64Box::value, D(IntBox, value))
         .def("setValue", (void (Int64Box::*)(int64_t)) &Int64Box::setValue, D(IntBox, setValue))
         .def("setCallback", (void (Int64Box::*)(const std::function<void(int64_t)>&))
-                &Int64Box::setCallback, D(IntBox, setCallback));
+                &Int64Box::setCallback, D(IntBox, setCallback))
+        .def("setValueIncrement", &Int64Box::setValueIncrement/*, D(IntBox, setValueIncrement)*/)
+        .def("setMinValue", &Int64Box::setMinValue/*, D(IntBox, setMinValue)*/)
+        .def("setMaxValue", &Int64Box::setMaxValue/*, D(IntBox, setMaxValue)*/)
+        .def("setMinValue", &Int64Box::setMinMaxValues/*, D(IntBox, setMinMaxValues)*/);
 
-    py::class_<PyDoubleBox, ref<PyDoubleBox>>(m, "FloatBox", tbox, D(FloatBox))
-        .alias<FloatBox<double>>()
+    py::class_<DoubleBox, ref<DoubleBox>, PyDoubleBox>(m, "FloatBox", tbox, D(FloatBox))
         .def(py::init<Widget *, double>(), py::arg("parent"), py::arg("value") = 0.0)
         .def("value", &DoubleBox::value, D(FloatBox, value))
-        .def("setValue", (void (DoubleBox::*)(int64_t)) &DoubleBox::setValue, D(FloatBox, setValue))
+        .def("setValue", (void (DoubleBox::*)(double)) &DoubleBox::setValue, D(FloatBox, setValue))
         .def("setCallback", (void (DoubleBox::*)(const std::function<void(double)>&))
-                &DoubleBox::setCallback, D(FloatBox, setCallback));
+                &DoubleBox::setCallback, D(FloatBox, setCallback))
+        .def("setValueIncrement", &DoubleBox::setValueIncrement/*, D(FloatBox, setValueIncrement)*/)
+        .def("setMinValue", &DoubleBox::setMinValue/*, D(FloatBox, setMinValue)*/)
+        .def("setMaxValue", &DoubleBox::setMaxValue/*, D(FloatBox, setMaxValue)*/)
+        .def("setMinValue", &DoubleBox::setMinMaxValues/*, D(FloatBox, setMinMaxValues)*/);
 
-    py::class_<PyColorWheel, ref<PyColorWheel>>(m, "ColorWheel", widget, D(ColorWheel))
-        .alias<ColorWheel>()
+    py::class_<ColorWheel, ref<ColorWheel>, PyColorWheel>(m, "ColorWheel", widget, D(ColorWheel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorWheel, ColorWheel))
         .def(py::init<Widget *, const Color &>(), py::arg("parent"), py::arg("Color"))
         .def("color", &ColorWheel::color, D(ColorWheel, color))
@@ -575,8 +756,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ColorWheel::callback, D(ColorWheel, callback))
         .def("setCallback", &ColorWheel::setCallback, D(ColorWheel, setCallback));
 
-    py::class_<PyColorPicker, ref<PyColorPicker>>(m, "ColorPicker", popupBtn, D(ColorPicker))
-        .alias<ColorPicker>()
+    py::class_<ColorPicker, ref<ColorPicker>, PyColorPicker>(m, "ColorPicker", popupBtn, D(ColorPicker))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorPicker, ColorPicker))
         .def(py::init<Widget *, const Color &>(), py::arg("parent"), py::arg("Color"))
         .def("color", &ColorPicker::color, D(ColorPicker, color))
@@ -584,8 +764,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &ColorPicker::callback, D(ColorPicker, callback))
         .def("setCallback", &ColorPicker::setCallback, D(ColorPicker, setCallback));
 
-    py::class_<PyGraph, ref<PyGraph>>(m, "Graph", widget, D(Graph))
-        .alias<Graph>()
+    py::class_<Graph, ref<Graph>, PyGraph>(m, "Graph", widget, D(Graph))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"), D(Graph, Graph))
         .def("caption", &Graph::caption, D(Graph, caption))
@@ -602,6 +781,86 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setTextColor", &Graph::setTextColor, D(Graph, setTextColor))
         .def("values", (VectorXf &(Graph::*)(void)) &Graph::values, D(Graph, values))
         .def("setValues", &Graph::setValues, D(Graph, setValues));
+
+    py::class_<StackedWidget, ref<StackedWidget>, PyStackedWidget>(m, "StackedWidget", widget, D(StackedWidget))
+        .def(py::init<Widget *>())
+        .def("selectedIndex", &StackedWidget::selectedIndex, D(StackedWidget, selectedIndex))
+        .def("setSelectedIndex", &StackedWidget::setSelectedIndex, D(StackedWidget, setSelectedIndex));
+
+    py::class_<TabHeader, ref<TabHeader>, PyTabHeader>(m, "TabHeader", widget, D(TabHeader))
+        .def(py::init<Widget *, const std::string &>(), D(TabHeader, TabHeader))
+        .def("setFont", &TabHeader::setFont, D(TabHeader, setFont))
+        .def("font", &TabHeader::font, D(TabHeader, font))
+        .def("overflowing", &TabHeader::overflowing, D(TabHeader, overflowing))
+        .def("callback", &TabHeader::callback, D(TabHeader, callback))
+        .def("setCallback", &TabHeader::setCallback, D(TabHeader, setCallback))
+        .def("activeTab", &TabHeader::activeTab, D(TabHeader, activeTab))
+        .def("setActiveTab", &TabHeader::setActiveTab, D(TabHeader, setActiveTab))
+        .def("addTab", (void (TabHeader::*)(const std::string &)) &TabHeader::addTab, D(TabHeader, addTab))
+        .def("addTab", (void (TabHeader::*)(int index, const std::string &)) &TabHeader::addTab, D(TabHeader, addTab, 2))
+        .def("removeTab", (int (TabHeader::*)(const std::string &)) &TabHeader::removeTab, D(TabHeader, removeTab))
+        .def("removeTab", (void (TabHeader::*)(int index)) &TabHeader::removeTab, D(TabHeader, removeTab, 2))
+        .def("tabLabelAt", &TabHeader::tabLabelAt, D(TabHeader, tabLabelAt))
+        .def("tabIndex", &TabHeader::tabIndex, D(TabHeader, tabIndex))
+        .def("ensureTabVisible", &TabHeader::ensureTabVisible, D(TabHeader, ensureTabVisible));
+
+    py::class_<TabWidget, ref<TabWidget>, PyTabWidget>(m, "TabWidget", widget, D(TabWidget))
+        .def(py::init<Widget *>(), D(TabWidget, TabWidget))
+        .def("setActiveTab", &TabWidget::setActiveTab, D(TabWidget, setActiveTab))
+        .def("activeTab", &TabWidget::activeTab, D(TabWidget, activeTab))
+        .def("tabCount", &TabWidget::tabCount, D(TabWidget, tabCount))
+        .def("setCallback", &TabWidget::setCallback, D(TabWidget, setCallback))
+        .def("callback", &TabWidget::callback, D(TabWidget, callback))
+        .def("addTab", (void (TabWidget::*)(const std::string &, Widget *)) &TabWidget::addTab, D(TabWidget, addTab))
+        .def("addTab", (void (TabWidget::*)(int index, const std::string &, Widget *)) &TabWidget::addTab, D(TabWidget, addTab, 2))
+        .def("createTab", (Widget *(TabWidget::*)(const std::string &)) &TabWidget::createTab, D(TabWidget, createTab))
+        .def("createTab", (Widget *(TabWidget::*)(int index, const std::string &)) &TabWidget::createTab, D(TabWidget, createTab, 2))
+        .def("removeTab", (bool (TabWidget::*)(const std::string &)) &TabWidget::removeTab, D(TabWidget, removeTab))
+        .def("removeTab", (void (TabWidget::*)(int index)) &TabWidget::removeTab, D(TabWidget, removeTab, 2))
+        .def("tabLabelAt", &TabWidget::tabLabelAt, D(TabWidget, tabLabelAt))
+        .def("tabIndex", &TabWidget::tabIndex, D(TabWidget, tabIndex))
+        .def("tab", (Widget * (TabWidget::*)(const std::string &)) &TabWidget::tab, D(TabWidget, tab))
+        .def("ensureTabVisible", &TabWidget::ensureTabVisible, D(TabWidget, ensureTabVisible));
+
+    py::class_<ImageView, ref<ImageView>, PyImageView>(m, "ImageView", widget/*, D(ImageView)*/)
+        .def(py::init<Widget *, GLuint>()/*, D(ImageView, ImageView)*/)
+        .def("bindImage", &ImageView::bindImage/*, D(ImageView, bindImage)*/)
+        .def("imageShader", &ImageView::imageShader/*, D(ImageView, imageShader)*/)
+        .def("positionF", &ImageView::positionF/*, D(ImageView, positionF)*/)
+        .def("sizeF", &ImageView::sizeF/*, D(ImageView, sizeF)*/)
+        .def("imageSize", &ImageView::imageSize/*, D(ImageView, imageSize)*/)
+        .def("scaledImageSize", &ImageView::scaledImageSize/*, D(ImageView, scaledImageSize)*/)
+        .def("imageSizeF", &ImageView::imageSizeF/*, D(ImageView, imageSizeF)*/)
+        .def("scaledImageSizeF", &ImageView::scaledImageSizeF/*, D(ImageView, scaledImageSizeF)*/)
+        .def("offset", &ImageView::offset/*, D(ImageView, offset)*/)
+        .def("setOffset", &ImageView::setOffset/*, D(ImageView, setOffset)*/)
+        .def("scale", &ImageView::scale/*, D(ImageView, scale)*/)
+        .def("fixedOffset", &ImageView::fixedOffset/*, D(ImageView, fixedOffset)*/)
+        .def("setFixedOffset", &ImageView::setFixedOffset/*, D(ImageView, setFixedOffset)*/)
+        .def("fixedScale", &ImageView::fixedScale/*, D(ImageView, fixedScale)*/)
+        .def("setFixedScale", &ImageView::setFixedScale/*, D(ImageView, setFixedScale)*/)
+        .def("zoomSensitivity", &ImageView::zoomSensitivity/*, D(ImageView, zoomSensitivity)*/)
+        .def("setZoomSensitivity", &ImageView::setZoomSensitivity/*, D(ImageView, setZoomSensitivity)*/)
+        .def("gridThreshold", &ImageView::gridThreshold/*, D(ImageView, gridThreshold)*/)
+        .def("setGridThreshold", &ImageView::setGridThreshold/*, D(ImageView, setGridThreshold)*/)
+        .def("pixelInfoThreshold", &ImageView::pixelInfoThreshold/*, D(ImageView, pixelInfoThreshold)*/)
+        .def("setPixelInfoThreshold", &ImageView::setPixelInfoThreshold/*, D(ImageView, setPixelInfoThreshold)*/)
+        .def("setPixelInfoCallback", &ImageView::setPixelInfoCallback/*, D(ImageView, setPixelInfoCallback)*/)
+        .def("pixelInfoCallback", &ImageView::pixelInfoCallback/*, D(ImageView, pixelInfoCallback)*/)
+        .def("setFontScaleFactor", &ImageView::setFontScaleFactor/*, D(ImageView, setFontScaleFactor)*/)
+        .def("fontScaleFactor", &ImageView::fontScaleFactor/*, D(ImageView, fontScaleFactor)*/)
+        .def("imageCoordinateAt", &ImageView::imageCoordinateAt/*, D(ImageView, imageCoordinateAt)*/)
+        .def("clampedImageCoordinateAt", &ImageView::clampedImageCoordinateAt/*, D(ImageView, clampedImageCoordinateAt)*/)
+        .def("positionForCoordinate", &ImageView::positionForCoordinate/*, D(ImageView, positionForCoordinate)*/)
+        .def("setImageCoordinateAt", &ImageView::setImageCoordinateAt/*, D(ImageView, setImageCoordinateAt)*/)
+        .def("center",&ImageView::center/*, D(ImageView, center)*/)
+        .def("fit", &ImageView::fit/*, D(ImageView, fit)*/)
+        .def("setScaleCentered", &ImageView::setScaleCentered/*, D(ImageView, setScaleCentered)*/)
+        .def("moveOffset", &ImageView::moveOffset/*, D(ImageView, moveOffset)*/)
+        .def("zoom", &ImageView::zoom/*, D(ImageView, zoom)*/)
+        .def("gridVisible", &ImageView::gridVisible/*, D(ImageView, gridVisible)*/)
+        .def("pixelInfoVisible", &ImageView::pixelInfoVisible/*, D(ImageView, pixelInfoVisible)*/)
+        .def("helpersVisible", &ImageView::helpersVisible/*, D(ImageView, helpersVisible)*/);
 
     enum DummyEnum { };
 

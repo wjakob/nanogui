@@ -1,7 +1,7 @@
 /*
     src/window.cpp -- Top-level window widget
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -14,6 +14,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/screen.h>
 #include <nanogui/layout.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -104,9 +105,12 @@ void Window::draw(NVGcontext *ctx) {
         nvgBeginPath(ctx);
         nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
         nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
-        nvgScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
+        
+        nvgSave(ctx);
+        nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
         nvgStroke(ctx);
         nvgResetScissor(ctx);
+        nvgRestore(ctx);
 
         nvgBeginPath(ctx);
         nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
@@ -176,6 +180,20 @@ bool Window::scrollEvent(const Vector2i &p, const Vector2f &rel) {
 
 void Window::refreshRelativePlacement() {
     /* Overridden in \ref Popup */
+}
+
+void Window::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("title", mTitle);
+    s.set("modal", mModal);
+}
+
+bool Window::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("title", mTitle)) return false;
+    if (!s.get("modal", mModal)) return false;
+    mDrag = false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

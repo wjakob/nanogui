@@ -3,7 +3,7 @@
 
     The grid layout was contributed by Christian Schueller.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -74,8 +74,8 @@ public:
     void setSpacing(int spacing) { mSpacing = spacing; }
 
     /* Implementation of the layout interface */
-    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
-    void performLayout(NVGcontext *ctx, Widget *widget) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     Orientation mOrientation;
@@ -114,8 +114,8 @@ public:
     void setGroupSpacing(int groupSpacing) { mGroupSpacing = groupSpacing; }
 
     /* Implementation of the layout interface */
-    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
-    void performLayout(NVGcontext *ctx, Widget *widget) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     int mMargin;
@@ -171,8 +171,8 @@ public:
     void setRowAlignment(const std::vector<Alignment> &value) { mAlignment[1] = value; }
 
     /* Implementation of the layout interface */
-    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
-    void performLayout(NVGcontext *ctx, Widget *widget) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     // Compute the maximum row and column sizes
@@ -248,7 +248,7 @@ public:
         }
     };
 
-    AdvancedGridLayout(const std::vector<int> &cols = {}, const std::vector<int> &rows = {});
+    AdvancedGridLayout(const std::vector<int> &cols = {}, const std::vector<int> &rows = {}, int margin = 0);
 
     int margin() const { return mMargin; }
     void setMargin(int margin) { mMargin = margin; }
@@ -283,8 +283,8 @@ public:
     }
 
     /* Implementation of the layout interface */
-    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
-    void performLayout(NVGcontext *ctx, Widget *widget) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     void computeLayout(NVGcontext *ctx, const Widget *widget,

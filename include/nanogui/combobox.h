@@ -1,7 +1,7 @@
 /*
     nanogui/combobox.h -- simple combo box widget based on a popup button
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -40,6 +40,11 @@ public:
     void setItems(const std::vector<std::string> &items) { setItems(items, items); }
     const std::vector<std::string> &items() const { return mItems; }
     const std::vector<std::string> &itemsShort() const { return mItemsShort; }
+
+    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
+
+    virtual void save(Serializer &s) const override;
+    virtual bool load(Serializer &s) override;
 protected:
     std::vector<std::string> mItems, mItemsShort;
     std::function<void(int)> mCallback;

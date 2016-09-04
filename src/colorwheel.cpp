@@ -3,7 +3,7 @@
 
     This widget was contributed by Dmitriy Morozov.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -14,6 +14,7 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 #include <Eigen/QR>
 #include <Eigen/Geometry>
 
@@ -301,6 +302,22 @@ void ColorWheel::setColor(const Color &rgb) {
         mBlack = bary[1];
         mWhite = bary[2];
     }
+}
+
+void ColorWheel::save(Serializer &s) const {
+    Widget::save(s);
+    s.set("hue", mHue);
+    s.set("white", mWhite);
+    s.set("black", mBlack);
+}
+
+bool ColorWheel::load(Serializer &s) {
+    if (!Widget::load(s)) return false;
+    if (!s.get("hue", mHue)) return false;
+    if (!s.get("white", mWhite)) return false;
+    if (!s.get("black", mBlack)) return false;
+    mDragRegion = Region::None;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

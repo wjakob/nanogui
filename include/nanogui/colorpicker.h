@@ -3,7 +3,7 @@
 
     This widget was contributed by Christian Schueller.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -29,7 +29,6 @@ public:
     Color color() const;
     /// Set the current color
     void setColor(const Color& color);
-
 protected:
     std::function<void(const Color &)> mCallback;
     ColorWheel *mColorWheel;

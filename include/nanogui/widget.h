@@ -1,7 +1,7 @@
 /*
     nanogui/widget.h -- Base class of all widgets
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -27,13 +27,6 @@ enum class Cursor;
  */
 class NANOGUI_EXPORT Widget : public Object {
 public:
-    template<typename WidgetClass, typename... Args>
-    WidgetClass& add(const Args&... args)
-    {
-        WidgetClass* widget = new WidgetClass(this, args...);
-        return *widget;
-    }
-
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
 
@@ -56,7 +49,7 @@ public:
     /// Return the \ref Theme used to draw this widget
     const Theme *theme() const { return mTheme.get(); }
     /// Set the \ref Theme used to draw this widget
-    void setTheme(Theme *theme) { mTheme = theme; }
+    virtual void setTheme(Theme *theme);
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
@@ -130,12 +123,16 @@ public:
     const std::vector<Widget *> &children() const { return mChildren; }
 
     /**
-     * \brief Add a child widget to the current widget
+     * \brief Add a child widget to the current widget at
+     * the specified index.
      *
      * This function almost never needs to be called by hand,
      * since the constructor of \ref Widget automatically
      * adds the current widget to its parent
      */
+    virtual void addChild(int index, Widget *widget);
+
+    /// Convenience function which appends a widget at the end
     void addChild(Widget *widget);
 
     /// Remove a child widget by index
@@ -143,6 +140,21 @@ public:
 
     /// Remove a child widget by value
     void removeChild(const Widget *widget);
+
+    /// Retrieves the child at the specific position
+    const Widget* childAt(int index) const { return mChildren[index]; }
+
+    /// Retrieves the child at the specific position
+    Widget* childAt(int index) { return mChildren[index]; }
+
+    /// Returns the index of a specific child or -1 if not found
+    int childIndex(Widget* widget) const;
+
+    /// Variadic shorthand notation to construct and add a child widget
+    template<typename WidgetClass, typename... Args>
+    WidgetClass* add(const Args&... args) {
+        return new WidgetClass(this, args...);
+    }
 
     // Walk up the hierarchy and return the parent window
     Window *window();
@@ -221,6 +233,11 @@ public:
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);
 
+    /// Save the state of the widget into the given \ref Serializer instance
+    virtual void save(Serializer &s) const;
+
+    /// Restore the state of the widget from the given \ref Serializer instance
+    virtual bool load(Serializer &s);
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();

@@ -1,7 +1,7 @@
 /*
     src/popupbutton.cpp -- Button which launches a popup widget
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -13,6 +13,7 @@
 #include <nanogui/entypo.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -25,6 +26,7 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption,
     Window *parentWindow = window();
     mPopup = new Popup(parentWindow->parent(), window());
     mPopup->setSize(Vector2i(320, 250));
+    mPopup->setVisible(false);
 }
 
 Vector2i PopupButton::preferredSize(NVGcontext *ctx) const {
@@ -63,6 +65,19 @@ void PopupButton::performLayout(NVGcontext *ctx) {
 
     mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15,
         absolutePosition().y() - parentWindow->position().y() + mSize.y() /2));
+}
+
+void PopupButton::save(Serializer &s) const {
+    Button::save(s);
+    s.set("chevronIcon", mChevronIcon);
+}
+
+bool PopupButton::load(Serializer &s) {
+    if (!Button::load(s))
+        return false;
+    if (!s.get("chevronIcon", mChevronIcon))
+        return false;
+    return true;
 }
 
 NAMESPACE_END(nanogui)

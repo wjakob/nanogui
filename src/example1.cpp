@@ -1,9 +1,9 @@
 /*
-    src/example1.cpp -- C++ version of an example application that shows 
+    src/example1.cpp -- C++ version of an example application that shows
     how to use the various widget classes. For a Python implementation, see
     '../python/example1.py'.
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -11,6 +11,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <nanogui/opengl.h>
+#include <nanogui/glutil.h>
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/layout.h>
@@ -30,15 +32,111 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-#include <nanogui/glutil.h>
+#include <nanogui/tabwidget.h>
 #include <iostream>
+#include <string>
+
+// Includes for the GLTexture class.
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#if defined(__GNUC__)
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+#if defined(_WIN32)
+#  pragma warning(push)
+#  pragma warning(disable: 4457 4456 4005 4312)
+#endif
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#if defined(_WIN32)
+#  pragma warning(pop)
+#endif
+#if defined(_WIN32)
+#  if defined(APIENTRY)
+#    undef APIENTRY
+#  endif
+#  include <windows.h>
+#endif
 
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
+using std::vector;
+using std::pair;
+using std::to_string;
+
+class GLTexture {
+public:
+    using handleType = std::unique_ptr<uint8_t[], void(*)(void*)>;
+    GLTexture() = default;
+    GLTexture(const std::string& textureName)
+        : mTextureName(textureName), mTextureId(0) {}
+
+    GLTexture(const std::string& textureName, GLint textureId)
+        : mTextureName(textureName), mTextureId(textureId) {}
+
+    GLTexture(const GLTexture& other) = delete;
+    GLTexture(GLTexture&& other) noexcept
+        : mTextureName(std::move(other.mTextureName)),
+        mTextureId(other.mTextureId) {
+        other.mTextureId = 0;
+    }
+    GLTexture& operator=(const GLTexture& other) = delete;
+    GLTexture& operator=(GLTexture&& other) noexcept {
+        mTextureName = std::move(other.mTextureName);
+        std::swap(mTextureId, other.mTextureId);
+        return *this;
+    }
+    ~GLTexture() noexcept {
+        if (mTextureId)
+            glDeleteTextures(1, &mTextureId);
+    }
+
+    GLuint texture() const { return mTextureId; }
+    const std::string& textureName() const { return mTextureName; }
+    
+    /**
+    *  Load a file in memory and create an OpenGL texture.
+    *  Returns a handle type (an std::unique_ptr) to the loaded pixels.
+    */
+    handleType load(const std::string& fileName) {
+        if (mTextureId) {
+            glDeleteTextures(1, &mTextureId);
+            mTextureId = 0;
+        }
+        int force_channels = 0;
+        int w, h, n;
+        handleType textureData(stbi_load(fileName.c_str(), &w, &h, &n, force_channels), stbi_image_free);
+        if (!textureData)
+            throw std::invalid_argument("Could not load texture data from file " + fileName);
+        glGenTextures(1, &mTextureId);
+        glBindTexture(GL_TEXTURE_2D, mTextureId);
+        GLint internalFormat;
+        GLint format;
+        switch (n) {
+            case 1: internalFormat = GL_R8; format = GL_RED; break;
+            case 2: internalFormat = GL_RG8; format = GL_RG; break;
+            case 3: internalFormat = GL_RGB8; format = GL_RGB; break;
+            case 4: internalFormat = GL_RGBA8; format = GL_RGBA; break;
+            default: internalFormat = 0; format = 0; break;
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, GL_UNSIGNED_BYTE, textureData.get());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        return textureData;
+    }
+
+private:
+    std::string mTextureName;
+    GLuint mTextureId;
+};
 
 class ExampleApplication : public nanogui::Screen {
 public:
@@ -55,9 +153,14 @@ public:
 
         Button *b = new Button(window, "Plain button");
         b->setCallback([] { cout << "pushed!" << endl; });
-        b = new Button(window, "Styled", ENTYPO_ICON_ROCKET);
+        b->setTooltip("short tooltip");
+
+        /* Alternative construction notation using variadic template */
+        b = window->add<Button>("Styled", ENTYPO_ICON_ROCKET);
         b->setBackgroundColor(Color(0, 0, 255, 25));
         b->setCallback([] { cout << "pushed!" << endl; });
+        b->setTooltip("This button has a fairly long tooltip. It is so long, in "
+                "fact, that the shown text will span several lines.");
 
         new Label(window, "Toggle buttons", "sans-bold");
         b = new Button(window, "Toggle me");
@@ -91,23 +194,6 @@ public:
         popup->setLayout(new GroupLayout());
         new CheckBox(popup, "Another check box");
 
-        //use add functino with widget semantics
-        {
-            performLayout(mNVGContext);
-            auto& window2 = add<Window>("Button demo with add style");
-            window2.setPosition( Vector2i(18,18 + window->size().y() ) );
-            window2.setLayout(new GroupLayout());
-
-            window2.add<Label>("Push buttons", "sans-bold");
-
-            window2.add<Button>("Plain button")
-                   .setCallback([] { cout << "pushed!" << endl; });
-            
-            auto& btn = window2.add<Button>("Styled", ENTYPO_ICON_ROCKET);
-            btn.setBackgroundColor(Color(0, 0, 255, 25));
-            btn.setCallback([] { cout << "pushed!" << endl; });
-        }
-
         window = new Window(this, "Basic widgets");
         window->setPosition(Vector2i(200, 15));
         window->setLayout(new GroupLayout());
@@ -132,8 +218,13 @@ public:
             dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
         });
 
-        std::vector<std::pair<int, std::string>>
+        vector<pair<int, string>>
             icons = loadImageDirectory(mNVGContext, "icons");
+        #if defined(_WIN32)
+            string resourcesFolderPath("../resources/");
+        #else
+            string resourcesFolderPath("./");
+        #endif
 
         new Label(window, "Image panel & scroll panel", "sans-bold");
         PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
@@ -144,21 +235,44 @@ public:
         imgPanel->setImages(icons);
         popup->setFixedSize(Vector2i(245, 150));
 
-        auto img_window = new Window(this, "Selected image");
-        img_window->setPosition(Vector2i(675, 15));
-        img_window->setLayout(new GroupLayout());
+        auto imageWindow = new Window(this, "Selected image");
+        imageWindow->setPosition(Vector2i(710, 15));
+        imageWindow->setLayout(new GroupLayout());
 
-        auto img = new ImageView(img_window);
-        img->setPolicy(ImageView::SizePolicy::Expand);
-        img->setFixedSize(Vector2i(300, 300));
-        img->setImage(icons[0].first);
-        imgPanel->setCallback([&, img, imgPanel, imagePanelBtn](int i) {
-            img->setImage(imgPanel->images()[i].first); cout << "Selected item " << i << endl;
+        // Load all of the images by creating a GLTexture object and saving the pixel data.
+        for (auto& icon : icons) {
+            GLTexture texture(icon.second);
+            auto data = texture.load(resourcesFolderPath + icon.second + ".png");
+            mImagesData.emplace_back(std::move(texture), std::move(data));
+        }
+        
+        // Set the first texture
+        auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
+        mCurrentImage = 0;
+        // Change the active textures.
+        imgPanel->setCallback([this, imageView, imgPanel](int i) {
+            imageView->bindImage(mImagesData[i].first.texture());
+            mCurrentImage = i;
+            cout << "Selected item " << i << '\n';
         });
-        auto img_cb = new CheckBox(img_window, "Expand",
-            [img](bool state) { if (state) img->setPolicy(ImageView::SizePolicy::Expand);
-                                else       img->setPolicy(ImageView::SizePolicy::Fixed); });
-        img_cb->setChecked(true);
+        imageView->setGridThreshold(20);
+        imageView->setPixelInfoThreshold(20);
+        imageView->setPixelInfoCallback(
+            [this, imageView](const Vector2i& index) -> pair<string, Color> {
+            auto& imageData = mImagesData[mCurrentImage].second;
+            auto& textureSize = imageView->imageSize();
+            string stringData;
+            uint16_t channelSum = 0;
+            for (int i = 0; i != 4; ++i) {
+                auto& channelData = imageData[4*index.y()*textureSize.x() + 4*index.x() + i];
+                channelSum += channelData;
+                stringData += (to_string(static_cast<int>(channelData)) + "\n");
+            }
+            float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
+            float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
+            Color textColor = Color(colorScale, 1.0f); 
+            return { stringData, textColor };
+        });
 
         new Label(window, "File dialog", "sans-bold");
         tools = new Widget(window);
@@ -212,13 +326,26 @@ public:
         textBox->setFontSize(20);
         textBox->setAlignment(TextBox::Alignment::Right);
 
-        window = new Window(this,"Misc. widgets");
+        window = new Window(this, "Misc. widgets");
         window->setPosition(Vector2i(425,15));
         window->setLayout(new GroupLayout());
-        new Label(window,"Color wheel","sans-bold");
-        new ColorWheel(window);
-        new Label(window, "Function graph", "sans-bold");
-        Graph *graph = new Graph(window, "Some function");
+
+        TabWidget* tabWidget = window->add<TabWidget>();
+
+        Widget* layer = tabWidget->createTab("Color Wheel");
+        layer->setLayout(new GroupLayout());
+
+        // Use overloaded variadic add to fill the tab widget with Different tabs.
+        layer->add<Label>("Color wheel widget", "sans-bold");
+        layer->add<ColorWheel>();
+
+        layer = tabWidget->createTab("Function Graph");
+        layer->setLayout(new GroupLayout());
+
+        layer->add<Label>("Function graph widget", "sans-bold");
+
+        Graph *graph = layer->add<Graph>("Some Function");
+
         graph->setHeader("E = 2.35e-3");
         graph->setFooter("Iteration 89");
         VectorXf &func = graph->values();
@@ -227,8 +354,61 @@ public:
             func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
                               0.5f * std::cos(i / 23.f) + 1);
 
+        // Dummy tab used to represent the last tab button.
+        tabWidget->createTab("+");
+
+        // A simple counter.
+        int counter = 1;
+        tabWidget->setCallback([tabWidget, this, counter] (int index) mutable {
+            if (index == (tabWidget->tabCount()-1)) {
+                // When the "+" tab has been clicked, simply add a new tab.
+                string tabName = "Dynamic " + to_string(counter);
+                Widget* layerDyn = tabWidget->createTab(index, tabName);
+                layerDyn->setLayout(new GroupLayout());
+                layerDyn->add<Label>("Function graph widget", "sans-bold");
+                Graph *graphDyn = layerDyn->add<Graph>("Dynamic function");
+
+                graphDyn->setHeader("E = 2.35e-3");
+                graphDyn->setFooter("Iteration " + to_string(index*counter));
+                VectorXf &funcDyn = graphDyn->values();
+                funcDyn.resize(100);
+                for (int i = 0; i < 100; ++i)
+                    funcDyn[i] = 0.5f *
+                        std::abs((0.5f * std::sin(i / 10.f + counter) +
+                                  0.5f * std::cos(i / 23.f + 1 + counter)));
+                ++counter;
+                // We must invoke perform layout from the screen instance to keep everything in order.
+                // This is essential when creating tabs dynamically.
+                performLayout();
+                // Ensure that the newly added header is visible on screen
+                tabWidget->ensureTabVisible(index);
+
+            }
+        });
+        tabWidget->setActiveTab(0);
+
+        // A button to go back to the first tab and scroll the window.
+        panel = window->add<Widget>();
+        panel->add<Label>("Jump to tab: ");
+        panel->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 6));
+
+        auto ib = panel->add<IntBox<int>>();
+        ib->setEditable(true);
+
+        b = panel->add<Button>("", ENTYPO_ICON_FORWARD);
+        b->setFixedSize(Vector2i(22, 22));
+        ib->setFixedHeight(22);
+        b->setCallback([tabWidget, ib] {
+            int value = ib->value();
+            if (value >= 0 && value < tabWidget->tabCount()) {
+                tabWidget->setActiveTab(value);
+                tabWidget->ensureTabVisible(value);
+            }
+        });
+
         window = new Window(this, "Grid of small widgets");
-        window->setPosition(Vector2i(425, 288));
+        window->setPosition(Vector2i(425, 300));
         GridLayout *layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
@@ -251,14 +431,17 @@ public:
 
         {
             new Label(window, "Positive integer :", "sans-bold");
-            textBox = new TextBox(window);
-            textBox->setEditable(true);
-            textBox->setFixedSize(Vector2i(100, 20));
-            textBox->setValue("50");
-            textBox->setUnits("Mhz");
-            textBox->setDefaultValue("0.0");
-            textBox->setFontSize(16);
-            textBox->setFormat("[1-9][0-9]*");
+            auto intBox = new IntBox<int>(window);
+            intBox->setEditable(true);
+            intBox->setFixedSize(Vector2i(100, 20));
+            intBox->setValue(50);
+            intBox->setUnits("Mhz");
+            intBox->setDefaultValue("0");
+            intBox->setFontSize(16);
+            intBox->setFormat("[1-9][0-9]*");
+            intBox->setSpinnable(true);
+            intBox->setMinValue(1);
+            intBox->setValueIncrement(2);
         }
 
         {
@@ -302,7 +485,7 @@ public:
             }
         });
 
-        performLayout(mNVGContext);
+        performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now
            create an OpenGL shader to draw the main window contents.
@@ -391,6 +574,10 @@ public:
 private:
     nanogui::ProgressBar *mProgress;
     nanogui::GLShader mShader;
+
+    using imagesDataType = vector<pair<GLTexture, GLTexture::handleType>>;
+    imagesDataType mImagesData;
+    int mCurrentImage;
 };
 
 int main(int /* argc */, char ** /* argv */) {

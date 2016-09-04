@@ -1,7 +1,7 @@
 /*
     nanogui/common.h -- common definitions used by NanoGUI
 
-    NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
+    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -63,10 +63,11 @@
 #pragma warning(disable : 4714) // warning C4714: funtion X marked as __forceinline not inlined
 #endif
 
-struct NVGcontext;
+struct NVGcontext { /* Opaque handle type, never de-referenced within NanoGUI */ };
+struct GLFWwindow { /* Opaque handle type, never de-referenced within NanoGUI */ };
+
 struct NVGcolor;
 struct NVGglyphPosition;
-struct GLFWwindow;
 struct GLFWcursor;
 
 // Define command key for windows/mac/linux
@@ -181,6 +182,7 @@ class GLShader;
 class GridLayout;
 class GroupLayout;
 class ImagePanel;
+class ImageView;
 class Label;
 class Layout;
 class MessageDialog;
@@ -189,7 +191,11 @@ class Popup;
 class PopupButton;
 class ProgressBar;
 class Screen;
+class Serializer;
 class Slider;
+class StackedWidget;
+class TabHeader;
+class TabWidget;
 class TextBox;
 class Theme;
 class ToolButton;
@@ -203,8 +209,44 @@ extern NANOGUI_EXPORT void init();
 /// Static shutdown; should be called before the application terminates
 extern NANOGUI_EXPORT void shutdown();
 
-/// Enter the application main loop
-extern NANOGUI_EXPORT void mainloop();
+/**
+ * \brief Enter the application main loop
+ *
+ * \param refresh
+ *     NanoGUI issues a redraw call whenever an keyboard/mouse/.. event is
+ *     received. In the absence of any external events, it enforces a redraw
+ *     once every ``refresh`` milliseconds. To disable the refresh timer,
+ *     specify a negative value here.
+ *
+ * \param detach
+ *     This pararameter only exists in the Python bindings. When the active 
+ *     \c Screen instance is provided via the \c detach parameter, the
+ *     <tt>mainloop()</tt> function becomes non-blocking and returns
+ *     immediately (in this case, the main loop runs in parallel on a newly
+ *     created thread). This feature is convenient for prototyping user
+ *     interfaces on an interactive Python command prompt.
+ *
+ *     When <tt>detach != None</tt>, the function returns an opaque handle that
+ *     will release any resources allocated by the created thread when the
+ *     handle's <tt>join()</tt> method is invoked (or when it is garbage
+ *     collected).
+ *
+ * \remark
+ *     Unfortunately, Mac OS X strictly requires all event processing to take
+ *     place on the application's main thread, which is fundamentally
+ *     incompatible with this type of approach. Thus, NanoGUI relies on a
+ *     rather crazy workaround on Mac OS (kudos to Dmitriy Morozov):
+ *     <tt>mainloop()</tt> launches a new thread as before but then uses
+ *     libcoro to swap the thread execution environment (stack, registers, ..)
+ *     with the main thread. This means that the main application thread is
+ *     hijacked and processes events in the main loop to satisfy the
+ *     requirements on Mac OS, while the thread that actually returns from this
+ *     function is the newly created one (paradoxical, as that may seem).
+ *     Deleting or <tt>join()</tt>ing the returned handle causes application to
+ *     wait for the termination of the main loop and then swap the two thread
+ *     environments back into their initial configuration.
+ */
+extern NANOGUI_EXPORT void mainloop(int refresh = 50);
 
 /// Request the application main loop to terminate
 extern NANOGUI_EXPORT void leave();
@@ -216,7 +258,9 @@ extern NANOGUI_EXPORT void leave();
  *     Pairs of permissible formats with descriptions like
  *     <tt>("png", "Portable Network Graphics")</tt>
  */
-extern NANOGUI_EXPORT std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save);
+extern NANOGUI_EXPORT std::string
+file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
+            bool save);
 
 #if defined(__APPLE__)
 /**
