@@ -39,8 +39,17 @@ public:
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
     virtual void draw(NVGcontext* ctx);
 
+    void setKnobOutterRadiusKoeff(float koeff) { mKnobRadKoeff.outter = koeff; }
+    void setKnobInnerRadiusKoeff(float koeff) { mKnobRadKoeff.inner = koeff; }
+
 protected:
     float mValue;
+
+    struct {
+        float outter=1.f;
+        float inner=0.5f;
+    } mKnobRadKoeff;
+
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
     std::pair<float, float> mHighlightedRange;
