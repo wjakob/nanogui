@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,6 +16,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class Slider slider.h nanogui/slider.h
+ *
+ * \brief Fractional slider widget with mouse control.
+ */
 class NANOGUI_EXPORT Slider : public Widget {
 public:
     Slider(Widget *parent);

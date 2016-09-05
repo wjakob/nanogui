@@ -9,6 +9,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -16,6 +17,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class ImagePanel imagepanel.h nanogui/imagepanel.h
+ *
+ * \brief Image panel widget which shows a number of square-shaped icons.
+ */
 class NANOGUI_EXPORT ImagePanel : public Widget {
 public:
     typedef std::vector<std::pair<int, std::string>> Images;

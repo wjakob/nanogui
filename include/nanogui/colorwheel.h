@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -17,9 +18,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class ColorWheel colorwheel.h nanogui/colorwheel.h
+ *
+ * \brief Fancy analog widget to select a color value.
+ */
 class NANOGUI_EXPORT ColorWheel : public Widget {
 public:
-    ColorWheel(Widget *parent, const Color& color = { 1.f, 0.f, 0.f, 1.f });
+    ColorWheel(Widget *parent, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 
     /// Set the change callback
     std::function<void(const Color &)> callback() const                  { return mCallback;     }

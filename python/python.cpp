@@ -323,7 +323,7 @@ PYBIND11_PLUGIN(nanogui) {
         m.attr("VectorXf") = vectorXf;
     }
 
-    py::enum_<Cursor>(m, "Cursor")
+    py::enum_<Cursor>(m, "Cursor", D(Cursor))
         .value("Arrow", Cursor::Arrow)
         .value("IBeam", Cursor::IBeam)
         .value("Crosshair", Cursor::Crosshair)
@@ -331,19 +331,22 @@ PYBIND11_PLUGIN(nanogui) {
         .value("HResize", Cursor::HResize)
         .value("VResize", Cursor::VResize);
 
-    py::class_<Color>(m, "Color")
-        .def(py::init<float, float, float, float>())
-        .def(py::init<float, float>())
-        .def("contrastingColor", &Color::contrastingColor)
+    py::class_<Color>(m, "Color", D(Color))
+        .def(py::init<float, float, float, float>(), D(Color, Color, 7))
+        .def(py::init<float, float>(), D(Color, Color, 5))
+        .def("contrastingColor", &Color::contrastingColor, D(Color, contrastingColor))
         .def_property("r",
             [](const Color &c) { return c.r(); },
-            [](Color &c, float v) { c.r() = v; })
+            [](Color &c, float v) { c.r() = v; },
+            D(Color, r))
         .def_property("g",
             [](const Color &c) { return c.g(); },
-            [](Color &c, float v) { c.g() = v; })
+            [](Color &c, float v) { c.g() = v; },
+            D(Color, g))
         .def_property("b",
             [](const Color &c) { return c.b(); },
-            [](Color &c, float v) { c.b() = v; });
+            [](Color &c, float v) { c.b() = v; },
+            D(Color, b));
 
     py::class_<NVGcontext> context(m, "NVGcontext");
 
@@ -434,7 +437,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setBackground", &Screen::setBackground, D(Screen, setBackground))
         .def("setVisible", &Screen::setVisible, D(Screen, setVisible))
         .def("setSize", &Screen::setSize, D(Screen, setSize))
-        .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout)
+        .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout, D(Screen, performLayout))
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
         .def("resizeEvent", &Screen::resizeEvent, py::arg("size"), D(Screen, resizeEvent))
@@ -457,13 +460,13 @@ PYBIND11_PLUGIN(nanogui) {
         .def("buttonPanel", &Window::buttonPanel, D(Window, buttonPanel))
         .def("center", &Window::center, D(Window, center));
 
-    py::enum_<Alignment>(m, "Alignment")
+    py::enum_<Alignment>(m, "Alignment", D(Alignment))
         .value("Minimum", Alignment::Minimum)
         .value("Middle", Alignment::Middle)
         .value("Maximum", Alignment::Maximum)
         .value("Fill", Alignment::Fill);
 
-    py::enum_<Orientation>(m, "Orientation")
+    py::enum_<Orientation>(m, "Orientation", D(Orientation))
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
@@ -513,12 +516,12 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setMargin", &GridLayout::setMargin, D(GridLayout, setMargin))
         .def("spacing", &GridLayout::spacing, D(GridLayout, spacing))
         .def("setSpacing", (void(GridLayout::*)(int)) &GridLayout::setSpacing, D(GridLayout, setSpacing))
-        .def("setSpacing", (void(GridLayout::*)(int, int)) &GridLayout::setSpacing)
+        .def("setSpacing", (void(GridLayout::*)(int, int)) &GridLayout::setSpacing, D(GridLayout, setSpacing, 2))
         .def("alignment", &GridLayout::alignment, D(GridLayout, alignment))
         .def("setColAlignment", (void(GridLayout::*)(Alignment)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment))
         .def("setRowAlignment", (void(GridLayout::*)(Alignment)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment))
-        .def("setColAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setColAlignment, D(GridLayout, setColAlignment, 2))
-        .def("setRowAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setRowAlignment, D(GridLayout, setRowAlignment, 2));
+        .def("setColAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setColAlignment/*, D(GridLayout, setColAlignment, 2)*/)
+        .def("setRowAlignment", (void(GridLayout::*)(const std::vector<Alignment>&)) &GridLayout::setRowAlignment/*, D(GridLayout, setRowAlignment, 2)*/);
 
     py::class_<AdvancedGridLayout, ref<AdvancedGridLayout>, PyAdvancedGridLayout> advGridLayout(
         m, "AdvancedGridLayout", layout, D(AdvancedGridLayout));
@@ -535,25 +538,28 @@ PYBIND11_PLUGIN(nanogui) {
              py::arg("stretch") = 0, D(AdvancedGridLayout, appendRow))
         .def("appendCol", &AdvancedGridLayout::appendCol, py::arg("size"),
              py::arg("stretch") = 0, D(AdvancedGridLayout, appendCol))
-        .def("setRowStretch", &AdvancedGridLayout::setRowStretch)
-        .def("setColStretch", &AdvancedGridLayout::setColStretch)
-        .def("setAnchor", &AdvancedGridLayout::setAnchor)
-        .def("anchor", &AdvancedGridLayout::anchor);
+        .def("setRowStretch", &AdvancedGridLayout::setRowStretch, D(AdvancedGridLayout, setRowStretch))
+        .def("setColStretch", &AdvancedGridLayout::setColStretch, D(AdvancedGridLayout, setColStretch))
+        .def("setAnchor", &AdvancedGridLayout::setAnchor, D(AdvancedGridLayout, setAnchor))
+        .def("anchor", &AdvancedGridLayout::anchor, D(AdvancedGridLayout, anchor));
 
     py::class_<AdvancedGridLayout::Anchor>(advGridLayout, "Anchor")
         .def(py::init<int, int, Alignment, Alignment>(),
              py::arg("x"), py::arg("y"),
              py::arg("horiz") = Alignment::Fill,
-             py::arg("vert") = Alignment::Fill)
+             py::arg("vert") = Alignment::Fill,
+             D(AdvancedGridLayout, Anchor, Anchor, 2))
         .def(py::init<int, int, int, int, Alignment, Alignment>(),
              py::arg("x"), py::arg("y"), py::arg("w"), py::arg("h"),
              py::arg("horiz") = Alignment::Fill,
-             py::arg("vert") = Alignment::Fill);
+             py::arg("vert") = Alignment::Fill,
+             D(AdvancedGridLayout, Anchor, Anchor, 3));
 
     py::class_<Label, ref<Label>, PyLabel>(m, "Label", widget, D(Label))
         .def(py::init<Widget *, const std::string &, const std::string &, int>(),
              py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
-             py::arg("fontSize") = -1)
+             py::arg("fontSize") = -1,
+             D(Label, Label))
         .def("caption", &Label::caption, D(Label, caption))
         .def("setCaption", &Label::setCaption, D(Label, setCaption))
         .def("font", &Label::font, D(Label, font))
@@ -564,7 +570,7 @@ PYBIND11_PLUGIN(nanogui) {
     py::class_<Button, ref<Button>, PyButton> button(m, "Button", widget, D(Button));
     button
         .def(py::init<Widget *, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0)
+             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0, D(Button, Button))
         .def("caption", &Button::caption, D(Button, caption))
         .def("setCaption", &Button::setCaption, D(Button, setCaption))
         .def("backgroundColor", &Button::backgroundColor, D(Button, backgroundColor))
@@ -586,13 +592,13 @@ PYBIND11_PLUGIN(nanogui) {
         .def("buttonGroup", &Button::buttonGroup, D(Button, buttonGroup))
         .def("setButtonGroup", &Button::setButtonGroup, D(Button, setButtonGroup));
 
-    py::enum_<Button::IconPosition>(button, "IconPosition")
+    py::enum_<Button::IconPosition>(button, "IconPosition", D(Button, IconPosition))
         .value("Left", Button::IconPosition::Left)
         .value("LeftCentered", Button::IconPosition::LeftCentered)
         .value("RightCentered", Button::IconPosition::RightCentered)
         .value("Right", Button::IconPosition::Right);
 
-    py::enum_<Button::Flags>(button, "Flags")
+    py::enum_<Button::Flags>(button, "Flags", D(Button, Flags))
         .value("NormalButton", Button::Flags::NormalButton)
         .value("RadioButton", Button::Flags::RadioButton)
         .value("ToggleButton", Button::Flags::ToggleButton)
@@ -643,12 +649,13 @@ PYBIND11_PLUGIN(nanogui) {
                       const std::string&, const std::string&, const std::string&, bool>(),
             py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
             py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
-            py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false)
+            py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false,
+            D(MessageDialog, MessageDialog))
         .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
         .def("setCallback", &MessageDialog::setCallback, D(MessageDialog, setCallback));
 
-    py::enum_<MessageDialog::Type>(mdlg, "Type")
+    py::enum_<MessageDialog::Type>(mdlg, "Type", D(MessageDialog, Type))
         .value("Information", MessageDialog::Type::Information)
         .value("Question", MessageDialog::Type::Question)
         .value("Warning", MessageDialog::Type::Warning);
@@ -666,17 +673,17 @@ PYBIND11_PLUGIN(nanogui) {
     py::class_<ComboBox, ref<ComboBox>, PyComboBox>(m, "ComboBox", widget, D(ComboBox))
         .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
         .def(py::init<Widget *, const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items"), D(ComboBox, ComboBox, 2))
+             py::arg("parent"), py::arg("items")/*, D(ComboBox, ComboBox, 2)*/)
         .def(py::init<Widget *, const std::vector<std::string> &,
                       const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items"), py::arg("itemsShort"), D(ComboBox, ComboBox, 3))
+             py::arg("parent"), py::arg("items"), py::arg("itemsShort")/* ,D(ComboBox, ComboBox, 3)*/)
         .def("callback", &ComboBox::callback, D(ComboBox, callback))
         .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
         .def("selectedIndex", &ComboBox::selectedIndex, D(ComboBox, selectedIndex))
         .def("setSelectedIndex", &ComboBox::setSelectedIndex, D(ComboBox, setSelectedIndex))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&,
-                          const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems, 2))
+                          const std::vector<std::string>&)) &ComboBox::setItems/*, D(ComboBox, setItems, 2)*/)
         .def("items", &ComboBox::items, D(ComboBox, items))
         .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort));
 
@@ -721,21 +728,21 @@ PYBIND11_PLUGIN(nanogui) {
         .def("callback", &TextBox::callback, D(TextBox, callback))
         .def("setCallback", &TextBox::setCallback, D(TextBox, setCallback));
 
-    py::enum_<TextBox::Alignment>(tbox, "Alignment")
+    py::enum_<TextBox::Alignment>(tbox, "Alignment", D(TextBox, Alignment))
         .value("Left", TextBox::Alignment::Left)
         .value("Center", TextBox::Alignment::Center)
         .value("Right", TextBox::Alignment::Right);
 
     py::class_<Int64Box, ref<Int64Box>, PyInt64Box>(m, "IntBox", tbox, D(IntBox))
-        .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0)
+        .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0, D(IntBox, IntBox))
         .def("value", &Int64Box::value, D(IntBox, value))
         .def("setValue", (void (Int64Box::*)(int64_t)) &Int64Box::setValue, D(IntBox, setValue))
         .def("setCallback", (void (Int64Box::*)(const std::function<void(int64_t)>&))
                 &Int64Box::setCallback, D(IntBox, setCallback))
-        .def("setValueIncrement", &Int64Box::setValueIncrement/*, D(IntBox, setValueIncrement)*/)
-        .def("setMinValue", &Int64Box::setMinValue/*, D(IntBox, setMinValue)*/)
-        .def("setMaxValue", &Int64Box::setMaxValue/*, D(IntBox, setMaxValue)*/)
-        .def("setMinValue", &Int64Box::setMinMaxValues/*, D(IntBox, setMinMaxValues)*/);
+        .def("setValueIncrement", &Int64Box::setValueIncrement, D(IntBox, setValueIncrement))
+        .def("setMinValue", &Int64Box::setMinValue, D(IntBox, setMinValue))
+        .def("setMaxValue", &Int64Box::setMaxValue, D(IntBox, setMaxValue))
+        .def("setMinValue", &Int64Box::setMinMaxValues, D(IntBox, setMinMaxValues));
 
     py::class_<DoubleBox, ref<DoubleBox>, PyDoubleBox>(m, "FloatBox", tbox, D(FloatBox))
         .def(py::init<Widget *, double>(), py::arg("parent"), py::arg("value") = 0.0)
@@ -743,10 +750,10 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setValue", (void (DoubleBox::*)(double)) &DoubleBox::setValue, D(FloatBox, setValue))
         .def("setCallback", (void (DoubleBox::*)(const std::function<void(double)>&))
                 &DoubleBox::setCallback, D(FloatBox, setCallback))
-        .def("setValueIncrement", &DoubleBox::setValueIncrement/*, D(FloatBox, setValueIncrement)*/)
-        .def("setMinValue", &DoubleBox::setMinValue/*, D(FloatBox, setMinValue)*/)
-        .def("setMaxValue", &DoubleBox::setMaxValue/*, D(FloatBox, setMaxValue)*/)
-        .def("setMinValue", &DoubleBox::setMinMaxValues/*, D(FloatBox, setMinMaxValues)*/);
+        .def("setValueIncrement", &DoubleBox::setValueIncrement, D(FloatBox, setValueIncrement))
+        .def("setMinValue", &DoubleBox::setMinValue, D(FloatBox, setMinValue))
+        .def("setMaxValue", &DoubleBox::setMaxValue, D(FloatBox, setMaxValue))
+        .def("setMinValue", &DoubleBox::setMinMaxValues, D(FloatBox, setMinMaxValues));
 
     py::class_<ColorWheel, ref<ColorWheel>, PyColorWheel>(m, "ColorWheel", widget, D(ColorWheel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ColorWheel, ColorWheel))
@@ -783,7 +790,7 @@ PYBIND11_PLUGIN(nanogui) {
         .def("setValues", &Graph::setValues, D(Graph, setValues));
 
     py::class_<StackedWidget, ref<StackedWidget>, PyStackedWidget>(m, "StackedWidget", widget, D(StackedWidget))
-        .def(py::init<Widget *>())
+        .def(py::init<Widget *>(), D(StackedWidget, StackedWidget))
         .def("selectedIndex", &StackedWidget::selectedIndex, D(StackedWidget, selectedIndex))
         .def("setSelectedIndex", &StackedWidget::setSelectedIndex, D(StackedWidget, setSelectedIndex));
 
@@ -822,45 +829,40 @@ PYBIND11_PLUGIN(nanogui) {
         .def("tab", (Widget * (TabWidget::*)(const std::string &)) &TabWidget::tab, D(TabWidget, tab))
         .def("ensureTabVisible", &TabWidget::ensureTabVisible, D(TabWidget, ensureTabVisible));
 
-    py::class_<ImageView, ref<ImageView>, PyImageView>(m, "ImageView", widget/*, D(ImageView)*/)
-        .def(py::init<Widget *, GLuint>()/*, D(ImageView, ImageView)*/)
-        .def("bindImage", &ImageView::bindImage/*, D(ImageView, bindImage)*/)
-        .def("imageShader", &ImageView::imageShader/*, D(ImageView, imageShader)*/)
-        .def("positionF", &ImageView::positionF/*, D(ImageView, positionF)*/)
-        .def("sizeF", &ImageView::sizeF/*, D(ImageView, sizeF)*/)
-        .def("imageSize", &ImageView::imageSize/*, D(ImageView, imageSize)*/)
-        .def("scaledImageSize", &ImageView::scaledImageSize/*, D(ImageView, scaledImageSize)*/)
-        .def("imageSizeF", &ImageView::imageSizeF/*, D(ImageView, imageSizeF)*/)
-        .def("scaledImageSizeF", &ImageView::scaledImageSizeF/*, D(ImageView, scaledImageSizeF)*/)
-        .def("offset", &ImageView::offset/*, D(ImageView, offset)*/)
-        .def("setOffset", &ImageView::setOffset/*, D(ImageView, setOffset)*/)
-        .def("scale", &ImageView::scale/*, D(ImageView, scale)*/)
-        .def("fixedOffset", &ImageView::fixedOffset/*, D(ImageView, fixedOffset)*/)
-        .def("setFixedOffset", &ImageView::setFixedOffset/*, D(ImageView, setFixedOffset)*/)
-        .def("fixedScale", &ImageView::fixedScale/*, D(ImageView, fixedScale)*/)
-        .def("setFixedScale", &ImageView::setFixedScale/*, D(ImageView, setFixedScale)*/)
-        .def("zoomSensitivity", &ImageView::zoomSensitivity/*, D(ImageView, zoomSensitivity)*/)
-        .def("setZoomSensitivity", &ImageView::setZoomSensitivity/*, D(ImageView, setZoomSensitivity)*/)
-        .def("gridThreshold", &ImageView::gridThreshold/*, D(ImageView, gridThreshold)*/)
-        .def("setGridThreshold", &ImageView::setGridThreshold/*, D(ImageView, setGridThreshold)*/)
-        .def("pixelInfoThreshold", &ImageView::pixelInfoThreshold/*, D(ImageView, pixelInfoThreshold)*/)
-        .def("setPixelInfoThreshold", &ImageView::setPixelInfoThreshold/*, D(ImageView, setPixelInfoThreshold)*/)
-        .def("setPixelInfoCallback", &ImageView::setPixelInfoCallback/*, D(ImageView, setPixelInfoCallback)*/)
-        .def("pixelInfoCallback", &ImageView::pixelInfoCallback/*, D(ImageView, pixelInfoCallback)*/)
-        .def("setFontScaleFactor", &ImageView::setFontScaleFactor/*, D(ImageView, setFontScaleFactor)*/)
-        .def("fontScaleFactor", &ImageView::fontScaleFactor/*, D(ImageView, fontScaleFactor)*/)
-        .def("imageCoordinateAt", &ImageView::imageCoordinateAt/*, D(ImageView, imageCoordinateAt)*/)
-        .def("clampedImageCoordinateAt", &ImageView::clampedImageCoordinateAt/*, D(ImageView, clampedImageCoordinateAt)*/)
-        .def("positionForCoordinate", &ImageView::positionForCoordinate/*, D(ImageView, positionForCoordinate)*/)
-        .def("setImageCoordinateAt", &ImageView::setImageCoordinateAt/*, D(ImageView, setImageCoordinateAt)*/)
-        .def("center",&ImageView::center/*, D(ImageView, center)*/)
-        .def("fit", &ImageView::fit/*, D(ImageView, fit)*/)
-        .def("setScaleCentered", &ImageView::setScaleCentered/*, D(ImageView, setScaleCentered)*/)
-        .def("moveOffset", &ImageView::moveOffset/*, D(ImageView, moveOffset)*/)
-        .def("zoom", &ImageView::zoom/*, D(ImageView, zoom)*/)
-        .def("gridVisible", &ImageView::gridVisible/*, D(ImageView, gridVisible)*/)
-        .def("pixelInfoVisible", &ImageView::pixelInfoVisible/*, D(ImageView, pixelInfoVisible)*/)
-        .def("helpersVisible", &ImageView::helpersVisible/*, D(ImageView, helpersVisible)*/);
+    py::class_<ImageView, ref<ImageView>, PyImageView>(m, "ImageView", widget, D(ImageView))
+        .def(py::init<Widget *, GLuint>(), D(ImageView, ImageView))
+        .def("bindImage", &ImageView::bindImage, D(ImageView, bindImage))
+        .def("imageShader", &ImageView::imageShader, D(ImageView, imageShader))
+        .def("scaledImageSize", &ImageView::scaledImageSize, D(ImageView, scaledImageSize))
+        .def("offset", &ImageView::offset, D(ImageView, offset))
+        .def("setOffset", &ImageView::setOffset, D(ImageView, setOffset))
+        .def("scale", &ImageView::scale, D(ImageView, scale))
+        .def("fixedOffset", &ImageView::fixedOffset, D(ImageView, fixedOffset))
+        .def("setFixedOffset", &ImageView::setFixedOffset, D(ImageView, setFixedOffset))
+        .def("fixedScale", &ImageView::fixedScale, D(ImageView, fixedScale))
+        .def("setFixedScale", &ImageView::setFixedScale, D(ImageView, setFixedScale))
+        .def("zoomSensitivity", &ImageView::zoomSensitivity, D(ImageView, zoomSensitivity))
+        .def("setZoomSensitivity", &ImageView::setZoomSensitivity, D(ImageView, setZoomSensitivity))
+        .def("gridThreshold", &ImageView::gridThreshold, D(ImageView, gridThreshold))
+        .def("setGridThreshold", &ImageView::setGridThreshold, D(ImageView, setGridThreshold))
+        .def("pixelInfoThreshold", &ImageView::pixelInfoThreshold, D(ImageView, pixelInfoThreshold))
+        .def("setPixelInfoThreshold", &ImageView::setPixelInfoThreshold, D(ImageView, setPixelInfoThreshold))
+        .def("setPixelInfoCallback", &ImageView::setPixelInfoCallback, D(ImageView, setPixelInfoCallback))
+        .def("pixelInfoCallback", &ImageView::pixelInfoCallback, D(ImageView, pixelInfoCallback))
+        .def("setFontScaleFactor", &ImageView::setFontScaleFactor, D(ImageView, setFontScaleFactor))
+        .def("fontScaleFactor", &ImageView::fontScaleFactor, D(ImageView, fontScaleFactor))
+        .def("imageCoordinateAt", &ImageView::imageCoordinateAt, D(ImageView, imageCoordinateAt))
+        .def("clampedImageCoordinateAt", &ImageView::clampedImageCoordinateAt, D(ImageView, clampedImageCoordinateAt))
+        .def("positionForCoordinate", &ImageView::positionForCoordinate, D(ImageView, positionForCoordinate))
+        .def("setImageCoordinateAt", &ImageView::setImageCoordinateAt, D(ImageView, setImageCoordinateAt))
+        .def("center",&ImageView::center, D(ImageView, center))
+        .def("fit", &ImageView::fit, D(ImageView, fit))
+        .def("setScaleCentered", &ImageView::setScaleCentered, D(ImageView, setScaleCentered))
+        .def("moveOffset", &ImageView::moveOffset, D(ImageView, moveOffset))
+        .def("zoom", &ImageView::zoom, D(ImageView, zoom))
+        .def("gridVisible", &ImageView::gridVisible, D(ImageView, gridVisible))
+        .def("pixelInfoVisible", &ImageView::pixelInfoVisible, D(ImageView, pixelInfoVisible))
+        .def("helpersVisible", &ImageView::helpersVisible, D(ImageView, helpersVisible));
 
     enum DummyEnum { };
 

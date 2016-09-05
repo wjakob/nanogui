@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,6 +16,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class ToolButton toolbutton.h nanogui/toolbutton.h
+ *
+ * \brief Simple radio+toggle button with an icon.
+ */
 class ToolButton : public Button {
 public:
     ToolButton(Widget *parent, int icon,

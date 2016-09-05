@@ -11,6 +11,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -19,6 +20,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class TabWidget tabwidget.h nanogui/tabwidget.h
+ *
+ * \brief A wrapper around the widgets TabHeader and StackedWidget which hooks
+ *        the two classes together.
+ */
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
     TabWidget(Widget* parent);
@@ -30,7 +37,7 @@ public:
     /**
      * Sets the callable objects which is invoked when a tab is changed.
      * The argument provided to the callback is the index of the new active tab.
-    */
+     */
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; };
     const std::function<void(int)> &callback() const { return mCallback; }
 

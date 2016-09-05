@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -16,10 +17,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-enum class Cursor;
+enum class Cursor;// do not put a docstring, this is already documented
 
 /**
- * \brief Base class of all widgets
+ * \class Widget widget.h nanogui/widget.h
+ *
+ * \brief Base class of all widgets.
  *
  * \ref Widget is the base class of all widgets in \c nanogui. It can
  * also be used as an panel to arrange an arbitrary number of child
@@ -156,7 +159,7 @@ public:
         return new WidgetClass(this, args...);
     }
 
-    // Walk up the hierarchy and return the parent window
+    /// Walk up the hierarchy and return the parent window
     Window *window();
 
     /// Associate this widget with an ID value (optional)
@@ -238,6 +241,7 @@ public:
 
     /// Restore the state of the widget from the given \ref Serializer instance
     virtual bool load(Serializer &s);
+
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();

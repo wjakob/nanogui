@@ -1,0 +1,59 @@
+/* Source taken directly from:
+ *     view-source:http://code.stephenmorley.org/javascript/collapsible-lists/
+ *
+ * Stephen Morley's license for this code is CC0:
+ *     http://code.stephenmorley.org/about-this-site/copyright/
+ */
+.treeView{
+  -moz-user-select:none;
+  position:relative;
+}
+
+.treeView ul{
+  margin:0 0 0 -1.5em ! important;
+  padding:0 0 0 1.5em ! important;
+}
+
+.treeView ul ul{
+  background:url('list-item-contents.png') repeat-y left ! important;
+}
+
+.treeView li.lastChild > ul{
+  background-image:none ! important;
+}
+
+.treeView li{
+  margin:0 ! important;
+  padding:0 ! important;
+  background:url('list-item-root.png') no-repeat top left ! important;
+  list-style-position:inside ! important;
+  list-style-image:url('button.png') ! important;
+  cursor:auto;
+}
+
+.treeView li.collapsibleListOpen{
+  list-style-image:url('button-open.png') ! important;
+  cursor:pointer;
+}
+
+.treeView li.collapsibleListClosed{
+  list-style-image:url('button-closed.png') ! important;
+  cursor:pointer;
+}
+
+.treeView li li{
+  background-image:url('list-item.png') ! important;
+  padding-left:1.5em ! important;
+}
+
+.treeView li.lastChild{
+  background-image:url('list-item-last.png') ! important;
+}
+
+.treeView li.collapsibleListOpen{
+  background-image:url('list-item-open.png') ! important;
+}
+
+.treeView li.collapsibleListOpen.lastChild{
+  background-image:url('list-item-last-open.png') ! important;
+}
