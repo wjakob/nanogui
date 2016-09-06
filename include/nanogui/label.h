@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -16,10 +17,12 @@
 NAMESPACE_BEGIN(nanogui)
 
 /**
- * \brief Text label widget
+ * \class Label label.h nanogui/label.h
+ *
+ * \brief Text label widget.
  *
  * The font and color can be customized. When \ref Widget::setFixedWidth()
- * is used, the text is wrapped when it surpasses the specified width
+ * is used, the text is wrapped when it surpasses the specified width.
  */
 class NANOGUI_EXPORT Label : public Widget {
 public:

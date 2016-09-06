@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -18,8 +19,10 @@
 NAMESPACE_BEGIN(nanogui)
 
 /**
+ * \class Screen screen.h nanogui/screen.h
+ *
  * \brief Represents a display surface (i.e. a full-screen or windowed GLFW window)
- * and forms the root element of a hierarchy of nanogui widgets
+ * and forms the root element of a hierarchy of nanogui widgets.
  */
 class NANOGUI_EXPORT Screen : public Widget {
     friend class Widget;
@@ -29,50 +32,50 @@ public:
      * Create a new Screen instance
      *
      * \param size
-     *    Size in pixels at 96 dpi (on high-DPI screens, the actual resolution
-     *    in terms of hardware pixels may be larger by an integer factor)
+     *     Size in pixels at 96 dpi (on high-DPI screens, the actual resolution
+     *     in terms of hardware pixels may be larger by an integer factor)
      *
      * \param caption
-     *    Window title (in UTF-8 encoding)
+     *     Window title (in UTF-8 encoding)
      *
      * \param resizable
-     *    If creating a window, should it be resizable?
+     *     If creating a window, should it be resizable?
      *
      * \param fullscreen
-     *    Specifies whether to create a windowed or full-screen view
+     *     Specifies whether to create a windowed or full-screen view
      *
      * \param colorBits
-     *    Number of bits per pixel dedicated to the R/G/B color components
+     *     Number of bits per pixel dedicated to the R/G/B color components
      *
      * \param alphaBits
-     *    Number of bits per pixel dedicated to the alpha channel
+     *     Number of bits per pixel dedicated to the alpha channel
      *
      * \param depthBits
-     *    Number of bits per pixel dedicated to the Z-buffer
+     *     Number of bits per pixel dedicated to the Z-buffer
      *
      * \param stencilBits
-     *    Number of bits per pixel dedicated to the stencil buffer (recommended
-     *    to set this to 8. NanoVG can draw higher-quality strokes using a
-     *    stencil buffer)
+     *     Number of bits per pixel dedicated to the stencil buffer (recommended
+     *     to set this to 8. NanoVG can draw higher-quality strokes using a
+     *     stencil buffer)
      *
      * \param nSamples
-     *    Number of MSAA samples (set to 0 to disable)
+     *     Number of MSAA samples (set to 0 to disable)
      *
      * \param glMajor
-     *    The requested OpenGL Major version number.  Default is 3, if changed
-     *    the value must correspond to a forward compatible core profile (for
-     *    portability reasons).  For example, set this to 4 and \ref glMinor to 1
-     *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *    invalid profile will result in no context (and therefore no GUI)
-     *    being created.
+     *     The requested OpenGL Major version number.  Default is 3, if changed
+     *     the value must correspond to a forward compatible core profile (for
+     *     portability reasons).  For example, set this to 4 and \ref glMinor to 1
+     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
+     *     invalid profile will result in no context (and therefore no GUI)
+     *     being created.
      *
      * \param glMinor
-     *    The requested OpenGL Minor version number.  Default is 3, if changed
-     *    the value must correspond to a forward compatible core profile (for
-     *    portability reasons).  For example, set this to 1 and \ref glMajor to 4
-     *    for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *    invalid profile will result in no context (and therefore no GUI)
-     *    being created.
+     *     The requested OpenGL Minor version number.  Default is 3, if changed
+     *     the value must correspond to a forward compatible core profile (for
+     *     portability reasons).  For example, set this to 1 and \ref glMajor to 4
+     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
+     *     invalid profile will result in no context (and therefore no GUI)
+     *     being created.
      */
     Screen(const Vector2i &size, const std::string &caption,
            bool resizable = true, bool fullscreen = false, int colorBits = 8,
@@ -104,7 +107,7 @@ public:
     /// Draw the Screen contents
     virtual void drawAll();
 
-    /// Draw the window contents -- put your OpenGL draw calls here
+    /// Draw the window contents --- put your OpenGL draw calls here
     virtual void drawContents() { /* To be overridden */ }
 
     /// Return the ratio between pixel and device coordinates (e.g. >= 2 on Mac Retina displays)

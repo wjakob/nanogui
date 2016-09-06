@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -17,6 +18,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 NAMESPACE_BEGIN(detail)
+
+// bypass template specializations
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template<>
 struct serialization_helper<GLShader> {
@@ -108,5 +112,8 @@ struct serialization_helper<GLShader> {
         }
     }
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 NAMESPACE_END(detail)
 NAMESPACE_END(nanogui)

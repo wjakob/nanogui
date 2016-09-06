@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -18,6 +19,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class Theme theme.h nanogui/theme.h
+ *
+ * \brief Storage class for basic theme-related properties.
+ */
 class NANOGUI_EXPORT Theme : public Object {
 public:
     Theme(NVGcontext *ctx);

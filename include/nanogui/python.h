@@ -8,12 +8,14 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
 #include <nanogui/common.h>
 #include <pybind11/pybind11.h>
 
+/// Provides a ``PYBIND11_OVERLOAD`` for any relevant Widget items that need to be bound.
 #define NANOGUI_WIDGET_OVERLOADS(Parent) \
     bool mouseButtonEvent(const ::nanogui::Vector2i &p, int button, bool down, int modifiers) { \
         PYBIND11_OVERLOAD(bool, Parent, mouseButtonEvent, p, button, down, modifiers); \
@@ -49,6 +51,7 @@
         PYBIND11_OVERLOAD(void, Parent, draw, ctx); \
     }
 
+/// Provides a ``PYBIND11_OVERLOAD`` for any relevant Layout items that need to be bound.
 #define NANOGUI_LAYOUT_OVERLOADS(Parent) \
     ::nanogui::Vector2i preferredSize(NVGcontext *ctx, const ::nanogui::Widget *widget) const { \
         PYBIND11_OVERLOAD(::nanogui::Vector2i, Parent, preferredSize, ctx, widget); \
@@ -57,6 +60,7 @@
         PYBIND11_OVERLOAD(void, Parent, performLayout, ctx, widget); \
     }
 
+/// Provides a ``PYBIND11_OVERLOAD`` for any relevant Screen items that need to be bound.
 #define NANOGUI_SCREEN_OVERLOADS(Parent) \
     virtual void drawAll() { \
         PYBIND11_OVERLOAD(void, Parent, drawAll); \

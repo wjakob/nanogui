@@ -125,7 +125,7 @@ class TestApp(Screen):
                 icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
             except:
                 icons = nanogui.loadImageDirectory(self.nvgContext(), "../resources/icons")
-            
+
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
@@ -140,7 +140,6 @@ class TestApp(Screen):
         img_window.setPosition(Vector2i(710, 15))
         img_window.setLayout(GroupLayout())
 
-        
         imgView = ImageView(img_window, icons[0][0])
 
         def cb(i):

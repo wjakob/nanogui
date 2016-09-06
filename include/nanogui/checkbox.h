@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,6 +16,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class CheckBox checkbox.h nanogui/checkbox.h
+ *
+ * \brief Two-state check box widget.
+ */
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
     CheckBox(Widget *parent, const std::string &caption = "Untitled",

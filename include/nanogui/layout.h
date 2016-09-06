@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -19,6 +20,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/// The different kinds of alignments a layout can perform.
 enum class Alignment : uint8_t {
     Minimum = 0,
     Middle,
@@ -26,12 +28,17 @@ enum class Alignment : uint8_t {
     Fill
 };
 
+/// The direction of data flow for a layout.
 enum class Orientation {
     Horizontal = 0,
     Vertical
 };
 
-/// Basic interface of a layout engine
+/**
+ * \class Layout layout.h nanogui/layout.h
+ *
+ * \brief Basic interface of a layout engine.
+ */
 class NANOGUI_EXPORT Layout : public Object {
 public:
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const = 0;
@@ -41,22 +48,27 @@ protected:
 };
 
 /**
+ * \class BoxLayout layout.h nanogui/layout.h
+ *
  * \brief Simple horizontal/vertical box layout
  *
  * This widget stacks up a bunch of widgets horizontally or vertically. It adds
  * margins around the entire container and a custom spacing between adjacent
- * widgets
+ * widgets.
  */
 class NANOGUI_EXPORT BoxLayout : public Layout {
 public:
     /**
-     * \brief Construct a box layout which packs widgets in the given \c orientation
+     * \brief Construct a box layout which packs widgets in the given \c Orientation
+     *
      * \param alignment
-     *    Widget alignment perpendicular to the chosen orientation.
+     *     Widget alignment perpendicular to the chosen orientation
+     *
      * \param margin
-     *    Margin around the layout container
+     *     Margin around the layout container
+     *
      * \param spacing
-     *    Extra spacing placed between widgets
+     *     Extra spacing placed between widgets
      */
     BoxLayout(Orientation orientation, Alignment alignment = Alignment::Middle,
               int margin = 0, int spacing = 0);
@@ -85,7 +97,9 @@ protected:
 };
 
 /**
- * \brief Special layout for widgets grouped by labels
+ * \class GroupLayout layout.h nanogui/layout.h
+ *
+ * \brief Special layout for widgets grouped by labels.
  *
  * This widget resembles a box layout in that it arranges a set of widgets
  * vertically. All widgets are indented on the horizontal axis except for
@@ -125,7 +139,9 @@ protected:
 };
 
 /**
- * \brief Grid layout
+ * \class GridLayout layout.h nanogui/layout.h
+ *
+ * \brief Grid layout.
  *
  * Widgets are arranged in a grid that has a fixed grid resolution \c resolution
  * along one of the axes. The layout orientation indicates the fixed dimension;
@@ -165,6 +181,7 @@ public:
         else
             return mDefaultAlignment[axis];
     }
+
     void setColAlignment(Alignment value) { mDefaultAlignment[0] = value; }
     void setRowAlignment(Alignment value) { mDefaultAlignment[1] = value; }
     void setColAlignment(const std::vector<Alignment> &value) { mAlignment[0] = value; }
@@ -189,7 +206,9 @@ protected:
 };
 
 /**
- * \brief Advanced Grid layout
+ * \class AdvancedGridLayout layout.h nanogui/layout.h
+ *
+ * \brief Advanced Grid layout.
  *
  * The is a fancier grid layout with support for items that span multiple rows
  * or columns, and per-widget alignment flags. Each row and column additionally
@@ -199,12 +218,15 @@ protected:
  *
  * An example:
  *
- * <pre>
- *   using AdvancedGridLayout::Anchor;
- *   Label *label = new Label(window, "A label");
- *   // Add a centered label at grid position (1, 5), which spans two horizontal cells
- *   layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignment::Middle, Alignment::Middle));
- * </pre>
+ * \rst
+ * .. code-block:: cpp
+ *
+ *    using AdvancedGridLayout::Anchor;
+ *    Label *label = new Label(window, "A label");
+ *    // Add a centered label at grid position (1, 5), which spans two horizontal cells
+ *    layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignment::Middle, Alignment::Middle));
+ *
+ * \endrst
  *
  * The grid is initialized with user-specified column and row size vectors
  * (which can be expanded later on if desired). If a size value of zero is
@@ -213,11 +235,17 @@ protected:
  * redistributed according to the row and column stretch factors.
  *
  * The high level usage somewhat resembles the classic HIG layout:
- * https://web.archive.org/web/20070813221705/http://www.autel.cz/dmi/tutorial.html
- * https://github.com/jaapgeurts/higlayout
+ *
+ * - https://web.archive.org/web/20070813221705/http://www.autel.cz/dmi/tutorial.html
+ * - https://github.com/jaapgeurts/higlayout
  */
 class NANOGUI_EXPORT AdvancedGridLayout : public Layout {
 public:
+    /**
+     * \struct Anchor layout.h nanogui/layout.h
+     *
+     * \brief Helper struct to coordinate anchor points for the layout.
+     */
     struct Anchor {
         uint8_t pos[2];
         uint8_t size[2];

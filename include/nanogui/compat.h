@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -16,5 +17,6 @@
 #ifdef _MSC_VER
 #define NANOGUI_SNPRINTF _snprintf
 #else
+/// Platform dependent snprintf (``_snprintf`` for MSVC, ``snprintf`` otherwise).
 #define NANOGUI_SNPRINTF snprintf
 #endif
