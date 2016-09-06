@@ -1,5 +1,6 @@
 # NanoGUI
 
+[![Documentation Status](https://readthedocs.org/projects/nanogui/badge/?version=latest)](http://nanogui.readthedocs.org/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/wjakob/nanogui.svg?branch=master)](https://travis-ci.org/wjakob/nanogui)
 [![Build status](https://ci.appveyor.com/api/projects/status/m8h3uyvdb4ej2i02/branch/master?svg=true)](https://ci.appveyor.com/project/wjakob/nanogui/branch/master)
 
