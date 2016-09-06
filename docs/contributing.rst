@@ -15,8 +15,8 @@ issue tracker tickets. Thus, before submitting a question or bug report, please 
 moment of your time and ensure that your issue isn't already discussed in the project
 documentation elsewhere on this site.
 
-Feature requests are generally closed unless they come with a pull requests
-that implement the desired functionality.
+Feature requests are generally closed unless they come with a pull request
+that implements the desired functionality.
 
 Assuming that you have identified a previously unknown problem or an important question,
 it's essential that you submit a self-contained and minimal piece of code that
