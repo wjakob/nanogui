@@ -436,7 +436,6 @@ else()
   endforeach()
 
   add_custom_target(mkdoc COMMAND
-    # python3 ${PROJECT_SOURCE_DIR}/ext/pybind11/tools/mkdoc.py
     python3 ${PROJECT_SOURCE_DIR}/docs/mkdoc_rst.py
       ${MKDOC_CXX_FLAGS_LIST}
       ${PROJECT_SOURCE_DIR}/include/nanogui/*.h

@@ -108,7 +108,7 @@ Vector2f ImageView::positionForCoordinate(const Vector2f& imageCoordinate) const
 }
 
 void ImageView::setImageCoordinateAt(const Vector2f& position, const Vector2f& imageCoordinate) {
-    // Calculate where the new offset must be in order to satisfy the image position equation. 
+    // Calculate where the new offset must be in order to satisfy the image position equation.
     // Round the floating point values to balance out the floating point to integer conversions.
     mOffset = position - (imageCoordinate * mScale); // .unaryExpr([](float x) { return std::round(x); });
     // Clamp offset so that the image remains near the screen.

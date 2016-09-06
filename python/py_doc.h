@@ -66,7 +66,7 @@ static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor_3 = R"doc()doc
 
 static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc()doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_operator_int = R"doc()doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_operator_basic_string = R"doc()doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc()doc";
 
@@ -434,6 +434,41 @@ static const char *__doc_nanogui_ColorWheel_setColor = R"doc(Set the current col
 
 static const char *__doc_nanogui_Color_Color = R"doc(Default constructor: represents black (``r, g, b, a = 0``))doc";
 
+static const char *__doc_nanogui_Color_Color_10 =
+R"doc(Explicit constructor: creates the Color ``(r, g, b, a)``.
+
+Parameter ``r``:
+    The red component of the color.
+
+Parameter ``g``:
+    The green component of the color.
+
+Parameter ``b``:
+    The blue component of the color.
+
+Parameter ``a``:
+    The alpha component of the color.)doc";
+
+static const char *__doc_nanogui_Color_Color_11 =
+R"doc(Explicit constructor: creates the Color ``(r, g, b, a) / 255.0``.
+Values are casted to floats before division.
+
+Parameter ``r``:
+    The red component of the color, will be divided by ``255.0``.
+
+Parameter ``g``:
+    The green component of the color, will be divided by ``255.0``.
+
+Parameter ``b``:
+    The blue component of the color, will be divided by ``255.0``.
+
+Parameter ``a``:
+    The alpha component of the color, will be divided by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_12 =
+R"doc(Construct a color vector from MatrixBase (needed to play nice with
+Eigen))doc";
+
 static const char *__doc_nanogui_Color_Color_2 =
 R"doc(Makes an exact copy of the data represented by the input parameter.
 
@@ -465,6 +500,29 @@ Parameter ``alpha``:
     by ``255.0``.)doc";
 
 static const char *__doc_nanogui_Color_Color_5 =
+R"doc(Copies (x, y, z) from the input vector, and sets the alpha of this
+color to be ``1.0``.
+
+Parameter ``color``:
+    The three dimensional float vector being copied.)doc";
+
+static const char *__doc_nanogui_Color_Color_6 =
+R"doc(Copies (x, y, z) from the input vector, casting to floats and dividing
+by ``255.0``. The alpha of this color will be set to ``1.0``.
+
+Parameter ``color``:
+    The three dimensional integer vector being copied, will be divided
+    by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_7 =
+R"doc(Copies (x, y, z, w) from the input vector, casting to floats and
+dividing by ``255.0``.
+
+Parameter ``color``:
+    The three dimensional integer vector being copied, will be divided
+    by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_8 =
 R"doc(Creates the Color ``(intensity, intensity, intensity, alpha)``.
 
 Parameter ``intensity``:
@@ -473,7 +531,7 @@ Parameter ``intensity``:
 Parameter ``alpha``:
     The alpha component of the color.)doc";
 
-static const char *__doc_nanogui_Color_Color_6 =
+static const char *__doc_nanogui_Color_Color_9 =
 R"doc(Creates the Color ``(intensity, intensity, intensity, alpha) /
 255.0``. Values are casted to floats before division.
 
@@ -483,41 +541,6 @@ Parameter ``intensity``:
 
 Parameter ``alpha``:
     The alpha component of the color, will be divided by ``255.0``.)doc";
-
-static const char *__doc_nanogui_Color_Color_7 =
-R"doc(Explicit constructor: creates the Color ``(r, g, b, a)``.
-
-Parameter ``r``:
-    The red component of the color.
-
-Parameter ``g``:
-    The green component of the color.
-
-Parameter ``b``:
-    The blue component of the color.
-
-Parameter ``a``:
-    The alpha component of the color.)doc";
-
-static const char *__doc_nanogui_Color_Color_8 =
-R"doc(Explicit constructor: creates the Color ``(r, g, b, a) / 255.0``.
-Values are casted to floats before division.
-
-Parameter ``r``:
-    The red component of the color, will be divided by ``255.0``.
-
-Parameter ``g``:
-    The green component of the color, will be divided by ``255.0``.
-
-Parameter ``b``:
-    The blue component of the color, will be divided by ``255.0``.
-
-Parameter ``a``:
-    The alpha component of the color, will be divided by ``255.0``.)doc";
-
-static const char *__doc_nanogui_Color_Color_9 =
-R"doc(Construct a color vector from MatrixBase (needed to play nice with
-Eigen))doc";
 
 static const char *__doc_nanogui_Color_b = R"doc(Return a reference to the blue channel)doc";
 
@@ -545,6 +568,12 @@ static const char *__doc_nanogui_ComboBox = R"doc(Simple combo box widget based 
 
 static const char *__doc_nanogui_ComboBox_ComboBox = R"doc(Create an empty combo box)doc";
 
+static const char *__doc_nanogui_ComboBox_ComboBox_2 = R"doc(Create a new combo box with the given items)doc";
+
+static const char *__doc_nanogui_ComboBox_ComboBox_3 =
+R"doc(Create a new combo box with the given items, providing both short and
+long descriptive labels for each item)doc";
+
 static const char *__doc_nanogui_ComboBox_callback = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_items = R"doc()doc";
@@ -570,6 +599,8 @@ static const char *__doc_nanogui_ComboBox_selectedIndex = R"doc()doc";
 static const char *__doc_nanogui_ComboBox_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setItems = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_setItems_2 = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setSelectedIndex = R"doc()doc";
 
@@ -650,11 +681,11 @@ h->addGroup("Group 1");
 h->addVariable("integer variable", aInt);
 // Expose a float variable via setter/getter functions
 h->addVariable(
-[&](float value){ aFloat = value; },
-[&](){ return *aFloat; },
+[&](float value) { aFloat = value; },
+[&]() { return *aFloat; },
 "float variable");
 // add a new button
-h->addButton("Button",[&](){ std::cout << "Button pressed" << std::endl; });
+h->addButton("Button", [&]() { std::cout << "Button pressed" << std::endl; });
 
 ```)doc";
 
@@ -665,6 +696,8 @@ static const char *__doc_nanogui_FormHelper_addButton = R"doc(Add a button with 
 static const char *__doc_nanogui_FormHelper_addGroup = R"doc(Add a new group that may contain several sub-widgets)doc";
 
 static const char *__doc_nanogui_FormHelper_addVariable = R"doc(Add a new data widget controlled using custom getter/setter functions)doc";
+
+static const char *__doc_nanogui_FormHelper_addVariable_2 = R"doc(Add a new data widget that exposes a raw variable in memory)doc";
 
 static const char *__doc_nanogui_FormHelper_addWidget = R"doc(Add an arbitrary (optionally labeled) widget to the layout)doc";
 
@@ -866,11 +899,23 @@ static const char *__doc_nanogui_GLShader_resetAttribVersion = R"doc(Reset the v
 
 static const char *__doc_nanogui_GLShader_setUniform = R"doc(Initialize a uniform parameter with a 4x4 matrix (float))doc";
 
+static const char *__doc_nanogui_GLShader_setUniform_10 = R"doc(Initialize a uniform buffer with a uniform buffer object)doc";
+
 static const char *__doc_nanogui_GLShader_setUniform_2 = R"doc(Initialize a uniform parameter with an integer value)doc";
 
 static const char *__doc_nanogui_GLShader_setUniform_3 = R"doc(Initialize a uniform parameter with a floating point value)doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_4 = R"doc(Initialize a uniform buffer with a uniform buffer object)doc";
+static const char *__doc_nanogui_GLShader_setUniform_4 = R"doc(Initialize a uniform parameter with a 2D vector (int))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_5 = R"doc(Initialize a uniform parameter with a 2D vector (float))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_6 = R"doc(Initialize a uniform parameter with a 3D vector (int))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_7 = R"doc(Initialize a uniform parameter with a 3D vector (float))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_8 = R"doc(Initialize a uniform parameter with a 4D vector (int))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_9 = R"doc(Initialize a uniform parameter with a 4D vector (float))doc";
 
 static const char *__doc_nanogui_GLShader_shareAttrib =
 R"doc(Create a symbolic link to an attribute of another GLShader. This
@@ -1001,6 +1046,8 @@ static const char *__doc_nanogui_GridLayout_resolution = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setColAlignment = R"doc()doc";
 
+static const char *__doc_nanogui_GridLayout_setColAlignment_2 = R"doc()doc";
+
 static const char *__doc_nanogui_GridLayout_setMargin = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setOrientation = R"doc()doc";
@@ -1008,6 +1055,8 @@ static const char *__doc_nanogui_GridLayout_setOrientation = R"doc()doc";
 static const char *__doc_nanogui_GridLayout_setResolution = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setRowAlignment = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_setRowAlignment_2 = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_setSpacing = R"doc()doc";
 
@@ -1749,6 +1798,8 @@ not visible.)doc";
 
 static const char *__doc_nanogui_TabHeader_activeIterator = R"doc()doc";
 
+static const char *__doc_nanogui_TabHeader_activeIterator_2 = R"doc()doc";
+
 static const char *__doc_nanogui_TabHeader_activeTab = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_addTab = R"doc(Inserts a tab at the end of the tabs collection.)doc";
@@ -1824,9 +1875,13 @@ tabs (tabsCount) if there is no such tab.)doc";
 
 static const char *__doc_nanogui_TabHeader_tabIterator = R"doc()doc";
 
+static const char *__doc_nanogui_TabHeader_tabIterator_2 = R"doc()doc";
+
 static const char *__doc_nanogui_TabHeader_tabLabelAt = R"doc(Retrieves the label of the tab at a specific index.)doc";
 
 static const char *__doc_nanogui_TabHeader_visibleBegin = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_visibleBegin_2 = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_visibleButtonArea =
 R"doc(Returns a pair of Vectors describing the top left (pair.first) and the
@@ -1834,6 +1889,8 @@ bottom right (pair.second) positions of the rectangle containing the
 visible tab buttons.)doc";
 
 static const char *__doc_nanogui_TabHeader_visibleEnd = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_visibleEnd_2 = R"doc()doc";
 
 static const char *__doc_nanogui_TabWidget =
 R"doc(A wrapper around the widgets TabHeader and StackedWidget which hooks
@@ -2427,6 +2484,12 @@ static const char *__doc_nanogui_Window_setModal = R"doc(Set whether or not this
 static const char *__doc_nanogui_Window_setTitle = R"doc(Set the window title)doc";
 
 static const char *__doc_nanogui_Window_title = R"doc(Return the window title)doc";
+
+static const char *__doc_nanogui_chdir_to_bundle_parent =
+R"doc(Move to the application bundle's parent directory
+
+This is function is convenient when deploying .app bundles on OSX. It
+adjusts the file path to the parent directory containing the bundle.)doc";
 
 static const char *__doc_nanogui_detail_FormWidget = R"doc()doc";
 

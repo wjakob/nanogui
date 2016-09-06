@@ -99,7 +99,7 @@ public:
 
     GLuint texture() const { return mTextureId; }
     const std::string& textureName() const { return mTextureName; }
-    
+
     /**
     *  Load a file in memory and create an OpenGL texture.
     *  Returns a handle type (an std::unique_ptr) to the loaded pixels.
@@ -245,7 +245,7 @@ public:
             auto data = texture.load(resourcesFolderPath + icon.second + ".png");
             mImagesData.emplace_back(std::move(texture), std::move(data));
         }
-        
+
         // Set the first texture
         auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
         mCurrentImage = 0;
@@ -270,7 +270,7 @@ public:
             }
             float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
             float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
-            Color textColor = Color(colorScale, 1.0f); 
+            Color textColor = Color(colorScale, 1.0f);
             return { stringData, textColor };
         });
 

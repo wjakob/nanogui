@@ -110,12 +110,12 @@ NAMESPACE_END(detail)
  *
  *    // Expose a float variable via setter/getter functions
  *    h->addVariable(
- *      [&](float value){ aFloat = value; },
- *      [&](){ return *aFloat; },
+ *      [&](float value) { aFloat = value; },
+ *      [&]() { return *aFloat; },
  *      "float variable");
  *
  *    // add a new button
- *    h->addButton("Button",[&](){ std::cout << "Button pressed" << std::endl; });
+ *    h->addButton("Button", [&]() { std::cout << "Button pressed" << std::endl; });
  *
  * \endrst
  */

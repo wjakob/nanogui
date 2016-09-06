@@ -22,23 +22,28 @@
 
 #if !defined(NAMESPACE_BEGIN) || defined(DOXYGEN_DOCUMENTATION_BUILD)
     /**
-     * Macro for making namespace usage more human-friendly.  Should be used in
-     * conjunction with \ref NAMESPACE_END.  For example,
-     * ``NAMESPACE_BEGIN(nanogui)`` will expand to ``namespace nanogui {``.
+     * \brief Convenience macro for namespace declarations
+     *
+     * The macro ``NAMESPACE_BEGIN(nanogui)`` will expand to ``namespace
+     * nanogui {``. This is done to hide the namespace scope from editors and
+     * C++ code formatting tools that may otherwise indent the entire file.
+     * The corresponding ``NAMESPACE_END`` macro also lists the namespace
+     * name for improved readability.
      *
      * \param name
-     *     The namespace you are beginning.
+     *     The name of the namespace scope to open
      */
     #define NAMESPACE_BEGIN(name) namespace name {
 #endif
 #if !defined(NAMESPACE_END) || defined(DOXYGEN_DOCUMENTATION_BUILD)
     /**
-     * Macro for making namespace usage more human-friendly.  Should be used in
-     * conjunction with \ref NAMESPACE_BEGIN.  For example,
-     * ``NAMESPACE_END(nanogui)`` will expand to ``}``.
+     * \brief Convenience macro for namespace declarations
+     *
+     * Closes a namespace (counterpart to ``NAMESPACE_BEGIN``)
+     * ``NAMESPACE_END(nanogui)`` will expand to only ``}``.
      *
      * \param name
-     *     The namespace you are ending.
+     *     The name of the namespace scope to close
      */
     #define NAMESPACE_END(name) }
 #endif
@@ -87,7 +92,7 @@
 #pragma warning(disable : 4244) // warning C4244: conversion from X to Y, possible loss of data
 #endif
 #pragma warning(disable : 4251) // warning C4251: class X needs to have dll-interface to be used by clients of class Y
-#pragma warning(disable : 4714) // warning C4714: funtion X marked as __forceinline not inlined
+#pragma warning(disable : 4714) // warning C4714: function X marked as __forceinline not inlined
 #endif
 
 // These will produce broken links in the docs build

@@ -1,9 +1,10 @@
 Compilation
 ========================================================================================
 
-NanoGUI uses a CMake build system for portability, that requires zero configuration on
-your part to "get it working".  Assuming you have just cloned NanoGUI into the current
-working directory, on Unix systems you could do
+NanoGUI uses a CMake build system to ensure portability. All dependencies are
+cloned and compiled in one batch, which should generally reduce the amount of
+configuration effort to zero. Assuming that NanoGUI was cloned into the current
+working directory, the following commands need to be executed:
 
 .. code-block:: bash
 
@@ -34,6 +35,7 @@ For Windows, the process is nearly the same:
    # Specify VS Version AND 64bit, otherwise it defaults to 32.
    # The version number and year may be different for you, Win64
    # can be appended to any of them.
+   # 32 bit Windows builds are /not/ supported
    $ cmake -G "Visual Studio 14 2015 Win64" ..
 
    # Either open the .sln with Visual Studio, or run
@@ -58,9 +60,10 @@ By default, NanoGUI will
 | Generate an ``install`` target. | ``NANOGUI_INSTALL``       |
 +---------------------------------+---------------------------+
 
-So, for example, if you are writing your project that uses NanoGUI as a ``git
-submodule`` (**encouraged**), then if the path to ``nanogui/`` relative to your
-``CMakeLists.txt`` is ``ext/nanogui``
+Users developing projects that reference NanoGUI as a ``git submodule`` (this
+is **strongly** encouraged) can set up the parent project's CMake configuration
+file as follows (this assumes that ``nanogui`` lives in the directory
+``ext/nanogui`` relative to the parent project):
 
 .. code-block:: cmake
 
@@ -91,6 +94,9 @@ following (assuming the target you are building is called ``myTarget``):
    # On top of adding the path to nanogui/include, you may need extras
    include_directories(${NANOGUI_EXTRA_INCS})
 
+   # Compile a target using NanoGUI
+   add_executable(myTarget myTarget.cpp)
+
    # Lastly, additional libraries may have been built for you.  In addition to linking
    # against NanoGUI, we need to link against those as well.
    target_link_libraries(myTarget nanogui ${NANOGUI_EXTRA_LIBS})
@@ -100,11 +106,13 @@ following (assuming the target you are building is called ``myTarget``):
 Compiling the Documentation
 ----------------------------------------------------------------------------------------
 
-The documentation system relies on 'Doxygen', 'Sphinx', and 'Breathe'.  It uses the
-'Read the Docs' theme for the layout of the generated html.  So you will need to first
+The documentation system relies on 'Doxygen', 'Sphinx', 'Breathe', and
+'Exhale'.  It uses the 'Read the Docs' theme for the layout of the generated
+html.  So you will need to first
 
-1. Install Doxygen for your operating system.  On Unix based systems, this should be
-   available through your package manager (apt-get, brew, dnf, etc).
+1. Install Doxygen for your operating system.  On Unix based systems, this
+   should be available through your package manager (apt-get, brew, dnf, etc).
+
 2. Install Sphinx, Breathe, and the theme:
 
    .. code-block:: py
@@ -121,10 +129,11 @@ Now that you have the relevant tools, you can build the documentation with
    # Build the documentation
    $ make html
 
-The output will be generated in ``_build``, the root html document is located at
-``_build/html/index.html``.
+The output will be generated in ``_build``, the root html document is located
+at ``_build/html/index.html``.
 
 .. note::
-   When building the documentation locally, there can be subtle differences in the
-   rendered pages than what is hosted online.  You should largely be able to ignore
-   this.
+
+   When building the documentation locally, there can be subtle differences in
+   the rendered pages than what is hosted online.  You should largely be able
+   to ignore this.

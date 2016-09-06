@@ -355,7 +355,7 @@ void GLFramebuffer::init(const Vector2i &size, int nSamples) {
 
     release();
 }
-    
+
 void GLFramebuffer::free() {
     glDeleteRenderbuffers(1, &mColor);
     glDeleteRenderbuffers(1, &mDepth);

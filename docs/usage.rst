@@ -10,6 +10,7 @@ and manage the OpenGL context (and GLFW), or you do it manually.
 1. If you are letting NanoGUI take over, you **must** call :ref:`function_nanogui__init`
    before trying to do anything else.  If you are managing OpenGL / GLFW yourself, make
    sure you **avoid** calling this method.
+
 2. Create an instance of :ref:`class_nanogui__Screen` (or a derivative class you have
    written).
 
@@ -20,7 +21,9 @@ and manage the OpenGL context (and GLFW), or you do it manually.
 3. Add any Widgets, Buttons, etc. you want to the screen instance, and call the
    :func:`nanogui::Screen::setVisible` and :func:`nanogui::Screen::performLayout`
    methods of your instance.
+
 4. Now that everything is ready, call :ref:`function_nanogui__mainloop`.
+
 5. When all windows are closed, this function will exit, and you should follow it up
    with a call to :ref:`function_nanogui__shutdown`.
 

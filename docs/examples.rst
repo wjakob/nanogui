@@ -32,7 +32,8 @@ Example 2
    :alt: Screenshot of Example 2.
    :align: center
 
-The second program is more concise, but still demonstrates the flexibility of NanoGUI.
+The second program demonstrates how simple label/editor widget-type layouts can
+be written in a very concise manner.
 
 - `Example 2 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example2.cpp>`_
 - `Example 2 in Python <https://github.com/wjakob/nanogui/blob/master/python/example2.py>`_

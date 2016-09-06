@@ -16,7 +16,7 @@
 #include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
-    
+
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
       mAnchorPos(Vector2i::Zero()), mAnchorHeight(30) {

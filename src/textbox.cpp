@@ -519,9 +519,8 @@ bool TextBox::copySelection() {
 void TextBox::pasteFromClipboard() {
     Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
     const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
-    if (cbstr){
+    if (cbstr)
         mValueTemp.insert(mCursorPos, std::string(cbstr));
-    }
 }
 
 bool TextBox::deleteSelection() {

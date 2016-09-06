@@ -520,8 +520,10 @@ protected:
  * \param viewportSize
  *     The dimensions of the viewport to project into.
  */
-extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &model,
-                        const Matrix4f &proj, const Vector2i &viewportSize);
+extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
+                                       const Matrix4f &model,
+                                       const Matrix4f &proj,
+                                       const Vector2i &viewportSize);
 
 /**
  * \brief Unprojects the vector ``win`` out of the specified viewport.
@@ -541,8 +543,10 @@ extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &mode
  * \param viewportSize
  *     The dimensions of the viewport to project out of.
  */
-extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win, const Matrix4f &model,
-                          const Matrix4f &proj, const Vector2i &viewportSize);
+extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
+                                         const Matrix4f &model,
+                                         const Matrix4f &proj,
+                                         const Vector2i &viewportSize);
 
 /**
  * \brief Creates a "look at" matrix for modeling say a camera.
@@ -564,8 +568,9 @@ extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win, const Matrix4f &mo
  *    perpendicular.
  * \endrst
  */
-extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye, const Vector3f &center,
-                       const Vector3f &up);
+extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye,
+                                      const Vector3f &center,
+                                      const Vector3f &up);
 
 /**
  * Creates an orthographic projection matrix.
@@ -588,8 +593,9 @@ extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye, const Vector3f &cente
  * \param zFar
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right, const float bottom,
-                      const float top, const float zNear, const float zFar);
+extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right,
+                                     const float bottom, const float top,
+                                     const float zNear, const float zFar);
 
 /**
  * Creates a perspective projection matrix.
@@ -612,9 +618,9 @@ extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right, const 
  * \param farVal
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right, const float bottom,
-                        const float top, const float nearVal,
-                        const float farVal);
+extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right,
+                                       const float bottom, const float top,
+                                       const float nearVal, const float farVal);
 /**
  * \brief Convenience column-wise matrix scaling function.
  *

@@ -41,15 +41,17 @@ import textwrap
 
 # This file is tailored to the NanoGUI documentation build system, the clang
 # module required is present in a full recursive clone here.
-clangParentFolder = os.path.abspath("../ext/pybind11/tools/")
-if not os.path.isdir(clangParentFolder):
+base_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+clang_parent_folder = os.path.join(base_path, "ext/pybind11/tools/")
+if not os.path.isdir(clang_parent_folder):
     raise RuntimeError(
          "The NanoGUI dependencies repository (pybind11, etc.) appear to be missing!\n"
          "You probably did not clone the project with --recursive. It is possible to recover\n"
          "by calling 'git submodule update --init --recursive'"
     )
 else:
-    sys.path.insert(0, clangParentFolder)
+    sys.path.insert(0, clang_parent_folder)
+
 # Now we can import clang
 from clang import cindex
 from clang.cindex import CursorKind
