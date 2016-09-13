@@ -81,7 +81,7 @@ int main(int /* argc */, char ** /* argv */) {
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
+
     glfwSwapInterval(0);
     glfwSwapBuffers(window);
 
