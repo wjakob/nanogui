@@ -132,6 +132,7 @@ void Button::draw(NVGcontext *ctx) {
             gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
         }
     }
+    //Clip the text rendering t
 
     NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
                                     mPos.y() + mSize.y(), gradTop, gradBot);
@@ -208,6 +209,11 @@ void Button::draw(NVGcontext *ctx) {
             nvgFill(ctx);
         }
     }
+    //scissor on text
+    nvgSave(ctx);
+    nvgIntersectScissor(ctx, mPos.x() + 1, mPos.y() + 1.0f,
+                        mSize.x() - 2,mSize.y() - 2);
+
 
     nvgFontSize(ctx, fontSize);
     nvgFontFace(ctx, "sans-bold");
@@ -216,6 +222,7 @@ void Button::draw(NVGcontext *ctx) {
     nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
     nvgFillColor(ctx, textColor);
     nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
+    nvgRestore(ctx);
 }
 
 void Button::save(Serializer &s) const {

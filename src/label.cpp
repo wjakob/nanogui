@@ -63,8 +63,12 @@ void Label::draw(NVGcontext *ctx) {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
         nvgTextBox(ctx, mPos.x(), mPos.y(), mFixedSize.x(), mCaption.c_str(), nullptr);
     } else {
+        nvgSave(ctx);
+        nvgIntersectScissor(ctx, mPos.x() + 1, mPos.y() + 1.0f,
+                            mSize.x() - 2,mSize.y() - 2);
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         nvgText(ctx, mPos.x(), mPos.y() + mSize.y() * 0.5f, mCaption.c_str(), nullptr);
+        nvgRestore(ctx);
     }
 }
 
