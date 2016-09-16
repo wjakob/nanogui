@@ -12,6 +12,7 @@
 #include <nanogui/glutil.h>
 #include <iostream>
 #include <fstream>
+#include <malloc.h>
 
 NAMESPACE_BEGIN(nanogui)
 
