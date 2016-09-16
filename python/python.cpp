@@ -377,6 +377,10 @@ PYBIND11_PLUGIN(nanogui) {
         .def("visible", &Widget::visible, D(Widget, visible))
         .def("setVisible", &Widget::setVisible, D(Widget, setVisible))
         .def("visibleRecursive", &Widget::visibleRecursive, D(Widget, visibleRecursive))
+        .def("showBorder", &Widget::showBorder, D(Widget, showBorder))
+        .def("setShowBorder", &Widget::setShowBorder, D(Widget, setShowBorder))
+        .def("setBorderColor", &Widget::setBorderColor, D(Widget, setBorderColor))
+        .def("borderColor", &Widget::borderColor, D(Widget, borderColor))
         .def("children", (std::vector<Widget *>&(Widget::*)(void)) &Widget::children,
              D(Widget, children), py::return_value_policy::reference)
         .def("addChild", (void (Widget::*) (int, Widget *)) &Widget::addChild, D(Widget, addChild))
