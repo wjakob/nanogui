@@ -65,6 +65,22 @@ static float get_pixel_ratio(GLFWwindow *window) {
             return std::round(dpiX / 96.0);
     }
     return 1.f;
+#elif defined(__linux__)
+    (void) window;
+
+    /* Try to read the pixel ratio from GTK */
+    FILE *fp = popen("gsettings get org.gnome.desktop.interface scaling-factor", "r");
+    if (!fp)
+        return 1;
+
+    int ratio = 1;
+    if (fscanf(fp, "uint32 %i", &ratio) != 1)
+        return 1;
+
+    if (pclose(fp) != 0)
+        return 1;
+
+    return ratio;
 #else
     Vector2i fbSize, size;
     glfwGetFramebufferSize(window, &fbSize[0], &fbSize[1]);
@@ -250,7 +266,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
     mPixelRatio = get_pixel_ratio(window);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__)
     if (mPixelRatio != 1 && !mFullscreen)
         glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
 #endif
@@ -329,7 +345,7 @@ void Screen::setCaption(const std::string &caption) {
 void Screen::setSize(const Vector2i &size) {
     Widget::setSize(size);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__)
     glfwSetWindowSize(mGLFWWindow, size.x() * mPixelRatio, size.y() * mPixelRatio);
 #else
     glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
@@ -353,7 +369,7 @@ void Screen::drawWidgets() {
     glfwMakeContextCurrent(mGLFWWindow);
     float newPixelRatio = get_pixel_ratio(mGLFWWindow);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__)
     if (mPixelRatio != newPixelRatio && !mFullscreen)
         glfwSetWindowSize(mGLFWWindow, mSize.x() * newPixelRatio / mPixelRatio, mSize.y() * newPixelRatio / mPixelRatio);
 #endif
@@ -362,7 +378,7 @@ void Screen::drawWidgets() {
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__)
     mSize /= mPixelRatio;
 #endif
 
@@ -447,9 +463,11 @@ bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
 
 bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
-#if defined(_WIN32)
+
+#if defined(_WIN32) || defined(__linux__)
     p /= mPixelRatio;
 #endif
+
     bool ret = false;
     mLastInteraction = glfwGetTime();
     try {
@@ -580,7 +598,8 @@ bool Screen::resizeCallbackEvent(int, int) {
     Vector2i fbSize, size;
     glfwGetFramebufferSize(mGLFWWindow, &fbSize[0], &fbSize[1]);
     glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
-#if defined(_WIN32)
+
+#if defined(_WIN32) || defined(__linux__)
     size /= mPixelRatio;
 #endif
 
