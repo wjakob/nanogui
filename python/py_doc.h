@@ -2429,6 +2429,14 @@ static const char *__doc_nanogui_Widget_visibleRecursive =
 R"doc(Check if this widget is currently visible, taking parent widgets into
 account)doc";
 
+static const char *__doc_nanogui_Widget_showBorder = R"doc(Query the status of 'show border')doc";
+
+static const char *__doc_nanogui_Widget_setShowBorder = R"doc(Turn on of off the border around this widget)doc";
+
+static const char *__doc_nanogui_Widget_setBorderColor = R"doc(Set the color of the border)doc";
+
+static const char *__doc_nanogui_Widget_borderColor = R"doc(Get the color of the border)doc";
+
 static const char *__doc_nanogui_Widget_width = R"doc(Return the width of the widget)doc";
 
 static const char *__doc_nanogui_Widget_window = R"doc(Walk up the hierarchy and return the parent window)doc";

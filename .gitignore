@@ -23,3 +23,5 @@ nanogui.pyd
 libnanogui.so
 libnanogui.dylib
 .vscode/
+bin/
+ext/glad_orig/

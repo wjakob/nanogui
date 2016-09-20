@@ -23,7 +23,9 @@ Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
-      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
+      mFocused(false), mMouseFocus(false),
+      mShowBorder(false), mBorderColor(Color(100,100,100,255)),
+      mTooltip(""), mFontSize(-1.0f),
       mCursor(Cursor::Arrow) {
     if (parent)
         parent->addChild(this);
@@ -190,13 +192,17 @@ void Widget::requestFocus() {
 }
 
 void Widget::draw(NVGcontext *ctx) {
-    #if NANOGUI_SHOW_WIDGET_BOUNDS
+    //    #if NANOGUI_SHOW_WIDGET_BOUNDS
+    if(showBorder())
+    {
         nvgStrokeWidth(ctx, 1.0f);
         nvgBeginPath(ctx);
         nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
-        nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
+        nvgStrokeColor(ctx, mBorderColor);
         nvgStroke(ctx);
-    #endif
+    }
+//    #endif
+
 
     if (mChildren.empty())
         return;
