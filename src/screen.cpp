@@ -80,7 +80,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
     if (pclose(fp) != 0)
         return 1;
 
-    return ratio;
+    return ratio >= 1 ? ratio : 1;
 #else
     Vector2i fbSize, size;
     glfwGetFramebufferSize(window, &fbSize[0], &fbSize[1]);
