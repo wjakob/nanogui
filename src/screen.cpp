@@ -372,15 +372,15 @@ void Screen::drawWidgets() {
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
 
 #if defined(_WIN32) || defined(__linux__)
-    mSize /= mPixelRatio;
+    mSize = (mSize / mPixelRatio).cast<int>();
+    mFBSize = (mSize * mPixelRatio).cast<int>();
+#else
+    /* Recompute pixel ratio on OSX */
+    if (mSize[0])
+        mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
 #endif
 
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
-
-    /* Calculate pixel ratio for hi-dpi devices. */
-    if (mSize[0])
-        mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
-
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
