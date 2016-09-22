@@ -367,14 +367,7 @@ void Screen::drawWidgets() {
         return;
 
     glfwMakeContextCurrent(mGLFWWindow);
-    float newPixelRatio = get_pixel_ratio(mGLFWWindow);
 
-#if defined(_WIN32) || defined(__linux__)
-    if (mPixelRatio != newPixelRatio && !mFullscreen)
-        glfwSetWindowSize(mGLFWWindow, mSize.x() * newPixelRatio / mPixelRatio, mSize.y() * newPixelRatio / mPixelRatio);
-#endif
-
-    mPixelRatio = newPixelRatio;
     glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
 
@@ -387,6 +380,7 @@ void Screen::drawWidgets() {
     /* Calculate pixel ratio for hi-dpi devices. */
     if (mSize[0])
         mPixelRatio = (float) mFBSize[0] / (float) mSize[0];
+
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
