@@ -223,6 +223,19 @@ PYBIND11_PLUGIN(nanogui) {
     if (!vector2i) {
         py::class_<Vector2i>(m, "Vector2i")
             .def(py::init<int, int>())
+            .def(py::init<int, int>())
+            .def("__init__", [](Vector2i &v, py::list l) {
+                if (l.size() != 2)
+                    throw std::runtime_error("Incompatible list size!");
+                v[0] = l[0].cast<int>();
+                v[1] = l[1].cast<int>();
+            })
+            .def("__init__", [](Vector2i &v, py::tuple t) {
+                if (t.size() != 2)
+                    throw std::runtime_error("Incompatible tuple size!");
+                v[0] = t[0].cast<int>();
+                v[1] = t[1].cast<int>();
+            })
             .def_property("x", [](const Vector2i &v) { return v.x();}, [](Vector2i &v, int x) { v.x() = x; })
             .def_property("y", [](const Vector2i &v) { return v.y();}, [](Vector2i &v, int y) { v.y() = y; })
             .def("__getitem__", [](const Vector2i &m, size_t i) {
@@ -235,6 +248,8 @@ PYBIND11_PLUGIN(nanogui) {
                     throw py::index_error();
                 m[i] = v;
              });
+        py::implicitly_convertible<py::list,Vector2i>();
+        py::implicitly_convertible<py::tuple,Vector2i>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
@@ -244,7 +259,19 @@ PYBIND11_PLUGIN(nanogui) {
     py::handle vector2f = py::detail::get_type_handle(typeid(Vector2f));
     if (!vector2f) {
         py::class_<Vector2f>(m, "Vector2f")
-            .def(py::init<int, int>())
+            .def(py::init<float, float>())
+            .def("__init__", [](Vector2f &v, py::list l) {
+                if (l.size() != 2)
+                    throw std::runtime_error("Incompatible list size!");
+                v[0] = l[0].cast<float>();
+                v[1] = l[1].cast<float>();
+            })
+            .def("__init__", [](Vector2f &v, py::tuple t) {
+                if (t.size() != 2)
+                    throw std::runtime_error("Incompatible tuple size!");
+                v[0] = t[0].cast<float>();
+                v[1] = t[1].cast<float>();
+            })
             .def_property("x", [](const Vector2f &v) { return v.x();}, [](Vector2f &v, float x) { v.x() = x; })
             .def_property("y", [](const Vector2f &v) { return v.y();}, [](Vector2f &v, float y) { v.y() = y; })
             .def("__getitem__", [](const Vector2f &m, size_t i) {
@@ -257,6 +284,8 @@ PYBIND11_PLUGIN(nanogui) {
                     throw py::index_error();
                 m[i] = v;
              });
+        py::implicitly_convertible<py::list,Vector2f>();
+        py::implicitly_convertible<py::tuple,Vector2f>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
@@ -317,6 +346,7 @@ PYBIND11_PLUGIN(nanogui) {
                     { sizeof(float) }       /* Strides (in bytes) for each index */
                 );
              });
+        py::implicitly_convertible<std::vector<float>,VectorXf>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
@@ -377,6 +407,10 @@ PYBIND11_PLUGIN(nanogui) {
         .def("visible", &Widget::visible, D(Widget, visible))
         .def("setVisible", &Widget::setVisible, D(Widget, setVisible))
         .def("visibleRecursive", &Widget::visibleRecursive, D(Widget, visibleRecursive))
+        .def("showBorder", &Widget::showBorder, D(Widget, showBorder))
+        .def("setShowBorder", &Widget::setShowBorder, D(Widget, setShowBorder))
+        .def("setBorderColor", &Widget::setBorderColor, D(Widget, setBorderColor))
+        .def("borderColor", &Widget::borderColor, D(Widget, borderColor))
         .def("children", (std::vector<Widget *>&(Widget::*)(void)) &Widget::children,
              D(Widget, children), py::return_value_policy::reference)
         .def("addChild", (void (Widget::*) (int, Widget *)) &Widget::addChild, D(Widget, addChild))
