@@ -56,11 +56,6 @@ set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
 set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  # Quench annoying deprecation warnings when compiling GLFW on OSX
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
-endif()
-
 # Compile GLFW
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
@@ -123,7 +118,7 @@ if (NANOGUI_USE_GLAD)
     set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c"
       PROPERTIES COMPILE_FLAGS "/wd4055 ")
   endif()
-  include_directories(ext/glad/include)
+  include_directories(SYSTEM ext/glad/include)
   list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_GLAD)
   list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include")
 endif()
@@ -139,7 +134,7 @@ if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "BSD")
-  include_directories(/usr/local/include)
+  include_directories(SYSTEM /usr/local/include)
   link_directories(/usr/local/lib)
 endif()
 
@@ -160,7 +155,8 @@ elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
   endif()
 endif()
 
-include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(SYSTEM ${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src)
+include_directories(include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
@@ -191,7 +187,7 @@ endif()
 if (APPLE OR CMAKE_SYSTEM MATCHES "Linux")
   # Include coroutine support for running the mainloop in detached mode
   add_definitions(-DCORO_SJLJ)
-  include_directories(ext/coro)
+  include_directories(SYSTEM ext/coro)
   list(APPEND LIBNANOGUI_PYTHON_EXTRA_SOURCE ext/coro/coro.c)
 endif()
 
@@ -353,7 +349,7 @@ if (NANOGUI_BUILD_PYTHON)
   set_target_properties(nanogui PROPERTIES POSITION_INDEPENDENT_CODE ON)
   set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-  include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
+  include_directories(SYSTEM "ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui_python SHARED python/python.cpp python/python.h python/py_doc.h
                                     ${LIBNANOGUI_PYTHON_EXTRA_SOURCE})
   set_target_properties(nanogui_python PROPERTIES OUTPUT_NAME "nanogui")
