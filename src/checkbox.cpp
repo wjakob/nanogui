@@ -58,13 +58,20 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
 void CheckBox::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
+    nvgSave(ctx);
+    nvgIntersectScissor(ctx,
+                        mPos.x() + 1.2f * mSize.y()+ 5,
+                        mPos.y() + 1.0f,
+                        mSize.x() - 1.2f * mSize.y()-6,
+                        mSize.y() - 2);
     nvgFontSize(ctx, fontSize());
     nvgFontFace(ctx, "sans");
     nvgFillColor(ctx,
                  mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgText(ctx, mPos.x() + 1.2f * mSize.y() + 5, mPos.y() + mSize.y() * 0.5f,
+    nvgText(ctx, mPos.x() + 1.2f * mSize.y()+ 5 , mPos.y() + mSize.y() * 0.5f,
             mCaption.c_str(), nullptr);
+    nvgRestore(ctx);
 
     NVGpaint bg = nvgBoxGradient(ctx, mPos.x() + 1.5f, mPos.y() + 1.5f,
                                  mSize.y() - 2.0f, mSize.y() - 2.0f, 3, 3,

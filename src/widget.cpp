@@ -23,7 +23,9 @@ Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
-      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
+      mFocused(false), mMouseFocus(false),
+      mShowBorder(false), mBorderColor(Color(100,100,100,255)),
+      mTooltip(""), mFontSize(-1.0f),
       mCursor(Cursor::Arrow) {
     if (parent)
         parent->addChild(this);
@@ -190,13 +192,13 @@ void Widget::requestFocus() {
 }
 
 void Widget::draw(NVGcontext *ctx) {
-    #if NANOGUI_SHOW_WIDGET_BOUNDS
+    if (mShowBorder == true) {
         nvgStrokeWidth(ctx, 1.0f);
         nvgBeginPath(ctx);
         nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
-        nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
+        nvgStrokeColor(ctx, mBorderColor);
         nvgStroke(ctx);
-    #endif
+    }
 
     if (mChildren.empty())
         return;
@@ -215,6 +217,8 @@ void Widget::save(Serializer &s) const {
     s.set("visible", mVisible);
     s.set("enabled", mEnabled);
     s.set("focused", mFocused);
+    s.set("showBorder", mShowBorder);
+    s.set("borderColor", mBorderColor);
     s.set("tooltip", mTooltip);
     s.set("fontSize", mFontSize);
     s.set("cursor", (int) mCursor);
@@ -227,6 +231,8 @@ bool Widget::load(Serializer &s) {
     if (!s.get("visible", mVisible)) return false;
     if (!s.get("enabled", mEnabled)) return false;
     if (!s.get("focused", mFocused)) return false;
+    if (!s.get("showBorder", mShowBorder)) return false;
+    if (!s.get("borderColor", mBorderColor)) return false;
     if (!s.get("tooltip", mTooltip)) return false;
     if (!s.get("fontSize", mFontSize)) return false;
     if (!s.get("cursor", mCursor)) return false;
