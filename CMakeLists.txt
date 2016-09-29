@@ -2,11 +2,11 @@ cmake_minimum_required (VERSION 2.8.12)
 
 project("NanoGUI")
 
-if(POLICY CMP0058)
+if (POLICY CMP0058)
   cmake_policy(SET CMP0058 NEW)
 endif()
 
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
+if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
   message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
     "You probably did not clone the project with --recursive. It is possible to recover "
     "by calling \"git submodule update --init --recursive\"")
@@ -111,6 +111,74 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|Intel)$")
   else()
     message(FATAL_ERROR "Unsupported compiler -- pybind11 requires C++11 support!")
   endif()
+endif()
+
+# Various optimizations for shared library release builds
+if (NANOGUI_BUILD_SHARED)
+  if (U_CMAKE_BUILD_TYPE MATCHES REL AND CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang)$")
+    # Set the default symbol visibility to hidden
+    if (NOT CMAKE_CXX_FLAGS MATCHES "-fvisibility")
+      set(CMAKE_CXX_FLAGS "-fvisibility=hidden ${CMAKE_CXX_FLAGS}")
+    endif()
+
+    # Enable link time optimization
+    if (NOT CMAKE_CXX_FLAGS MATCHES "-flto")
+      set(BACKUP_C_FLAGS ${CMAKE_CXX_FLAGS})
+      set(BACKUP_CXX_FLAGS ${CMAKE_C_FLAGS})
+      set(BACKUP_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+      set(BACKUP_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
+
+      if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(CMAKE_EXE_LINKER_FLAGS "-flto=thin ${CMAKE_EXE_LINKER_FLAGS}")
+        set(CMAKE_SHARED_LINKER_FLAGS "-flto=thin ${CMAKE_SHARED_LINKER_FLAGS}")
+        set(CMAKE_CXX_FLAGS "-flto=thin ${CMAKE_CXX_FLAGS}")
+        set(CMAKE_C_FLAGS "-flto=thin ${CMAKE_C_FLAGS}")
+        if (NOT APPLE AND U_CMAKE_BUILD_TYPE MATCHES MINSIZEREL)
+            # Clang Gold plugin does not support -Os
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -O3")
+        endif()
+      else()
+        set(CMAKE_EXE_LINKER_FLAGS "-flto ${CMAKE_EXE_LINKER_FLAGS}")
+        set(CMAKE_SHARED_LINKER_FLAGS "-flto ${CMAKE_SHARED_LINKER_FLAGS}")
+        set(CMAKE_CXX_FLAGS "-flto -fno-fat-lto-objects ${CMAKE_CXX_FLAGS}")
+        set(CMAKE_C_FLAGS "-flto -fno-fat-lto-objects ${CMAKE_C_FLAGS}")
+      endif()
+
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/CMakeTmp/test.c "int main(int argc, char **argv) { return 0; }")
+      try_compile(HAS_LTO
+        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/CMakeTmp
+        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/CMakeTmp/test.c)
+
+      if (HAS_LTO)
+        message(STATUS "NanoGUI: LTO support enabled.")
+      else()
+        message(STATUS "NanoGUI: LTO not supported by the compiler.")
+        set(CMAKE_C_FLAGS ${BACKUP_CXX_FLAGS})
+        set(CMAKE_CXX_FLAGS ${BACKUP_C_FLAGS})
+        set(CMAKE_EXE_LINKER_FLAGS ${BACKUP_EXE_LINKER_FLAGS})
+        set(CMAKE_SHARED_LINKER_FLAGS ${BACKUP_SHARED_LINKER_FLAGS})
+      endif()
+    endif()
+  elseif(MSVC)
+    set(Configurations RELEASE RELWITHDEBINFO MINSIZEREL)
+    set(LinkTypes EXE SHARED MODULE STATIC)
+    foreach(Configuration ${Configurations})
+      set("CMAKE_CXX_FLAGS_${Configuration}" "${CMAKE_CXX_FLAGS_${Configuration}} /GL")
+      foreach(LinkType ${LinkTypes})
+        set("CMAKE_${LinkType}_LINKER_FLAGS_${Configuration}" "${CMAKE_${LinkType}_LINKER_FLAGS_${Configuration}} /LTCG")
+        message(STATUS CMAKE_${LinkType}_LINKER_FLAGS_${Configuration})
+      endforeach()
+    endforeach()
+    message(STATUS "NanoGUI: LTO support enabled.")
+  endif()
+endif()
+
+# Always use libc++ on Clang
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
 endif()
 
 if (NANOGUI_USE_GLAD)
@@ -263,40 +331,12 @@ if (NANOGUI_BUILD_SHARED)
 endif()
 
 if (NANOGUI_INSTALL)
-  install(
-    TARGETS nanogui
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
+  install(TARGETS nanogui
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib)
 
-  install(
-    DIRECTORY include/nanogui DESTINATION include
-    FILES_MATCHING PATTERN "*.h"
-  )
-endif()
-
-# Check for Link Time Optimization support
-CHECK_CXX_COMPILER_FLAG("-flto" HAS_LTO_FLAG)
-CHECK_CXX_COMPILER_FLAG("-flto=thin" HAS_LTO_THIN_FLAG)
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG AND NANOGUI_BUILD_SHARED)
-    # Link-time code generation (only for shared library in release mode)
-    set_property(TARGET nanogui-obj APPEND_STRING PROPERTY COMPILE_FLAGS "-fvisibility=hidden ")
-
-    if (HAS_LTO_THIN_FLAG)
-      set_property(TARGET nanogui-obj APPEND_STRING PROPERTY COMPILE_FLAGS "-flto=thin ")
-    elseif (HAS_LTO_FLAG)
-      set_property(TARGET nanogui-obj APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
-    endif()
-  endif()
-elseif (MSVC AND NANOGUI_BUILD_SHARED)
-  # Link-time code generation (only for shared library in release mode)
-  set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_OPTIONS
-    "$<$<CONFIG:Release>:/GL>" "$<$<CONFIG:MinSizeRel>:/GL>" "$<$<CONFIG:RelWithDebInfo>:/GL>")
-  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELEASE "/LTCG ")
-  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL "/LTCG ")
-  set_property(TARGET nanogui APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO "/LTCG ")
+  install(DIRECTORY include/nanogui DESTINATION include
+          FILES_MATCHING PATTERN "*.h")
 endif()
 
 if (NANOGUI_BUILD_SHARED)
@@ -304,7 +344,7 @@ if (NANOGUI_BUILD_SHARED)
   set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL")
 endif()
 
-if (NANOGUI_BUILD_SHARED AND NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+if (NANOGUI_BUILD_SHARED AND NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
   # Platform-specific strip flags for reducing the library size.
   if (APPLE)
     # Strip .dylib library on OSX
@@ -342,10 +382,8 @@ if(NANOGUI_BUILD_EXAMPLE)
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
   if (NANOGUI_INSTALL)
-    install(
-      TARGETS example1 example2 example3
-      RUNTIME DESTINATION bin
-    )
+    install(TARGETS example1 example2 example3
+            RUNTIME DESTINATION bin)
   endif()
 endif()
 
@@ -411,22 +449,18 @@ if (NANOGUI_BUILD_PYTHON)
     target_link_libraries(nanogui-python ${PYTHON_LIBRARY})
 
     if (MSVC)
-      # Optimize size, /bigobj is needed for due to the heavy template metaprogramming in pybind11
+      # Optimize for size, /bigobj is needed for due to the heavy template metaprogramming in pybind11
       set_property(TARGET nanogui-python-obj APPEND PROPERTY COMPILE_OPTIONS
-        "/bigobj" "$<$<CONFIG:Release>:/Os>" "$<$<CONFIG:MinSizeRel>:/Os>" "$<$<CONFIG:RelWithDebInfo>:/Os>")
+        "/bigobj" "$<$<CONFIG:Release>:/Os>" "$<$<CONFIG:MinSizeRel>:/Os>"
+        "$<$<CONFIG:RelWithDebInfo>:/Os>")
     endif()
   elseif(UNIX)
     # .SO file extension on Linux/Mac OS
     set_target_properties(nanogui-python PROPERTIES SUFFIX ".so")
 
-    # Optimize for a small binary size
-    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      set_target_properties(nanogui-python-obj PROPERTIES COMPILE_FLAGS "-Os -fvisibility=hidden ")
-      if (HAS_LTO_THIN_FLAG)
-        set_property(TARGET nanogui-python-obj APPEND_STRING PROPERTY COMPILE_FLAGS "-flto=thin ")
-      elseif (HAS_LTO_FLAG)
-        set_property(TARGET nanogui-python-obj APPEND_STRING PROPERTY COMPILE_FLAGS "-flto ")
-      endif()
+    # Optimize for size
+    if (U_CMAKE_BUILD_TYPE MATCHES REL)
+      set_property(TARGET nanogui-python-obj APPEND PROPERTY COMPILE_OPTIONS "-Os")
     endif()
 
     # Strip unnecessary sections of the binary on Linux/Mac OS
@@ -434,22 +468,20 @@ if (NANOGUI_BUILD_PYTHON)
       set_target_properties(nanogui-python PROPERTIES MACOSX_RPATH ".")
       set_target_properties(nanogui-python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup ")
 
-      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
         add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
       endif()
     else()
-      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
         add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
       endif()
     endif()
   endif()
 
   if (NANOGUI_INSTALL)
-    install(
-      TARGETS nanogui-python
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib
-    )
+    install(TARGETS nanogui-python
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
   endif()
 endif()
 
