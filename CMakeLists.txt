@@ -385,9 +385,9 @@ if (NANOGUI_BUILD_PYTHON)
   set_target_properties(nanogui-python PROPERTIES OUTPUT_NAME "nanogui")
   target_link_libraries(nanogui-python nanogui ${NANOGUI_EXTRA_LIBS})
 
-  # Quench GCC-related warnings
+  # Quench warnings on GCC
   if (CMAKE_COMPILER_IS_GNUCC)
-    set_target_properties(nanogui-python-obj PROPERTIES COMPILE_FLAGS -Wno-unused-variable)
+    set_property(TARGET nanogui-python-obj APPEND PROPERTY COMPILE_OPTIONS "-Wno-unused-variable")
   endif()
 
   set_target_properties(nanogui-python PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python)
