@@ -3,25 +3,28 @@
 #include "python.h"
 
 void register_eigen(py::module &m) {
-    py::handle vector2i = py::detail::get_type_handle(typeid(Vector2i));
+    py::handle vector2i = py::detail::get_type_handle(typeid(Vector2i), false);
     if (!vector2i) {
         py::class_<Vector2i>(m, "Vector2i")
-            .def(py::init<int, int>())
             .def(py::init<int, int>())
             .def("__init__", [](Vector2i &v, py::list l) {
                 if (l.size() != 2)
                     throw std::runtime_error("Incompatible list size!");
-                v[0] = l[0].cast<int>();
-                v[1] = l[1].cast<int>();
+                new (&v) Vector2i(
+                    l[0].cast<int>(),
+                    l[1].cast<int>()
+                );
             })
             .def("__init__", [](Vector2i &v, py::tuple t) {
                 if (t.size() != 2)
                     throw std::runtime_error("Incompatible tuple size!");
-                v[0] = t[0].cast<int>();
-                v[1] = t[1].cast<int>();
+                new (&v) Vector2i(
+                    t[0].cast<int>(),
+                    t[1].cast<int>()
+                );
             })
-            .def_property("x", [](const Vector2i &v) { return v.x();}, [](Vector2i &v, int x) { v.x() = x; })
-            .def_property("y", [](const Vector2i &v) { return v.y();}, [](Vector2i &v, int y) { v.y() = y; })
+            .def_property("x", [](const Vector2i &v) { return v.x(); }, [](Vector2i &v, int x) { v.x() = x; })
+            .def_property("y", [](const Vector2i &v) { return v.y(); }, [](Vector2i &v, int y) { v.y() = y; })
             .def("__getitem__", [](const Vector2i &m, size_t i) {
                 if (i >= (size_t) m.size())
                     throw py::index_error();
@@ -32,32 +35,37 @@ void register_eigen(py::module &m) {
                     throw py::index_error();
                 m[i] = v;
              });
-        py::implicitly_convertible<py::list,Vector2i>();
-        py::implicitly_convertible<py::tuple,Vector2i>();
+
+        py::implicitly_convertible<py::list, Vector2i>();
+        py::implicitly_convertible<py::tuple, Vector2i>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
         m.attr("Vector2i") = vector2i;
     }
 
-    py::handle vector2f = py::detail::get_type_handle(typeid(Vector2f));
+    py::handle vector2f = py::detail::get_type_handle(typeid(Vector2f), false);
     if (!vector2f) {
         py::class_<Vector2f>(m, "Vector2f")
             .def(py::init<float, float>())
             .def("__init__", [](Vector2f &v, py::list l) {
                 if (l.size() != 2)
                     throw std::runtime_error("Incompatible list size!");
-                v[0] = l[0].cast<float>();
-                v[1] = l[1].cast<float>();
+                new (&v) Vector2i(
+                    l[0].cast<float>(),
+                    l[1].cast<float>()
+                );
             })
             .def("__init__", [](Vector2f &v, py::tuple t) {
                 if (t.size() != 2)
                     throw std::runtime_error("Incompatible tuple size!");
-                v[0] = t[0].cast<float>();
-                v[1] = t[1].cast<float>();
+                new (&v) Vector2i(
+                    t[0].cast<float>(),
+                    t[1].cast<float>()
+                );
             })
-            .def_property("x", [](const Vector2f &v) { return v.x();}, [](Vector2f &v, float x) { v.x() = x; })
-            .def_property("y", [](const Vector2f &v) { return v.y();}, [](Vector2f &v, float y) { v.y() = y; })
+            .def_property("x", [](const Vector2f &v) { return v.x(); }, [](Vector2f &v, float x) { v.x() = x; })
+            .def_property("y", [](const Vector2f &v) { return v.y(); }, [](Vector2f &v, float y) { v.y() = y; })
             .def("__getitem__", [](const Vector2f &m, size_t i) {
                 if (i >= (size_t) m.size())
                     throw py::index_error();
@@ -68,15 +76,15 @@ void register_eigen(py::module &m) {
                     throw py::index_error();
                 m[i] = v;
              });
-        py::implicitly_convertible<py::list,Vector2f>();
-        py::implicitly_convertible<py::tuple,Vector2f>();
+        py::implicitly_convertible<py::list, Vector2f>();
+        py::implicitly_convertible<py::tuple, Vector2f>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
         m.attr("Vector2f") = vector2f;
     }
 
-    py::handle vectorXf = py::detail::get_type_handle(typeid(VectorXf));
+    py::handle vectorXf = py::detail::get_type_handle(typeid(VectorXf), false);
     if (!vectorXf) {
         py::class_<VectorXf>(m, "VectorXf")
             .def(py::init<>())
@@ -130,7 +138,7 @@ void register_eigen(py::module &m) {
                     { sizeof(float) }       /* Strides (in bytes) for each index */
                 );
              });
-        py::implicitly_convertible<std::vector<float>,VectorXf>();
+        py::implicitly_convertible<std::vector<float>, VectorXf>();
     } else {
         /* Don't create a new type if some other library has already
            exposed (potentially much fancier) Eigen Python bindings */
