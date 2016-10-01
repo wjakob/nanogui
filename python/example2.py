@@ -13,7 +13,7 @@ import nanogui
 import math
 import gc
 
-from nanogui import Screen, FormHelper, Vector2i
+from nanogui import Screen, FormHelper
 
 bvar = True
 ivar = 12345678
@@ -37,12 +37,12 @@ use_gl_4_1 = False # Set to True to create an OpenGL 4.1 context.
 if use_gl_4_1:
     # NanoGUI presents many options for you to utilize at your discretion.
     # See include/nanogui/screen.h for what all of the options are.
-    screen = Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]", glMajor=4, glMinor=1)
+    screen = Screen((500, 700), "NanoGUI test [GL 4.1]", glMajor=4, glMinor=1)
 else:
-    screen = Screen(Vector2i(500, 700), "NanoGUI test")
+    screen = Screen((500, 700), "NanoGUI test")
 
 gui = FormHelper(screen)
-window = gui.addWindow(Vector2i(10, 10), "Form helper example")
+window = gui.addWindow((10, 10), "Form helper example")
 
 gui.addGroup("Basic types")
 gui.addBoolVariable("bool", *make_accessors("bvar"))
@@ -50,7 +50,7 @@ gui.addStringVariable("string", *make_accessors("strvar"))
 
 gui.addGroup("Validating fields")
 gui.addIntVariable("int", *make_accessors("ivar"))
-gui.addDoubleVariable("double", *make_accessors("dvar")).setSpinnable(True)
+gui.addDoubleVariable("double", *make_accessors("dvar"))
 
 gui.addGroup("Complex types")
 gui.addEnumVariable("Enumeration", *make_accessors("enumvar")) \

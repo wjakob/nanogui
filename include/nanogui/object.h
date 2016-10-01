@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -16,7 +17,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-/// Reference counted object base class
+/**
+ * \class Object object.h nanogui/object.h
+ *
+ * \brief Reference counted object base class.
+ */
 class NANOGUI_EXPORT Object {
 public:
     /// Default constructor
@@ -48,20 +53,22 @@ private:
 };
 
 /**
- * \brief Reference counting helper
+ * \class ref object.h nanogui/object.h
+ *
+ * \brief Reference counting helper.
  *
  * The \a ref template is a simple wrapper to store a pointer to an object. It
  * takes care of increasing and decreasing the object's reference count as
  * needed. When the last reference goes out of scope, the associated object
  * will be deallocated.
  *
- * The advantage over C++ solutions such as <tt>std::shared_ptr</tt> is that
+ * The advantage over C++ solutions such as ``std::shared_ptr`` is that
  * the reference count is very compactly integrated into the base object
  * itself.
  */
 template <typename T> class ref {
 public:
-    /// Create a <tt>nullptr</tt>-valued reference
+    /// Create a ``nullptr``-valued reference
     ref() { }
 
     /// Construct a reference from a pointer

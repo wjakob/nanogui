@@ -105,7 +105,7 @@ void Window::draw(NVGcontext *ctx) {
         nvgBeginPath(ctx);
         nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
         nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
-        
+
         nvgSave(ctx);
         nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
         nvgStroke(ctx);

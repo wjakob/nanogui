@@ -8,23 +8,29 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
 #include <nanogui/widget.h>
 
 NAMESPACE_BEGIN(nanogui)
-
+/**
+ * \class Button button.h nanogui/button.h
+ *
+ * \brief [Normal/Toggle/Radio/Popup] Button widget.
+ */
 class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flags {
-        NormalButton = 1,
-        RadioButton  = 2,
-        ToggleButton = 4,
-        PopupButton  = 8
+        NormalButton = (1 << 0), // 1
+        RadioButton  = (1 << 1), // 2
+        ToggleButton = (1 << 2), // 4
+        PopupButton  = (1 << 3)  // 8
     };
 
+    /// The available icon positions.
     enum class IconPosition {
         Left,
         LeftCentered,

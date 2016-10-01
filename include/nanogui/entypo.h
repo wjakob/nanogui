@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define ENTYPO_ICON_PHONE                0x1F4DE
 #define ENTYPO_ICON_MOBILE               0x1F4F1
 #define ENTYPO_ICON_MOUSE                0xE789
@@ -289,3 +291,5 @@
 #define ENTYPO_ICON_GOOGLE_CIRCLES       0xF351
 #define ENTYPO_ICON_VK                   0xF354
 #define ENTYPO_ICON_SMASHING             0xF357
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS

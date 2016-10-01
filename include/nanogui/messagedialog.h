@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,8 +16,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class MessageDialog messagedialog.h nanogui/messagedialog.h
+ *
+ * \brief Simple "OK" or "Yes/No"-style modal dialogs.
+ */
 class NANOGUI_EXPORT MessageDialog : public Window {
 public:
+    /// Classification of the type of message this MessageDialog represents.
     enum class Type {
         Information,
         Question,

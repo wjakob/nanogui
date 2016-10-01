@@ -9,11 +9,13 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
 #include <nanogui/common.h>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #if defined(NANOGUI_GLAD)
     #if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
         #define GLAD_GLAPI_EXPORT
@@ -27,12 +29,14 @@
         #define GL_GLEXT_PROTOTYPES
     #endif
 #endif
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #include <GLFW/glfw3.h>
 #include <nanovg.h>
 
 NAMESPACE_BEGIN(nanogui)
 
+/// Allows for conversion between nanogui::Color and the NanoVG NVGcolor class.
 inline Color::operator const NVGcolor &() const {
     return reinterpret_cast<const NVGcolor &>(*this->data());
 }

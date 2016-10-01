@@ -1,9 +1,10 @@
 # NanoGUI
 
+[![Documentation Status](https://readthedocs.org/projects/nanogui/badge/?version=latest)](http://nanogui.readthedocs.org/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/wjakob/nanogui.svg?branch=master)](https://travis-ci.org/wjakob/nanogui)
 [![Build status](https://ci.appveyor.com/api/projects/status/m8h3uyvdb4ej2i02/branch/master?svg=true)](https://ci.appveyor.com/project/wjakob/nanogui/branch/master)
 
-NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x.
+NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x or higher.
 It supports automatic layout generation, stateful C++11 lambdas callbacks,
 a variety of useful widget types and Retina-capable rendering on Apple devices
 thanks to [NanoVG](https://github.com/memononen/NanoVG) by Mikko Mononen.

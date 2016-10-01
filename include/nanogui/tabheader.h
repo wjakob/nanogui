@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -22,6 +23,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class TabHeader tabheader.h nanogui/tabheader.h
+ *
+ * \brief A Tab navigable widget.
+ */
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
     TabHeader(Widget *parent, const std::string &font = "sans-bold");
@@ -32,7 +38,7 @@ public:
 
     /**
      * Sets the callable objects which is invoked when a tab button is pressed.
-     *  The argument provided to the callback is the index of the tab.
+     * The argument provided to the callback is the index of the tab.
      */
     void setCallback(const std::function<void(int)>& callback) { mCallback = callback; };
     const std::function<void(int)>& callback() const { return mCallback; }
@@ -94,7 +100,11 @@ public:
     virtual void draw(NVGcontext* ctx) override;
 
 private:
-    /// Implementation class of the actual tab buttons.
+    /**
+     * \class TabButton tabheader.h
+     *
+     * \brief Implementation class of the actual tab buttons.
+     */
     class TabButton {
     public:
         constexpr static const char* dots = "...";
@@ -116,6 +126,12 @@ private:
         TabHeader* mHeader;
         std::string mLabel;
         Vector2i mSize;
+
+        /**
+         * \struct StringView tabheader.h nanogui/tabheader.h
+         *
+         * \brief Helper struct to represent the TabButton.
+         */
         struct StringView {
             const char* first = nullptr;
             const char* last = nullptr;
@@ -127,6 +143,7 @@ private:
     using TabIterator = std::vector<TabButton>::iterator;
     using ConstTabIterator = std::vector<TabButton>::const_iterator;
 
+    /// The location in which the Widget will be facing.
     enum class ClickLocation {
         LeftControls, RightControls, TabButtons
     };

@@ -53,14 +53,14 @@ int main(int argc, char **argv) {
 
 		size = 0;
 		while ((count = (unsigned int) fread(buf, 1, sizeof(buf), f_i)) > 0) {
-			fprintf(f_c, "\t");
+			fprintf(f_c, "    ");
 			for (j=0; j<count; j++) {
 				fprintf(f_c, "0x%02x, ", (unsigned int) buf[j]);
 				size++;
 			}
 			fprintf(f_c, "\n");
 		}
-		fprintf(f_c, "\t0x00\n");
+		fprintf(f_c, "    0x00\n");
 
 		fprintf(f_c, "};\n\n");
 		fprintf(f_h, "extern uint32_t %s_size;\n\n", name);

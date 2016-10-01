@@ -15,10 +15,10 @@ import time
 import gc
 
 from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
-                    ToolButton, Vector2i, Label, Button, Widget, \
+                    ToolButton, Label, Button, Widget, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
-                    TextBox, ColorWheel, Graph, VectorXf, GridLayout, \
+                    TextBox, ColorWheel, Graph, GridLayout, \
                     Alignment, Orientation, TabWidget, IntBox
 
 from nanogui import glfw, entypo
@@ -26,10 +26,10 @@ from nanogui import glfw, entypo
 
 class TestApp(Screen):
     def __init__(self):
-        super(TestApp, self).__init__(Vector2i(1024, 768), "NanoGUI Test")
+        super(TestApp, self).__init__((1024, 768), "NanoGUI Test")
 
         window = Window(self, "Button demo")
-        window.setPosition(Vector2i(15, 15))
+        window.setPosition((15, 15))
         window.setLayout(GroupLayout())
 
         Label(window, "Push buttons", "sans-bold")
@@ -79,7 +79,7 @@ class TestApp(Screen):
         CheckBox(popup, "Another check box")
 
         window = Window(self, "Basic widgets")
-        window.setPosition(Vector2i(200, 15))
+        window.setPosition((200, 15))
         window.setLayout(GroupLayout())
 
         Label(window, "Message dialog", "sans-bold")
@@ -125,7 +125,7 @@ class TestApp(Screen):
                 icons = nanogui.loadImageDirectory(self.nvgContext(), "../icons")
             except:
                 icons = nanogui.loadImageDirectory(self.nvgContext(), "../resources/icons")
-            
+
 
         Label(window, "Image panel & scroll panel", "sans-bold")
         imagePanelBtn = PopupButton(window, "Image Panel")
@@ -134,13 +134,12 @@ class TestApp(Screen):
         vscroll = VScrollPanel(popup)
         imgPanel = ImagePanel(vscroll)
         imgPanel.setImages(icons)
-        popup.setFixedSize(Vector2i(245, 150))
+        popup.setFixedSize((245, 150))
 
         img_window = Window(self, "Selected image")
-        img_window.setPosition(Vector2i(710, 15))
+        img_window.setPosition((710, 15))
         img_window.setLayout(GroupLayout())
 
-        
         imgView = ImageView(img_window, icons[0][0])
 
         def cb(i):
@@ -198,7 +197,7 @@ class TestApp(Screen):
         slider.setFixedWidth(80)
 
         textBox = TextBox(panel)
-        textBox.setFixedSize(Vector2i(60, 25))
+        textBox.setFixedSize((60, 25))
         textBox.setValue("50")
         textBox.setUnits("%")
         textBox.setFontSize(20)
@@ -213,7 +212,7 @@ class TestApp(Screen):
         slider.setFinalCallback(cb)
 
         window = Window(self, "Misc. widgets")
-        window.setPosition(Vector2i(425, 15))
+        window.setPosition((425, 15))
         window.setLayout(GroupLayout())
 
         tabWidget = TabWidget(window)
@@ -230,15 +229,14 @@ class TestApp(Screen):
         graph = Graph(layer, "Some function")
         graph.setHeader("E = 2.35e-3")
         graph.setFooter("Iteration 89")
-        values = VectorXf(100)
-        for i in range(100):
-            values[i] = 0.5 * (0.5 * math.sin(i / 10.0) +
-                               0.5 * math.cos(i / 23.0) + 1)
+        values = [0.5 * (0.5 * math.sin(i / 10.0) +
+                         0.5 * math.cos(i / 23.0) + 1)
+                  for i in range(100)]
         graph.setValues(values)
         tabWidget.setActiveTab(0)
 
         window = Window(self, "Grid of small widgets")
-        window.setPosition(Vector2i(425, 300))
+        window.setPosition((425, 300))
         layout = GridLayout(Orientation.Horizontal, 2,
                             Alignment.Middle, 15, 5)
         layout.setColAlignment(
@@ -249,7 +247,7 @@ class TestApp(Screen):
         Label(window, "Floating point :", "sans-bold")
         floatBox = TextBox(window)
         floatBox.setEditable(True)
-        floatBox.setFixedSize(Vector2i(100, 20))
+        floatBox.setFixedSize((100, 20))
         floatBox.setValue("50")
         floatBox.setUnits("GiB")
         floatBox.setDefaultValue("0.0")
@@ -259,7 +257,7 @@ class TestApp(Screen):
         Label(window, "Positive integer :", "sans-bold")
         intBox = IntBox(window)
         intBox.setEditable(True)
-        intBox.setFixedSize(Vector2i(100, 20))
+        intBox.setFixedSize((100, 20))
         intBox.setValue(50)
         intBox.setUnits("Mhz")
         intBox.setDefaultValue("0")
@@ -278,13 +276,13 @@ class TestApp(Screen):
         Label(window, "Combo box :", "sans-bold")
         cobo = ComboBox(window, ["Item 1", "Item 2", "Item 3"])
         cobo.setFontSize(16)
-        cobo.setFixedSize(Vector2i(100, 20))
+        cobo.setFixedSize((100, 20))
 
         Label(window, "Color button :", "sans-bold")
         popupBtn = PopupButton(window, "", 0)
         popupBtn.setBackgroundColor(Color(1, 0.47, 0, 1))
         popupBtn.setFontSize(16)
-        popupBtn.setFixedSize(Vector2i(100, 20))
+        popupBtn.setFixedSize((100, 20))
         popup = popupBtn.popup()
         popup.setLayout(GroupLayout())
 
@@ -292,7 +290,7 @@ class TestApp(Screen):
         colorwheel.setColor(popupBtn.backgroundColor())
 
         colorBtn = Button(popup, "Pick")
-        colorBtn.setFixedSize(Vector2i(100, 25))
+        colorBtn.setFixedSize((100, 25))
         c = colorwheel.color()
         colorBtn.setBackgroundColor(c)
 

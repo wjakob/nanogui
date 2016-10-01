@@ -67,7 +67,7 @@ int main(int /* argc */, char ** /* argv */) {
         gui->addVariable("Color", colval);
 
         gui->addGroup("Other widgets");
-        gui->addButton("A button", [](){ std::cout << "Button pressed." << std::endl; });
+        gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; });
 
         screen->setVisible(true);
         screen->performLayout();

@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,9 +16,14 @@
 #include <Eigen/Geometry>
 #include <map>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace half_float { class half; }
+#endif
 
 NAMESPACE_BEGIN(nanogui)
+
+// bypass template specializations
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 NAMESPACE_BEGIN(detail)
 template <typename T> struct type_traits;
@@ -33,6 +39,8 @@ template <> struct type_traits<half_float::half> { enum { type = GL_HALF_FLOAT, 
 template <typename T> struct serialization_helper;
 NAMESPACE_END(detail)
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 using Eigen::Quaternionf;
 
 class GLUniformBuffer;
@@ -40,23 +48,59 @@ class GLUniformBuffer;
 //  ----------------------------------------------------
 
 /**
+ * \class GLShader glutil.h nanogui/glutil.h
+ *
  * Helper class for compiling and linking OpenGL shaders and uploading
- * associated vertex and index buffers from Eigen matrices
+ * associated vertex and index buffers from Eigen matrices.
  */
 class NANOGUI_EXPORT GLShader {
+// this friendship breaks the documentation
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     template <typename T> friend struct detail::serialization_helper;
+#endif
 public:
     /// Create an unitialized OpenGL shader
     GLShader()
         : mVertexShader(0), mFragmentShader(0), mGeometryShader(0),
           mProgramShader(0), mVertexArrayObject(0) { }
 
-    /// Initialize the shader using the specified source strings
+    /**
+     * \brief Initialize the shader using the specified source strings.
+     *
+     * \param name
+     *     The name this shader will be registered as.
+     *
+     * \param vertex_str
+     *     The source of the vertex shader as a string.
+     *
+     * \param fragment_str
+     *     The source of the fragment shader as a string.
+     *
+     * \param geometry_str
+     *     The source of the geometry shader as a string.  The default value is
+     *     the empty string, which indicates no geometry shader will be used.
+     */
     bool init(const std::string &name, const std::string &vertex_str,
               const std::string &fragment_str,
               const std::string &geometry_str = "");
 
-    /// Initialize the shader using the specified files on disk
+    /**
+     * \brief Initialize the shader using the specified files on disk.
+     *
+     * \param name
+     *     The name this shader will be registered as.
+     *
+     * \param vertex_fname
+     *     The path to the file containing the source of the fragment shader.
+     *
+     * \param fragment_fname
+     *     The path to the file containing the source of the vertex shader.
+     *
+     * \param geometry_fname
+     *     The path to the file containing the source of the geometry shader.
+     *     The default value is the empty string, which indicates no geometry
+     *     shader will be used.
+     */
     bool initFromFiles(const std::string &name,
                        const std::string &vertex_fname,
                        const std::string &fragment_fname,
@@ -117,7 +161,7 @@ public:
     void freeAttrib(const std::string &name);
 
     /// Check if an attribute was registered a given name
-    bool hasAttrib(const std::string &name) const { 
+    bool hasAttrib(const std::string &name) const {
         auto it = mBufferObjects.find(name);
         if (it == mBufferObjects.end())
             return false;
@@ -214,11 +258,17 @@ public:
     }
 protected:
     void uploadAttrib(const std::string &name, uint32_t size, int dim,
-                       uint32_t compSize, GLuint glType, bool integral, 
+                       uint32_t compSize, GLuint glType, bool integral,
                        const uint8_t *data, int version = -1);
     void downloadAttrib(const std::string &name, uint32_t size, int dim,
                        uint32_t compSize, GLuint glType, uint8_t *data);
 protected:
+    /**
+     * \struct Buffer glutil.h nanogui/glutil.h
+     *
+     * A wrapper struct for maintaining various aspects of items being managed
+     * by OpenGL.
+     */
     struct Buffer {
         GLuint id;
         GLuint glType;
@@ -239,9 +289,14 @@ protected:
 
 //  ----------------------------------------------------
 
-/// Helper class for creating OpenGL Uniform Buffer objects
+/**
+ * \class GLUniformBuffer glutil.h nanogui/glutil.h
+ *
+ * \brief Helper class for creating OpenGL Uniform Buffer objects.
+ */
 class NANOGUI_EXPORT GLUniformBuffer {
 public:
+    /// Default constructor: unusable until you call the ``init()`` method
     GLUniformBuffer() : mID(0), mBindingPoint(0) { }
 
     /// Create a new uniform buffer
@@ -268,7 +323,12 @@ private:
 
 //  ----------------------------------------------------
 
-// Helper class for accumulating uniform buffer data following the 'std140' packing format
+/**
+ * \class UniformBufferStd140 glutil.h nanogui/glutil.h
+ *
+ * \brief Helper class for accumulating uniform buffer data following the
+ *        'std140' packing format.
+ */
 class UniformBufferStd140 : public std::vector<uint8_t> {
 public:
     using Parent = std::vector<uint8_t>;
@@ -311,9 +371,14 @@ public:
 
 //  ----------------------------------------------------
 
-/// Helper class for creating framebuffer objects
+/**
+ * \class GLFramebuffer glutil.h nanogui/glutil.h
+ *
+ * \brief Helper class for creating framebuffer objects.
+ */
 class NANOGUI_EXPORT GLFramebuffer {
 public:
+    /// Default constructor: unusable until you call the ``init()`` method
     GLFramebuffer() : mFramebuffer(0), mDepth(0), mColor(0), mSamples(0) { }
 
     /// Create a new framebuffer with the specified size and number of MSAA samples
@@ -347,7 +412,11 @@ protected:
 
 //  ----------------------------------------------------
 
-/// Arcball helper class to interactively rotate objects on-screen
+/**
+ * \struct Arcball glutil.h nanogui/glutil.h
+ *
+ * \brief Arcball helper class to interactively rotate objects on-screen.
+ */
 struct Arcball {
     Arcball(float speedFactor = 2.0f)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
@@ -432,24 +501,152 @@ protected:
 
 //  ----------------------------------------------------
 
-extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj, const Matrix4f &model,
-                        const Matrix4f &proj, const Vector2i &viewportSize);
+/**
+ * \brief Projects the vector ``obj`` into the specified viewport.
+ *
+ * Performs a homogeneous transformation of a vector into "screen space", as
+ * defined by the provided model and projection matrices, and the dimensions
+ * of the viewport.
+ *
+ * \param obj
+ *     The vector being transformed.
+ *
+ * \param model
+ *     The model matrix.
+ *
+ * \param proj
+ *     The projection matrix.
+ *
+ * \param viewportSize
+ *     The dimensions of the viewport to project into.
+ */
+extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
+                                       const Matrix4f &model,
+                                       const Matrix4f &proj,
+                                       const Vector2i &viewportSize);
 
-extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win, const Matrix4f &model,
-                          const Matrix4f &proj, const Vector2i &viewportSize);
+/**
+ * \brief Unprojects the vector ``win`` out of the specified viewport.
+ *
+ * The reverse transformation of \ref project --- use the same matrices and
+ * viewport dimensions to easily transition between the two spaces.
+ *
+ * \param win
+ *     The vector being transformed out of "screen space".
+ *
+ * \param model
+ *     The model matrix.
+ *
+ * \param proj
+ *     The projection matrix.
+ *
+ * \param viewportSize
+ *     The dimensions of the viewport to project out of.
+ */
+extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
+                                         const Matrix4f &model,
+                                         const Matrix4f &proj,
+                                         const Vector2i &viewportSize);
 
-extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye, const Vector3f &center,
-                       const Vector3f &up);
+/**
+ * \brief Creates a "look at" matrix for modeling say a camera.
+ *
+ * \param eye
+ *     The position of the camera.
+ *
+ * \param center
+ *     The gaze direction of the camera.
+ *
+ * \param up
+ *     The up vector of the camera.
+ *
+ * \rst
+ * .. warning::
+ *    These are used to form an orthonormal basis.  The first basis vector is
+ *    defined as ``f = (center - eye).normalized()``, so ``eye`` cannot be
+ *    equal to ``center``.  Additionally, ``center`` and ``up`` should be
+ *    perpendicular.
+ * \endrst
+ */
+extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye,
+                                      const Vector3f &center,
+                                      const Vector3f &up);
 
-extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right, const float bottom,
-                      const float top, const float zNear, const float zFar);
+/**
+ * Creates an orthographic projection matrix.
+ *
+ * \param left
+ *     The left border of the viewport.
+ *
+ * \param right
+ *     The right border of the viewport.
+ *
+ * \param bottom
+ *     The bottom border of the viewport.
+ *
+ * \param top
+ *     The top border of the viewport.
+ *
+ * \param zNear
+ *     The near plane.
+ *
+ * \param zFar
+ *     The far plane.
+ */
+extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right,
+                                     const float bottom, const float top,
+                                     const float zNear, const float zFar);
 
-extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right, const float bottom,
-                        const float top, const float nearVal,
-                        const float farVal);
-
+/**
+ * Creates a perspective projection matrix.
+ *
+ * \param left
+ *     The left border of the viewport.
+ *
+ * \param right
+ *     The right border of the viewport.
+ *
+ * \param bottom
+ *     The bottom border of the viewport.
+ *
+ * \param top
+ *     The top border of the viewport.
+ *
+ * \param nearVal
+ *     The near plane.
+ *
+ * \param farVal
+ *     The far plane.
+ */
+extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right,
+                                       const float bottom, const float top,
+                                       const float nearVal, const float farVal);
+/**
+ * \brief Convenience column-wise matrix scaling function.
+ *
+ * Returns a matrix that is the piecewise scaling of m's columns with vector v.
+ * Column 0 of ``m`` is scaled by ``v(0)``, column 1 by ``v(1)``, and column 2
+ * by ``v(2)``.  Column 3 is the original column 3 of ``m``.
+ *
+ * \param m
+ *     The matrix that will be copied and then scaled for the return.
+ *
+ * \param v
+ *     The vector representing the scaling for each axis.
+ */
 extern NANOGUI_EXPORT Matrix4f scale(const Matrix4f &m, const Vector3f &v);
 
+/**
+ * \brief Convenience matrix translation function.
+ *
+ * Returns a matrix that is the translation of m by v.
+ *
+ * \param m
+ *     The matrix that will be copied and then translated.
+ *
+ * \param v
+ *     The vector representing the translation for each axis.
+ */
 extern NANOGUI_EXPORT Matrix4f translate(const Matrix4f &m, const Vector3f &v);
 
 NAMESPACE_END(nanogui)

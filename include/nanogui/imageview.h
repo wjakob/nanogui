@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -19,6 +20,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class ImageView imageview.h nanogui/imageview.h
+ *
+ * \brief Widget used to display images.
+ */
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
     ImageView(Widget* parent, GLuint imageID);
@@ -55,36 +61,38 @@ public:
     float pixelInfoThreshold() const { return mPixelInfoThreshold; }
     void setPixelInfoThreshold(float pixelInfoThreshold) { mPixelInfoThreshold = pixelInfoThreshold; }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void setPixelInfoCallback(const std::function<std::pair<std::string, Color>(const Vector2i&)>& callback) {
         mPixelInfoCallback = callback;
     }
     const std::function<std::pair<std::string, Color>(const Vector2i&)>& pixelInfoCallback() const {
         return mPixelInfoCallback;
     }
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
     void setFontScaleFactor(float fontScaleFactor) { mFontScaleFactor = fontScaleFactor; }
     float fontScaleFactor() const { return mFontScaleFactor; }
 
-    /// Image transformation functions.
+    // Image transformation functions.
 
     /// Calculates the image coordinates of the given pixel position on the widget.
     Vector2f imageCoordinateAt(const Vector2f& position) const;
 
     /**
-    *  Calculates the image coordinates of the given pixel position on the widget.
-    *  If the position provided corresponds to a coordinate outside the range of
-    *  the image, the coordinates are clamped to edges of the image.
-    */
+     * Calculates the image coordinates of the given pixel position on the widget.
+     * If the position provided corresponds to a coordinate outside the range of
+     * the image, the coordinates are clamped to edges of the image.
+     */
     Vector2f clampedImageCoordinateAt(const Vector2f& position) const;
 
     /// Calculates the position inside the widget for the given image coordinate.
     Vector2f positionForCoordinate(const Vector2f& imageCoordinate) const;
 
     /**
-    *  Modifies the internal state of the image viewer widget so that the pixel at the provided
-    *  position on the widget has the specified image coordinate. Also clamps the values of offset
-    *  to the sides of the widget.
-    */
+     * Modifies the internal state of the image viewer widget so that the pixel at the provided
+     * position on the widget has the specified image coordinate. Also clamps the values of offset
+     * to the sides of the widget.
+     */
     void setImageCoordinateAt(const Vector2f& position, const Vector2f& imageCoordinate);
 
     /// Centers the image without affecting the scaling factor.
@@ -100,10 +108,10 @@ public:
     void moveOffset(const Vector2f& delta);
 
     /**
-    *  Changes the scale factor by the provided amount modified by the zoom sensitivity member variable.
-    *  The scaling occurs such that the image coordinate under the focused position remains in
-    *  the same position before and after the scaling.
-    */
+     * Changes the scale factor by the provided amount modified by the zoom sensitivity member variable.
+     * The scaling occurs such that the image coordinate under the focused position remains in
+     * the same position before and after the scaling.
+     */
     void zoom(int amount, const Vector2f& focusPosition);
 
     bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
