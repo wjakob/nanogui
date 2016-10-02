@@ -14,6 +14,7 @@
 #include <nanogui/imageview.h>
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
+#include <nanogui/color_list.h>
 #include <nanogui/theme.h>
 #include <cmath>
 
@@ -343,7 +344,7 @@ void ImageView::drawImageBorder(NVGcontext* ctx) const {
     Vector2i borderSize = scaledImageSizeF().cast<int>();
     nvgRect(ctx, borderPosition.x() - 0.5f, borderPosition.y() - 0.5f,
             borderSize.x() + 1, borderSize.y() + 1);
-    nvgStrokeColor(ctx, Color(1.0f, 1.0f, 1.0f, 1.0f));
+    nvgStrokeColor(ctx, ColorList::white);
     nvgStroke(ctx);
     nvgResetScissor(ctx);
     nvgRestore(ctx);
@@ -385,7 +386,7 @@ void ImageView::drawPixelGrid(NVGcontext* ctx, const Vector2f& upperLeftCorner,
         currentY += stride;
     }
     nvgStrokeWidth(ctx, 1.0f);
-    nvgStrokeColor(ctx, Color(1.0f, 1.0f, 1.0f, 1.0f));
+    nvgStrokeColor(ctx, ColorList::white);
     nvgStroke(ctx);
 }
 
