@@ -14,6 +14,7 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/color_list.h>
 #include <nanogui/serializer/core.h>
 #include <Eigen/QR>
 #include <Eigen/Geometry>
@@ -261,8 +262,8 @@ Color ColorWheel::hue2rgb(float h) const {
 
 Color ColorWheel::color() const {
     Color rgb    = hue2rgb(mHue);
-    Color black  { 0.f, 0.f, 0.f, 1.f };
-    Color white  { 1.f, 1.f, 1.f, 1.f };
+    Color black  = ColorList::black;
+    Color white  = ColorList::white;
     return rgb * (1 - mWhite - mBlack) + black * mBlack + white * mWhite;
 }
 
