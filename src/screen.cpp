@@ -16,6 +16,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
+#include <nanogui/color_list.h>
 #include <map>
 #include <iostream>
 
@@ -416,7 +417,7 @@ void Screen::drawWidgets() {
                            std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
 
             nvgBeginPath(mNVGContext);
-            nvgFillColor(mNVGContext, Color(0, 255));
+            nvgFillColor(mNVGContext, ColorList::black);
             nvgRoundedRect(mNVGContext, bounds[0] - 4 - h, bounds[1] - 4,
                            (int) (bounds[2] - bounds[0]) + 8,
                            (int) (bounds[3] - bounds[1]) + 8, 3);
@@ -427,7 +428,7 @@ void Screen::drawWidgets() {
             nvgLineTo(mNVGContext, px - 7, bounds[1] + 1);
             nvgFill(mNVGContext);
 
-            nvgFillColor(mNVGContext, Color(255, 255));
+            nvgFillColor(mNVGContext, ColorList::white);
             nvgFontBlur(mNVGContext, 0.0f);
             nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
                        widget->tooltip().c_str(), nullptr);

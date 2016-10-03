@@ -32,6 +32,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
+#include <nanogui/color_list.h>
 #include <nanogui/tabwidget.h>
 #include <iostream>
 #include <string>
