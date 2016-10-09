@@ -14,6 +14,7 @@
 #pragma once
 
 #include <nanogui/window.h>
+#include <nanogui/vscrollpanel.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -53,6 +54,11 @@ public:
 
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+
+    /// Set the parent vscroll if there is one.
+    void setParentPanel(VScrollPanel *panel){
+        mParentPanel = panel;
+    }
 protected:
     /// Internal helper function to maintain nested window position values
     virtual void refreshRelativePlacement() override;
@@ -61,6 +67,7 @@ protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
     int mAnchorHeight;
+    VScrollPanel *mParentPanel;
 };
 
 NAMESPACE_END(nanogui)

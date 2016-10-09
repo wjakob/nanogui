@@ -34,6 +34,7 @@ public:
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
     virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual void draw(NVGcontext *ctx) override;
+    virtual float getOffset();
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:

@@ -86,6 +86,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgTranslate(ctx, mPos.x(), mPos.y());
     nvgIntersectScissor(ctx, 0, 0, mSize.x(), mSize.y());
     nvgTranslate(ctx, 0, -mScroll*(mChildPreferredHeight - mSize.y()));
+
     if (child->visible())
         child->draw(ctx);
     nvgRestore(ctx);
@@ -116,6 +117,10 @@ void VScrollPanel::save(Serializer &s) const {
     Widget::save(s);
     s.set("childPreferredHeight", mChildPreferredHeight);
     s.set("scroll", mScroll);
+}
+
+float VScrollPanel::getOffset(){
+    return -mScroll*(mChildPreferredHeight - mSize.y());
 }
 
 bool VScrollPanel::load(Serializer &s) {

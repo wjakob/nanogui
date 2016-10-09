@@ -24,7 +24,7 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption,
     setFlags(Flags::ToggleButton | Flags::PopupButton);
 
     Window *parentWindow = window();
-    mPopup = new Popup(parentWindow->parent(), window());
+    mPopup = new Popup(parentWindow->parent(), parentWindow);
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
 }
@@ -62,6 +62,15 @@ void PopupButton::performLayout(NVGcontext *ctx) {
     Widget::performLayout(ctx);
 
     const Window *parentWindow = window();
+
+    Widget* checkScroll = parent();
+    while (checkScroll != parentWindow){
+        if (VScrollPanel* derived = dynamic_cast<VScrollPanel*>(checkScroll)){
+            mPopup->setParentPanel(derived);
+            break;
+        }
+        checkScroll = checkScroll->parent();
+    }
 
     mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15,
         absolutePosition().y() - parentWindow->position().y() + mSize.y() /2));

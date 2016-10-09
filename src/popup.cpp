@@ -19,7 +19,7 @@ NAMESPACE_BEGIN(nanogui)
 
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30) {
+      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mParentPanel(nullptr){
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
@@ -36,6 +36,9 @@ void Popup::refreshRelativePlacement() {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
     mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+	if (mParentPanel){
+		mPos += Vector2i(0, mParentPanel->getOffset());
+	}
 }
 
 void Popup::draw(NVGcontext* ctx) {
@@ -50,7 +53,7 @@ void Popup::draw(NVGcontext* ctx) {
     NVGpaint shadowPaint = nvgBoxGradient(
         ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
-
+    
     nvgBeginPath(ctx);
     nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
