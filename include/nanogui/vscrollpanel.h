@@ -31,14 +31,13 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
-    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual void draw(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:
     int mChildPreferredHeight;
     float mScroll;
+    bool mUpdateLayout;
 };
 
 NAMESPACE_END(nanogui)
