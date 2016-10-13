@@ -19,9 +19,9 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, GridLayout, \
-                    Alignment, Orientation, TabWidget, IntBox
+                    Alignment, Orientation, TabWidget, IntBox, GLShader
 
-from nanogui import glfw, entypo
+from nanogui import gl, glfw, entypo
 
 
 class TestApp(Screen):
@@ -307,9 +307,74 @@ class TestApp(Screen):
 
         self.performLayout()
 
+        try:
+            import numpy as np
+
+            self.shader = GLShader()
+            self.shader.init(
+                # An identifying name
+                "a_simple_shader",
+
+                # Vertex shader
+                """#version 330
+                uniform mat4 modelViewProj;
+                in vec3 position;
+                void main() {
+                    gl_Position = modelViewProj * vec4(position, 1.0);
+                }""",
+
+                """#version 330
+                out vec4 color;
+                uniform float intensity;
+                void main() {
+                    color = vec4(vec3(intensity), 1.0);
+                }"""
+            )
+
+            # Draw 2 triangles
+            indices = np.array(
+                [[0, 2], [1, 3], [2, 0]],
+                dtype=np.int32)
+
+            positions = np.array(
+                [[-1, 1, 1, -1],
+                 [-1, -1, 1, 1],
+                 [0, 0, 0, 0]],
+                dtype=np.float32)
+
+            self.shader.bind()
+            self.shader.uploadIndices(indices)
+            self.shader.uploadAttrib("position", positions)
+            self.shader.setUniform("intensity", 0.5)
+        except ImportError:
+            self.shader = None
+            pass
+
     def draw(self, ctx):
         self.progress.setValue(math.fmod(time.time() / 10, 1))
         super(TestApp, self).draw(ctx)
+
+    def drawContents(self):
+        if self.shader is not None:
+            import numpy as np
+            self.shader.bind()
+
+            angle = time.time()
+
+            mvp = np.array(
+                [[np.cos(angle), -np.sin(angle), 0, 0],
+                 [np.sin(angle), np.cos(angle), 0, 0],
+                 [0, 0, 1, 0],
+                 [0, 0, 0, 1]],
+                dtype=np.float32
+            )
+
+            mvp[0:3, 0:3] *= 0.25
+            mvp[0, :] *= self.size()[1] / self.size()[0]
+
+            self.shader.setUniform("modelViewProj", mvp)
+            self.shader.drawIndexed(gl.TRIANGLES, 0, 2)
+        super(TestApp, self).drawContents()
 
     def keyboardEvent(self, key, scancode, action, modifiers):
         if super(TestApp, self).keyboardEvent(key, scancode,
@@ -326,5 +391,6 @@ if __name__ == "__main__":
     test.drawAll()
     test.setVisible(True)
     nanogui.mainloop()
+    del test
     gc.collect()
     nanogui.shutdown()

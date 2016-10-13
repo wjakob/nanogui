@@ -46,6 +46,7 @@ extern void register_tabs(py::module &m);
 extern void register_textbox(py::module &m);
 extern void register_formhelper(py::module &m);
 extern void register_misc(py::module &m);
+extern void register_glutil(py::module &m);
 
 class MainloopHandle;
 static MainloopHandle *handle = nullptr;
@@ -217,6 +218,7 @@ PYBIND11_PLUGIN(nanogui) {
     register_textbox(m);
     register_formhelper(m);
     register_misc(m);
+    register_glutil(m);
 
     return m.ptr();
 }

@@ -131,7 +131,7 @@ public:
         bool integral = (bool) detail::type_traits<typename Matrix::Scalar>::integral;
 
         uploadAttrib(name, (uint32_t) M.size(), (int) M.rows(), compSize,
-                     glType, integral, (const uint8_t *) M.data(), version);
+                     glType, integral, M.data(), version);
     }
 
     /// Download a vertex buffer object into an Eigen matrix
@@ -146,15 +146,15 @@ public:
         const Buffer &buf = it->second;
         M.resize(buf.dim, buf.size / buf.dim);
 
-        downloadAttrib(name, M.size(), M.rows(), compSize, glType, (uint8_t *) M.data());
+        downloadAttrib(name, M.size(), M.rows(), compSize, glType, M.data());
     }
 
     /// Upload an index buffer
-    template <typename Matrix> void uploadIndices(const Matrix &M) {
-        uploadAttrib("indices", M);
+    template <typename Matrix> void uploadIndices(const Matrix &M, int version = -1) {
+        uploadAttrib("indices", M, version);
     }
 
-    /// Invalidate the version numbers assiciated with attribute data
+    /// Invalidate the version numbers associated with attribute data
     void invalidateAttribs();
 
     /// Completely free an existing attribute buffer
@@ -256,12 +256,15 @@ public:
             size += buf.second.size;
         return size;
     }
-protected:
-    void uploadAttrib(const std::string &name, uint32_t size, int dim,
+
+public:
+    /* Low-level API */
+    void uploadAttrib(const std::string &name, size_t size, int dim,
                        uint32_t compSize, GLuint glType, bool integral,
-                       const uint8_t *data, int version = -1);
-    void downloadAttrib(const std::string &name, uint32_t size, int dim,
-                       uint32_t compSize, GLuint glType, uint8_t *data);
+                       const void *data, int version = -1);
+    void downloadAttrib(const std::string &name, size_t size, int dim,
+                       uint32_t compSize, GLuint glType, void *data);
+
 protected:
     /**
      * \struct Buffer glutil.h nanogui/glutil.h
