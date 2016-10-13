@@ -62,11 +62,17 @@ public:
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
+
+    virtual void updateResizeRectPositions();
 protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mResize;
+    Vector2i mResizeDir;
+    std::array<Rect, ResizeRectangleCount> mResizeRects;
+    Vector2i mMinSize;
 };
 
 NAMESPACE_END(nanogui)

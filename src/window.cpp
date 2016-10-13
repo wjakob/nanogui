@@ -19,7 +19,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false),
+    mMinSize(Vector2i::Zero()), mResizeDir(Vector2i::Zero()) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -61,12 +62,17 @@ void Window::performLayout(NVGcontext *ctx) {
         mButtonPanel->setPosition(Vector2i(width() - (mButtonPanel->preferredSize(ctx).x() + 5), 3));
         mButtonPanel->performLayout(ctx);
     }
+    if (mMinSize == Vector2i::Zero()) {
+        mMinSize = mSize;
+    }
 }
 
 void Window::draw(NVGcontext *ctx) {
     int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
     int hh = mTheme->mWindowHeaderHeight;
 
+    if(mResize) performLayout(ctx);
+    updateResizeRectPositions();
     /* Draw window */
     nvgSave(ctx);
     nvgBeginPath(ctx);
@@ -154,10 +160,27 @@ void Window::center() {
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
                             int button, int /* modifiers */) {
+
     if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
         mPos += rel;
         mPos = mPos.cwiseMax(Vector2i::Zero());
         mPos = mPos.cwiseMin(parent()->size() - mSize);
+        return true;
+    } else if (mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
+        if (mResizeDir.x() > 0) {
+            mSize.x() += rel[0];
+        } else if (mResizeDir.x() < 0) {
+            mSize[0] += -rel[0];
+            if (mSize[0] > mMinSize[0]) mPos[0] += rel[0];
+        }
+
+        if (mResizeDir.y() > 0) {
+            mSize[1] += rel[1];
+        } else if (mResizeDir.y() < 0) {
+            mSize[1] += -rel[1];
+            if (mSize[1] > mMinSize[1]) mPos[1] += rel[1];
+        }
+        mSize = mSize.cwiseMax(mMinSize);
         return true;
     }
     return false;
@@ -168,6 +191,44 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
         return true;
     if (button == GLFW_MOUSE_BUTTON_1) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
+        mResize = false;
+        if (!mDrag && down) {
+            for (int i = 0; i < mResizeRects.size(); i++) {
+                if (mResizeRects[i].collisionPoint(p)) {
+                    mResize = true;
+                    switch (i) {
+                        case BottomRight:
+                            mResizeDir.x() = 1;
+                            mResizeDir.y() = 1;
+                            break;
+                        case BottomLeft:
+                            mResizeDir.x() = -1;
+                            mResizeDir.y() = 1;
+                            break;
+                        case Bottom:
+                            mResizeDir.x() = 0;
+                            mResizeDir.y() = 1;
+                            break;
+                        case Left:
+                            mResizeDir.x() = -1;
+                            mResizeDir.y() = 0;
+                            break;
+                        case Right:
+                            mResizeDir.x() = 1;
+                            mResizeDir.y() = 0;
+                            break;
+                    }
+                    break;
+                }
+            }
+            if (mFixedSize.x() != 0) {
+                mResizeDir.x() = 0;
+            }
+
+            if (mFixedSize.y() != 0) {
+                mResizeDir.y() = 0;
+            }
+        }
         return true;
     }
     return false;
@@ -194,6 +255,33 @@ bool Window::load(Serializer &s) {
     if (!s.get("modal", mModal)) return false;
     mDrag = false;
     return true;
+}
+
+void Window::updateResizeRectPositions() {
+    mResizeRects[BottomRight].x() = absolutePosition().x() + (width() - mResizeRects[BottomRight].w());
+    mResizeRects[BottomRight].y() = absolutePosition().y() + (height() - mResizeRects[BottomRight].h());
+    mResizeRects[BottomRight].w() = mTheme->mResizeRectangleCornerSize.x();
+    mResizeRects[BottomRight].h() = mTheme->mResizeRectangleCornerSize.y();
+
+    mResizeRects[BottomLeft].x() = absolutePosition().x();
+    mResizeRects[BottomLeft].y() = absolutePosition().y() + (height() - mResizeRects[BottomLeft].h());
+    mResizeRects[BottomLeft].w() = mTheme->mResizeRectangleCornerSize.x();
+    mResizeRects[BottomLeft].h() = mTheme->mResizeRectangleCornerSize.y();
+
+    mResizeRects[Bottom].w() = width() - (mResizeRects[BottomLeft].w() + mResizeRects[BottomRight].w());
+    mResizeRects[Bottom].h() = mTheme->mResizeRectangleBottomSideHeight;
+    mResizeRects[Bottom].x() = absolutePosition().x() + mResizeRects[BottomLeft].w();
+    mResizeRects[Bottom].y() = absolutePosition().y() + (height() - mResizeRects[Bottom].h());
+
+    mResizeRects[Right].w() = mTheme ->mResizeRectangleLeftRightSidesWidth;
+    mResizeRects[Right].h() = height() - (mTheme->mWindowHeaderHeight + mResizeRects[BottomRight].h());
+    mResizeRects[Right].x() = absolutePosition().x() + (width() - mResizeRects[Right].w());
+    mResizeRects[Right].y() = absolutePosition().y() + mTheme->mWindowHeaderHeight;
+
+    mResizeRects[Left].w() =  mTheme ->mResizeRectangleLeftRightSidesWidth;
+    mResizeRects[Left].h() =  height() - (mTheme->mWindowHeaderHeight + mResizeRects[BottomLeft].h());
+    mResizeRects[Left].x() = absolutePosition().x();
+    mResizeRects[Left].y() = absolutePosition().y() + mTheme->mWindowHeaderHeight;
 }
 
 NAMESPACE_END(nanogui)

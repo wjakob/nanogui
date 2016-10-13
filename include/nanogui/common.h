@@ -346,6 +346,80 @@ public:
     inline operator const NVGcolor &() const;
 };
 
+
+/**
+ * \class Rect common.h nanogui/common.h
+ *
+ * \brief Stores a Rectangle position and size.
+ *
+ * This class simply wraps around an ``Eigen::Vector4f``, providing some convenient
+ * methods and terminology for thinking of it as a rectangle.  The data operates in the
+ * same way as ``Eigen::Vector4f``, and the following values are identical:
+ *
+ * \rst
+ * +---------+-------------+-----------------------+-------------+
+ * |  Name   | Array Index | Eigen::Vector4f Value | Color Value |
+ * +=========+=============+=======================+=============+
+ * | X       | ``0``       | x()                   | x()         |
+ * +---------+-------------+-----------------------+-------------+
+ * | Y       | ``1``       | y()                   | y()         |
+ * +---------+-------------+-----------------------+-------------+
+ * | Width   | ``2``       | z()                   | w()         |
+ * +---------+-------------+-----------------------+-------------+
+ * | Height  | ``3``       | w()                   | h()         |
+ * +---------+-------------+-----------------------+-------------+
+ *
+ * .. note::
+ *    The method for the height component is **always** ``w()``.
+ * \endrst
+ *
+ * You can and should still use the various convenience methods such as ``any()``,
+ * ``all()``, ``head<index>()``, etc provided by Eigen.
+ */
+class Rect : public Eigen::Vector4f {
+    using Base = Eigen::Vector4f;
+public:
+
+    Rect() : Eigen::Vector4f(0, 0, 0, 0) {}
+    Rect(const Vector4f &rect) : Eigen::Vector4f(rect) {}
+    Rect(int x, int y, int w, int h) : Rect(Eigen::Vector4f(x, y, w, h)) {}
+
+    /// Return a reference to Width
+    float &w() { return z(); }
+    /// Return a reference to Width (const version)
+    const float &w() const { return z(); }
+    /// Return a reference to Height
+    float &h() { return (*this)[3]; }
+    /// Return a reference to Height (const version)
+    const float &h() const { return (*this)[3]; }
+
+    /// Check for collision against an axis-aligned rectangle
+    bool collisionAARect(const Rect &rect) {
+        return (rect.x() < (x() + w()) && (rect.x() + rect.w()) > x() &&
+                rect.y() < (y() + h()) && (rect.y() + rect.h()) > y());
+    }
+
+    /// Check for collision against a 2D point
+    bool collisionPoint(const Eigen::Vector2f &p) {
+        return p.x() < (x() + w()) && p.x() > x() && p.y() < (y() + h()) && p.y() > y();
+    }
+
+    /// Check for collision against a 2D point
+    bool collisionPoint(const Eigen::Vector2i &p) {
+        return p.x() < (x() + w()) && p.x() > x() && p.y() < (y() + h()) && p.y() > y();
+    }
+};
+
+
+enum ResizeRectanglePositions {
+    BottomLeft,
+    BottomRight,
+    Bottom,
+    Left,
+    Right,
+    ResizeRectangleCount
+};
+
 // skip the forward declarations for the docs
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
