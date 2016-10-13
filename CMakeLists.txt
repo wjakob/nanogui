@@ -397,7 +397,10 @@ if (NANOGUI_BUILD_PYTHON)
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
     set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
+    message(WARNING "NanoGUI: not building the Python plugin!")
   endif()
+    message(STATUS "NanoGUI: building the Python plugin.")
+  else()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
@@ -432,12 +435,11 @@ if (NANOGUI_BUILD_PYTHON)
   endif()
 
   set_target_properties(nanogui-python PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python)
-  set_target_properties(nanogui-python PROPERTIES PREFIX "")
+  # The prefix and extension are provided by FindPythonLibsNew.cmake
+  set_target_properties(nanogui-python PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
+  set_target_properties(nanogui-python PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
 
   if (WIN32)
-    # .PYD file extension on Windows
-    set_target_properties(nanogui-python PROPERTIES SUFFIX ".pyd")
-
     # Set output path
     set_target_properties(nanogui-python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "Release/python")
     set_target_properties(nanogui-python PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "Debug/python")
@@ -458,9 +460,6 @@ if (NANOGUI_BUILD_PYTHON)
         "$<$<CONFIG:RelWithDebInfo>:/Os>")
     endif()
   elseif(UNIX)
-    # .SO file extension on Linux/Mac OS
-    set_target_properties(nanogui-python PROPERTIES SUFFIX ".so")
-
     # Optimize for size
     if (U_CMAKE_BUILD_TYPE MATCHES REL)
       set_property(TARGET nanogui-python-obj APPEND PROPERTY COMPILE_OPTIONS "-Os")
@@ -472,11 +471,11 @@ if (NANOGUI_BUILD_PYTHON)
       set_target_properties(nanogui-python PROPERTIES LINK_FLAGS "-undefined dynamic_lookup ")
 
       if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
-        add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
+        add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip -u -r $<TARGET_FILE:nanogui-python>)
       endif()
     else()
       if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEB)
-        add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/python/nanogui.so)
+        add_custom_command(TARGET nanogui-python POST_BUILD COMMAND strip $<TARGET_FILE:nanogui-python>)
       endif()
     endif()
   endif()
