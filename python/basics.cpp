@@ -80,6 +80,8 @@ void register_basics(py::module &m) {
         .def("setValue", &Slider::setValue, D(Slider, setValue))
         .def("highlightColor", &Slider::highlightColor, D(Slider, highlightColor))
         .def("setHighlightColor", &Slider::setHighlightColor, D(Slider, setHighlightColor))
+        .def("range", &Slider::range, D(Slider, range))
+        .def("setRange", &Slider::setRange, D(Slider, setRange))
         .def("highlightedRange", &Slider::highlightedRange, D(Slider, highlightedRange))
         .def("setHighlightedRange", &Slider::setHighlightedRange, D(Slider, setHighlightedRange))
         .def("setCallback", &Slider::setCallback, D(Slider, setCallback))

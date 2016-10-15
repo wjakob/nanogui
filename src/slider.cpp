@@ -17,7 +17,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 Slider::Slider(Widget *parent)
-    : Widget(parent), mValue(0.0f), mHighlightedRange(std::make_pair(0.f, 0.f)) {
+    : Widget(parent), mValue(0.0f), mRange(0.f, 1.f),
+      mHighlightedRange(0.f, 0.f) {
     mHighlightColor = Color(255, 80, 80, 70);
 }
 
@@ -29,7 +30,9 @@ bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
                             int /* button */, int /* modifiers */) {
     if (!mEnabled)
         return false;
-    mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);
+    float value = (p.x() - mPos.x()) / (float) mSize.x();
+    value = value * (mRange.second - mRange.first) + mRange.first;
+    mValue = std::min(std::max(value, mRange.first), mRange.second);
     if (mCallback)
         mCallback(mValue);
     return true;
@@ -38,7 +41,9 @@ bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
 bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int /* modifiers */) {
     if (!mEnabled)
         return false;
-    mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);
+    float value = (p.x() - mPos.x()) / (float) mSize.x();
+    value = value * (mRange.second - mRange.first) + mRange.first;
+    mValue = std::min(std::max(value, mRange.first), mRange.second);
     if (mCallback)
         mCallback(mValue);
     if (mFinalCallback && !down)
@@ -48,7 +53,8 @@ bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, in
 
 void Slider::draw(NVGcontext* ctx) {
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
-    Vector2f knobPos(mPos.x() + mValue * mSize.x(), center.y() + 0.5f);
+    Vector2f knobPos(mPos.x() + (mValue - mRange.first) /
+            (mRange.second - mRange.first) * mSize.x(), center.y() + 0.5f);
     float kr = (int)(mSize.y()*0.5f);
     NVGpaint bg = nvgBoxGradient(ctx,
         mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 3, 3, Color(0, mEnabled ? 32 : 10), Color(0, mEnabled ? 128 : 210));
@@ -100,6 +106,7 @@ void Slider::draw(NVGcontext* ctx) {
 void Slider::save(Serializer &s) const {
     Widget::save(s);
     s.set("value", mValue);
+    s.set("range", mRange);
     s.set("highlightedRange", mHighlightedRange);
     s.set("highlightColor", mHighlightColor);
 }
@@ -107,6 +114,7 @@ void Slider::save(Serializer &s) const {
 bool Slider::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("value", mValue)) return false;
+    if (!s.get("range", mRange)) return false;
     if (!s.get("highlightedRange", mHighlightedRange)) return false;
     if (!s.get("highlightColor", mHighlightColor)) return false;
     return true;

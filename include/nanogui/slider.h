@@ -31,6 +31,9 @@ public:
     const Color &highlightColor() const { return mHighlightColor; }
     void setHighlightColor(const Color &highlightColor) { mHighlightColor = highlightColor; }
 
+    std::pair<float, float> range() const { return mRange; }
+    void setRange(std::pair<float, float> range) { mRange = range; }
+
     std::pair<float, float> highlightedRange() const { return mHighlightedRange; }
     void setHighlightedRange(std::pair<float, float> highlightedRange) { mHighlightedRange = highlightedRange; }
 
@@ -51,6 +54,7 @@ protected:
     float mValue;
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
+    std::pair<float, float> mRange;
     std::pair<float, float> mHighlightedRange;
     Color mHighlightColor;
 };

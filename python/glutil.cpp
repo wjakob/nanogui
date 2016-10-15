@@ -99,7 +99,6 @@ static void setUniformPy(GLShader &sh, const std::string &name, py::object arg, 
     }
 }
 
-
 void register_glutil(py::module &m) {
     py::class_<GLShader>(m, "GLShader", D(GLShader))
         .def(py::init<>())

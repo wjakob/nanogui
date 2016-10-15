@@ -1692,6 +1692,8 @@ static const char *__doc_nanogui_Slider_highlightColor = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_highlightedRange = R"doc()doc";
 
+static const char *__doc_nanogui_Slider_range = R"doc()doc";
+
 static const char *__doc_nanogui_Slider_load = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_mCallback = R"doc()doc";
@@ -1719,6 +1721,8 @@ static const char *__doc_nanogui_Slider_setFinalCallback = R"doc()doc";
 static const char *__doc_nanogui_Slider_setHighlightColor = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_setHighlightedRange = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_setRange = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_setValue = R"doc()doc";
 
