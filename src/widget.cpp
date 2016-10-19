@@ -194,7 +194,7 @@ void Widget::drawEx(NVGcontext *ctx) {
         this->draw(ctx);
         this->Widget::draw(ctx);
     }
-    
+
     if (!mChildren.empty()) {
         nvgTranslate(ctx, mPos.x(), mPos.y());
         for (auto child : mChildren)
@@ -202,7 +202,7 @@ void Widget::drawEx(NVGcontext *ctx) {
                 child->drawEx(ctx);
         nvgTranslate(ctx, -mPos.x(), -mPos.y());
     }
-    
+
     if (!this->drawsFirst()) {
         this->draw(ctx);
         this->Widget::draw(ctx);

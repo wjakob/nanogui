@@ -242,10 +242,10 @@ public:
 
     /// Restore the state of the widget from the given \ref Serializer instance
     virtual bool load(Serializer &s);
-    
+
     /// Per default, signify that this instance draws after its children
     virtual bool drawsFirst() const { return false; }
-    
+
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();
