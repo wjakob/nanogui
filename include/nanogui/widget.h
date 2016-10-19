@@ -233,7 +233,7 @@ public:
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);
 
-    /// Draw the widget (and all child widgets)
+    /// Draw the widget (and all child widgets); drawEx() is a helper function
     virtual void drawEx(NVGcontext *ctx);
     virtual void draw(NVGcontext *ctx);
 
@@ -243,6 +243,7 @@ public:
     /// Restore the state of the widget from the given \ref Serializer instance
     virtual bool load(Serializer &s);
     
+    /// Per default, signify that this instance draws after its children
     virtual bool drawsFirst() const { return false; }
     
 protected:
