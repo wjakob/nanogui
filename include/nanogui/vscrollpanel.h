@@ -31,6 +31,7 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
+    virtual void drawEx(NVGcontext *ctx) override;
     virtual void draw(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;

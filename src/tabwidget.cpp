@@ -165,8 +165,6 @@ void TabWidget::draw(NVGcontext* ctx) {
         nvgStroke(ctx);
         nvgRestore(ctx);
     }
-
-    Widget::draw(ctx);
 }
 
 NAMESPACE_END(nanogui)

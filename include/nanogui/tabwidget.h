@@ -90,6 +90,7 @@ public:
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
     virtual void draw(NVGcontext* ctx) override;
+    virtual bool drawsFirst() const override { return true; }
 
 private:
     TabHeader* mHeader;

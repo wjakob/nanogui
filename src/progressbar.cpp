@@ -23,8 +23,6 @@ Vector2i ProgressBar::preferredSize(NVGcontext *) const {
 }
 
 void ProgressBar::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
-
     NVGpaint paint = nvgBoxGradient(
         ctx, mPos.x() + 1, mPos.y() + 1,
         mSize.x()-2, mSize.y(), 3, 4, Color(0, 32), Color(0, 92));

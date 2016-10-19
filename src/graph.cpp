@@ -28,8 +28,6 @@ Vector2i Graph::preferredSize(NVGcontext *) const {
 }
 
 void Graph::draw(NVGcontext *ctx) {
-    Widget::draw(ctx);
-
     nvgBeginPath(ctx);
     nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
     nvgFillColor(ctx, mBackgroundColor);

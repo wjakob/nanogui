@@ -59,6 +59,10 @@ public:
     virtual void performLayout(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+
+    /// Signify that this instance draws before its children
+    virtual bool drawsFirst() const override { return true; }
+
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();

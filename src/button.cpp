@@ -104,8 +104,6 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
 }
 
 void Button::draw(NVGcontext *ctx) {
-    Widget::draw(ctx);
-
     NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
     NVGcolor gradBot = mTheme->mButtonGradientBotUnfocused;
 

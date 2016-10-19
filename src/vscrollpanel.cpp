@@ -78,6 +78,10 @@ bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     }
 }
 
+void VScrollPanel::drawEx(NVGcontext *ctx) {
+  this->draw(ctx);
+}
+
 void VScrollPanel::draw(NVGcontext *ctx) {
     if (mChildren.empty())
         return;
@@ -94,7 +98,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgTranslate(ctx, mPos.x(), mPos.y());
     nvgIntersectScissor(ctx, 0, 0, mSize.x(), mSize.y());
     if (child->visible())
-        child->draw(ctx);
+        child->drawEx(ctx);
     nvgRestore(ctx);
 
     if (mChildPreferredHeight <= mSize.y())

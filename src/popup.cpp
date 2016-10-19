@@ -68,8 +68,6 @@ void Popup::draw(NVGcontext* ctx) {
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
-
-    Widget::draw(ctx);
 }
 
 void Popup::save(Serializer &s) const {
