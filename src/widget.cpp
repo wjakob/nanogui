@@ -192,7 +192,7 @@ void Widget::requestFocus() {
 void Widget::drawEx(NVGcontext *ctx) {
     if (this->drawsFirst()) {
         this->draw(ctx);
-	this->Widget::draw(ctx);
+        this->Widget::draw(ctx);
     }
     
     if (!mChildren.empty()) {
@@ -205,7 +205,7 @@ void Widget::drawEx(NVGcontext *ctx) {
     
     if (!this->drawsFirst()) {
         this->draw(ctx);
-	this->Widget::draw(ctx);
+        this->Widget::draw(ctx);
     }
 }
 
