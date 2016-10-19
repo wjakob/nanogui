@@ -384,7 +384,7 @@ void Screen::drawWidgets() {
     glBindSampler(0, 0);
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
-    draw(mNVGContext);
+    drawEx(mNVGContext);
 
     double elapsed = glfwGetTime() - mLastInteraction;
 

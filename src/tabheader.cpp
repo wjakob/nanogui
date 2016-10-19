@@ -353,7 +353,6 @@ bool TabHeader::mouseButtonEvent(const Vector2i &p, int button, bool down, int m
 
 void TabHeader::draw(NVGcontext* ctx) {
     // Draw controls.
-    Widget::draw(ctx);
     if (mOverflowing)
         drawControls(ctx);
 

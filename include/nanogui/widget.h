@@ -234,6 +234,7 @@ public:
     virtual void performLayout(NVGcontext *ctx);
 
     /// Draw the widget (and all child widgets)
+    virtual void drawEx(NVGcontext *ctx);
     virtual void draw(NVGcontext *ctx);
 
     /// Save the state of the widget into the given \ref Serializer instance

@@ -189,6 +189,22 @@ void Widget::requestFocus() {
     ((Screen *) widget)->updateFocus(this);
 }
 
+void Widget::drawEx(NVGcontext *ctx) {
+    if (this->drawsFirst())
+        this->draw(ctx);
+    
+    if (!mChildren.empty()) {
+        nvgTranslate(ctx, mPos.x(), mPos.y());
+        for (auto child : mChildren)
+            if (child->visible())
+                child->drawEx(ctx);
+        nvgTranslate(ctx, -mPos.x(), -mPos.y());
+    }
+    
+    if (!this->drawsFirst())
+        this->draw(ctx);
+}
+
 void Widget::draw(NVGcontext *ctx) {
     #if NANOGUI_SHOW_WIDGET_BOUNDS
         nvgStrokeWidth(ctx, 1.0f);
@@ -197,15 +213,6 @@ void Widget::draw(NVGcontext *ctx) {
         nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
         nvgStroke(ctx);
     #endif
-
-    if (mChildren.empty())
-        return;
-
-    nvgTranslate(ctx, mPos.x(), mPos.y());
-    for (auto child : mChildren)
-        if (child->visible())
-            child->draw(ctx);
-    nvgTranslate(ctx, -mPos.x(), -mPos.y());
 }
 
 void Widget::save(Serializer &s) const {

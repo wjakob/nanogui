@@ -135,7 +135,6 @@ void Window::draw(NVGcontext *ctx) {
     }
 
     nvgRestore(ctx);
-    Widget::draw(ctx);
 }
 
 void Window::dispose() {

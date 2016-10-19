@@ -280,7 +280,6 @@ void ImageView::performLayout(NVGcontext* ctx) {
 }
 
 void ImageView::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
     nvgEndFrame(ctx); // Flush the NanoVG draw stack, not necessary to call nvgBeginFrame afterwards.
 
     drawWidgetBorder(ctx);

@@ -30,8 +30,6 @@ Vector2i ColorWheel::preferredSize(NVGcontext *) const {
 }
 
 void ColorWheel::draw(NVGcontext *ctx) {
-    Widget::draw(ctx);
-
     if (!mVisible)
         return;
 

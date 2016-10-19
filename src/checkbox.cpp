@@ -56,8 +56,6 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
 }
 
 void CheckBox::draw(NVGcontext *ctx) {
-    Widget::draw(ctx);
-
     nvgFontSize(ctx, fontSize());
     nvgFontFace(ctx, "sans");
     nvgFillColor(ctx,
