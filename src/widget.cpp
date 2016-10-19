@@ -190,8 +190,10 @@ void Widget::requestFocus() {
 }
 
 void Widget::drawEx(NVGcontext *ctx) {
-    if (this->drawsFirst())
+    if (this->drawsFirst()) {
         this->draw(ctx);
+	this->Widget::draw(ctx);
+    }
     
     if (!mChildren.empty()) {
         nvgTranslate(ctx, mPos.x(), mPos.y());
@@ -201,8 +203,10 @@ void Widget::drawEx(NVGcontext *ctx) {
         nvgTranslate(ctx, -mPos.x(), -mPos.y());
     }
     
-    if (!this->drawsFirst())
+    if (!this->drawsFirst()) {
         this->draw(ctx);
+	this->Widget::draw(ctx);
+    }
 }
 
 void Widget::draw(NVGcontext *ctx) {
