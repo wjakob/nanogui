@@ -37,7 +37,7 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     void drawWidgetBorder(NVGcontext* ctx) const;
     virtual void draw(NVGcontext *ctx) override;
-    
+
     void setGLDrawingCallback(std::function<void()> fncDraw);
 
     virtual void save(Serializer &s) const override;
@@ -52,7 +52,6 @@ protected:
     GLuint mDepthRenderBuffer;
     GLenum mDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     std::function<void()> mDrawingCallback;
-    
     GLShader mShader;
 };
 

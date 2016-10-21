@@ -27,7 +27,7 @@ namespace {
             uv = vertex;
             gl_Position = vec4(2.0 * vertex - 1.0, 0.0, 1.0);
         })";
-        
+
     constexpr char const *const defaultGLCanvasFragmentShader =
         R"(#version 330
         uniform sampler2D image;
@@ -36,33 +36,32 @@ namespace {
         void main() {
             color = texture(image, uv);
         })";
-
 }
 
 GLCanvas::GLCanvas(Widget *parent)
     : Widget(parent) {
     mBackgroundColor = Color(20, 128);
-    
+
     Vector2i vcSize = Vector2i(250, 250);
-    
+
     glGenFramebuffers(1, &mFrameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-    
+
     glGenTextures(1, &mTexture);
     glBindTexture(GL_TEXTURE_2D, mTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, vcSize[0], vcSize[1], 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    
+
     glGenRenderbuffers(1, &mDepthRenderBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderBuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, vcSize[0], vcSize[1]);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer);
-    
+
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexture, 0);
-    
+
     glDrawBuffers(1, mDrawBuffers);
-    
+
     mShader.init("GLCanvasShader", defaultGLCanvasVertexShader, defaultGLCanvasFragmentShader);
 
     MatrixXu indices(3, 2);
@@ -103,42 +102,42 @@ void GLCanvas::drawWidgetBorder(NVGcontext* ctx) const {
 void GLCanvas::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx);
-    
+
     drawWidgetBorder(ctx);
-    
+
     const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
     assert(screen);
-    
+
     Vector2f screenSize = screen->size().cast<float>();
     Vector2i positionInScreen = absolutePosition();
     Vector2i imagePosition = Vector2i(positionInScreen[0], screenSize[1] - positionInScreen[1] - mSize[1]);
-    
+
     GLint arrnViewport[4];
     glGetIntegerv(GL_VIEWPORT, arrnViewport);
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-    
+
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
       glViewport(0, 0, mSize[0], mSize[1]);
-      
+
       glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-      
+
       mDrawingCallback();
     }
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
+
     glViewport(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
-    
+
     mShader.bind();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mTexture);
-    
+
     mShader.setUniform("image", 0);
     mShader.drawIndexed(GL_TRIANGLES, 0, 2);
-    
+
     glViewport(arrnViewport[0], arrnViewport[1], arrnViewport[2], arrnViewport[3]);
 }
 
