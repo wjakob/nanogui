@@ -82,28 +82,27 @@ public:
         window->setLayout(new GroupLayout());
 
         mCanvas = new GLCanvas(window);
-	mCanvas->setBackgroundColor({100, 100, 100, 255});
-	
-	mCanvas->setGLDrawingCallback([this]() {
-	    mShader.bind();
-	    
-	    Matrix4f mvp;
-	    mvp.setIdentity();
-	    float fTime = (float)glfwGetTime();
-	    mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(0.25*fTime, Vector3f::UnitX()) *
-	                                               Eigen::AngleAxisf(0.5*fTime,  Vector3f::UnitY()) *
-						       Eigen::AngleAxisf(0.33*fTime, Vector3f::UnitZ())) * 0.25f;
-	    
-	    mShader.setUniform("modelViewProj", mvp);
-	    
-	    glFrontFace(GL_CW);
-	    
-	    /* Draw 12 triangles starting at index 0 */
-	    mShader.drawIndexed(GL_TRIANGLES, 0, 12);
-	  });
-	
-	performLayout();
-	
+        mCanvas->setBackgroundColor({100, 100, 100, 255});
+
+        mCanvas->setGLDrawingCallback([this]() {
+            mShader.bind();
+
+            Matrix4f mvp;
+            mvp.setIdentity();
+            float fTime = (float)glfwGetTime();
+            mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(0.25*fTime, Vector3f::UnitX()) *
+                                                       Eigen::AngleAxisf(0.5*fTime,  Vector3f::UnitY()) *
+                                                       Eigen::AngleAxisf(0.33*fTime, Vector3f::UnitZ())) * 0.25f;
+
+            mShader.setUniform("modelViewProj", mvp);
+            glFrontFace(GL_CW);
+
+            /* Draw 12 triangles starting at index 0 */
+            mShader.drawIndexed(GL_TRIANGLES, 0, 12);
+          });
+
+        performLayout();
+
         mShader.init(
             /* An identifying name */
             "a_simple_shader",
@@ -113,7 +112,7 @@ public:
             "uniform mat4 modelViewProj;\n"
             "in vec3 position;\n"
             "in vec3 normal;\n"
-	    "out vec4 frag_normal;\n"
+            "out vec4 frag_normal;\n"
             "void main() {\n"
             "    frag_normal = modelViewProj * vec4(normal, 1.0);\n"
             "    gl_Position = modelViewProj * vec4(position, 1.0);\n"
@@ -122,48 +121,48 @@ public:
             /* Fragment shader */
             "#version 330\n"
             "out vec4 color;\n"
-	    "in vec4 frag_normal;\n"
+            "in vec4 frag_normal;\n"
             "uniform float intensity;\n"
-	    "struct SimpleDirectionalLight {\n"
-	    "vec4 color;\n"
-	    "vec3 direction;\n"
-	    "float amb_intensity;\n"
-	    "};\n"
-	    "uniform SimpleDirectionalLight light;\n"
+            "struct SimpleDirectionalLight {\n"
+            "vec4 color;\n"
+            "vec3 direction;\n"
+            "float amb_intensity;\n"
+            "};\n"
+            "uniform SimpleDirectionalLight light;\n"
             "void main() {\n"
-	    "    float diffuse_intensity = max(0.0, dot(normalize(frag_normal), normalize(vec4(-light.direction, 0.0))));\n"
+            "    float diffuse_intensity = max(0.0, dot(normalize(frag_normal), normalize(vec4(-light.direction, 0.0))));\n"
             "    color = intensity * light.color * (light.amb_intensity + diffuse_intensity);\n"
             //"    color = vec4(vec3(intensity), 1.0);\n"
             "}"
         );
-	
+
         MatrixXu indices(3, 12); /* Draw a cube */
         indices.col( 0) << 0, 1, 3;
         indices.col( 1) << 2, 3, 1;
         indices.col( 2) << 3, 2, 6;
         indices.col( 3) << 6, 7, 3;
-	indices.col( 4) << 7, 6, 5;
-	indices.col( 5) << 5, 4, 7;
+        indices.col( 4) << 7, 6, 5;
+        indices.col( 5) << 5, 4, 7;
         indices.col( 6) << 4, 5, 1;
         indices.col( 7) << 1, 0, 4;
         indices.col( 8) << 4, 0, 3;
         indices.col( 9) << 3, 7, 4;
-	indices.col(10) << 5, 6, 2;
+        indices.col(10) << 5, 6, 2;
         indices.col(11) << 2, 1, 5;
-	
-	MatrixXf normals(3, 12);
-	normals.col( 0) <<  0,  1,  0;
-	normals.col( 1) <<  0,  1,  0;
-	normals.col( 2) <<  1,  0,  0;
-	normals.col( 3) <<  1,  0,  0;
-	normals.col( 4) <<  0, -1,  0;
-	normals.col( 5) <<  0, -1,  0;
-	normals.col( 6) << -1,  0,  0;
-	normals.col( 7) << -1,  0,  0;
-	normals.col( 8) <<  0,  0,  1;
-	normals.col( 9) <<  0,  0,  1;
-	normals.col(10) <<  0,  0, -1;
-	normals.col(11) <<  0,  0, -1;
+
+        MatrixXf normals(3, 12);
+        normals.col( 0) <<  0,  1,  0;
+        normals.col( 1) <<  0,  1,  0;
+        normals.col( 2) <<  1,  0,  0;
+        normals.col( 3) <<  1,  0,  0;
+        normals.col( 4) <<  0, -1,  0;
+        normals.col( 5) <<  0, -1,  0;
+        normals.col( 6) << -1,  0,  0;
+        normals.col( 7) << -1,  0,  0;
+        normals.col( 8) <<  0,  0,  1;
+        normals.col( 9) <<  0,  0,  1;
+        normals.col(10) <<  0,  0, -1;
+        normals.col(11) <<  0,  0, -1;
 
         MatrixXf positions(3, 8);
         positions.col(0) << -1,  1,  1;
@@ -177,7 +176,7 @@ public:
 
         mShader.bind();
         mShader.uploadIndices(indices);
-	
+
         mShader.uploadAttrib("position", positions);
         mShader.uploadAttrib("normal", normals);
         mShader.setUniform("intensity", 1.0);
