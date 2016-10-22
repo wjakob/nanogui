@@ -422,6 +422,7 @@ if (NANOGUI_BUILD_PYTHON)
     python/button.cpp
     python/tabs.cpp
     python/textbox.cpp
+    python/glcanvas.cpp
     python/formhelper.cpp
     python/misc.cpp
     python/glutil.cpp
