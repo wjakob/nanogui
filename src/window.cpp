@@ -172,13 +172,8 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
         } else if (mResizeDir.x() == -1) {
             mSize.x() += -rel.x();
             if (mSize.x() > mMinSize.x()) mPos.x() += rel.x();
-        }
-
-        if (mResizeDir.y() == 1) {
+        } else if (mResizeDir.y() == 1) {
             mSize.y() += rel.y();
-        } else if (mResizeDir.y() == -1) {
-            mSize.y() += -rel.y();
-            if (mSize.y() > mMinSize.y()) mPos.y() += rel.y();
         }
         mSize = mSize.cwiseMax(mMinSize);
         return true;
