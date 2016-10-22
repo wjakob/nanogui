@@ -9,11 +9,11 @@ void register_glcanvas(py::module &m) {
     glcanvas
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
             D(GLCanvas, GLCanvas))
-        .def("backgroundColor", &TextBox::backgroundColor, D(TextBox, backgroundColor))
-        .def("setBackgroundColor", &TextBox::setBackgroundColor, D(TextBox, setBackgroundColor))
-        .def("drawBorder", &TextBox::drawBorder, D(TextBox, drawBorder))
-        .def("setDrawBorder", &TextBox::setDrawBorder, D(TextBox, setDrawBorder))
-        .def("setDrawingCallback", &TextBox::setDrawingCallback, D(TextBox, setDrawingCallback));
+        .def("backgroundColor", &GLCanvas::backgroundColor, D(GLCanvas, backgroundColor))
+        .def("setBackgroundColor", &GLCanvas::setBackgroundColor, D(GLCanvas, setBackgroundColor))
+        .def("drawBorder", &GLCanvas::drawBorder, D(GLCanvas, drawBorder))
+        .def("setDrawBorder", &GLCanvas::setDrawBorder, D(GLCanvas, setDrawBorder))
+        .def("setDrawingCallback", &GLCanvas::setDrawingCallback, D(GLCanvas, setDrawingCallback));
 }
 
 #endif
