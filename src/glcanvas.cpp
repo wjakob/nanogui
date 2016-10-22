@@ -81,6 +81,10 @@ GLCanvas::GLCanvas(Widget *parent)
 
 GLCanvas::~GLCanvas() {
     mShader.free();
+    
+    glDeleteBuffers(1, &mDepthRenderBuffer);
+    glDeleteTextures(1, &mTexture);
+    glDeleteBuffers(1, &mFrameBuffer);
 }
 
 Vector2i GLCanvas::preferredSize(NVGcontext *) const {
