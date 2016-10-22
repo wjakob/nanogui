@@ -1,5 +1,6 @@
 /*
-    src/graph.cpp -- Simple graph widget for showing a function plot
+    nanogui/glcanvas.h -- OpenGL canvas widget for showing a rendering
+    framebuffer
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
