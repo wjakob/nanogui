@@ -69,7 +69,7 @@ GLCanvas::GLCanvas(Widget *parent)
 
 GLCanvas::~GLCanvas() {
     mShader.free();
-    
+
     glDeleteBuffers(1, &mDepthRenderBuffer);
     glDeleteTextures(1, &mTexture);
     glDeleteBuffers(1, &mFrameBuffer);
@@ -113,7 +113,7 @@ void GLCanvas::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx);
 
-    if(mDrawBorder)
+    if (mDrawBorder)
       drawWidgetBorder(ctx);
 
     const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
@@ -128,7 +128,7 @@ void GLCanvas::draw(NVGcontext *ctx) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
       glViewport(0, 0, mSize[0], mSize[1]);
 
       glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
