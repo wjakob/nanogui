@@ -72,7 +72,7 @@ void Window::draw(NVGcontext *ctx) {
     int hh = mTheme->mWindowHeaderHeight;
 
     if (mResize) performLayout(ctx);
-    updateResizeRectPositions();
+
     /* Draw window */
     nvgSave(ctx);
     nvgBeginPath(ctx);
@@ -158,7 +158,7 @@ void Window::center() {
     ((Screen *) widget)->centerWindow(this);
 }
 
-bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
+bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
                             int button, int /* modifiers */) {
 
     if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
@@ -167,21 +167,32 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
     } else if (mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
-        if (mResizeDir.x() > 0) {
-            mSize.x() += rel[0];
-        } else if (mResizeDir.x() < 0) {
-            mSize[0] += -rel[0];
-            if (mSize[0] > mMinSize[0]) mPos[0] += rel[0];
+        if (mResizeDir.x() == 1) {
+            mSize.x() += rel.x();
+        } else if (mResizeDir.x() == -1) {
+            mSize.x() += -rel.x();
+            if (mSize.x() > mMinSize.x()) mPos.x() += rel.x();
         }
 
-        if (mResizeDir.y() > 0) {
-            mSize[1] += rel[1];
-        } else if (mResizeDir.y() < 0) {
-            mSize[1] += -rel[1];
-            if (mSize[1] > mMinSize[1]) mPos[1] += rel[1];
+        if (mResizeDir.y() == 1) {
+            mSize.y() += rel.y();
+        } else if (mResizeDir.y() == -1) {
+            mSize.y() += -rel.y();
+            if (mSize.y() > mMinSize.y()) mPos.y() += rel.y();
         }
         mSize = mSize.cwiseMax(mMinSize);
         return true;
+    }
+    return false;
+}
+
+bool Window::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
+    if (checkHorizontalResize(p) != 0) {
+        mCursor = Cursor::HResize;
+    } else if (checkVerticalResize(p) != 0) {
+        mCursor = Cursor::VResize;
+    } else {
+        mCursor = Cursor::Arrow;
     }
     return false;
 }
@@ -193,41 +204,9 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         mResize = false;
         if (!mDrag && down) {
-            for (int i = 0; i < mResizeRects.size(); i++) {
-                if (mResizeRects[i].collisionPoint(p)) {
-                    mResize = true;
-                    switch (i) {
-                        case BottomRight:
-                            mResizeDir.x() = 1;
-                            mResizeDir.y() = 1;
-                            break;
-                        case BottomLeft:
-                            mResizeDir.x() = -1;
-                            mResizeDir.y() = 1;
-                            break;
-                        case Bottom:
-                            mResizeDir.x() = 0;
-                            mResizeDir.y() = 1;
-                            break;
-                        case Left:
-                            mResizeDir.x() = -1;
-                            mResizeDir.y() = 0;
-                            break;
-                        case Right:
-                            mResizeDir.x() = 1;
-                            mResizeDir.y() = 0;
-                            break;
-                    }
-                    break;
-                }
-            }
-            if (mFixedSize.x() != 0) {
-                mResizeDir.x() = 0;
-            }
-
-            if (mFixedSize.y() != 0) {
-                mResizeDir.y() = 0;
-            }
+            mResize = true;
+            mResizeDir.x() = (mFixedSize.x() == 0) ? checkHorizontalResize(p) : 0;
+            mResizeDir.y() = (mFixedSize.y() == 0) ? checkVerticalResize(p) : 0;
         }
         return true;
     }
@@ -257,31 +236,29 @@ bool Window::load(Serializer &s) {
     return true;
 }
 
-void Window::updateResizeRectPositions() {
-    mResizeRects[BottomRight].x() = absolutePosition().x() + (width() - mResizeRects[BottomRight].w());
-    mResizeRects[BottomRight].y() = absolutePosition().y() + (height() - mResizeRects[BottomRight].h());
-    mResizeRects[BottomRight].w() = mTheme->mResizeRectangleCornerSize.x();
-    mResizeRects[BottomRight].h() = mTheme->mResizeRectangleCornerSize.y();
+int Window::checkHorizontalResize(const Eigen::Vector2i &mousePos) {
+    int offset = mTheme->mResizeAreaOffset;
+    Vector2i lowerRightCorner = absolutePosition() + size();
 
-    mResizeRects[BottomLeft].x() = absolutePosition().x();
-    mResizeRects[BottomLeft].y() = absolutePosition().y() + (height() - mResizeRects[BottomLeft].h());
-    mResizeRects[BottomLeft].w() = mTheme->mResizeRectangleCornerSize.x();
-    mResizeRects[BottomLeft].h() = mTheme->mResizeRectangleCornerSize.y();
+    if (mousePos.x() <= absolutePosition().x() + offset && mousePos.x() >= absolutePosition().x()) {
+        return -1;
+    } else if (mousePos.x() >= lowerRightCorner.x() - offset && mousePos.x() <= lowerRightCorner.x()) {
+        return 1;
+    }
 
-    mResizeRects[Bottom].w() = width() - (mResizeRects[BottomLeft].w() + mResizeRects[BottomRight].w());
-    mResizeRects[Bottom].h() = mTheme->mResizeRectangleBottomSideHeight;
-    mResizeRects[Bottom].x() = absolutePosition().x() + mResizeRects[BottomLeft].w();
-    mResizeRects[Bottom].y() = absolutePosition().y() + (height() - mResizeRects[Bottom].h());
+    return 0;
+}
 
-    mResizeRects[Right].w() = mTheme ->mResizeRectangleLeftRightSidesWidth;
-    mResizeRects[Right].h() = height() - (mTheme->mWindowHeaderHeight + mResizeRects[BottomRight].h());
-    mResizeRects[Right].x() = absolutePosition().x() + (width() - mResizeRects[Right].w());
-    mResizeRects[Right].y() = absolutePosition().y() + mTheme->mWindowHeaderHeight;
+int Window::checkVerticalResize(const Eigen::Vector2i &mousePos) {
+    int offset = mTheme->mResizeAreaOffset;
+    Vector2i lowerRightCorner = absolutePosition() + size();
 
-    mResizeRects[Left].w() =  mTheme ->mResizeRectangleLeftRightSidesWidth;
-    mResizeRects[Left].h() =  height() - (mTheme->mWindowHeaderHeight + mResizeRects[BottomLeft].h());
-    mResizeRects[Left].x() = absolutePosition().x();
-    mResizeRects[Left].y() = absolutePosition().y() + mTheme->mWindowHeaderHeight;
+    // Do not check for resize area on top of the window. It is to prevent conflict drag and resize event.
+    if (mousePos.y() >= lowerRightCorner.y() - offset && mousePos.y() <= lowerRightCorner.y()) {
+        return 1;
+    }
+
+    return 0;
 }
 
 NAMESPACE_END(nanogui)

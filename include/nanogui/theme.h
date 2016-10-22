@@ -48,9 +48,7 @@ public:
     int mTabControlWidth;
     int mTabButtonHorizontalPadding;
     int mTabButtonVerticalPadding;
-    Eigen::Vector2f mResizeRectangleCornerSize;
-    int mResizeRectangleLeftRightSidesWidth;
-    int mResizeRectangleBottomSideHeight;
+    int mResizeAreaOffset;
 
     /* Generic colors */
     Color mDropShadow;
