@@ -40,26 +40,13 @@ namespace {
 }
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true) {
-    mBackgroundColor = Color(20, 128);
-
-    Vector2i vcSize = Vector2i(250, 250);
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mFrameBuffer(0), mTexture(0), mDepthRenderBuffer(0), mDrawBorder(true) {
+    mSize = Vector2i(250, 250);
 
     glGenFramebuffers(1, &mFrameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
 
-    glGenTextures(1, &mTexture);
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, vcSize[0], vcSize[1], 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glGenRenderbuffers(1, &mDepthRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, vcSize[0], vcSize[1]);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer);
-
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexture, 0);
+    this->resizeTexture();
 
     glDrawBuffers(1, mDrawBuffers);
 
@@ -88,8 +75,26 @@ GLCanvas::~GLCanvas() {
     glDeleteBuffers(1, &mFrameBuffer);
 }
 
+void GLCanvas::resizeTexture() {
+    glDeleteTextures(1, &mTexture);
+    glDeleteBuffers(1, &mDepthRenderBuffer);
+
+    glGenTextures(1, &mTexture);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mSize[0], mSize[1], 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexture, 0);
+
+    glGenRenderbuffers(1, &mDepthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mSize[0], mSize[1]);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer);
+}
+
 Vector2i GLCanvas::preferredSize(NVGcontext *) const {
-    return Vector2i(250, 250);
+    return mSize;
 }
 
 void GLCanvas::drawWidgetBorder(NVGcontext* ctx) const {
@@ -149,6 +154,11 @@ void GLCanvas::draw(NVGcontext *ctx) {
 
 void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
   mDrawingCallback = fncDraw;
+}
+
+void GLCanvas::setSize(const Vector2i &size) {
+  this->Widget::setSize(size);
+  this->resizeTexture();
 }
 
 void GLCanvas::save(Serializer &s) const {
