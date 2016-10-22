@@ -39,7 +39,7 @@ namespace {
 }
 
 GLCanvas::GLCanvas(Widget *parent)
-    : Widget(parent) {
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)) {
     mBackgroundColor = Color(20, 128);
 
     Vector2i vcSize = Vector2i(250, 250);
