@@ -31,6 +31,8 @@ public:
     GLCanvas(Widget *parent);
     ~GLCanvas();
 
+    void resizeTexture();
+
     const Color &backgroundColor() const { return mBackgroundColor; }
     void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
@@ -47,6 +49,8 @@ public:
     virtual bool load(Serializer &s) override;
 
     GLShader& imageShader() { return mShader; }
+
+    void setSize(const Vector2i &size);
 
 protected:
     Color mBackgroundColor;
