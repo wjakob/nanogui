@@ -83,6 +83,9 @@ public:
 
         mCanvas = new GLCanvas(window);
         mCanvas->setBackgroundColor({100, 100, 100, 255});
+	mCanvas->setSize({400, 400});
+
+	mRotation = Vector3f(0.25, 0.5, 0.33);
 
         mCanvas->setGLDrawingCallback([this]() {
             mShader.bind();
@@ -90,9 +93,9 @@ public:
             Matrix4f mvp;
             mvp.setIdentity();
             float fTime = (float)glfwGetTime();
-            mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(0.25*fTime, Vector3f::UnitX()) *
-                                                       Eigen::AngleAxisf(0.5*fTime,  Vector3f::UnitY()) *
-                                                       Eigen::AngleAxisf(0.33*fTime, Vector3f::UnitZ())) * 0.25f;
+            mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0]*fTime, Vector3f::UnitX()) *
+                                                       Eigen::AngleAxisf(mRotation[1]*fTime,  Vector3f::UnitY()) *
+                                                       Eigen::AngleAxisf(mRotation[2]*fTime, Vector3f::UnitZ())) * 0.25f;
 
             mShader.setUniform("modelViewProj", mvp);
             glFrontFace(GL_CW);
@@ -100,6 +103,16 @@ public:
             /* Draw 12 triangles starting at index 0 */
             mShader.drawIndexed(GL_TRIANGLES, 0, 12);
           });
+
+        Widget *tools = new Widget(window);
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 5));
+
+        Button *b0 = new Button(tools, "Random Color");
+	b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
+
+        Button *b1 = new Button(tools, "Random Rotation");
+	b1->setCallback([this]() { mRotation = Vector3f((rand() % 100) / 100.0, (rand() % 100) / 100.0, (rand() % 100) / 100.0); });
 
         performLayout();
 
@@ -209,6 +222,7 @@ public:
 private:
     nanogui::GLCanvas *mCanvas;
     nanogui::GLShader mShader;
+    Eigen::Vector3f mRotation;
 };
 
 int main(int /* argc */, char ** /* argv */) {
