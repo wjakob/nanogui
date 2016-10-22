@@ -108,7 +108,8 @@ void GLCanvas::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx);
 
-    drawWidgetBorder(ctx);
+    if(mDrawBorder)
+      drawWidgetBorder(ctx);
 
     const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
     assert(screen);
@@ -153,11 +154,13 @@ void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
 void GLCanvas::save(Serializer &s) const {
     Widget::save(s);
     s.set("backgroundColor", mBackgroundColor);
+    s.set("drawBorder", mDrawBorder);
 }
 
 bool GLCanvas::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("backgroundColor", mBackgroundColor)) return false;
+    if (!s.get("drawBorder", mDrawBorder)) return false;
     return true;
 }
 
