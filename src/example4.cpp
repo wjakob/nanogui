@@ -83,9 +83,9 @@ public:
 
         mCanvas = new GLCanvas(window);
         mCanvas->setBackgroundColor({100, 100, 100, 255});
-	mCanvas->setSize({400, 400});
+        mCanvas->setSize({400, 400});
 
-	mRotation = Vector3f(0.25, 0.5, 0.33);
+        mRotation = Vector3f(0.25, 0.5, 0.33);
 
         mCanvas->setGLDrawingCallback([this]() {
             mShader.bind();
@@ -109,10 +109,10 @@ public:
                                        Alignment::Middle, 0, 5));
 
         Button *b0 = new Button(tools, "Random Color");
-	b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
+        b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
 
         Button *b1 = new Button(tools, "Random Rotation");
-	b1->setCallback([this]() { mRotation = Vector3f((rand() % 100) / 100.0, (rand() % 100) / 100.0, (rand() % 100) / 100.0); });
+        b1->setCallback([this]() { mRotation = Vector3f((rand() % 100) / 100.0, (rand() % 100) / 100.0, (rand() % 100) / 100.0); });
 
         performLayout();
 
