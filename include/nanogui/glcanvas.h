@@ -1,6 +1,5 @@
 /*
-    nanogui/glcanvas.h -- OpenGL canvas widget for showing a rendering
-    framebuffer
+    nanogui/glcanvas.h -- Canvas widget for rendering GL
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -24,14 +23,12 @@ NAMESPACE_BEGIN(nanogui)
 /**
  * \class GLCanvas glcanvas.h nanogui/glcanvas.h
  *
- * \brief OpenGL canvas widget for showing a rendering framebuffer
+ * \brief Canvas widget for rendering GL
  */
 class NANOGUI_EXPORT GLCanvas : public Widget {
 public:
     GLCanvas(Widget *parent);
     ~GLCanvas();
-
-    void resizeTexture();
 
     const Color &backgroundColor() const { return mBackgroundColor; }
     void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
@@ -50,14 +47,8 @@ public:
 
     GLShader& imageShader() { return mShader; }
 
-    void setSize(const Vector2i &size);
-
 protected:
     Color mBackgroundColor;
-    GLuint mFrameBuffer;
-    GLuint mTexture;
-    GLuint mDepthRenderBuffer;
-    GLenum mDrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
     std::function<void()> mDrawingCallback;
     GLShader mShader;
     bool mDrawBorder;

@@ -1,6 +1,5 @@
 /*
-    nanogui/glcanvas.h -- OpenGL canvas widget for showing a rendering
-    framebuffer
+    nanogui/glcanvas.h -- Canvas widget for rendering GL
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -40,15 +39,8 @@ namespace {
 }
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mFrameBuffer(0), mTexture(0), mDepthRenderBuffer(0), mDrawBorder(true) {
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true) {
     mSize = Vector2i(250, 250);
-
-    glGenFramebuffers(1, &mFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-
-    this->resizeTexture();
-
-    glDrawBuffers(1, mDrawBuffers);
 
     mShader.init("GLCanvasShader", defaultGLCanvasVertexShader, defaultGLCanvasFragmentShader);
 
@@ -69,28 +61,6 @@ GLCanvas::GLCanvas(Widget *parent)
 
 GLCanvas::~GLCanvas() {
     mShader.free();
-
-    glDeleteBuffers(1, &mDepthRenderBuffer);
-    glDeleteTextures(1, &mTexture);
-    glDeleteBuffers(1, &mFrameBuffer);
-}
-
-void GLCanvas::resizeTexture() {
-    glDeleteTextures(1, &mTexture);
-    glDeleteBuffers(1, &mDepthRenderBuffer);
-
-    glGenTextures(1, &mTexture);
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mSize[0], mSize[1], 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexture, 0);
-
-    glGenRenderbuffers(1, &mDepthRenderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, mSize[0], mSize[1]);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer);
 }
 
 Vector2i GLCanvas::preferredSize(NVGcontext *) const {
@@ -114,7 +84,7 @@ void GLCanvas::draw(NVGcontext *ctx) {
     nvgEndFrame(ctx);
 
     if (mDrawBorder)
-      drawWidgetBorder(ctx);
+        drawWidgetBorder(ctx);
 
     const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
     assert(screen);
@@ -126,39 +96,21 @@ void GLCanvas::draw(NVGcontext *ctx) {
     GLint arrnViewport[4];
     glGetIntegerv(GL_VIEWPORT, arrnViewport);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-      glViewport(0, 0, mSize[0], mSize[1]);
-
-      glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-      mDrawingCallback();
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     glViewport(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
 
-    mShader.bind();
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
+    glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-
-    mShader.setUniform("image", 0);
-    mShader.drawIndexed(GL_TRIANGLES, 0, 2);
+    mDrawingCallback();
+    glDisable(GL_SCISSOR_TEST);
 
     glViewport(arrnViewport[0], arrnViewport[1], arrnViewport[2], arrnViewport[3]);
 }
 
 void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
-  mDrawingCallback = fncDraw;
-}
-
-void GLCanvas::setSize(const Vector2i &size) {
-  this->Widget::setSize(size);
-  this->resizeTexture();
+    mDrawingCallback = fncDraw;
 }
 
 void GLCanvas::save(Serializer &s) const {
