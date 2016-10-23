@@ -44,6 +44,7 @@ extern void register_basics(py::module &m);
 extern void register_button(py::module &m);
 extern void register_tabs(py::module &m);
 extern void register_textbox(py::module &m);
+extern void register_glcanvas(py::module &m);
 extern void register_formhelper(py::module &m);
 extern void register_misc(py::module &m);
 extern void register_glutil(py::module &m);
@@ -216,6 +217,7 @@ PYBIND11_PLUGIN(nanogui) {
     register_button(m);
     register_tabs(m);
     register_textbox(m);
+    register_glcanvas(m);
     register_formhelper(m);
     register_misc(m);
     register_glutil(m);

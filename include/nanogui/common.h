@@ -378,6 +378,7 @@ class StackedWidget;
 class TabHeader;
 class TabWidget;
 class TextBox;
+class GLCanvas;
 class Theme;
 class ToolButton;
 class VScrollPanel;
