@@ -234,10 +234,13 @@ bool Window::load(Serializer &s) {
 int Window::checkHorizontalResize(const Eigen::Vector2i &mousePos) {
     int offset = mTheme->mResizeAreaOffset;
     Vector2i lowerRightCorner = absolutePosition() + size();
+    int headerLowerLeftCornerY = absolutePosition().y() + mTheme->mWindowHeaderHeight;
 
-    if (mousePos.x() <= absolutePosition().x() + offset && mousePos.x() >= absolutePosition().x()) {
+    if (mousePos.y() > headerLowerLeftCornerY && mousePos.x() <= absolutePosition().x() + offset &&
+            mousePos.x() >= absolutePosition().x()) {
         return -1;
-    } else if (mousePos.x() >= lowerRightCorner.x() - offset && mousePos.x() <= lowerRightCorner.x()) {
+    } else if (mousePos.y() > headerLowerLeftCornerY && mousePos.x() >= lowerRightCorner.x() - offset &&
+               mousePos.x() <= lowerRightCorner.x()) {
         return 1;
     }
 
