@@ -147,7 +147,6 @@ public:
             "void main() {\n"
             "    float diffuse_intensity = max(0.0, dot(normalize(frag_normal), normalize(vec4(-light.direction, 0.0))));\n"
             "    color = intensity * light.color * (light.amb_intensity + diffuse_intensity);\n"
-            //"    color = vec4(vec3(intensity), 1.0);\n"
             "}"
         );
 

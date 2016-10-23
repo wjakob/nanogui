@@ -18,53 +18,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-namespace {
-    constexpr char const *const defaultGLCanvasVertexShader =
-        R"(#version 330
-        in vec2 vertex;
-        out vec2 uv;
-        void main() {
-            uv = vertex;
-            gl_Position = vec4(2.0 * vertex - 1.0, 0.0, 1.0);
-        })";
-
-    constexpr char const *const defaultGLCanvasFragmentShader =
-        R"(#version 330
-        uniform sampler2D image;
-        out vec4 color;
-        in vec2 uv;
-        void main() {
-            color = texture(image, uv);
-        })";
-}
-
 GLCanvas::GLCanvas(Widget *parent)
   : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true) {
     mSize = Vector2i(250, 250);
-
-    mShader.init("GLCanvasShader", defaultGLCanvasVertexShader, defaultGLCanvasFragmentShader);
-
-    MatrixXu indices(3, 2);
-    indices.col(0) << 0, 1, 2;
-    indices.col(1) << 2, 3, 1;
-
-    MatrixXf vertices(2, 4);
-    vertices.col(0) << 0, 0;
-    vertices.col(1) << 1, 0;
-    vertices.col(2) << 0, 1;
-    vertices.col(3) << 1, 1;
-
-    mShader.bind();
-    mShader.uploadIndices(indices);
-    mShader.uploadAttrib("vertex", vertices);
 }
 
 GLCanvas::~GLCanvas() {
-    mShader.free();
-}
-
-Vector2i GLCanvas::preferredSize(NVGcontext *) const {
-    return mSize;
 }
 
 void GLCanvas::drawWidgetBorder(NVGcontext* ctx) const {

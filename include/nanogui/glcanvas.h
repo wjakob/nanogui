@@ -36,7 +36,6 @@ public:
     void setDrawBorder(const bool bDrawBorder) { mDrawBorder = bDrawBorder; }
     const bool &drawBorder() const { return mDrawBorder; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     void drawWidgetBorder(NVGcontext* ctx) const;
     virtual void draw(NVGcontext *ctx) override;
 
@@ -45,12 +44,9 @@ public:
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 
-    GLShader& imageShader() { return mShader; }
-
 protected:
     Color mBackgroundColor;
     std::function<void()> mDrawingCallback;
-    GLShader mShader;
     bool mDrawBorder;
 };
 
