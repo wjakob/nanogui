@@ -5,14 +5,14 @@
 DECLARE_WIDGET(GLCanvas);
 
 void register_glcanvas(py::module &m) {
-    py::class_<GLCanvas, Widget, ref<GLCanvas>, PyGLCanvas> glcanvas(m, "GLCanvas", D(GLCanvas));
+    py::class_<GLCanvas, Widget, ref<GLCanvas>, PyGLCanvas> glcanvas(m, "GLCanvas");
     glcanvas
-        .def(py::init<Widget *, const std::string &>(), py::arg("parent"))
+        .def(py::init<Widget *>(), py::arg("parent"))
         .def("backgroundColor", &GLCanvas::backgroundColor)
         .def("setBackgroundColor", &GLCanvas::setBackgroundColor)
         .def("drawBorder", &GLCanvas::drawBorder)
         .def("setDrawBorder", &GLCanvas::setDrawBorder)
-        .def("setDrawingCallback", &GLCanvas::setDrawingCallback);
+        .def("setGLDrawingCallback", &GLCanvas::setGLDrawingCallback);
 }
 
 #endif
