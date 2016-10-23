@@ -100,8 +100,10 @@ public:
             mShader.setUniform("modelViewProj", mvp);
             glFrontFace(GL_CW);
 
+	    glEnable(GL_DEPTH_TEST);
             /* Draw 12 triangles starting at index 0 */
             mShader.drawIndexed(GL_TRIANGLES, 0, 12);
+	    glDisable(GL_DEPTH_TEST);
           });
 
         Widget *tools = new Widget(window);
