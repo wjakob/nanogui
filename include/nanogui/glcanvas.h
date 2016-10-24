@@ -35,13 +35,16 @@ public:
     void setDrawBorder(const bool bDrawBorder) { mDrawBorder = bDrawBorder; }
     const bool &drawBorder() const { return mDrawBorder; }
 
-    void drawWidgetBorder(NVGcontext* ctx) const;
     virtual void draw(NVGcontext *ctx) override;
 
     void setGLDrawingCallback(std::function<void()> fncDraw);
 
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+
+protected:
+    /// Internal helper function for drawing the widget border
+    void drawWidgetBorder(NVGcontext* ctx) const;
 
 protected:
     Color mBackgroundColor;
