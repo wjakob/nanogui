@@ -29,16 +29,23 @@ class NANOGUI_EXPORT GLCanvas : public Widget {
 public:
     GLCanvas(Widget *parent);
 
+    /// Return the background color
     const Color &backgroundColor() const { return mBackgroundColor; }
+    /// Set the background color
     void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
+    /// Set whether to draw the widget border or not
     void setDrawBorder(const bool bDrawBorder) { mDrawBorder = bDrawBorder; }
+    /// Return whether the widget border gets drawn or not
     const bool &drawBorder() const { return mDrawBorder; }
 
+    /// Draw the canvas
     virtual void draw(NVGcontext *ctx) override;
 
+    /// Set the function invoked when the canvas content needs to be drawn
     void setGLDrawingCallback(std::function<void()> fncDraw);
 
+    /// Save and load widget properties
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 
