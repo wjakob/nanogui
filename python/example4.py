@@ -76,9 +76,9 @@ class TestApp(Screen):
 
                 self.shader.setUniform("modelViewProj", mvp)
 
-                self.shader.glEnable(gl.DEPTH_TEST)
+                gl.glEnable(gl.DEPTH_TEST)
                 self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
-                self.shader.glDisable(gl.DEPTH_TEST)
+                gl.glDisable(gl.DEPTH_TEST)
 
         self.canvas.setGLDrawingCallback(cb)
         tools = Widget(window)
