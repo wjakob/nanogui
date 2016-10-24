@@ -142,12 +142,19 @@ void register_glutil(py::module &m) {
              D(GLShader, drawIndexed), py::arg("type"),
              py::arg("offset"), py::arg("count"))
         .def("setUniform", &setUniformPy, py::arg("name"),
-             py::arg("value"), py::arg("warn") = true);
+             py::arg("value"), py::arg("warn") = true)
+        .def("glEnable", [](GLShader, py::int_ cap) {
+                glEnable(cap);
+             }, py::arg("cap"))
+        .def("glDisable", [](GLShader, py::int_ cap) {
+                glDisable(cap);
+             }, py::arg("cap"));
 
     #define C(name) gl.attr(#name) = py::int_(GL_##name);
     py::module gl = m.def_submodule("gl");
 
     C(TRIANGLES); C(LINES); C(POINTS);
+    C(DEPTH_TEST);
 }
 
 #endif
