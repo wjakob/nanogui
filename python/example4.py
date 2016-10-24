@@ -34,7 +34,7 @@ class TestApp(Screen):
         window.setLayout(GroupLayout())
 
         self.canvas = GLCanvas(window)
-        self.canvas.setBackgroundColor(Color(100, 100, 100, 255))
+        self.canvas.setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0))
         self.canvas.setSize((400, 400))
 
         self.rotation = [0.25, 0.5, 0.33]
@@ -76,9 +76,9 @@ class TestApp(Screen):
 
                 self.shader.setUniform("modelViewProj", mvp)
 
-                #glEnable(GL_DEPTH_TEST)
+                self.shader.glEnable(gl.DEPTH_TEST)
                 self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
-                #glDisable(GL_DEPTH_TEST)
+                #self.shader.glDisable(gl.DEPTH_TEST)
 
         self.canvas.setGLDrawingCallback(cb)
         tools = Widget(window)
@@ -87,7 +87,7 @@ class TestApp(Screen):
 
         b0 = Button(tools, "Random Color")
         def cb0():
-            self.canvas.setBackgroundColor(Color(int(random.random() * 255), int(random.random() * 255), int(random.random() * 255), 255))
+            self.canvas.setBackgroundColor(Color(random.random(), random.random(), random.random(), 1.0))
         b0.setCallback(cb0)
 
         b1 = Button(tools, "Random Rotation")
