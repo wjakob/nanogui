@@ -23,9 +23,6 @@ GLCanvas::GLCanvas(Widget *parent)
     mSize = Vector2i(250, 250);
 }
 
-GLCanvas::~GLCanvas() {
-}
-
 void GLCanvas::drawWidgetBorder(NVGcontext* ctx) const {
     nvgBeginPath(ctx);
     nvgStrokeWidth(ctx, 1.0f);

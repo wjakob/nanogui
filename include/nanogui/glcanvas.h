@@ -28,7 +28,6 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT GLCanvas : public Widget {
 public:
     GLCanvas(Widget *parent);
-    ~GLCanvas();
 
     const Color &backgroundColor() const { return mBackgroundColor; }
     void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
