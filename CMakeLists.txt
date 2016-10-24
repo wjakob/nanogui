@@ -398,9 +398,9 @@ if (NANOGUI_BUILD_PYTHON)
     # Python not found -- disable the plugin
     set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
     message(WARNING "NanoGUI: not building the Python plugin!")
-  endif()
-    message(STATUS "NanoGUI: building the Python plugin.")
   else()
+    message(STATUS "NanoGUI: building the Python plugin.")
+  endif()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
