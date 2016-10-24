@@ -78,7 +78,7 @@ class TestApp(Screen):
 
                 self.shader.glEnable(gl.DEPTH_TEST)
                 self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
-                #self.shader.glDisable(gl.DEPTH_TEST)
+                self.shader.glDisable(gl.DEPTH_TEST)
 
         self.canvas.setGLDrawingCallback(cb)
         tools = Widget(window)
@@ -87,8 +87,7 @@ class TestApp(Screen):
 
         b0 = Button(tools, "Random Color")
         def cb0():
-            self.canvas.setBackgroundColor(Color(random.random(), random.random(), random.random(), 1.0))
-        b0.setCallback(cb0)
+            self.canvas.setBackgroundColor(Color(random.random(), random.random(), random.ran        b0.setCallback(cb0)
 
         b1 = Button(tools, "Random Rotation")
         def cb1():
