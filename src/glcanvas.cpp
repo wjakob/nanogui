@@ -19,7 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true) {
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true), mDrawingCallback([](){}) {
     mSize = Vector2i(250, 250);
 }
 
