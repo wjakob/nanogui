@@ -19,7 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawBorder(true), mDrawingCallback([](){}) {
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawingCallback([](){}), mMouseButtonCallback([](const Vector2i&, int, bool, int){}), mMouseMotionCallback([](const Vector2i&, const Vector2i&, int, int){}), mDrawBorder(true) {
     mSize = Vector2i(250, 250);
 }
 
@@ -67,6 +67,26 @@ void GLCanvas::draw(NVGcontext *ctx) {
 
 void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
     mDrawingCallback = fncDraw;
+}
+
+bool GLCanvas::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
+    mMouseButtonCallback(p, button, down, modifiers);
+
+    return true;
+}
+
+bool GLCanvas::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+    mMouseMotionCallback(p, rel, button, modifiers);
+
+    return true;
+}
+
+void GLCanvas::setMouseButtonCallback(std::function<void(const Vector2i&, int, bool, int)> fncMouseButtonCallback) {
+    mMouseButtonCallback = fncMouseButtonCallback;
+}
+
+void GLCanvas::setMouseMotionCallback(std::function<void(const Vector2i&, const Vector2i&, int, int)> fncMouseMotionCallback) {
+    mMouseMotionCallback = fncMouseMotionCallback;
 }
 
 void GLCanvas::save(Serializer &s) const {

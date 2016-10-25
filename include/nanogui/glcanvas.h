@@ -45,6 +45,15 @@ public:
     /// Set the function invoked when the canvas content needs to be drawn
     void setGLDrawingCallback(std::function<void()> fncDraw);
 
+    /// React to mouse events (motion and button press/release events)
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
+    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
+
+    /// Set callback for when a mouse button event is received
+    void setMouseButtonCallback(std::function<void(const Vector2i&, int, bool, int)> fncMouseButtonCallback);
+    /// Set callback for when a mouse motion event is received
+    void setMouseMotionCallback(std::function<void(const Vector2i&, const Vector2i&, int, int)> fncMouseMotionCallback);
+
     /// Save and load widget properties
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
@@ -56,6 +65,8 @@ protected:
 protected:
     Color mBackgroundColor;
     std::function<void()> mDrawingCallback;
+    std::function<void(const Vector2i&, int, bool, int)> mMouseButtonCallback;
+    std::function<void(const Vector2i&, const Vector2i&, int, int)> mMouseMotionCallback;
     bool mDrawBorder;
 };
 
