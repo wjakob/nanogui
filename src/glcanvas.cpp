@@ -19,7 +19,9 @@
 NAMESPACE_BEGIN(nanogui)
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)), mDrawingCallback([](){}), mMouseButtonCallback([](const Vector2i&, int, bool, int){}), mMouseMotionCallback([](const Vector2i&, const Vector2i&, int, int){}), mDrawBorder(true) {
+  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)),
+    mDrawingCallback(nullptr), mMouseButtonCallback(nullptr),
+    mMouseMotionCallback(nullptr), mDrawBorder(true) {
     mSize = Vector2i(250, 250);
 }
 
@@ -59,7 +61,8 @@ void GLCanvas::draw(NVGcontext *ctx) {
     glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    mDrawingCallback();
+    if (mDrawingCallback)
+        mDrawingCallback();
     glDisable(GL_SCISSOR_TEST);
 
     glViewport(arrnViewport[0], arrnViewport[1], arrnViewport[2], arrnViewport[3]);
@@ -70,13 +73,15 @@ void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
 }
 
 bool GLCanvas::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
-    mMouseButtonCallback(p, button, down, modifiers);
+    if (mMouseButtonCallback)
+        mMouseButtonCallback(p, button, down, modifiers);
 
     return true;
 }
 
 bool GLCanvas::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
-    mMouseMotionCallback(p, rel, button, modifiers);
+    if (mMouseMotionCallback)
+        mMouseMotionCallback(p, rel, button, modifiers);
 
     return true;
 }
