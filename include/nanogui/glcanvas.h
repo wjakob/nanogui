@@ -56,7 +56,7 @@ protected:
     /// Internal helper function for drawing the widget border
     void drawWidgetBorder(NVGcontext* ctx) const;
     
-    virtual void drawGL(__attribute__((unused)) NVGcontext *ctx) {}
+    virtual void drawGL(NVGcontext*) {}
 
 protected:
     Color mBackgroundColor;
