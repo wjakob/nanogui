@@ -154,7 +154,7 @@ public:
         mRotation = vRotation;
     }
 
-    virtual void drawGL(__attribute__((unused)) NVGcontext *ctx) override {
+    virtual void drawGL() override {
         using namespace nanogui;
 
         mShader.bind();

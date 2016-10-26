@@ -45,9 +45,9 @@ public:
     /// Draw the canvas
     virtual void draw(NVGcontext *ctx) override;
 
-    /// React to mouse events (motion and button press/release events)
-    //virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers);
-    //virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers);
+    /// Draw the GL scene. Override this method to draw the actual GL
+    /// content.
+    virtual void drawGL() {}
 
     /// Save and load widget properties
     virtual void save(Serializer &s) const override;
@@ -56,8 +56,6 @@ public:
 protected:
     /// Internal helper function for drawing the widget border
     void drawWidgetBorder(NVGcontext* ctx) const;
-    
-    virtual void drawGL(NVGcontext*) {}
 
 protected:
     Color mBackgroundColor;

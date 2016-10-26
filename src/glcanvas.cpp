@@ -64,7 +64,7 @@ void GLCanvas::draw(NVGcontext *ctx) {
                  mBackgroundColor[2], mBackgroundColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    this->drawGL(ctx);
+    this->drawGL();
 
     glDisable(GL_SCISSOR_TEST);
     glViewport(arrnStoredViewport[0], arrnStoredViewport[1],
