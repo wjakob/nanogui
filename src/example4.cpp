@@ -72,50 +72,10 @@ using std::pair;
 using std::to_string;
 
 
-class ExampleApplication : public nanogui::Screen {
+class MyGLCanvas : public nanogui::GLCanvas {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", false) {
+    MyGLCanvas(Widget *parent) : nanogui::GLCanvas(parent), mRotation(nanogui::Vector3f(0.25, 0.5, 0.33)) {
         using namespace nanogui;
-
-        Window *window = new Window(this, "GLCanvas Demo");
-        window->setPosition(Vector2i(15, 15));
-        window->setLayout(new GroupLayout());
-
-        mCanvas = new GLCanvas(window);
-        mCanvas->setBackgroundColor({100, 100, 100, 255});
-        mCanvas->setSize({400, 400});
-
-        mRotation = Vector3f(0.25, 0.5, 0.33);
-
-        mCanvas->setGLDrawingCallback([this]() {
-            mShader.bind();
-
-            Matrix4f mvp;
-            mvp.setIdentity();
-            float fTime = (float)glfwGetTime();
-            mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0]*fTime, Vector3f::UnitX()) *
-                                                       Eigen::AngleAxisf(mRotation[1]*fTime,  Vector3f::UnitY()) *
-                                                       Eigen::AngleAxisf(mRotation[2]*fTime, Vector3f::UnitZ())) * 0.25f;
-
-            mShader.setUniform("modelViewProj", mvp);
-
-            glEnable(GL_DEPTH_TEST);
-            /* Draw 12 triangles starting at index 0 */
-            mShader.drawIndexed(GL_TRIANGLES, 0, 12);
-            glDisable(GL_DEPTH_TEST);
-          });
-
-        Widget *tools = new Widget(window);
-        tools->setLayout(new BoxLayout(Orientation::Horizontal,
-                                       Alignment::Middle, 0, 5));
-
-        Button *b0 = new Button(tools, "Random Color");
-        b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
-
-        Button *b1 = new Button(tools, "Random Rotation");
-        b1->setCallback([this]() { mRotation = Vector3f((rand() % 100) / 100.0, (rand() % 100) / 100.0, (rand() % 100) / 100.0); });
-
-        performLayout();
 
         mShader.init(
             /* An identifying name */
@@ -186,8 +146,64 @@ public:
         mShader.uploadAttrib("color", colors);
     }
 
-    ~ExampleApplication() {
+    ~MyGLCanvas() {
         mShader.free();
+    }
+
+    void setRotation(nanogui::Vector3f vRotation) {
+        mRotation = vRotation;
+    }
+
+    virtual void drawGL(__attribute__((unused)) NVGcontext *ctx) override {
+        using namespace nanogui;
+
+        mShader.bind();
+
+        Matrix4f mvp;
+        mvp.setIdentity();
+        float fTime = (float)glfwGetTime();
+        mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0]*fTime, Vector3f::UnitX()) *
+                                                   Eigen::AngleAxisf(mRotation[1]*fTime,  Vector3f::UnitY()) *
+                                                   Eigen::AngleAxisf(mRotation[2]*fTime, Vector3f::UnitZ())) * 0.25f;
+
+        mShader.setUniform("modelViewProj", mvp);
+
+        glEnable(GL_DEPTH_TEST);
+        /* Draw 12 triangles starting at index 0 */
+        mShader.drawIndexed(GL_TRIANGLES, 0, 12);
+        glDisable(GL_DEPTH_TEST);
+    }
+
+private:
+    nanogui::GLShader mShader;
+    Eigen::Vector3f mRotation;
+};
+
+
+class ExampleApplication : public nanogui::Screen {
+public:
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", false) {
+        using namespace nanogui;
+
+        Window *window = new Window(this, "GLCanvas Demo");
+        window->setPosition(Vector2i(15, 15));
+        window->setLayout(new GroupLayout());
+
+        mCanvas = new MyGLCanvas(window);
+        mCanvas->setBackgroundColor({100, 100, 100, 255});
+        mCanvas->setSize({400, 400});
+
+        Widget *tools = new Widget(window);
+        tools->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 5));
+
+        Button *b0 = new Button(tools, "Random Color");
+        b0->setCallback([this]() { mCanvas->setBackgroundColor(Vector4i(rand() % 256, rand() % 256, rand() % 256, 255)); });
+
+        Button *b1 = new Button(tools, "Random Rotation");
+        b1->setCallback([this]() { mCanvas->setRotation(nanogui::Vector3f((rand() % 100) / 100.0, (rand() % 100) / 100.0, (rand() % 100) / 100.0)); });
+
+        performLayout();
     }
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
@@ -204,13 +220,8 @@ public:
         /* Draw the user interface */
         Screen::draw(ctx);
     }
-
-    virtual void drawContents() {
-    }
 private:
-    nanogui::GLCanvas *mCanvas;
-    nanogui::GLShader mShader;
-    Eigen::Vector3f mRotation;
+    MyGLCanvas *mCanvas;
 };
 
 int main(int /* argc */, char ** /* argv */) {

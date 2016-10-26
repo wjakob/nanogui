@@ -1,5 +1,7 @@
 /*
-    nanogui/glcanvas.h -- Canvas widget for rendering GL
+    nanogui/glcanvas.h -- Canvas widget for rendering full-fledged
+    OpenGL content within its designated area. Very useful for
+    displaying and manipulating 3D objects or scenes.
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -20,12 +22,11 @@ NAMESPACE_BEGIN(nanogui)
 
 GLCanvas::GLCanvas(Widget *parent)
   : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)),
-    mDrawingCallback(nullptr), mMouseButtonCallback(nullptr),
-    mMouseMotionCallback(nullptr), mDrawBorder(true) {
+    mDrawBorder(true) {
     mSize = Vector2i(250, 250);
 }
 
-void GLCanvas::drawWidgetBorder(NVGcontext* ctx) const {
+void GLCanvas::drawWidgetBorder(NVGcontext *ctx) const {
     nvgBeginPath(ctx);
     nvgStrokeWidth(ctx, 1.0f);
     nvgRoundedRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f,
@@ -51,47 +52,22 @@ void GLCanvas::draw(NVGcontext *ctx) {
     Vector2i positionInScreen = absolutePosition();
     Vector2i imagePosition = Vector2i(positionInScreen[0], screenSize[1] - positionInScreen[1] - mSize[1]);
 
-    GLint arrnViewport[4];
-    glGetIntegerv(GL_VIEWPORT, arrnViewport);
+    GLint arrnStoredViewport[4];
+    glGetIntegerv(GL_VIEWPORT, arrnStoredViewport);
 
     glViewport(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
 
     glEnable(GL_SCISSOR_TEST);
     glScissor(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
-    glClearColor(mBackgroundColor[0], mBackgroundColor[1], mBackgroundColor[2], mBackgroundColor[3]);
+    glClearColor(mBackgroundColor[0], mBackgroundColor[1],
+                 mBackgroundColor[2], mBackgroundColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if (mDrawingCallback)
-        mDrawingCallback();
+    this->drawGL(ctx);
+
     glDisable(GL_SCISSOR_TEST);
-
-    glViewport(arrnViewport[0], arrnViewport[1], arrnViewport[2], arrnViewport[3]);
-}
-
-void GLCanvas::setGLDrawingCallback(std::function<void()> fncDraw) {
-    mDrawingCallback = fncDraw;
-}
-
-bool GLCanvas::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
-    if (mMouseButtonCallback)
-        mMouseButtonCallback(p, button, down, modifiers);
-
-    return true;
-}
-
-bool GLCanvas::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
-    if (mMouseMotionCallback)
-        mMouseMotionCallback(p, rel, button, modifiers);
-
-    return true;
-}
-
-void GLCanvas::setMouseButtonCallback(std::function<void(const Vector2i&, int, bool, int)> fncMouseButtonCallback) {
-    mMouseButtonCallback = fncMouseButtonCallback;
-}
-
-void GLCanvas::setMouseMotionCallback(std::function<void(const Vector2i&, const Vector2i&, int, int)> fncMouseMotionCallback) {
-    mMouseMotionCallback = fncMouseMotionCallback;
+    glViewport(arrnStoredViewport[0], arrnStoredViewport[1],
+               arrnStoredViewport[2], arrnStoredViewport[3]);
 }
 
 void GLCanvas::save(Serializer &s) const {
