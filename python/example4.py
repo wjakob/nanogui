@@ -25,77 +25,9 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
 from nanogui import gl, glfw, entypo
 
 
-class TestApp(Screen):
-    def __init__(self):
-        super(TestApp, self).__init__((800, 600), "NanoGUI Test", False)
-
-        window = Window(self, "GLCanvas Demo")
-        window.setPosition((15, 15))
-        window.setLayout(GroupLayout())
-
-        self.canvas = GLCanvas(window)
-        self.canvas.setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0))
-        self.canvas.setSize((400, 400))
-
-        self.rotation = [0.25, 0.5, 0.33]
-
-        def cb():
-            if self.shader is not None:
-                import numpy as np
-                self.shader.bind()
-
-                current_time = time.time()
-                angle_x = self.rotation[0] * current_time
-                angle_y = self.rotation[1] * current_time
-                angle_z = self.rotation[2] * current_time
-
-                mvp_rotX = np.matrix(
-                    [[1, 0, 0, 0],
-                     [0, np.cos(angle_x), -np.sin(angle_x), 0],
-                     [0, np.sin(angle_x), np.cos(angle_x), 0],
-                     [0, 0, 0, 1]],
-                    dtype=np.float32)
-
-                mvp_rotY = np.matrix(
-                    [[np.cos(angle_y), 0, np.sin(angle_y), 0],
-                     [0, 1, 0, 0],
-                     [-np.sin(angle_y), 0, np.cos(angle_y), 0],
-                     [0, 0, 0, 1]],
-                    dtype=np.float32)
-
-                mvp_rotZ = np.matrix(
-                    [[np.cos(angle_z), -np.sin(angle_z), 0, 0],
-                     [np.sin(angle_z), np.cos(angle_z), 0, 0],
-                     [0, 0, 1, 0],
-                     [0, 0, 0, 1]],
-                    dtype=np.float32)
-
-                mvp = mvp_rotX * mvp_rotY * mvp_rotZ
-
-                mvp[0:3, 0:3] *= 0.25
-
-                self.shader.setUniform("modelViewProj", mvp)
-
-                gl.glEnable(gl.DEPTH_TEST)
-                self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
-                gl.glDisable(gl.DEPTH_TEST)
-
-        self.canvas.setGLDrawingCallback(cb)
-        tools = Widget(window)
-        tools.setLayout(BoxLayout(Orientation.Horizontal,
-                                  Alignment.Middle, 0, 5))
-
-        b0 = Button(tools, "Random Color")
-        def cb0():
-            self.canvas.setBackgroundColor(Color(random.random(), random.random(), random.random(), 1.0))
-        b0.setCallback(cb0)
-
-        b1 = Button(tools, "Random Rotation")
-        def cb1():
-            self.rotation = [random.random(), random.random(), random.random()]
-        b1.setCallback(cb1)
-
-        self.performLayout()
+class MyGLCanvas(GLCanvas):
+    def __init__(self, parent):
+        super(MyGLCanvas, self).__init__(parent)
 
         try:
             import numpy as np
@@ -152,6 +84,78 @@ class TestApp(Screen):
         except ImportError:
             self.shader = None
             pass
+
+    def drawGL(self):
+        if self.shader is not None:
+            import numpy as np
+            self.shader.bind()
+
+            current_time = time.time()
+            angle_x = self.rotation[0] * current_time
+            angle_y = self.rotation[1] * current_time
+            angle_z = self.rotation[2] * current_time
+
+            mvp_rotX = np.matrix(
+                [[1, 0, 0, 0],
+                 [0, np.cos(angle_x), -np.sin(angle_x), 0],
+                 [0, np.sin(angle_x), np.cos(angle_x), 0],
+                 [0, 0, 0, 1]],
+                dtype=np.float32)
+
+            mvp_rotY = np.matrix(
+                [[np.cos(angle_y), 0, np.sin(angle_y), 0],
+                 [0, 1, 0, 0],
+                 [-np.sin(angle_y), 0, np.cos(angle_y), 0],
+                 [0, 0, 0, 1]],
+                dtype=np.float32)
+
+            mvp_rotZ = np.matrix(
+                [[np.cos(angle_z), -np.sin(angle_z), 0, 0],
+                 [np.sin(angle_z), np.cos(angle_z), 0, 0],
+                 [0, 0, 1, 0],
+                 [0, 0, 0, 1]],
+                dtype=np.float32)
+
+            mvp = mvp_rotX * mvp_rotY * mvp_rotZ
+
+            mvp[0:3, 0:3] *= 0.25
+
+            self.shader.setUniform("modelViewProj", mvp)
+
+            gl.glEnable(gl.DEPTH_TEST)
+            self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
+            gl.glDisable(gl.DEPTH_TEST)
+
+
+class TestApp(Screen):
+    def __init__(self):
+        super(TestApp, self).__init__((800, 600), "NanoGUI Test", False)
+
+        window = Window(self, "GLCanvas Demo")
+        window.setPosition((15, 15))
+        window.setLayout(GroupLayout())
+
+        self.canvas = MyGLCanvas(window)
+        self.canvas.setBackgroundColor(Color(0.5, 0.5, 0.5, 1.0))
+        self.canvas.setSize((400, 400))
+
+        self.canvas.rotation = [0.25, 0.5, 0.33]
+
+        tools = Widget(window)
+        tools.setLayout(BoxLayout(Orientation.Horizontal,
+                                  Alignment.Middle, 0, 5))
+
+        b0 = Button(tools, "Random Color")
+        def cb0():
+            self.canvas.setBackgroundColor(Color(random.random(), random.random(), random.random(), 1.0))
+        b0.setCallback(cb0)
+
+        b1 = Button(tools, "Random Rotation")
+        def cb1():
+            self.canvas.rotation = [random.random(), random.random(), random.random()]
+        b1.setCallback(cb1)
+
+        self.performLayout()
 
     def keyboardEvent(self, key, scancode, action, modifiers):
         if super(TestApp, self).keyboardEvent(key, scancode,
