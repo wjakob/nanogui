@@ -8,7 +8,7 @@ public:
     NANOGUI_WIDGET_OVERLOADS(GLCanvas);
 
     void drawGL() {
-      PYBIND11_OVERLOAD(void, GLCanvas, drawGL);
+        PYBIND11_OVERLOAD(void, GLCanvas, drawGL);
     }
 };
 
