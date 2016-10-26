@@ -4,12 +4,12 @@
 
 class PyGLCanvas : public GLCanvas {
 public:
-  using GLCanvas::GLCanvas;
-  NANOGUI_WIDGET_OVERLOADS(GLCanvas);
+    using GLCanvas::GLCanvas;
+    NANOGUI_WIDGET_OVERLOADS(GLCanvas);
 
-  void drawGL() {
-    PYBIND11_OVERLOAD(void, GLCanvas, drawGL);
-  }
+    void drawGL() {
+      PYBIND11_OVERLOAD(void, GLCanvas, drawGL);
+    }
 };
 
 void register_glcanvas(py::module &m) {
