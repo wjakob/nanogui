@@ -13,14 +13,14 @@ public:
 };
 
 void register_glcanvas(py::module &m) {
-    py::class_<GLCanvas, Widget, ref<GLCanvas>, PyGLCanvas> glcanvas(m, "GLCanvas");
+    py::class_<GLCanvas, Widget, ref<GLCanvas>, PyGLCanvas> glcanvas(m, "GLCanvas", D(GLCanvas));
     glcanvas
-        .def(py::init<Widget *>(), py::arg("parent"))
-        .def("backgroundColor", &GLCanvas::backgroundColor)
-        .def("setBackgroundColor", &GLCanvas::setBackgroundColor)
-        .def("drawBorder", &GLCanvas::drawBorder)
-        .def("setDrawBorder", &GLCanvas::setDrawBorder)
-        .def("drawGL", &GLCanvas::drawGL);
+        .def(py::init<Widget *>(), py::arg("parent"), D(GLCanvas, GLCanvas))
+        .def("backgroundColor", &GLCanvas::backgroundColor, D(GLCanvas, backgroundColor))
+        .def("setBackgroundColor", &GLCanvas::setBackgroundColor, D(GLCanvas, setBackgroundColor))
+        .def("drawBorder", &GLCanvas::drawBorder, D(GLCanvas, drawBorder))
+        .def("setDrawBorder", &GLCanvas::setDrawBorder, D(GLCanvas, setDrawBorder))
+        .def("drawGL", &GLCanvas::drawGL, D(GLCanvas, drawGL));
 }
 
 #endif

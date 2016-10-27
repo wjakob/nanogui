@@ -1,8 +1,5 @@
 /*
-    nanogui/glcanvas.h -- Canvas widget for rendering full-fledged
-    OpenGL content within its designated area. Very useful for
-    displaying and manipulating 3D objects or scenes. Subclass it and
-    overload `drawGL` for rendering.
+    nanogui/glcanvas.h -- Canvas widget for rendering OpenGL content
 
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
@@ -11,7 +8,6 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
-/** \file */
 
 #pragma once
 
@@ -25,8 +21,14 @@ NAMESPACE_BEGIN(nanogui)
 
 /**
  * \class GLCanvas glcanvas.h nanogui/glcanvas.h
+ * \brief Canvas widget for rendering OpenGL content
  *
- * \brief Canvas widget for rendering GL
+ * Canvas widget that can be used to display arbitrary OpenGL content. This is
+ * useful to display and manipulate 3D objects as part of an interactive
+ * application. The implementation uses scissoring to ensure that rendered
+ * objects don't spill into neighboring widgets.
+ *
+ * Usage: override `drawGL` in subclasses to provide custom drawing code.
  */
 class NANOGUI_EXPORT GLCanvas : public Widget {
 public:
