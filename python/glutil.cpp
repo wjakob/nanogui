@@ -147,7 +147,15 @@ void register_glutil(py::module &m) {
     #define C(name) gl.attr(#name) = py::int_(GL_##name);
     py::module gl = m.def_submodule("gl");
 
+    gl.def("glEnable", [](GLenum cap) {
+              glEnable(cap);
+           }, py::arg("cap"));
+    gl.def("glDisable", [](GLenum cap) {
+              glDisable(cap);
+           }, py::arg("cap"));
+
     C(TRIANGLES); C(LINES); C(POINTS);
+    C(DEPTH_TEST);
 }
 
 #endif
