@@ -53,8 +53,8 @@ void GLCanvas::draw(NVGcontext *ctx) {
     Vector2i positionInScreen = absolutePosition();
     Vector2i imagePosition = Vector2i(positionInScreen[0], screenSize[1] - positionInScreen[1] - mSize[1]);
 
-    GLint arrnStoredViewport[4];
-    glGetIntegerv(GL_VIEWPORT, arrnStoredViewport);
+    GLint storedViewport[4];
+    glGetIntegerv(GL_VIEWPORT, storedViewport);
 
     glViewport(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
 
@@ -67,8 +67,8 @@ void GLCanvas::draw(NVGcontext *ctx) {
     this->drawGL();
 
     glDisable(GL_SCISSOR_TEST);
-    glViewport(arrnStoredViewport[0], arrnStoredViewport[1],
-               arrnStoredViewport[2], arrnStoredViewport[3]);
+    glViewport(storedViewport[0], storedViewport[1],
+               storedViewport[2], storedViewport[3]);
 }
 
 void GLCanvas::save(Serializer &s) const {
