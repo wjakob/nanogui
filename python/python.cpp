@@ -7,6 +7,7 @@
 
 #if defined(__APPLE__) || defined(__linux__)
 #  include <coro.h>
+#  include <signal.h>
 #endif
 
 #if defined(__APPLE__) || defined(__linux__)
@@ -99,6 +100,16 @@ public:
     }
 };
 
+#if defined(__APPLE__) || defined(__linux__)
+static void (*sigint_handler_prev)(int) = nullptr;
+static void sigint_handler(int sig) {
+    signal(sig, sigint_handler_prev);
+    raise(sig);
+    nanogui::leave();
+    signal(sig, sigint_handler);
+}
+#endif
+
 PYBIND11_PLUGIN(nanogui) {
     py::module m("nanogui", "NanoGUI plugin");
 
@@ -175,6 +186,7 @@ PYBIND11_PLUGIN(nanogui) {
 
             return handle;
         } else {
+            py::gil_scoped_release release;
             mainloop(refresh);
             return nullptr;
         }
@@ -221,6 +233,10 @@ PYBIND11_PLUGIN(nanogui) {
     register_formhelper(m);
     register_misc(m);
     register_glutil(m);
+
+    #if defined(__APPLE__) || defined(__linux__)
+        sigint_handler_prev = signal(SIGINT, sigint_handler);
+    #endif
 
     return m.ptr();
 }
