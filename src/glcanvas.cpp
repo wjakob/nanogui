@@ -49,17 +49,22 @@ void GLCanvas::draw(NVGcontext *ctx) {
     const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
     assert(screen);
 
+    float pixelRatio = screen->pixelRatio();
     Vector2f screenSize = screen->size().cast<float>();
     Vector2i positionInScreen = absolutePosition();
-    Vector2i imagePosition = Vector2i(positionInScreen[0], screenSize[1] - positionInScreen[1] - mSize[1]);
+
+    Vector2i size = (mSize.cast<float>() * pixelRatio).cast<int>(),
+             imagePosition = (Vector2f(positionInScreen[0],
+                                       screenSize[1] - positionInScreen[1] -
+                                       (float) mSize[1]) * pixelRatio).cast<int>();
 
     GLint storedViewport[4];
     glGetIntegerv(GL_VIEWPORT, storedViewport);
 
-    glViewport(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
+    glViewport(imagePosition[0], imagePosition[1], size[0] , size[1]);
 
     glEnable(GL_SCISSOR_TEST);
-    glScissor(imagePosition[0], imagePosition[1], mSize[0], mSize[1]);
+    glScissor(imagePosition[0], imagePosition[1], size[0], size[1]);
     glClearColor(mBackgroundColor[0], mBackgroundColor[1],
                  mBackgroundColor[2], mBackgroundColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
