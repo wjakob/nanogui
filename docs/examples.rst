@@ -49,6 +49,15 @@ C++ side, and how to detach the NanoGUI ``mainloop()`` on the Python side.
 - `Example 3 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example3.cpp>`_
 - `Example 3 in Python <https://github.com/wjakob/nanogui/blob/master/python/example3.py>`_
 
+Example 4
+----------------------------------------------------------------------------------------
+
+The fourth example program demonstrates the GLCanvas widget, which renders an
+arbitrary sequence of OpenGL commands into a NanoGUI widget.
+
+- `Example 4 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example4.cpp>`_
+- `Example 4 in Python <https://github.com/wjakob/nanogui/blob/master/python/example4.py>`_
+
 .. _nanogui_example_repository:
 
 Example Repository
