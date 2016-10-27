@@ -209,7 +209,7 @@ void Widget::draw(NVGcontext *ctx) {
             nvgSave(ctx);
             child->draw(ctx);
             nvgRestore(ctx);
-	}
+        }
     nvgRestore(ctx);
 }
 
