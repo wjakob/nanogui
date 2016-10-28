@@ -26,14 +26,13 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT PopupButton : public Button {
 public:
     PopupButton(Widget *parent, const std::string &caption = "Untitled",
-                int buttonIcon = 0,
-                int chevronIcon = ENTYPO_ICON_CHEVRON_SMALL_RIGHT);
+                int buttonIcon = 0);
 
     void setChevronIcon(int icon) { mChevronIcon = icon; }
     int chevronIcon() const { return mChevronIcon; }
 
-    void setPopupSide(PopupSide popupSide);
-    PopupSide popupSide() const { return mPopup->popupSide(); }
+    void setSide(Popup::Side popupSide);
+    Popup::Side side() const { return mPopup->side(); }
 
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }

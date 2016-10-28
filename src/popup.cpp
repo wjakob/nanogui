@@ -19,7 +19,7 @@ NAMESPACE_BEGIN(nanogui)
 
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mPopupSide(PopupSide::RIGHTSIDE) {
+      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
@@ -30,9 +30,8 @@ void Popup::performLayout(NVGcontext *ctx) {
         mChildren[0]->setSize(mSize);
         mChildren[0]->performLayout(ctx);
     }
-    if(mPopupSide == PopupSide::LEFTSIDE){
+    if (mSide == Side::Left)
         mAnchorPos[0] -= size()[0];
-    }
 }
 
 void Popup::refreshRelativePlacement() {
@@ -65,15 +64,16 @@ void Popup::draw(NVGcontext* ctx) {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
 
-    if(mPopupSide == PopupSide::RIGHTSIDE){
-        nvgMoveTo(ctx, mPos.x()-15,mPos.y()+mAnchorHeight);
-        nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight-15);
-        nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight+15);
-    }else{
-        nvgMoveTo(ctx, mPos.x()+mSize.x()+15,mPos.y()+mAnchorHeight);
-        nvgLineTo(ctx, mPos.x()+mSize.x()-1,mPos.y()+mAnchorHeight-15);
-        nvgLineTo(ctx, mPos.x()+mSize.x()-1,mPos.y()+mAnchorHeight+15);
+    Vector2i base = mPos + Vector2i(0, mAnchorHeight);
+    int sign = -1;
+    if (mSide == Side::Left) {
+        base.x() += mSize.x();
+        sign = 1;
     }
+
+    nvgMoveTo(ctx, base.x() + 15*sign, base.y());
+    nvgLineTo(ctx, base.x() - 1*sign, base.y() - 15);
+    nvgLineTo(ctx, base.x() - 1*sign, base.y() + 15);
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
@@ -85,16 +85,14 @@ void Popup::save(Serializer &s) const {
     Window::save(s);
     s.set("anchorPos", mAnchorPos);
     s.set("anchorHeight", mAnchorHeight);
-    s.set("popupSide", (int)mPopupSide);
+    s.set("side", mSide);
 }
 
 bool Popup::load(Serializer &s) {
     if (!Window::load(s)) return false;
     if (!s.get("anchorPos", mAnchorPos)) return false;
     if (!s.get("anchorHeight", mAnchorHeight)) return false;
-    int dummy;
-    if (!s.get("popupSide", dummy)) return false;
-    mPopupSide = (PopupSide)dummy;
+    if (!s.get("side", mSide)) return false;
     return true;
 }
 

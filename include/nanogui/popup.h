@@ -17,10 +17,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-enum class PopupSide{
-    LEFTSIDE=0, RIGHTSIDE
-};
-
 /**
  * \class Popup popup.h nanogui/popup.h
  *
@@ -31,6 +27,8 @@ enum class PopupSide{
  */
 class NANOGUI_EXPORT Popup : public Window {
 public:
+    enum Side { Left = 0, Right };
+
     /// Create a new popup parented to a screen (first argument) and a parent window
     Popup(Widget *parent, Window *parentWindow);
 
@@ -44,10 +42,10 @@ public:
     /// Return the anchor height; this determines the vertical shift relative to the anchor position
     int anchorHeight() const { return mAnchorHeight; }
 
-    /// Set the popup side; this determines at what side of the parent window popup will appear
-    void setPopupSide(PopupSide popupSide) { mPopupSide = popupSide; }
-    /// Return the popup side; this determines at what side of the parent window popup will appear
-    PopupSide popupSide() const { return mPopupSide; }
+    /// Set the side of the parent window at which popup will appear
+    void setSide(Side popupSide) { mSide = popupSide; }
+    /// Return the side of the parent window at which popup will appear
+    Side side() const { return mSide; }
 
     /// Return the parent window of the popup
     Window *parentWindow() { return mParentWindow; }
@@ -70,7 +68,7 @@ protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
     int mAnchorHeight;
-    PopupSide mPopupSide;
+    Side mSide;
 };
 
 NAMESPACE_END(nanogui)

@@ -1484,9 +1484,19 @@ static const char *__doc_nanogui_PopupButton_save = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_setChevronIcon = R"doc()doc";
 
+static const char *__doc_nanogui_PopupButton_setSide = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_side = R"doc()doc";
+
 static const char *__doc_nanogui_Popup_Popup =
 R"doc(Create a new popup parented to a screen (first argument) and a parent
 window)doc";
+
+static const char *__doc_nanogui_Popup_Side = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_Side_Left = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_Side_Right = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_anchorHeight =
 R"doc(Return the anchor height; this determines the vertical shift relative
@@ -1505,6 +1515,8 @@ static const char *__doc_nanogui_Popup_mAnchorHeight = R"doc()doc";
 static const char *__doc_nanogui_Popup_mAnchorPos = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_mParentWindow = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_mSide = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_parentWindow = R"doc(Return the parent window of the popup)doc";
 
@@ -1525,6 +1537,10 @@ the anchor position)doc";
 static const char *__doc_nanogui_Popup_setAnchorPos =
 R"doc(Return the anchor position in the parent window; the placement of the
 popup is relative to it)doc";
+
+static const char *__doc_nanogui_Popup_setSide = R"doc(Set the side of the parent window at which popup will appear)doc";
+
+static const char *__doc_nanogui_Popup_side = R"doc(Return the side of the parent window at which popup will appear)doc";
 
 static const char *__doc_nanogui_ProgressBar = R"doc(Standard widget for visualizing progress.)doc";
 

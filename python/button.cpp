@@ -52,13 +52,14 @@ void register_button(py::module &m) {
 
     py::class_<PopupButton, Button, ref<PopupButton>, PyPopupButton> popupBtn(m, "PopupButton", D(PopupButton));
     popupBtn
-        .def(py::init<Widget *, const std::string&, int, int>(),
+        .def(py::init<Widget *, const std::string&, int>(),
                 py::arg("parent"), py::arg("caption") = std::string("Untitled"),
-                py::arg("buttonIcon") = 0, py::arg("chevronIcon") = ENTYPO_ICON_CHEVRON_SMALL_RIGHT,
-                D(PopupButton, PopupButton))
+                py::arg("buttonIcon") = 0, D(PopupButton, PopupButton))
         .def("popup", (Popup*(PopupButton::*)(void)) &PopupButton::popup, D(PopupButton, popup))
         .def("chevronIcon", &PopupButton::chevronIcon, D(PopupButton, chevronIcon))
-        .def("setChevronIcon", &PopupButton::setChevronIcon, D(PopupButton, setChevronIcon));
+        .def("setChevronIcon", &PopupButton::setChevronIcon, D(PopupButton, setChevronIcon))
+        .def("side", &PopupButton::side, D(PopupButton, side))
+        .def("setSide", &PopupButton::setSide, D(PopupButton, setSide));
 
     py::class_<CheckBox, Widget, ref<CheckBox>, PyCheckBox>(m, "CheckBox", D(CheckBox))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),

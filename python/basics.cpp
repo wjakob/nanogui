@@ -24,13 +24,21 @@ void register_basics(py::module &m) {
         .def("setColor", &Label::setColor, D(Label, setColor));
 
 
-    py::class_<Popup, Window, ref<Popup>, PyPopup>(m, "Popup", D(Popup))
+    py::class_<Popup, Window, ref<Popup>, PyPopup> popup(m, "Popup", D(Popup));
+    popup
         .def(py::init<Widget *, Window *>(), py::arg("parent"), py::arg("parentWindow"), D(Popup, Popup))
         .def("anchorPos", &Popup::anchorPos, D(Popup, anchorPos))
         .def("setAnchorPos", &Popup::setAnchorPos, D(Popup, setAnchorPos))
         .def("anchorHeight", &Popup::anchorHeight, D(Popup, anchorHeight))
         .def("setAnchorHeight", &Popup::setAnchorHeight, D(Popup, setAnchorHeight))
-        .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow));
+        .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow))
+        .def("side", &Popup::side, D(Popup, side))
+        .def("setSide", &Popup::setSide, D(Popup, setSide));
+
+    py::enum_<Popup::Side>(popup, "Side", D(Popup, Side))
+        .value("Left", Popup::Side::Left)
+        .value("Right", Popup::Side::Right)
+        .export_values();
 
     py::class_<MessageDialog, Window, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", D(MessageDialog));
     mdlg

@@ -17,9 +17,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-PopupButton::PopupButton(Widget *parent, const std::string &caption,
-                         int buttonIcon, int chevronIcon)
-    : Button(parent, caption, buttonIcon), mChevronIcon(chevronIcon) {
+PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
+    : Button(parent, caption, buttonIcon),
+      mChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_RIGHT) {
 
     setFlags(Flags::ToggleButton | Flags::PopupButton);
 
@@ -52,11 +52,11 @@ void PopupButton::draw(NVGcontext* ctx) {
 
         float iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
         Vector2f iconPos(0, mPos.y() + mSize.y() * 0.5f - 1);
-        if(mPopup->popupSide() == PopupSide::RIGHTSIDE){
+
+        if (mPopup->side() == Popup::Right)
             iconPos[0] = mPos.x() + mSize.x() - iw - 8;
-        }else{
+        else
             iconPos[0] = mPos.x() + 8;
-        }
 
         nvgText(ctx, iconPos.x(), iconPos.y(), icon.data(), nullptr);
     }
@@ -68,20 +68,20 @@ void PopupButton::performLayout(NVGcontext *ctx) {
     const Window *parentWindow = window();
 
     int posY = absolutePosition().y() - parentWindow->position().y() + mSize.y() /2;
-    if(mPopup->popupSide() == PopupSide::RIGHTSIDE){
+    if (mPopup->side() == Popup::Right)
         mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15, posY));
-    }else{
+    else
         mPopup->setAnchorPos(Vector2i(0 - 15, posY));
-    }
 }
 
-void PopupButton::setPopupSide(PopupSide popupSide) {
-    if(mPopup->popupSide() == PopupSide::RIGHTSIDE && mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_RIGHT){
+void PopupButton::setSide(Popup::Side side) {
+    if (mPopup->side() == Popup::Right &&
+        mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_RIGHT)
         setChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_LEFT);
-    }else if(mPopup->popupSide() == PopupSide::LEFTSIDE && mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_LEFT){
+    else if (mPopup->side() == Popup::Left &&
+             mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_LEFT)
         setChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_RIGHT);
-    }
-    mPopup->setPopupSide(popupSide);
+    mPopup->setSide(side);
 }
 
 void PopupButton::save(Serializer &s) const {
