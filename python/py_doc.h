@@ -24,7 +24,7 @@
 
 
 static const char *__doc_nanogui_AdvancedGridLayout =
-R"doc(Advanced Grid layout
+R"doc(Advanced Grid layout.
 
 The is a fancier grid layout with support for items that span multiple
 rows or columns, and per-widget alignment flags. Each row and column
@@ -36,9 +36,10 @@ An example:
 
 ```
 using AdvancedGridLayout::Anchor;
-  Label *label = new Label(window, "A label");
-  // Add a centered label at grid position (1, 5), which spans two horizontal cells
-  layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignment::Middle, Alignment::Middle));
+Label *label = new Label(window, "A label");
+// Add a centered label at grid position (1, 5), which spans two horizontal cells
+layout->setAnchor(label, Anchor(1, 5, 2, 1, Alignment::Middle, Alignment::Middle));
+
 ```
 
 The grid is initialized with user-specified column and row size
@@ -48,13 +49,14 @@ maximum preferred size of any widgets contained in the same row or
 column. Any remaining space is redistributed according to the row and
 column stretch factors.
 
-The high level usage somewhat resembles the classic HIG layout: https:
-//web.archive.org/web/20070813221705/http://www.autel.cz/dmi/tutorial.
-html https://github.com/jaapgeurts/higlayout)doc";
+The high level usage somewhat resembles the classic HIG layout:
+
+- https://web.archive.org/web/20070813221705/http://www.autel.cz/dmi/t
+utorial.html - https://github.com/jaapgeurts/higlayout)doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_AdvancedGridLayout = R"doc()doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor = R"doc()doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor = R"doc(Helper struct to coordinate anchor points for the layout.)doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor = R"doc()doc";
 
@@ -108,7 +110,7 @@ static const char *__doc_nanogui_AdvancedGridLayout_setMargin = R"doc()doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_setRowStretch = R"doc(Set the stretch factor of a given row)doc";
 
-static const char *__doc_nanogui_Alignment = R"doc()doc";
+static const char *__doc_nanogui_Alignment = R"doc(The different kinds of alignments a layout can perform.)doc";
 
 static const char *__doc_nanogui_Alignment_Fill = R"doc()doc";
 
@@ -118,7 +120,7 @@ static const char *__doc_nanogui_Alignment_Middle = R"doc()doc";
 
 static const char *__doc_nanogui_Alignment_Minimum = R"doc()doc";
 
-static const char *__doc_nanogui_Arcball = R"doc(Arcball helper class to interactively rotate objects on-screen)doc";
+static const char *__doc_nanogui_Arcball = R"doc(Arcball helper class to interactively rotate objects on-screen.)doc";
 
 static const char *__doc_nanogui_Arcball_Arcball = R"doc()doc";
 
@@ -161,14 +163,14 @@ R"doc(Simple horizontal/vertical box layout
 
 This widget stacks up a bunch of widgets horizontally or vertically.
 It adds margins around the entire container and a custom spacing
-between adjacent widgets)doc";
+between adjacent widgets.)doc";
 
 static const char *__doc_nanogui_BoxLayout_BoxLayout =
 R"doc(Construct a box layout which packs widgets in the given
-``orientation``
+``Orientation``
 
 Parameter ``alignment``:
-    Widget alignment perpendicular to the chosen orientation.
+    Widget alignment perpendicular to the chosen orientation
 
 Parameter ``margin``:
     Margin around the layout container
@@ -204,7 +206,7 @@ static const char *__doc_nanogui_BoxLayout_setSpacing = R"doc()doc";
 
 static const char *__doc_nanogui_BoxLayout_spacing = R"doc()doc";
 
-static const char *__doc_nanogui_Button = R"doc()doc";
+static const char *__doc_nanogui_Button = R"doc([Normal/Toggle/Radio/Popup] Button widget.)doc";
 
 static const char *__doc_nanogui_Button_Button = R"doc()doc";
 
@@ -218,7 +220,7 @@ static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc()doc";
 
 static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc()doc";
 
-static const char *__doc_nanogui_Button_IconPosition = R"doc()doc";
+static const char *__doc_nanogui_Button_IconPosition = R"doc(The available icon positions.)doc";
 
 static const char *__doc_nanogui_Button_IconPosition_Left = R"doc()doc";
 
@@ -298,7 +300,7 @@ static const char *__doc_nanogui_Button_setTextColor = R"doc()doc";
 
 static const char *__doc_nanogui_Button_textColor = R"doc()doc";
 
-static const char *__doc_nanogui_CheckBox = R"doc()doc";
+static const char *__doc_nanogui_CheckBox = R"doc(Two-state check box widget.)doc";
 
 static const char *__doc_nanogui_CheckBox_CheckBox = R"doc()doc";
 
@@ -336,9 +338,35 @@ static const char *__doc_nanogui_CheckBox_setChecked = R"doc()doc";
 
 static const char *__doc_nanogui_CheckBox_setPushed = R"doc()doc";
 
-static const char *__doc_nanogui_Color = R"doc(Stores an RGBA color value)doc";
+static const char *__doc_nanogui_Color =
+R"doc(Stores an RGBA floating point color value.
 
-static const char *__doc_nanogui_ColorPicker = R"doc()doc";
+This class simply wraps around an ``Eigen::Vector4f``, providing some
+convenient methods and terminology for thinking of it as a color. The
+data operates in the same way as ``Eigen::Vector4f``, and the
+following values are identical:
+
+```
++---------+-------------+-----------------------+-------------+
+| Channel | Array Index | Eigen::Vector4f Value | Color Value |
++=========+=============+=======================+=============+
+| Red     | ``0``       | x()                   | r()         |
++---------+-------------+-----------------------+-------------+
+| Green   | ``1``       | y()                   | g()         |
++---------+-------------+-----------------------+-------------+
+| Blue    | ``2``       | z()                   | b()         |
++---------+-------------+-----------------------+-------------+
+| Alpha   | ``3``       | w()                   | w()         |
++---------+-------------+-----------------------+-------------+
+Note:
+The method for the alpha component is **always** ``w()``.
+
+```
+
+You can and should still use the various convenience methods such as
+``any()``, ``all()``, ``head<index>()``, etc provided by Eigen.)doc";
+
+static const char *__doc_nanogui_ColorPicker = R"doc(Push button with a popup to tweak a color value.)doc";
 
 static const char *__doc_nanogui_ColorPicker_ColorPicker = R"doc()doc";
 
@@ -356,7 +384,7 @@ static const char *__doc_nanogui_ColorPicker_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ColorPicker_setColor = R"doc(Set the current color)doc";
 
-static const char *__doc_nanogui_ColorWheel = R"doc()doc";
+static const char *__doc_nanogui_ColorWheel = R"doc(Fancy analog widget to select a color value.)doc";
 
 static const char *__doc_nanogui_ColorWheel_ColorWheel = R"doc()doc";
 
@@ -404,37 +432,125 @@ static const char *__doc_nanogui_ColorWheel_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ColorWheel_setColor = R"doc(Set the current color)doc";
 
-static const char *__doc_nanogui_Color_Color = R"doc()doc";
+static const char *__doc_nanogui_Color_Color = R"doc(Default constructor: represents black (``r, g, b, a = 0``))doc";
 
-static const char *__doc_nanogui_Color_Color_10 = R"doc()doc";
+static const char *__doc_nanogui_Color_Color_10 =
+R"doc(Explicit constructor: creates the Color ``(r, g, b, a)``.
 
-static const char *__doc_nanogui_Color_Color_11 = R"doc()doc";
+Parameter ``r``:
+    The red component of the color.
+
+Parameter ``g``:
+    The green component of the color.
+
+Parameter ``b``:
+    The blue component of the color.
+
+Parameter ``a``:
+    The alpha component of the color.)doc";
+
+static const char *__doc_nanogui_Color_Color_11 =
+R"doc(Explicit constructor: creates the Color ``(r, g, b, a) / 255.0``.
+Values are casted to floats before division.
+
+Parameter ``r``:
+    The red component of the color, will be divided by ``255.0``.
+
+Parameter ``g``:
+    The green component of the color, will be divided by ``255.0``.
+
+Parameter ``b``:
+    The blue component of the color, will be divided by ``255.0``.
+
+Parameter ``a``:
+    The alpha component of the color, will be divided by ``255.0``.)doc";
 
 static const char *__doc_nanogui_Color_Color_12 =
 R"doc(Construct a color vector from MatrixBase (needed to play nice with
 Eigen))doc";
 
-static const char *__doc_nanogui_Color_Color_2 = R"doc()doc";
+static const char *__doc_nanogui_Color_Color_2 =
+R"doc(Makes an exact copy of the data represented by the input parameter.
 
-static const char *__doc_nanogui_Color_Color_3 = R"doc()doc";
+Parameter ``color``:
+    The four dimensional float vector being copied.)doc";
 
-static const char *__doc_nanogui_Color_Color_4 = R"doc()doc";
+static const char *__doc_nanogui_Color_Color_3 =
+R"doc(Copies (x, y, z) from the input vector, and uses the value specified
+by the ``alpha`` parameter for this Color object's alpha component.
 
-static const char *__doc_nanogui_Color_Color_5 = R"doc()doc";
+Parameter ``color``:
+    The three dimensional float vector being copied.
 
-static const char *__doc_nanogui_Color_Color_6 = R"doc()doc";
+Parameter ``alpha``:
+    The value to set this object's alpha component to.)doc";
 
-static const char *__doc_nanogui_Color_Color_7 = R"doc()doc";
+static const char *__doc_nanogui_Color_Color_4 =
+R"doc(Copies (x, y, z) from the input vector, casted as floats first and
+then divided by ``255.0``, and uses the value specified by the
+``alpha`` parameter, casted to a float and divided by ``255.0`` as
+well, for this Color object's alpha component.
 
-static const char *__doc_nanogui_Color_Color_8 = R"doc()doc";
+Parameter ``color``:
+    The three dimensional integer vector being copied, will be divided
+    by ``255.0``.
 
-static const char *__doc_nanogui_Color_Color_9 = R"doc()doc";
+Parameter ``alpha``:
+    The value to set this object's alpha component to, will be divided
+    by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_5 =
+R"doc(Copies (x, y, z) from the input vector, and sets the alpha of this
+color to be ``1.0``.
+
+Parameter ``color``:
+    The three dimensional float vector being copied.)doc";
+
+static const char *__doc_nanogui_Color_Color_6 =
+R"doc(Copies (x, y, z) from the input vector, casting to floats and dividing
+by ``255.0``. The alpha of this color will be set to ``1.0``.
+
+Parameter ``color``:
+    The three dimensional integer vector being copied, will be divided
+    by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_7 =
+R"doc(Copies (x, y, z, w) from the input vector, casting to floats and
+dividing by ``255.0``.
+
+Parameter ``color``:
+    The three dimensional integer vector being copied, will be divided
+    by ``255.0``.)doc";
+
+static const char *__doc_nanogui_Color_Color_8 =
+R"doc(Creates the Color ``(intensity, intensity, intensity, alpha)``.
+
+Parameter ``intensity``:
+    The value to be used for red, green, and blue.
+
+Parameter ``alpha``:
+    The alpha component of the color.)doc";
+
+static const char *__doc_nanogui_Color_Color_9 =
+R"doc(Creates the Color ``(intensity, intensity, intensity, alpha) /
+255.0``. Values are casted to floats before division.
+
+Parameter ``intensity``:
+    The value to be used for red, green, and blue, will be divided by
+    ``255.0``.
+
+Parameter ``alpha``:
+    The alpha component of the color, will be divided by ``255.0``.)doc";
 
 static const char *__doc_nanogui_Color_b = R"doc(Return a reference to the blue channel)doc";
 
 static const char *__doc_nanogui_Color_b_2 = R"doc(Return a reference to the blue channel (const version))doc";
 
-static const char *__doc_nanogui_Color_contrastingColor = R"doc()doc";
+static const char *__doc_nanogui_Color_contrastingColor =
+R"doc(Computes the luminance as ``l = 0.299r + 0.587g + 0.144b + 0.0a``. If
+the luminance is less than 0.5, white is returned. If the luminance is
+greater than or equal to 0.5, black is returned. Both returns will
+have an alpha component of 1.0.)doc";
 
 static const char *__doc_nanogui_Color_g = R"doc(Return a reference to the green channel)doc";
 
@@ -442,13 +558,13 @@ static const char *__doc_nanogui_Color_g_2 = R"doc(Return a reference to the gre
 
 static const char *__doc_nanogui_Color_operator_assign = R"doc(Assign a color vector from MatrixBase (needed to play nice with Eigen))doc";
 
-static const char *__doc_nanogui_Color_operator_const_NVGcolor = R"doc()doc";
+static const char *__doc_nanogui_Color_operator_const_NVGcolor = R"doc(Allows for conversion between this Color and NanoVG's representation.)doc";
 
 static const char *__doc_nanogui_Color_r = R"doc(Return a reference to the red channel)doc";
 
 static const char *__doc_nanogui_Color_r_2 = R"doc(Return a reference to the red channel (const version))doc";
 
-static const char *__doc_nanogui_ComboBox = R"doc()doc";
+static const char *__doc_nanogui_ComboBox = R"doc(Simple combo box widget based on a popup button.)doc";
 
 static const char *__doc_nanogui_ComboBox_ComboBox = R"doc(Create an empty combo box)doc";
 
@@ -488,13 +604,15 @@ static const char *__doc_nanogui_ComboBox_setItems_2 = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_setSelectedIndex = R"doc()doc";
 
-static const char *__doc_nanogui_Cursor = R"doc()doc";
+static const char *__doc_nanogui_Cursor = R"doc(Cursor shapes available to use in GLFW.)doc";
 
 static const char *__doc_nanogui_Cursor_Arrow = R"doc()doc";
 
 static const char *__doc_nanogui_Cursor_Crosshair = R"doc()doc";
 
-static const char *__doc_nanogui_Cursor_CursorCount = R"doc()doc";
+static const char *__doc_nanogui_Cursor_CursorCount =
+R"doc(Not a cursor --- should always be last: enables a loop over the cursor
+types.)doc";
 
 static const char *__doc_nanogui_Cursor_HResize = R"doc()doc";
 
@@ -504,7 +622,11 @@ static const char *__doc_nanogui_Cursor_IBeam = R"doc()doc";
 
 static const char *__doc_nanogui_Cursor_VResize = R"doc()doc";
 
-static const char *__doc_nanogui_FloatBox = R"doc()doc";
+static const char *__doc_nanogui_FloatBox =
+R"doc(A specialization of TextBox representing floating point values.
+
+Template parameters should be float types, e.g. ``float``, ``double``,
+``float64_t``, etc.)doc";
 
 static const char *__doc_nanogui_FloatBox_FloatBox = R"doc()doc";
 
@@ -546,30 +668,25 @@ static const char *__doc_nanogui_FormHelper =
 R"doc(Convenience class to create simple AntTweakBar-style layouts that
 expose variables of various types using NanoGUI widgets
 
-Example:
+**Example**:
 
 ```
-[ ... initialize NanoGUI, construct screen ... ]
-
+// [ ... initialize NanoGUI, construct screen ... ]
 FormHelper* h = new FormHelper(screen);
-
 // Add a new windows widget
 h->addWindow(Eigen::Vector2i(10,10),"Menu");
-
 // Start a new group
 h->addGroup("Group 1");
-
 // Expose an integer variable by reference
 h->addVariable("integer variable", aInt);
-
 // Expose a float variable via setter/getter functions
 h->addVariable(
-  [&](float value){ aFloat = value; },
-  [&](){ return *aFloat; },
-  "float variable");
-
+[&](float value) { aFloat = value; },
+[&]() { return *aFloat; },
+"float variable");
 // add a new button
-h->addButton("Button",[&](){ std::cout << "Button pressed" << std::endl; });
+h->addButton("Button", [&]() { std::cout << "Button pressed" << std::endl; });
+
 ```)doc";
 
 static const char *__doc_nanogui_FormHelper_FormHelper = R"doc(Create a helper class to construct NanoGUI widgets on the given screen)doc";
@@ -642,9 +759,43 @@ static const char *__doc_nanogui_FormHelper_widgetFontSize = R"doc()doc";
 
 static const char *__doc_nanogui_FormHelper_window = R"doc(Access the currently active Window instance)doc";
 
-static const char *__doc_nanogui_GLFramebuffer = R"doc(Helper class for creating framebuffer objects)doc";
+static const char *__doc_nanogui_GLCanvas =
+R"doc(Canvas widget for rendering OpenGL content
 
-static const char *__doc_nanogui_GLFramebuffer_GLFramebuffer = R"doc()doc";
+Canvas widget that can be used to display arbitrary OpenGL content.
+This is useful to display and manipulate 3D objects as part of an
+interactive application. The implementation uses scissoring to ensure
+that rendered objects don't spill into neighboring widgets.
+
+Usage: override `drawGL` in subclasses to provide custom drawing code.)doc";
+
+static const char *__doc_nanogui_GLCanvas_GLCanvas = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_backgroundColor = R"doc(Return the background color)doc";
+
+static const char *__doc_nanogui_GLCanvas_draw = R"doc(Draw the canvas)doc";
+
+static const char *__doc_nanogui_GLCanvas_drawBorder = R"doc(Return whether the widget border gets drawn or not)doc";
+
+static const char *__doc_nanogui_GLCanvas_drawGL = R"doc(Draw the GL scene. Override this method to draw the actual GL content.)doc";
+
+static const char *__doc_nanogui_GLCanvas_drawWidgetBorder = R"doc(Internal helper function for drawing the widget border)doc";
+
+static const char *__doc_nanogui_GLCanvas_load = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_mBackgroundColor = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_mDrawBorder = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_save = R"doc(Save and load widget properties)doc";
+
+static const char *__doc_nanogui_GLCanvas_setBackgroundColor = R"doc(Set the background color)doc";
+
+static const char *__doc_nanogui_GLCanvas_setDrawBorder = R"doc(Set whether to draw the widget border or not)doc";
+
+static const char *__doc_nanogui_GLFramebuffer = R"doc(Helper class for creating framebuffer objects.)doc";
+
+static const char *__doc_nanogui_GLFramebuffer_GLFramebuffer = R"doc(Default constructor: unusable until you call the ``init()`` method)doc";
 
 static const char *__doc_nanogui_GLFramebuffer_bind = R"doc(Bind the framebuffer object)doc";
 
@@ -678,9 +829,11 @@ static const char *__doc_nanogui_GLFramebuffer_samples = R"doc(Return the number
 
 static const char *__doc_nanogui_GLShader =
 R"doc(Helper class for compiling and linking OpenGL shaders and uploading
-associated vertex and index buffers from Eigen matrices)doc";
+associated vertex and index buffers from Eigen matrices.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer =
+R"doc(A wrapper struct for maintaining various aspects of items being
+managed by OpenGL.)doc";
 
 static const char *__doc_nanogui_GLShader_Buffer_compSize = R"doc()doc";
 
@@ -722,11 +875,41 @@ static const char *__doc_nanogui_GLShader_freeAttrib = R"doc(Completely free an 
 
 static const char *__doc_nanogui_GLShader_hasAttrib = R"doc(Check if an attribute was registered a given name)doc";
 
-static const char *__doc_nanogui_GLShader_init = R"doc(Initialize the shader using the specified source strings)doc";
+static const char *__doc_nanogui_GLShader_init =
+R"doc(Initialize the shader using the specified source strings.
 
-static const char *__doc_nanogui_GLShader_initFromFiles = R"doc(Initialize the shader using the specified files on disk)doc";
+Parameter ``name``:
+    The name this shader will be registered as.
 
-static const char *__doc_nanogui_GLShader_invalidateAttribs = R"doc(Invalidate the version numbers assiciated with attribute data)doc";
+Parameter ``vertex_str``:
+    The source of the vertex shader as a string.
+
+Parameter ``fragment_str``:
+    The source of the fragment shader as a string.
+
+Parameter ``geometry_str``:
+    The source of the geometry shader as a string. The default value
+    is the empty string, which indicates no geometry shader will be
+    used.)doc";
+
+static const char *__doc_nanogui_GLShader_initFromFiles =
+R"doc(Initialize the shader using the specified files on disk.
+
+Parameter ``name``:
+    The name this shader will be registered as.
+
+Parameter ``vertex_fname``:
+    The path to the file containing the source of the fragment shader.
+
+Parameter ``fragment_fname``:
+    The path to the file containing the source of the vertex shader.
+
+Parameter ``geometry_fname``:
+    The path to the file containing the source of the geometry shader.
+    The default value is the empty string, which indicates no geometry
+    shader will be used.)doc";
+
+static const char *__doc_nanogui_GLShader_invalidateAttribs = R"doc(Invalidate the version numbers associated with attribute data)doc";
 
 static const char *__doc_nanogui_GLShader_mBufferObjects = R"doc()doc";
 
@@ -782,9 +965,9 @@ static const char *__doc_nanogui_GLShader_uploadAttrib_2 = R"doc()doc";
 
 static const char *__doc_nanogui_GLShader_uploadIndices = R"doc(Upload an index buffer)doc";
 
-static const char *__doc_nanogui_GLUniformBuffer = R"doc(Helper class for creating OpenGL Uniform Buffer objects)doc";
+static const char *__doc_nanogui_GLUniformBuffer = R"doc(Helper class for creating OpenGL Uniform Buffer objects.)doc";
 
-static const char *__doc_nanogui_GLUniformBuffer_GLUniformBuffer = R"doc()doc";
+static const char *__doc_nanogui_GLUniformBuffer_GLUniformBuffer = R"doc(Default constructor: unusable until you call the ``init()`` method)doc";
 
 static const char *__doc_nanogui_GLUniformBuffer_bind = R"doc(Bind the uniform buffer to a specific binding point)doc";
 
@@ -802,7 +985,7 @@ static const char *__doc_nanogui_GLUniformBuffer_release = R"doc(Release/unbind 
 
 static const char *__doc_nanogui_GLUniformBuffer_update = R"doc(Update content on the GPU using data)doc";
 
-static const char *__doc_nanogui_Graph = R"doc()doc";
+static const char *__doc_nanogui_Graph = R"doc(Simple graph widget for showing a function plot.)doc";
 
 static const char *__doc_nanogui_Graph_Graph = R"doc()doc";
 
@@ -859,7 +1042,7 @@ static const char *__doc_nanogui_Graph_values = R"doc()doc";
 static const char *__doc_nanogui_Graph_values_2 = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout =
-R"doc(Grid layout
+R"doc(Grid layout.
 
 Widgets are arranged in a grid that has a fixed grid resolution
 ``resolution`` along one of the axes. The layout orientation indicates
@@ -916,7 +1099,7 @@ static const char *__doc_nanogui_GridLayout_setSpacing_2 = R"doc()doc";
 static const char *__doc_nanogui_GridLayout_spacing = R"doc()doc";
 
 static const char *__doc_nanogui_GroupLayout =
-R"doc(Special layout for widgets grouped by labels
+R"doc(Special layout for widgets grouped by labels.
 
 This widget resembles a box layout in that it arranges a set of
 widgets vertically. All widgets are indented on the horizontal axis
@@ -955,7 +1138,7 @@ static const char *__doc_nanogui_GroupLayout_setSpacing = R"doc()doc";
 
 static const char *__doc_nanogui_GroupLayout_spacing = R"doc()doc";
 
-static const char *__doc_nanogui_ImagePanel = R"doc()doc";
+static const char *__doc_nanogui_ImagePanel = R"doc(Image panel widget which shows a number of square-shaped icons.)doc";
 
 static const char *__doc_nanogui_ImagePanel_ImagePanel = R"doc()doc";
 
@@ -991,33 +1174,161 @@ static const char *__doc_nanogui_ImagePanel_setCallback = R"doc()doc";
 
 static const char *__doc_nanogui_ImagePanel_setImages = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView = R"doc()doc";
+static const char *__doc_nanogui_ImageView = R"doc(Widget used to display images.)doc";
 
 static const char *__doc_nanogui_ImageView_ImageView = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_SizePolicy = R"doc()doc";
+static const char *__doc_nanogui_ImageView_bindImage = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_SizePolicy_Expand = R"doc()doc";
+static const char *__doc_nanogui_ImageView_center = R"doc(Centers the image without affecting the scaling factor.)doc";
 
-static const char *__doc_nanogui_ImageView_SizePolicy_Fixed = R"doc()doc";
+static const char *__doc_nanogui_ImageView_clampedImageCoordinateAt =
+R"doc(Calculates the image coordinates of the given pixel position on the
+widget. If the position provided corresponds to a coordinate outside
+the range of the image, the coordinates are clamped to edges of the
+image.)doc";
 
 static const char *__doc_nanogui_ImageView_draw = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_image = R"doc()doc";
+static const char *__doc_nanogui_ImageView_drawHelpers = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_mImage = R"doc()doc";
+static const char *__doc_nanogui_ImageView_drawImageBorder = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_mPolicy = R"doc()doc";
+static const char *__doc_nanogui_ImageView_drawPixelGrid = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_policy = R"doc()doc";
+static const char *__doc_nanogui_ImageView_drawPixelInfo = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_drawWidgetBorder = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_fit = R"doc(Centers and scales the image so that it fits inside the widgets.)doc";
+
+static const char *__doc_nanogui_ImageView_fixedOffset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_fixedScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_fontScaleFactor = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_gridThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_gridVisible = R"doc(Function indicating whether the grid is currently visible.)doc";
+
+static const char *__doc_nanogui_ImageView_helpersVisible = R"doc(Function indicating whether any of the overlays are visible.)doc";
+
+static const char *__doc_nanogui_ImageView_imageCoordinateAt =
+R"doc(Calculates the image coordinates of the given pixel position on the
+widget.)doc";
+
+static const char *__doc_nanogui_ImageView_imageShader = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_imageSize = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_imageSizeF = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_keyboardCharacterEvent = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_keyboardEvent = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mFixedOffset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mFixedScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mFontScaleFactor = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mGridThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mImageID = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mImageSize = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mOffset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mPixelInfoCallback = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mPixelInfoThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mShader = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mZoomSensitivity = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mouseDragEvent = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_moveOffset = R"doc(Moves the offset by the specified amount. Does bound checking.)doc";
+
+static const char *__doc_nanogui_ImageView_offset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_pixelInfoCallback = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_pixelInfoThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_pixelInfoVisible =
+R"doc(Function indicating whether the pixel information is currently
+visible.)doc";
+
+static const char *__doc_nanogui_ImageView_positionF = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_positionForCoordinate =
+R"doc(Calculates the position inside the widget for the given image
+coordinate.)doc";
 
 static const char *__doc_nanogui_ImageView_preferredSize = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_setImage = R"doc()doc";
+static const char *__doc_nanogui_ImageView_scale = R"doc()doc";
 
-static const char *__doc_nanogui_ImageView_setPolicy = R"doc()doc";
+static const char *__doc_nanogui_ImageView_scaledImageSize = R"doc()doc";
 
-static const char *__doc_nanogui_IntBox = R"doc()doc";
+static const char *__doc_nanogui_ImageView_scaledImageSizeF = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_scrollEvent = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setFixedOffset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setFixedScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setFontScaleFactor = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setGridThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setImageCoordinateAt =
+R"doc(Modifies the internal state of the image viewer widget so that the
+pixel at the provided position on the widget has the specified image
+coordinate. Also clamps the values of offset to the sides of the
+widget.)doc";
+
+static const char *__doc_nanogui_ImageView_setOffset = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setPixelInfoCallback = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setPixelInfoThreshold = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setScaleCentered = R"doc(Set the scale while keeping the image centered)doc";
+
+static const char *__doc_nanogui_ImageView_setZoomSensitivity = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_sizeF = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_updateImageParameters = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_writePixelInfo = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_zoom =
+R"doc(Changes the scale factor by the provided amount modified by the zoom
+sensitivity member variable. The scaling occurs such that the image
+coordinate under the focused position remains in the same position
+before and after the scaling.)doc";
+
+static const char *__doc_nanogui_ImageView_zoomSensitivity = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox =
+R"doc(A specialization of TextBox for representing integral values.
+
+Template parameters should be integral types, e.g. ``int``, ``long``,
+``uint32_t``, etc.)doc";
 
 static const char *__doc_nanogui_IntBox_IntBox = R"doc()doc";
 
@@ -1050,10 +1361,10 @@ static const char *__doc_nanogui_IntBox_setValueIncrement = R"doc()doc";
 static const char *__doc_nanogui_IntBox_value = R"doc()doc";
 
 static const char *__doc_nanogui_Label =
-R"doc(Text label widget
+R"doc(Text label widget.
 
 The font and color can be customized. When Widget::setFixedWidth() is
-used, the text is wrapped when it surpasses the specified width)doc";
+used, the text is wrapped when it surpasses the specified width.)doc";
 
 static const char *__doc_nanogui_Label_Label = R"doc()doc";
 
@@ -1087,17 +1398,17 @@ R"doc(Set the currently active font (2 are available by default: 'sans' and
 
 static const char *__doc_nanogui_Label_setTheme = R"doc(Set the Theme used to draw this widget)doc";
 
-static const char *__doc_nanogui_Layout = R"doc(Basic interface of a layout engine)doc";
+static const char *__doc_nanogui_Layout = R"doc(Basic interface of a layout engine.)doc";
 
 static const char *__doc_nanogui_Layout_performLayout = R"doc()doc";
 
 static const char *__doc_nanogui_Layout_preferredSize = R"doc()doc";
 
-static const char *__doc_nanogui_MessageDialog = R"doc()doc";
+static const char *__doc_nanogui_MessageDialog = R"doc(Simple "OK" or "Yes/No"-style modal dialogs.)doc";
 
 static const char *__doc_nanogui_MessageDialog_MessageDialog = R"doc()doc";
 
-static const char *__doc_nanogui_MessageDialog_Type = R"doc()doc";
+static const char *__doc_nanogui_MessageDialog_Type = R"doc(Classification of the type of message this MessageDialog represents.)doc";
 
 static const char *__doc_nanogui_MessageDialog_Type_Information = R"doc()doc";
 
@@ -1117,7 +1428,7 @@ static const char *__doc_nanogui_MessageDialog_messageLabel_2 = R"doc()doc";
 
 static const char *__doc_nanogui_MessageDialog_setCallback = R"doc()doc";
 
-static const char *__doc_nanogui_Object = R"doc(Reference counted object base class)doc";
+static const char *__doc_nanogui_Object = R"doc(Reference counted object base class.)doc";
 
 static const char *__doc_nanogui_Object_Object = R"doc(Default constructor)doc";
 
@@ -1135,7 +1446,7 @@ static const char *__doc_nanogui_Object_incRef = R"doc(Increase the object's ref
 
 static const char *__doc_nanogui_Object_m_refCount = R"doc()doc";
 
-static const char *__doc_nanogui_Orientation = R"doc()doc";
+static const char *__doc_nanogui_Orientation = R"doc(The direction of data flow for a layout.)doc";
 
 static const char *__doc_nanogui_Orientation_Horizontal = R"doc()doc";
 
@@ -1147,7 +1458,7 @@ R"doc(Popup window for combo boxes, popup buttons, nested dialogs etc.
 Usually the Popup instance is constructed by another widget (e.g.
 PopupButton) and does not need to be created by hand.)doc";
 
-static const char *__doc_nanogui_PopupButton = R"doc()doc";
+static const char *__doc_nanogui_PopupButton = R"doc(Button which launches a popup widget.)doc";
 
 static const char *__doc_nanogui_PopupButton_PopupButton = R"doc()doc";
 
@@ -1215,7 +1526,7 @@ static const char *__doc_nanogui_Popup_setAnchorPos =
 R"doc(Return the anchor position in the parent window; the placement of the
 popup is relative to it)doc";
 
-static const char *__doc_nanogui_ProgressBar = R"doc()doc";
+static const char *__doc_nanogui_ProgressBar = R"doc(Standard widget for visualizing progress.)doc";
 
 static const char *__doc_nanogui_ProgressBar_ProgressBar = R"doc()doc";
 
@@ -1235,7 +1546,7 @@ static const char *__doc_nanogui_ProgressBar_value = R"doc()doc";
 
 static const char *__doc_nanogui_Screen =
 R"doc(Represents a display surface (i.e. a full-screen or windowed GLFW
-window) and forms the root element of a hierarchy of nanogui widgets)doc";
+window) and forms the root element of a hierarchy of nanogui widgets.)doc";
 
 static const char *__doc_nanogui_Screen_Screen =
 R"doc(Create a new Screen instance
@@ -1313,7 +1624,7 @@ static const char *__doc_nanogui_Screen_disposeWindow = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_drawAll = R"doc(Draw the Screen contents)doc";
 
-static const char *__doc_nanogui_Screen_drawContents = R"doc(Draw the window contents -- put your OpenGL draw calls here)doc";
+static const char *__doc_nanogui_Screen_drawContents = R"doc(Draw the window contents --- put your OpenGL draw calls here)doc";
 
 static const char *__doc_nanogui_Screen_drawWidgets = R"doc()doc";
 
@@ -1377,6 +1688,10 @@ static const char *__doc_nanogui_Screen_nvgContext = R"doc(Return a pointer to t
 
 static const char *__doc_nanogui_Screen_performLayout = R"doc(Compute the layout of all widgets)doc";
 
+static const char *__doc_nanogui_Screen_pixelRatio =
+R"doc(Return the ratio between pixel and device coordinates (e.g. >= 2 on
+Mac Retina displays))doc";
+
 static const char *__doc_nanogui_Screen_resizeCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_resizeEvent = R"doc(Window resize event handler)doc";
@@ -1397,7 +1712,7 @@ static const char *__doc_nanogui_Screen_shutdownGLFWOnDestruct = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_updateFocus = R"doc()doc";
 
-static const char *__doc_nanogui_Slider = R"doc()doc";
+static const char *__doc_nanogui_Slider = R"doc(Fractional slider widget with mouse control.)doc";
 
 static const char *__doc_nanogui_Slider_Slider = R"doc()doc";
 
@@ -1421,6 +1736,8 @@ static const char *__doc_nanogui_Slider_mHighlightColor = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_mHighlightedRange = R"doc()doc";
 
+static const char *__doc_nanogui_Slider_mRange = R"doc()doc";
+
 static const char *__doc_nanogui_Slider_mValue = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_mouseButtonEvent = R"doc()doc";
@@ -1428,6 +1745,8 @@ static const char *__doc_nanogui_Slider_mouseButtonEvent = R"doc()doc";
 static const char *__doc_nanogui_Slider_mouseDragEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_range = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_save = R"doc()doc";
 
@@ -1439,11 +1758,13 @@ static const char *__doc_nanogui_Slider_setHighlightColor = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_setHighlightedRange = R"doc()doc";
 
+static const char *__doc_nanogui_Slider_setRange = R"doc()doc";
+
 static const char *__doc_nanogui_Slider_setValue = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_value = R"doc()doc";
 
-static const char *__doc_nanogui_StackedWidget = R"doc()doc";
+static const char *__doc_nanogui_StackedWidget = R"doc(A stack widget.)doc";
 
 static const char *__doc_nanogui_StackedWidget_StackedWidget = R"doc()doc";
 
@@ -1459,9 +1780,9 @@ static const char *__doc_nanogui_StackedWidget_selectedIndex = R"doc()doc";
 
 static const char *__doc_nanogui_StackedWidget_setSelectedIndex = R"doc()doc";
 
-static const char *__doc_nanogui_TabHeader = R"doc()doc";
+static const char *__doc_nanogui_TabHeader = R"doc(A Tab navigable widget.)doc";
 
-static const char *__doc_nanogui_TabHeader_ClickLocation = R"doc()doc";
+static const char *__doc_nanogui_TabHeader_ClickLocation = R"doc(The location in which the Widget will be facing.)doc";
 
 static const char *__doc_nanogui_TabHeader_ClickLocation_LeftControls = R"doc()doc";
 
@@ -1471,7 +1792,7 @@ static const char *__doc_nanogui_TabHeader_ClickLocation_TabButtons = R"doc()doc
 
 static const char *__doc_nanogui_TabHeader_TabButton = R"doc(Implementation class of the actual tab buttons.)doc";
 
-static const char *__doc_nanogui_TabHeader_TabButton_StringView = R"doc()doc";
+static const char *__doc_nanogui_TabHeader_TabButton_StringView = R"doc(Helper struct to represent the TabButton.)doc";
 
 static const char *__doc_nanogui_TabHeader_TabButton_StringView_first = R"doc()doc";
 
@@ -1611,7 +1932,9 @@ static const char *__doc_nanogui_TabHeader_visibleEnd = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_visibleEnd_2 = R"doc()doc";
 
-static const char *__doc_nanogui_TabWidget = R"doc()doc";
+static const char *__doc_nanogui_TabWidget =
+R"doc(A wrapper around the widgets TabHeader and StackedWidget which hooks
+the two classes together.)doc";
 
 static const char *__doc_nanogui_TabWidget_TabWidget = R"doc()doc";
 
@@ -1681,9 +2004,9 @@ if there is no such tab.)doc";
 
 static const char *__doc_nanogui_TabWidget_tab_2 = R"doc()doc";
 
-static const char *__doc_nanogui_TextBox = R"doc()doc";
+static const char *__doc_nanogui_TextBox = R"doc(Fancy text box with builtin regular expression-based validation.)doc";
 
-static const char *__doc_nanogui_TextBox_Alignment = R"doc()doc";
+static const char *__doc_nanogui_TextBox_Alignment = R"doc(How to align the text in the text box.)doc";
 
 static const char *__doc_nanogui_TextBox_Alignment_Center = R"doc()doc";
 
@@ -1691,7 +2014,7 @@ static const char *__doc_nanogui_TextBox_Alignment_Left = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_Alignment_Right = R"doc()doc";
 
-static const char *__doc_nanogui_TextBox_SpinArea = R"doc()doc";
+static const char *__doc_nanogui_TextBox_SpinArea = R"doc(The location (if any) for the spin area.)doc";
 
 static const char *__doc_nanogui_TextBox_SpinArea_Bottom = R"doc()doc";
 
@@ -1815,7 +2138,7 @@ static const char *__doc_nanogui_TextBox_updateCursor = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_value = R"doc()doc";
 
-static const char *__doc_nanogui_Theme = R"doc()doc";
+static const char *__doc_nanogui_Theme = R"doc(Storage class for basic theme-related properties.)doc";
 
 static const char *__doc_nanogui_Theme_Theme = R"doc()doc";
 
@@ -1903,21 +2226,13 @@ static const char *__doc_nanogui_Theme_mWindowTitleFocused = R"doc()doc";
 
 static const char *__doc_nanogui_Theme_mWindowTitleUnfocused = R"doc()doc";
 
-static const char *__doc_nanogui_ToolButton = R"doc()doc";
+static const char *__doc_nanogui_ToolButton = R"doc(Simple radio+toggle button with an icon.)doc";
 
 static const char *__doc_nanogui_ToolButton_ToolButton = R"doc()doc";
 
-static const char *__doc_nanogui_UniformBufferStd140 = R"doc()doc";
-
-static const char *__doc_nanogui_UniformBufferStd140_UniformBufferStd140 = R"doc()doc";
-
-static const char *__doc_nanogui_UniformBufferStd140_UniformBufferStd140_2 = R"doc()doc";
-
-static const char *__doc_nanogui_UniformBufferStd140_UniformBufferStd140_3 = R"doc()doc";
-
-static const char *__doc_nanogui_UniformBufferStd140_UniformBufferStd140_4 = R"doc()doc";
-
-static const char *__doc_nanogui_UniformBufferStd140_UniformBufferStd140_5 = R"doc()doc";
+static const char *__doc_nanogui_UniformBufferStd140 =
+R"doc(Helper class for accumulating uniform buffer data following the
+'std140' packing format.)doc";
 
 static const char *__doc_nanogui_UniformBufferStd140_push_back = R"doc()doc";
 
@@ -1925,7 +2240,9 @@ static const char *__doc_nanogui_UniformBufferStd140_push_back_2 = R"doc()doc";
 
 static const char *__doc_nanogui_UniformBufferStd140_push_back_3 = R"doc()doc";
 
-static const char *__doc_nanogui_VScrollPanel = R"doc()doc";
+static const char *__doc_nanogui_VScrollPanel =
+R"doc(Adds a vertical scrollbar around a widget that is too big to fit into
+a certain area.)doc";
 
 static const char *__doc_nanogui_VScrollPanel_VScrollPanel = R"doc()doc";
 
@@ -1937,11 +2254,9 @@ static const char *__doc_nanogui_VScrollPanel_mChildPreferredHeight = R"doc()doc
 
 static const char *__doc_nanogui_VScrollPanel_mScroll = R"doc()doc";
 
-static const char *__doc_nanogui_VScrollPanel_mouseButtonEvent = R"doc()doc";
+static const char *__doc_nanogui_VScrollPanel_mUpdateLayout = R"doc()doc";
 
 static const char *__doc_nanogui_VScrollPanel_mouseDragEvent = R"doc()doc";
-
-static const char *__doc_nanogui_VScrollPanel_mouseMotionEvent = R"doc()doc";
 
 static const char *__doc_nanogui_VScrollPanel_performLayout = R"doc()doc";
 
@@ -1952,7 +2267,7 @@ static const char *__doc_nanogui_VScrollPanel_save = R"doc()doc";
 static const char *__doc_nanogui_VScrollPanel_scrollEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Widget =
-R"doc(Base class of all widgets
+R"doc(Base class of all widgets.
 
 Widget is the base class of all widgets in ``nanogui``. It can also be
 used as an panel to arrange an arbitrary number of child widgets using
@@ -2154,9 +2469,9 @@ account)doc";
 
 static const char *__doc_nanogui_Widget_width = R"doc(Return the width of the widget)doc";
 
-static const char *__doc_nanogui_Widget_window = R"doc()doc";
+static const char *__doc_nanogui_Widget_window = R"doc(Walk up the hierarchy and return the parent window)doc";
 
-static const char *__doc_nanogui_Window = R"doc()doc";
+static const char *__doc_nanogui_Window = R"doc(Top-level window widget.)doc";
 
 static const char *__doc_nanogui_Window_Window = R"doc()doc";
 
@@ -2299,21 +2614,73 @@ R"doc(Open a native file open/save dialog.
 
 Parameter ``filetypes``:
     Pairs of permissible formats with descriptions like ``("png",
-    "Portable Network Graphics")``)doc";
+    "Portable Network Graphics")``.
 
-static const char *__doc_nanogui_frustum = R"doc()doc";
+Parameter ``save``:
+    Set to ``True`` if you would like subsequent file dialogs to open
+    at whatever folder they were in when they close this one.)doc";
+
+static const char *__doc_nanogui_frustum =
+R"doc(Creates a perspective projection matrix.
+
+Parameter ``left``:
+    The left border of the viewport.
+
+Parameter ``right``:
+    The right border of the viewport.
+
+Parameter ``bottom``:
+    The bottom border of the viewport.
+
+Parameter ``top``:
+    The top border of the viewport.
+
+Parameter ``nearVal``:
+    The near plane.
+
+Parameter ``farVal``:
+    The far plane.)doc";
 
 static const char *__doc_nanogui_init =
-R"doc(Static initialization; should be called once before invoking any
-NanoGUI functions)doc";
+R"doc(Static initialization; should be called once before invoking **any**
+NanoGUI functions **if** you are having NanoGUI manage OpenGL / GLFW.
+This method is effectively a wrapper call to ``glfwInit()``, so if you
+are managing OpenGL / GLFW on your own *do not call this method*.
 
-static const char *__doc_nanogui_leave = R"doc(Request the application main loop to terminate)doc";
+```
+Refer to :ref:`nanogui_example_3` for how you might go about managing OpenGL
+and GLFW on your own, while still using NanoGUI's classes.
+
+```)doc";
+
+static const char *__doc_nanogui_leave =
+R"doc(Request the application main loop to terminate (e.g. if you detached
+mainloop).)doc";
 
 static const char *__doc_nanogui_loadImageDirectory =
 R"doc(Load a directory of PNG images and upload them to the GPU (suitable
 for use with ImagePanel))doc";
 
-static const char *__doc_nanogui_lookAt = R"doc()doc";
+static const char *__doc_nanogui_lookAt =
+R"doc(Creates a "look at" matrix for modeling say a camera.
+
+Parameter ``eye``:
+    The position of the camera.
+
+Parameter ``center``:
+    The gaze direction of the camera.
+
+Parameter ``up``:
+    The up vector of the camera.
+
+```
+Warning:
+These are used to form an orthonormal basis.  The first basis vector is
+defined as ``f = (center - eye).normalized()``, so ``eye`` cannot be
+equal to ``center``.  Additionally, ``center`` and ``up`` should be
+perpendicular.
+
+```)doc";
 
 static const char *__doc_nanogui_mainloop =
 R"doc(Enter the application main loop
@@ -2331,12 +2698,10 @@ Parameter ``detach``:
     returns immediately (in this case, the main loop runs in parallel
     on a newly created thread). This feature is convenient for
     prototyping user interfaces on an interactive Python command
-    prompt.
-
-When ``detach != None``, the function returns an opaque handle that
-will release any resources allocated by the created thread when the
-handle's ``join()`` method is invoked (or when it is garbage
-collected).
+    prompt. When ``detach != None``, the function returns an opaque
+    handle that will release any resources allocated by the created
+    thread when the handle's ``join()`` method is invoked (or when it
+    is garbage collected).
 
 Remark:
     Unfortunately, Mac OS X strictly requires all event processing to
@@ -2362,14 +2727,52 @@ entypo.ttf font))doc";
 
 static const char *__doc_nanogui_nvgIsImageIcon = R"doc(Determine whether an icon ID is a texture loaded via nvgImageIcon)doc";
 
-static const char *__doc_nanogui_operator_const_NVGcolor = R"doc()doc";
+static const char *__doc_nanogui_operator_const_NVGcolor =
+R"doc(Allows for conversion between nanogui::Color and the NanoVG NVGcolor
+class.)doc";
 
-static const char *__doc_nanogui_ortho = R"doc()doc";
+static const char *__doc_nanogui_ortho =
+R"doc(Creates an orthographic projection matrix.
 
-static const char *__doc_nanogui_project = R"doc()doc";
+Parameter ``left``:
+    The left border of the viewport.
+
+Parameter ``right``:
+    The right border of the viewport.
+
+Parameter ``bottom``:
+    The bottom border of the viewport.
+
+Parameter ``top``:
+    The top border of the viewport.
+
+Parameter ``zNear``:
+    The near plane.
+
+Parameter ``zFar``:
+    The far plane.)doc";
+
+static const char *__doc_nanogui_project =
+R"doc(Projects the vector ``obj`` into the specified viewport.
+
+Performs a homogeneous transformation of a vector into "screen space",
+as defined by the provided model and projection matrices, and the
+dimensions of the viewport.
+
+Parameter ``obj``:
+    The vector being transformed.
+
+Parameter ``model``:
+    The model matrix.
+
+Parameter ``proj``:
+    The projection matrix.
+
+Parameter ``viewportSize``:
+    The dimensions of the viewport to project into.)doc";
 
 static const char *__doc_nanogui_ref =
-R"doc(Reference counting helper
+R"doc(Reference counting helper.
 
 The *ref* template is a simple wrapper to store a pointer to an
 object. It takes care of increasing and decreasing the object's
@@ -2420,19 +2823,62 @@ static const char *__doc_nanogui_ref_ref_3 = R"doc(Copy constructor)doc";
 
 static const char *__doc_nanogui_ref_ref_4 = R"doc(Move constructor)doc";
 
-static const char *__doc_nanogui_scale = R"doc()doc";
+static const char *__doc_nanogui_scale =
+R"doc(Convenience column-wise matrix scaling function.
 
-static const char *__doc_nanogui_shutdown = R"doc(Static shutdown; should be called before the application terminates)doc";
+Returns a matrix that is the piecewise scaling of m's columns with
+vector v. Column 0 of ``m`` is scaled by ``v(0)``, column 1 by
+``v(1)``, and column 2 by ``v(2)``. Column 3 is the original column 3
+of ``m``.
 
-static const char *__doc_nanogui_translate = R"doc()doc";
+Parameter ``m``:
+    The matrix that will be copied and then scaled for the return.
 
-static const char *__doc_nanogui_unproject = R"doc()doc";
+Parameter ``v``:
+    The vector representing the scaling for each axis.)doc";
+
+static const char *__doc_nanogui_shutdown = R"doc(Static shutdown; should be called before the application terminates.)doc";
+
+static const char *__doc_nanogui_translate =
+R"doc(Convenience matrix translation function.
+
+Returns a matrix that is the translation of m by v.
+
+Parameter ``m``:
+    The matrix that will be copied and then translated.
+
+Parameter ``v``:
+    The vector representing the translation for each axis.)doc";
+
+static const char *__doc_nanogui_unproject =
+R"doc(Unprojects the vector ``win`` out of the specified viewport.
+
+The reverse transformation of project --- use the same matrices and
+viewport dimensions to easily transition between the two spaces.
+
+Parameter ``win``:
+    The vector being transformed out of "screen space".
+
+Parameter ``model``:
+    The model matrix.
+
+Parameter ``proj``:
+    The projection matrix.
+
+Parameter ``viewportSize``:
+    The dimensions of the viewport to project out of.)doc";
 
 static const char *__doc_nanogui_utf8 =
-R"doc(Convert a single UTF32 character code to UTF8
+R"doc(Convert a single UTF32 character code to UTF8.
 
-NanoGUI uses this to convert the icon character codes defined in
-entypo.h)doc";
+```
+NanoGUI uses this to convert the icon character codes
+defined in :ref:`file_include_nanogui_entypo.h`.
+
+```
+
+Parameter ``c``:
+    The UTF32 character to be converted.)doc";
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop

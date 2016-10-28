@@ -158,9 +158,9 @@ GLint GLShader::uniform(const std::string &name, bool warn) const {
     return id;
 }
 
-void GLShader::uploadAttrib(const std::string &name, uint32_t size, int dim,
+void GLShader::uploadAttrib(const std::string &name, size_t size, int dim,
                             uint32_t compSize, GLuint glType, bool integral,
-                            const uint8_t *data, int version) {
+                            const void *data, int version) {
     int attribID = 0;
     if (name != "indices") {
         attribID = attrib(name);
@@ -187,7 +187,7 @@ void GLShader::uploadAttrib(const std::string &name, uint32_t size, int dim,
         buffer.version = version;
         mBufferObjects[name] = buffer;
     }
-    size_t totalSize = (size_t) size * (size_t) compSize;
+    size_t totalSize = size * (size_t) compSize;
 
     if (name == "indices") {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
@@ -204,8 +204,8 @@ void GLShader::uploadAttrib(const std::string &name, uint32_t size, int dim,
     }
 }
 
-void GLShader::downloadAttrib(const std::string &name, uint32_t size, int /* dim */,
-                             uint32_t compSize, GLuint /* glType */, uint8_t *data) {
+void GLShader::downloadAttrib(const std::string &name, size_t size, int /* dim */,
+                             uint32_t compSize, GLuint /* glType */, void *data) {
     auto it = mBufferObjects.find(name);
     if (it == mBufferObjects.end())
         throw std::runtime_error("downloadAttrib(" + mName + ", " + name + ") : buffer not found!");
@@ -214,7 +214,7 @@ void GLShader::downloadAttrib(const std::string &name, uint32_t size, int /* dim
     if (buf.size != size || buf.compSize != compSize)
         throw std::runtime_error(mName + ": downloadAttrib: size mismatch!");
 
-    size_t totalSize = (size_t) size * (size_t) compSize;
+    size_t totalSize = size * (size_t) compSize;
 
     if (name == "indices") {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.id);
@@ -282,9 +282,12 @@ void GLShader::drawArray(int type, uint32_t offset, uint32_t count) {
 void GLShader::free() {
     for (auto &buf: mBufferObjects)
         glDeleteBuffers(1, &buf.second.id);
+    mBufferObjects.clear();
 
-    if (mVertexArrayObject)
+    if (mVertexArrayObject) {
         glDeleteVertexArrays(1, &mVertexArrayObject);
+        mVertexArrayObject = 0;
+    }
 
     glDeleteProgram(mProgramShader); mProgramShader = 0;
     glDeleteShader(mVertexShader);   mVertexShader = 0;
@@ -309,6 +312,7 @@ void GLUniformBuffer::release() {
 
 void GLUniformBuffer::free() {
     glDeleteBuffers(1, &mID);
+    mID = 0;
 }
 
 void GLUniformBuffer::update(const std::vector<uint8_t> &data) {
@@ -355,10 +359,11 @@ void GLFramebuffer::init(const Vector2i &size, int nSamples) {
 
     release();
 }
-    
+
 void GLFramebuffer::free() {
     glDeleteRenderbuffers(1, &mColor);
     glDeleteRenderbuffers(1, &mDepth);
+    mColor = mDepth = 0;
 }
 
 void GLFramebuffer::bind() {

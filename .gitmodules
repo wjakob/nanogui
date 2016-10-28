@@ -1,15 +1,15 @@
-[submodule "nanovg"]
+[submodule "ext/nanovg"]
     path = ext/nanovg
     url = https://github.com/wjakob/nanovg
-[submodule "glfw"]
+[submodule "ext/glfw"]
     path = ext/glfw
     url = https://github.com/wjakob/glfw
-[submodule "glew"]
+[submodule "ext/glew"]
     path = ext/glew
     url = https://github.com/nigels-com/glew
-[submodule "eigen"]
+[submodule "ext/eigen"]
     path = ext/eigen
     url = https://github.com/libigl/eigen.git
 [submodule "ext/pybind"]
     path = ext/pybind11
-    url = https://github.com/wjakob/pybind11
+    url = https://github.com/pybind/pybind11

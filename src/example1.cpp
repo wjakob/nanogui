@@ -11,6 +11,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <nanogui/opengl.h>
+#include <nanogui/glutil.h>
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/layout.h>
@@ -31,11 +33,6 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
-#if defined(_WIN32)
-#  include <windows.h>
-#endif
-#include <nanogui/glutil.h>
-#include <nanogui/opengl.h>
 #include <iostream>
 #include <string>
 
@@ -47,9 +44,23 @@
 #if defined(__GNUC__)
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
+#if defined(_WIN32)
+#  pragma warning(push)
+#  pragma warning(disable: 4457 4456 4005 4312)
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#if defined(_WIN32)
+#  pragma warning(pop)
+#endif
+#if defined(_WIN32)
+#  if defined(APIENTRY)
+#    undef APIENTRY
+#  endif
+#  include <windows.h>
+#endif
 
 using std::cout;
 using std::cerr;
@@ -88,7 +99,7 @@ public:
 
     GLuint texture() const { return mTextureId; }
     const std::string& textureName() const { return mTextureName; }
-    
+
     /**
     *  Load a file in memory and create an OpenGL texture.
     *  Returns a handle type (an std::unique_ptr) to the loaded pixels.
@@ -234,7 +245,7 @@ public:
             auto data = texture.load(resourcesFolderPath + icon.second + ".png");
             mImagesData.emplace_back(std::move(texture), std::move(data));
         }
-        
+
         // Set the first texture
         auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
         mCurrentImage = 0;
@@ -252,14 +263,14 @@ public:
             auto& textureSize = imageView->imageSize();
             string stringData;
             uint16_t channelSum = 0;
-            for(int i = 0; i != 4; ++i) {
+            for (int i = 0; i != 4; ++i) {
                 auto& channelData = imageData[4*index.y()*textureSize.x() + 4*index.x() + i];
                 channelSum += channelData;
                 stringData += (to_string(static_cast<int>(channelData)) + "\n");
             }
             float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
             float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
-            Color textColor = Color(colorScale, 1.0f); 
+            Color textColor = Color(colorScale, 1.0f);
             return { stringData, textColor };
         });
 

@@ -16,10 +16,11 @@ Makefile
 bin2c
 example1
 example2
+example3
 icons
 *~
-nanogui.so
-nanogui.pyd
+nanogui*.so
+nanogui*.pyd
 libnanogui.so
 libnanogui.dylib
 .vscode/

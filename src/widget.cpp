@@ -201,11 +201,16 @@ void Widget::draw(NVGcontext *ctx) {
     if (mChildren.empty())
         return;
 
+    nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
+    nvgScissor(ctx, 0, 0, mSize.x(), mSize.y());
     for (auto child : mChildren)
-        if (child->visible())
+        if (child->visible()) {
+            nvgSave(ctx);
             child->draw(ctx);
-    nvgTranslate(ctx, -mPos.x(), -mPos.y());
+            nvgRestore(ctx);
+        }
+    nvgRestore(ctx);
 }
 
 void Widget::save(Serializer &s) const {

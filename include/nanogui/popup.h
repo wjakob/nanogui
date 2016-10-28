@@ -9,6 +9,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -21,6 +22,8 @@ enum class PopupSide{
 };
 
 /**
+ * \class Popup popup.h nanogui/popup.h
+ *
  * \brief Popup window for combo boxes, popup buttons, nested dialogs etc.
  *
  * Usually the Popup instance is constructed by another widget (e.g. \ref PopupButton)

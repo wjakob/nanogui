@@ -20,6 +20,7 @@
 #include <nanogui/entypo.h>
 #include <nanogui/serializer/core.h>
 #include <regex>
+#include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -85,11 +86,11 @@ void TextBox::draw(NVGcontext* ctx) {
 
     NVGpaint bg = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(255, 32), Color(32, 32)); 
+        3, 4, Color(255, 32), Color(32, 32));
     NVGpaint fg1 = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
         3, 4, Color(150, 32), Color(32, 32));
-    NVGpaint fg2 = nvgBoxGradient(ctx, 
+    NVGpaint fg2 = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
         3, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
 
@@ -145,10 +146,10 @@ void TextBox::draw(NVGcontext* ctx) {
     }
 
     float spinArrowsWidth = 0.f;
-    
+
     if (mSpinnable && !focused()) {
         spinArrowsWidth = 14.f;
-    
+
         nvgFontFace(ctx, "icons");
         nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * 1.2f);
 
@@ -201,7 +202,7 @@ void TextBox::draw(NVGcontext* ctx) {
     float clipWidth = mSize.x() - unitWidth - spinArrowsWidth - 2 * xSpacing + 2.0f;
     float clipHeight = mSize.y() - 3.0f;
 
-	nvgSave(ctx);
+    nvgSave(ctx);
     nvgIntersectScissor(ctx, clipX, clipY, clipWidth, clipHeight);
 
     Vector2i oldDrawPos(drawPos);
@@ -274,7 +275,7 @@ void TextBox::draw(NVGcontext* ctx) {
             nvgStroke(ctx);
         }
     }
-	nvgRestore(ctx);
+    nvgRestore(ctx);
 }
 
 bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
@@ -303,7 +304,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             mMouseDragPos = Vector2i(-1, -1);
         }
         return true;
-    } else if(mSpinnable && !focused()) {
+    } else if (mSpinnable && !focused()) {
         if (down) {
             if (spinArea(p) == SpinArea::None) {
                 mMouseDownPos = p;
@@ -494,8 +495,17 @@ bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
 bool TextBox::checkFormat(const std::string &input, const std::string &format) {
     if (format.empty())
         return true;
-    std::regex regex(format);
-    return regex_match(input, regex);
+    try {
+        std::regex regex(format);
+        return regex_match(input, regex);
+    } catch (const std::regex_error &) {
+#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
+        std::cerr << "Warning: cannot validate text field due to lacking regular expression support. please compile with GCC >= 4.9" << std::endl;
+        return true;
+#else
+        throw;
+#endif
+    }
 }
 
 bool TextBox::copySelection() {
@@ -518,8 +528,9 @@ bool TextBox::copySelection() {
 
 void TextBox::pasteFromClipboard() {
     Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
-    std::string str(glfwGetClipboardString(sc->glfwWindow()));
-    mValueTemp.insert(mCursorPos, str);
+    const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
+    if (cbstr)
+        mValueTemp.insert(mCursorPos, std::string(cbstr));
 }
 
 bool TextBox::deleteSelection() {

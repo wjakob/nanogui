@@ -153,7 +153,7 @@ TabHeader::TabHeader(Widget* parent, const std::string& font)
 void TabHeader::setActiveTab(int tabIndex) {
     assert(tabIndex < tabCount());
     mActiveTab = tabIndex;
-    if(mCallback)
+    if (mCallback)
         mCallback(tabIndex);
 }
 

@@ -10,6 +10,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -17,9 +18,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class ColorPicker colorpicker.h nanogui/colorpicker.h
+ *
+ * \brief Push button with a popup to tweak a color value.
+ */
 class NANOGUI_EXPORT ColorPicker : public PopupButton {
 public:
-    ColorPicker(Widget *parent, const Color& color = { 1.f, 0.f, 0.f, 1.f });
+    ColorPicker(Widget *parent, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 
     /// Set the change callback
     std::function<void(const Color &)> callback() const                  { return mCallback; }

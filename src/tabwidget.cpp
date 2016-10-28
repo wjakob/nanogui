@@ -79,7 +79,7 @@ int TabWidget::tabIndex(Widget* tab) {
 }
 
 void TabWidget::ensureTabVisible(int index) {
-    if(!mHeader->isTabVisible(index))
+    if (!mHeader->isTabVisible(index))
         mHeader->ensureTabVisible(index);
 }
 

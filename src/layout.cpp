@@ -380,9 +380,9 @@ void AdvancedGridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
             grid[axis][i] += grid[axis][i-1];
 
         for (Widget *w : widget->children()) {
-            Anchor anchor = this->anchor(w);
             if (!w->visible())
                 continue;
+            Anchor anchor = this->anchor(w);
 
             int itemPos = grid[axis][anchor.pos[axis]];
             int cellSize  = grid[axis][anchor.pos[axis] + anchor.size[axis]] - itemPos;

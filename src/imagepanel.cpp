@@ -28,7 +28,7 @@ Vector2i ImagePanel::gridSize() const {
 }
 
 int ImagePanel::indexForPosition(const Vector2i &p) const {
-    Vector2f pp = (p.cast<float>() - Vector2f::Constant(mMargin)) /
+    Vector2f pp = ((p - mPos).cast<float>() - Vector2f::Constant(mMargin)) /
                   (float)(mThumbSize + mSpacing);
     float iconRegion = mThumbSize / (float)(mThumbSize + mSpacing);
     bool overImage = pp.x() - std::floor(pp.x()) < iconRegion &&

@@ -79,15 +79,15 @@ int main(int /* argc */, char ** /* argv */) {
     }
     glfwMakeContextCurrent(window);
 
+    // Create a nanogui screen and pass the glfw pointer to initialize
+    screen = new Screen();
+    screen->initialize(window, true);
+
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     glfwSwapInterval(0);
     glfwSwapBuffers(window);
-
-    // Create a nanogui screen and pass the glfw pointer to initialize
-    screen = new Screen();
-    screen->initialize(window, true);
 
     // Create nanogui gui
     bool enabled = true;

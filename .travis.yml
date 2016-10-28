@@ -26,3 +26,8 @@ matrix:
       script:
         - cmake -DNANOGUI_PYTHON_VERSION=2.7
         - make -j 2
+    - os: linux
+      language: docs
+      env: STYLE
+      script:
+      - resources/check-style.sh

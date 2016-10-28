@@ -8,6 +8,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
+/** \file */
 
 #pragma once
 
@@ -15,6 +16,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+/**
+ * \class Slider slider.h nanogui/slider.h
+ *
+ * \brief Fractional slider widget with mouse control.
+ */
 class NANOGUI_EXPORT Slider : public Widget {
 public:
     Slider(Widget *parent);
@@ -24,6 +30,9 @@ public:
 
     const Color &highlightColor() const { return mHighlightColor; }
     void setHighlightColor(const Color &highlightColor) { mHighlightColor = highlightColor; }
+
+    std::pair<float, float> range() const { return mRange; }
+    void setRange(std::pair<float, float> range) { mRange = range; }
 
     std::pair<float, float> highlightedRange() const { return mHighlightedRange; }
     void setHighlightedRange(std::pair<float, float> highlightedRange) { mHighlightedRange = highlightedRange; }
@@ -45,6 +54,7 @@ protected:
     float mValue;
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
+    std::pair<float, float> mRange;
     std::pair<float, float> mHighlightedRange;
     Color mHighlightColor;
 };
