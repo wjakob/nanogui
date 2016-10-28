@@ -20,7 +20,7 @@ NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false),
-    mMinSize(Vector2i::Zero()), mResizeDir(Vector2i::Zero()) { }
+    mResizeDir(Vector2i::Zero()), mMinSize(Vector2i::Zero())  { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
