@@ -18,9 +18,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Window::Window(Widget *parent, const std::string &title)
+Window::Window(Widget *parent, const std::string &title, bool resizable)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false),
-    mResizeDir(Vector2i::Zero()), mMinSize(Vector2i::Zero())  { }
+    mResizeDir(Vector2i::Zero()), mMinSize(Vector2i::Zero()), mResizable(resizable)  { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -62,9 +62,8 @@ void Window::performLayout(NVGcontext *ctx) {
         mButtonPanel->setPosition(Vector2i(width() - (mButtonPanel->preferredSize(ctx).x() + 5), 3));
         mButtonPanel->performLayout(ctx);
     }
-    if (mMinSize == Vector2i::Zero()) {
+    if (mMinSize == Vector2i::Zero())
         mMinSize = mSize;
-    }
 }
 
 void Window::draw(NVGcontext *ctx) {
@@ -166,7 +165,7 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
         mPos = mPos.cwiseMax(Vector2i::Zero());
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
-    } else if (mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
+    } else if (mResizable && mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
         Vector2i &&lowerLeftCorner = mPos + mSize;
         Vector2i &lowerRightCorner = mPos;
 
@@ -195,9 +194,9 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
 }
 
 bool Window::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
-    if (mFixedSize.x() == 0 && checkHorizontalResize(p) != 0) {
+    if (mResizable && mFixedSize.x() == 0 && checkHorizontalResize(p) != 0) {
         mCursor = Cursor::HResize;
-    } else if (mFixedSize.y() == 0 && checkVerticalResize(p) != 0) {
+    } else if (mResizable && mFixedSize.y() == 0 && checkVerticalResize(p) != 0) {
         mCursor = Cursor::VResize;
     } else {
         mCursor = Cursor::Arrow;
@@ -212,7 +211,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (button == GLFW_MOUSE_BUTTON_1) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         mResize = false;
-        if (!mDrag && down) {
+        if (mResizable && !mDrag && down) {
             mResizeDir.x() = (mFixedSize.x() == 0) ? checkHorizontalResize(p) : 0;
             mResizeDir.y() = (mFixedSize.y() == 0) ? checkVerticalResize(p) : 0;
             mResize = mResizeDir.x() != 0 || mResizeDir.y() != 0;

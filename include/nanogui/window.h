@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
-    Window(Widget *parent, const std::string &title = "Untitled");
+    Window(Widget *parent, const std::string &title = "Untitled", bool resizable = false);
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
@@ -35,6 +35,11 @@ public:
     bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
+
+    /// Is this a resizable window?
+    bool resizable() const { return mResizable; }
+    /// Set whether or not this window is resizable
+    void setResizable(bool resizable) { mResizable = resizable; }
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -75,6 +80,7 @@ protected:
     bool mResize;
     Vector2i mResizeDir;
     Vector2i mMinSize;
+    bool mResizable;
 };
 
 NAMESPACE_END(nanogui)
