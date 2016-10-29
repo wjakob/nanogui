@@ -167,13 +167,26 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
     } else if (mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
+        Vector2i &&lowerLeftCorner = mPos + mSize;
+        Vector2i &lowerRightCorner = mPos;
+
         if (mResizeDir.x() == 1) {
-            mSize.x() += rel.x();
+            if ((rel.x() > 0 && p.x() >= lowerLeftCorner.x()) || (rel.x() < 0)) {
+                mSize.x() += rel.x();
+            }
         } else if (mResizeDir.x() == -1) {
-            mSize.x() += -rel.x();
-            if (mSize.x() > mMinSize.x()) mPos.x() += rel.x();
-        } else if (mResizeDir.y() == 1) {
-            mSize.y() += rel.y();
+            if ((rel.x() < 0 && p.x() <= lowerRightCorner.x()) ||
+                    (rel.x() > 0)) {
+                mSize.x() += -rel.x();
+                mSize = mSize.cwiseMax(mMinSize);
+                mPos = lowerLeftCorner - mSize;
+            }
+        }
+
+        if (mResizeDir.y() == 1) {
+            if ((rel.y() > 0 && p.y() >= lowerLeftCorner.y()) || (rel.y() < 0)) {
+                mSize.y() += rel.y();
+            }
         }
         mSize = mSize.cwiseMax(mMinSize);
         return true;
@@ -195,13 +208,14 @@ bool Window::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &r
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
         return true;
+
     if (button == GLFW_MOUSE_BUTTON_1) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         mResize = false;
         if (!mDrag && down) {
-            mResize = true;
             mResizeDir.x() = (mFixedSize.x() == 0) ? checkHorizontalResize(p) : 0;
             mResizeDir.y() = (mFixedSize.y() == 0) ? checkVerticalResize(p) : 0;
+            mResize = mResizeDir.x() != 0 || mResizeDir.y() != 0;
         }
         return true;
     }
