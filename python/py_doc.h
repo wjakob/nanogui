@@ -2455,7 +2455,15 @@ static const char *__doc_nanogui_Window_mModal = R"doc()doc";
 
 static const char *__doc_nanogui_Window_mTitle = R"doc()doc";
 
+static const char *_doc_nanogui_Window_mResizable = R"doc()doc";
+
+static const char *_doc_nanogui_Window_mMinSize = R"doc()doc";
+
+static const char *_doc_nanogui_Window_mResizeDir = R"doc()doc";
+
 static const char *__doc_nanogui_Window_modal = R"doc(Is this a model dialog?)doc";
+
+static const char *__doc_nanogui_Window_resizable = R"doc(Is this a resizable window?)doc";
 
 static const char *__doc_nanogui_Window_mouseButtonEvent =
 R"doc(Handle mouse events recursively and bring the current window to the
@@ -2480,6 +2488,8 @@ R"doc(Accept scroll events and propagate them to the widget under the mouse
 cursor)doc";
 
 static const char *__doc_nanogui_Window_setModal = R"doc(Set whether or not this is a modal dialog)doc";
+
+static const char *__doc_nanogui_Window_setResizable = R"doc(Set whether or not this window is resizable)doc";
 
 static const char *__doc_nanogui_Window_setTitle = R"doc(Set the window title)doc";
 
