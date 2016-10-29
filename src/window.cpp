@@ -193,7 +193,7 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
     return false;
 }
 
-bool Window::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
+bool Window::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &, int, int) {
     if (mResizable && mFixedSize.x() == 0 && checkHorizontalResize(p) != 0) {
         mCursor = Cursor::HResize;
     } else if (mResizable && mFixedSize.y() == 0 && checkVerticalResize(p) != 0) {
