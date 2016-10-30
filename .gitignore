@@ -24,3 +24,8 @@ nanogui*.pyd
 libnanogui.so
 libnanogui.dylib
 .vscode/
+# html documentation specific
+*.pyc
+docs/_build
+docs/doxyoutput
+docs/generated_api
