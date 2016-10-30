@@ -12,6 +12,7 @@
 #include <nanogui/glutil.h>
 #include <iostream>
 #include <fstream>
+#include <Eigen/Geometry>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -473,69 +474,61 @@ Eigen::Vector3f unproject(const Eigen::Vector3f &win,
     return obj.head(3);
 }
 
-Eigen::Matrix4f lookAt(const Eigen::Vector3f &eye,
-                       const Eigen::Vector3f &center,
+Eigen::Matrix4f lookAt(const Eigen::Vector3f &origin,
+                       const Eigen::Vector3f &target,
                        const Eigen::Vector3f &up) {
-    Eigen::Vector3f f = (center - eye).normalized();
+    Eigen::Vector3f f = (target - origin).normalized();
     Eigen::Vector3f s = f.cross(up).normalized();
     Eigen::Vector3f u = s.cross(f);
 
-    Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-    Result(0, 0) = s(0);
-    Result(0, 1) = s(1);
-    Result(0, 2) = s(2);
-    Result(1, 0) = u(0);
-    Result(1, 1) = u(1);
-    Result(1, 2) = u(2);
-    Result(2, 0) = -f(0);
-    Result(2, 1) = -f(1);
-    Result(2, 2) = -f(2);
-    Result(0, 3) = -s.transpose() * eye;
-    Result(1, 3) = -u.transpose() * eye;
-    Result(2, 3) = f.transpose() * eye;
-    return Result;
+    Eigen::Matrix4f result = Eigen::Matrix4f::Identity();
+    result(0, 0) = s(0);
+    result(0, 1) = s(1);
+    result(0, 2) = s(2);
+    result(1, 0) = u(0);
+    result(1, 1) = u(1);
+    result(1, 2) = u(2);
+    result(2, 0) = -f(0);
+    result(2, 1) = -f(1);
+    result(2, 2) = -f(2);
+    result(0, 3) = -s.transpose() * origin;
+    result(1, 3) = -u.transpose() * origin;
+    result(2, 3) = f.transpose() * origin;
+    return result;
 }
 
-Eigen::Matrix4f ortho(const float left, const float right, const float bottom,
-                      const float top, const float zNear, const float zFar) {
-    Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-    Result(0, 0) = 2.0f / (right - left);
-    Result(1, 1) = 2.0f / (top - bottom);
-    Result(2, 2) = -2.0f / (zFar - zNear);
-    Result(0, 3) = -(right + left) / (right - left);
-    Result(1, 3) = -(top + bottom) / (top - bottom);
-    Result(2, 3) = -(zFar + zNear) / (zFar - zNear);
-    return Result;
+Eigen::Matrix4f ortho(float left, float right, float bottom,
+                      float top, float nearVal, float farVal) {
+    Eigen::Matrix4f result = Eigen::Matrix4f::Identity();
+    result(0, 0) = 2.0f / (right - left);
+    result(1, 1) = 2.0f / (top - bottom);
+    result(2, 2) = -2.0f / (farVal - nearVal);
+    result(0, 3) = -(right + left) / (right - left);
+    result(1, 3) = -(top + bottom) / (top - bottom);
+    result(2, 3) = -(farVal + nearVal) / (farVal - nearVal);
+    return result;
 }
 
-Eigen::Matrix4f frustum(const float left, const float right, const float bottom,
-                        const float top, const float nearVal,
-                        const float farVal) {
-    Eigen::Matrix4f Result = Eigen::Matrix4f::Zero();
-    Result(0, 0) = (2.0f * nearVal) / (right - left);
-    Result(1, 1) = (2.0f * nearVal) / (top - bottom);
-    Result(0, 2) = (right + left) / (right - left);
-    Result(1, 2) = (top + bottom) / (top - bottom);
-    Result(2, 2) = -(farVal + nearVal) / (farVal - nearVal);
-    Result(3, 2) = -1.0f;
-    Result(2, 3) = -(2.0f * farVal * nearVal) / (farVal - nearVal);
-    return Result;
+Eigen::Matrix4f frustum(float left, float right, float bottom,
+                        float top, float nearVal,
+                        float farVal) {
+    Eigen::Matrix4f result = Eigen::Matrix4f::Zero();
+    result(0, 0) = (2.0f * nearVal) / (right - left);
+    result(1, 1) = (2.0f * nearVal) / (top - bottom);
+    result(0, 2) = (right + left) / (right - left);
+    result(1, 2) = (top + bottom) / (top - bottom);
+    result(2, 2) = -(farVal + nearVal) / (farVal - nearVal);
+    result(3, 2) = -1.0f;
+    result(2, 3) = -(2.0f * farVal * nearVal) / (farVal - nearVal);
+    return result;
 }
 
-Eigen::Matrix4f scale(const Eigen::Matrix4f &m, const Eigen::Vector3f &v) {
-    Eigen::Matrix4f Result;
-    Result.col(0) = m.col(0).array() * v(0);
-    Result.col(1) = m.col(1).array() * v(1);
-    Result.col(2) = m.col(2).array() * v(2);
-    Result.col(3) = m.col(3);
-    return Result;
+Eigen::Matrix4f scale(const Eigen::Vector3f &v) {
+    return Eigen::Affine3f(Eigen::Scaling(v)).matrix();
 }
 
-Eigen::Matrix4f translate(const Eigen::Matrix4f &m, const Eigen::Vector3f &v) {
-    Eigen::Matrix4f Result = m;
-    Result.col(3) = m.col(0).array() * v(0) + m.col(1).array() * v(1) +
-                    m.col(2).array() * v(2) + m.col(3).array();
-    return Result;
+Eigen::Matrix4f translate(const Eigen::Vector3f &v) {
+    return Eigen::Affine3f(Eigen::Translation<float, 3>(v)).matrix();
 }
 
 NAMESPACE_END(nanogui)

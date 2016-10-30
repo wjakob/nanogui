@@ -552,13 +552,14 @@ extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
                                          const Vector2i &viewportSize);
 
 /**
- * \brief Creates a "look at" matrix for modeling say a camera.
+ * \brief Creates a "look at" matrix that describes the position and
+ * orientation of e.g. a camera
  *
- * \param eye
+ * \param origin
  *     The position of the camera.
  *
- * \param center
- *     The gaze direction of the camera.
+ * \param target
+ *     The gaze target of the camera.
  *
  * \param up
  *     The up vector of the camera.
@@ -566,13 +567,11 @@ extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
  * \rst
  * .. warning::
  *    These are used to form an orthonormal basis.  The first basis vector is
- *    defined as ``f = (center - eye).normalized()``, so ``eye`` cannot be
- *    equal to ``center``.  Additionally, ``center`` and ``up`` should be
- *    perpendicular.
+ *    defined as ``f = (target - origin).normalized()``.
  * \endrst
  */
-extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye,
-                                      const Vector3f &center,
+extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &origin,
+                                      const Vector3f &target,
                                       const Vector3f &up);
 
 /**
@@ -590,15 +589,15 @@ extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &eye,
  * \param top
  *     The top border of the viewport.
  *
- * \param zNear
+ * \param nearVal
  *     The near plane.
  *
- * \param zFar
+ * \param farVal
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right,
-                                     const float bottom, const float top,
-                                     const float zNear, const float zFar);
+extern NANOGUI_EXPORT Matrix4f ortho(float left, float right,
+                                     float bottom, float top,
+                                     float nearVal, float farVal);
 
 /**
  * Creates a perspective projection matrix.
@@ -621,35 +620,31 @@ extern NANOGUI_EXPORT Matrix4f ortho(const float left, const float right,
  * \param farVal
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f frustum(const float left, const float right,
-                                       const float bottom, const float top,
-                                       const float nearVal, const float farVal);
+extern NANOGUI_EXPORT Matrix4f frustum(float left, float right,
+                                       float bottom, float top,
+                                       float nearVal, float farVal);
 /**
- * \brief Convenience column-wise matrix scaling function.
+ * \brief Construct homogeneous coordinate scaling matrix
  *
- * Returns a matrix that is the piecewise scaling of m's columns with vector v.
- * Column 0 of ``m`` is scaled by ``v(0)``, column 1 by ``v(1)``, and column 2
- * by ``v(2)``.  Column 3 is the original column 3 of ``m``.
- *
- * \param m
- *     The matrix that will be copied and then scaled for the return.
+ * Returns a 3D homogeneous coordinate matrix that scales the X, Y, and Z
+ * components with the corresponding entries of the 3D vector ``v``. The ``w``
+ * component is left unchanged
  *
  * \param v
  *     The vector representing the scaling for each axis.
  */
-extern NANOGUI_EXPORT Matrix4f scale(const Matrix4f &m, const Vector3f &v);
+extern NANOGUI_EXPORT Matrix4f scale(const Vector3f &v);
 
 /**
- * \brief Convenience matrix translation function.
+ * \brief Construct homogeneous coordinate translation matrix
  *
- * Returns a matrix that is the translation of m by v.
- *
- * \param m
- *     The matrix that will be copied and then translated.
+ * Returns a 3D homogeneous coordinate matrix that translates the X, Y, and Z
+ * components by the corresponding entries of the 3D vector ``v``. The ``w``
+ * component is left unchanged
  *
  * \param v
  *     The vector representing the translation for each axis.
  */
-extern NANOGUI_EXPORT Matrix4f translate(const Matrix4f &m, const Vector3f &v);
+extern NANOGUI_EXPORT Matrix4f translate(const Vector3f &v);
 
 NAMESPACE_END(nanogui)

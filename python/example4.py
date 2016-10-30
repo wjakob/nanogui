@@ -122,9 +122,9 @@ class MyGLCanvas(GLCanvas):
 
             self.shader.setUniform("modelViewProj", mvp)
 
-            gl.glEnable(gl.DEPTH_TEST)
+            gl.Enable(gl.DEPTH_TEST)
             self.shader.drawIndexed(gl.TRIANGLES, 0, 12)
-            gl.glDisable(gl.DEPTH_TEST)
+            gl.Disable(gl.DEPTH_TEST)
 
 
 class TestApp(Screen):
