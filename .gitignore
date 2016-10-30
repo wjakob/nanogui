@@ -14,9 +14,7 @@ build.ninja
 rules.ninja
 Makefile
 bin2c
-example1
-example2
-example3
+example[1-9]
 icons
 *~
 nanogui*.so
