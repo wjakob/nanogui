@@ -53,29 +53,30 @@ bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, in
 
 void Slider::draw(NVGcontext* ctx) {
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
-    Vector2f knobPos(mPos.x() + (mValue - mRange.first) /
-            (mRange.second - mRange.first) * mSize.x(), center.y() + 0.5f);
     float kr = (int)(mSize.y()*0.5f);
+    float kshadow = 3;
+    Vector2f knobPos(kr + kshadow + mPos.x() + (mValue - mRange.first) /
+            (mRange.second - mRange.first) * mSize.x(), center.y() + 0.5f);
     NVGpaint bg = nvgBoxGradient(ctx,
-        mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 3, 3, Color(0, mEnabled ? 32 : 10), Color(0, mEnabled ? 128 : 210));
+        kr + kshadow + mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 3, 3, Color(0, mEnabled ? 32 : 10), Color(0, mEnabled ? 128 : 210));
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 2);
+    nvgRoundedRect(ctx, kr + kshadow + mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 2);
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 
     if (mHighlightedRange.second != mHighlightedRange.first) {
         nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x() + mHighlightedRange.first * mSize.x(), center.y() - 3 + 1, mSize.x() * (mHighlightedRange.second-mHighlightedRange.first), 6, 2);
+        nvgRoundedRect(ctx, kr + kshadow + mPos.x() + mHighlightedRange.first * mSize.x(), center.y() - kshadow + 1, mSize.x() * (mHighlightedRange.second-mHighlightedRange.first), kshadow*2, 2);
         nvgFillColor(ctx, mHighlightColor);
         nvgFill(ctx);
     }
 
     NVGpaint knobShadow = nvgRadialGradient(ctx,
-        knobPos.x(), knobPos.y(), kr-3, kr+3, Color(0, 64), mTheme->mTransparent);
+        knobPos.x(), knobPos.y(), kr-kshadow, kr+kshadow, Color(0, 64), mTheme->mTransparent);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, knobPos.x() - kr - 5, knobPos.y() - kr - 5, kr*2+10, kr*2+10+3);
+    nvgRect(ctx, knobPos.x() - kr - 5, knobPos.y() - kr - 5, kr*2+10, kr*2+10+kshadow);
     nvgCircle(ctx, knobPos.x(), knobPos.y(), kr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, knobShadow);
