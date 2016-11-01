@@ -164,29 +164,29 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
     } else if (mResizable && mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
-        const Vector2i &lowerLeftCorner = mPos + mSize;
-        const Vector2i &lowerRightCorner = mPos;
+        const Vector2i &lowerRightCorner = mPos + mSize;
+        const Vector2i &upperLeftCorner = mPos;
         NVGcontext *ctx = static_cast<Screen *>(parent())->nvgContext();
         bool resized = false;
 
 
         if (mResizeDir.x() == 1) {
-            if ((rel.x() > 0 && p.x() >= lowerLeftCorner.x()) || (rel.x() < 0)) {
+            if ((rel.x() > 0 && p.x() >= lowerRightCorner.x()) || (rel.x() < 0)) {
                 mSize.x() += rel.x();
                 resized = true;
             }
         } else if (mResizeDir.x() == -1) {
-            if ((rel.x() < 0 && p.x() <= lowerRightCorner.x()) ||
+            if ((rel.x() < 0 && p.x() <= upperLeftCorner.x()) ||
                     (rel.x() > 0)) {
                 mSize.x() += -rel.x();
                 mSize = mSize.cwiseMax(mMinSize);
-                mPos = lowerLeftCorner - mSize;
+                mPos = lowerRightCorner - mSize;
                 resized = true;
             }
         }
 
         if (mResizeDir.y() == 1) {
-            if ((rel.y() > 0 && p.y() >= lowerLeftCorner.y()) || (rel.y() < 0)) {
+            if ((rel.y() > 0 && p.y() >= lowerRightCorner.y()) || (rel.y() < 0)) {
                 mSize.y() += rel.y();
                 resized = true;
             }
