@@ -166,8 +166,8 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
     } else if (mResizable && mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
-        Vector2i &&lowerLeftCorner = mPos + mSize;
-        Vector2i &lowerRightCorner = mPos;
+        const Vector2i &lowerLeftCorner = mPos + mSize;
+        const Vector2i &lowerRightCorner = mPos;
 
         if (mResizeDir.x() == 1) {
             if ((rel.x() > 0 && p.x() >= lowerLeftCorner.x()) || (rel.x() < 0)) {
