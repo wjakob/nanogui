@@ -70,8 +70,6 @@ void Window::draw(NVGcontext *ctx) {
     int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
     int hh = mTheme->mWindowHeaderHeight;
 
-    if (mResize) performLayout(ctx);
-
     /* Draw window */
     nvgSave(ctx);
     nvgBeginPath(ctx);
@@ -168,10 +166,14 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
     } else if (mResizable && mResize && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
         const Vector2i &lowerLeftCorner = mPos + mSize;
         const Vector2i &lowerRightCorner = mPos;
+        NVGcontext *ctx = static_cast<Screen *>(parent())->nvgContext();
+        bool resized = false;
+
 
         if (mResizeDir.x() == 1) {
             if ((rel.x() > 0 && p.x() >= lowerLeftCorner.x()) || (rel.x() < 0)) {
                 mSize.x() += rel.x();
+                resized = true;
             }
         } else if (mResizeDir.x() == -1) {
             if ((rel.x() < 0 && p.x() <= lowerRightCorner.x()) ||
@@ -179,15 +181,19 @@ bool Window::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
                 mSize.x() += -rel.x();
                 mSize = mSize.cwiseMax(mMinSize);
                 mPos = lowerLeftCorner - mSize;
+                resized = true;
             }
         }
 
         if (mResizeDir.y() == 1) {
             if ((rel.y() > 0 && p.y() >= lowerLeftCorner.y()) || (rel.y() < 0)) {
                 mSize.y() += rel.y();
+                resized = true;
             }
         }
         mSize = mSize.cwiseMax(mMinSize);
+        if (resized)
+            performLayout(ctx);
         return true;
     }
     return false;
