@@ -49,7 +49,7 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         return Vector2i(
             nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr),
-            mTheme->mStandardFontSize
+            fontSize()
         );
     }
 }

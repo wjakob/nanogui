@@ -203,10 +203,10 @@ void Widget::draw(NVGcontext *ctx) {
 
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
-    nvgScissor(ctx, 0, 0, mSize.x(), mSize.y());
     for (auto child : mChildren)
         if (child->visible()) {
             nvgSave(ctx);
+            nvgScissor(ctx, child->mPos.x(), child->mPos.y(), child->mSize.x(), child->mSize.y());
             child->draw(ctx);
             nvgRestore(ctx);
         }
