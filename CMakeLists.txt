@@ -437,6 +437,7 @@ if (NANOGUI_BUILD_PYTHON)
     python/formhelper.cpp
     python/misc.cpp
     python/glutil.cpp
+    python/nanovg.cpp
     python/python.h python/py_doc.h
     ${LIBNANOGUI_PYTHON_EXTRA_SOURCE})
 

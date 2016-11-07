@@ -49,6 +49,7 @@ extern void register_glcanvas(py::module &m);
 extern void register_formhelper(py::module &m);
 extern void register_misc(py::module &m);
 extern void register_glutil(py::module &m);
+extern void register_nanovg(py::module &m);
 
 class MainloopHandle;
 static MainloopHandle *handle = nullptr;
@@ -231,8 +232,6 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
-    py::class_<NVGcontext> context(m, "NVGcontext");
-
     register_constants(m);
     register_eigen(m);
     register_widget(m);
@@ -245,6 +244,7 @@ PYBIND11_PLUGIN(nanogui) {
     register_formhelper(m);
     register_misc(m);
     register_glutil(m);
+    register_nanovg(m);
 
     return m.ptr();
 }

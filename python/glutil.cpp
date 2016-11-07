@@ -177,11 +177,10 @@ void register_glutil(py::module &m) {
 
     m.def("translate", &translate, py::arg("v"), D(translate));
 
-
     /* Very basic OpenGL coverage */
 
     #define C(name) gl.attr(#name) = py::int_(GL_##name);
-    py::module gl = m.def_submodule("gl");
+    py::module gl = m.def_submodule("gl", "OpenGL bindings");
 
     gl.def("Enable", [](GLenum cap) { glEnable(cap); }, py::arg("cap"));
     gl.def("Disable", [](GLenum cap) { glDisable(cap); }, py::arg("cap"));

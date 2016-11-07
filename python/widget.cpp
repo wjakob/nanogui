@@ -110,6 +110,7 @@ void register_widget(py::module &m) {
         .def("resizeEvent", &Screen::resizeEvent, py::arg("size"), D(Screen, resizeEvent))
         .def("dropEvent", &Screen::dropEvent, D(Screen, dropEvent))
         .def("mousePos", &Screen::mousePos, D(Screen, mousePos))
+        .def("pixelRatio", &Screen::pixelRatio, D(Screen, pixelRatio))
         .def("glfwWindow", &Screen::glfwWindow, D(Screen, glfwWindow),
                 py::return_value_policy::reference)
         .def("nvgContext", &Screen::nvgContext, D(Screen, nvgContext),
