@@ -48,6 +48,9 @@ void Popup::draw(NVGcontext* ctx) {
 
     int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
 
+    nvgSave(ctx);
+    nvgResetScissor(ctx);
+
     /* Draw a drop shadow */
     NVGpaint shadowPaint = nvgBoxGradient(
         ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
@@ -77,6 +80,7 @@ void Popup::draw(NVGcontext* ctx) {
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
+    nvgRestore(ctx);
 
     Widget::draw(ctx);
 }
