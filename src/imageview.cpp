@@ -20,17 +20,24 @@
 NAMESPACE_BEGIN(nanogui)
 
 namespace {
-    std::vector<std::string> splitString(const std::string& text, const std::string& delimiter) {
-        using std::string; using std::vector;
-        vector<string> strings;
-        string::size_type current = 0;
-        string::size_type previous = 0;
-        while ((current = text.find(delimiter, previous)) != string::npos) {
-            strings.push_back(text.substr(previous, current - previous));
-            previous = current + 1;
+    std::vector<std::string> tokenize(const std::string &string,
+                                      const std::string &delim = "\n",
+                                      bool includeEmpty = false) {
+        std::string::size_type lastPos = 0, pos = string.find_first_of(delim, lastPos);
+        std::vector<std::string> tokens;
+
+        while (lastPos != std::string::npos) {
+            std::string substr = string.substr(lastPos, pos - lastPos);
+            if (!substr.empty() || includeEmpty)
+                tokens.push_back(std::move(substr));
+            lastPos = pos;
+            if (lastPos != std::string::npos) {
+                lastPos += 1;
+                pos = string.find_first_of(delim, lastPos);
+            }
         }
-        strings.push_back(text.substr(previous));
-        return strings;
+
+        return tokens;
     }
 
     constexpr char const *const defaultImageViewVertexShader =
@@ -98,9 +105,7 @@ Vector2f ImageView::imageCoordinateAt(const Vector2f& position) const {
 
 Vector2f ImageView::clampedImageCoordinateAt(const Vector2f& position) const {
     auto imageCoordinate = imageCoordinateAt(position);
-    return imageCoordinate.array().
-        max(Vector2f::Zero().array()).
-        min(imageSizeF().array());
+    return imageCoordinate.cwiseMax(Vector2f::Zero()).cwiseMin(imageSizeF());
 }
 
 Vector2f ImageView::positionForCoordinate(const Vector2f& imageCoordinate) const {
@@ -110,11 +115,10 @@ Vector2f ImageView::positionForCoordinate(const Vector2f& imageCoordinate) const
 void ImageView::setImageCoordinateAt(const Vector2f& position, const Vector2f& imageCoordinate) {
     // Calculate where the new offset must be in order to satisfy the image position equation.
     // Round the floating point values to balance out the floating point to integer conversions.
-    mOffset = position - (imageCoordinate * mScale); // .unaryExpr([](float x) { return std::round(x); });
+    mOffset = position - (imageCoordinate * mScale);
+
     // Clamp offset so that the image remains near the screen.
-    mOffset = mOffset.array().
-        min(sizeF().array()).
-        max(-scaledImageSizeF().array());
+    mOffset = mOffset.cwiseMin(sizeF()).cwiseMax(-scaledImageSizeF());
 }
 
 void ImageView::center() {
@@ -283,7 +287,6 @@ void ImageView::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx); // Flush the NanoVG draw stack, not necessary to call nvgBeginFrame afterwards.
 
-    drawWidgetBorder(ctx);
     drawImageBorder(ctx);
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be
@@ -297,8 +300,9 @@ void ImageView::draw(NVGcontext* ctx) {
     Vector2f imagePosition = positionAfterOffset.cwiseQuotient(screenSize);
     glEnable(GL_SCISSOR_TEST);
     float r = screen->pixelRatio();
-    glScissor(positionInScreen.x() * r, (screenSize.y() - positionInScreen.y() - size().y()) * r,
-              size().x()*r, size().y()*r);
+    glScissor(positionInScreen.x() * r,
+              (screenSize.y() - positionInScreen.y() - size().y()) * r,
+              size().x() * r, size().y() * r);
     mShader.bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mImageID);
@@ -310,8 +314,9 @@ void ImageView::draw(NVGcontext* ctx) {
 
     if (helpersVisible())
         drawHelpers(ctx);
-}
 
+    drawWidgetBorder(ctx);
+}
 
 void ImageView::updateImageParameters() {
     // Query the width of the OpenGL texture.
@@ -324,12 +329,15 @@ void ImageView::updateImageParameters() {
 
 void ImageView::drawWidgetBorder(NVGcontext* ctx) const {
     nvgBeginPath(ctx);
-    nvgStrokeWidth(ctx, 1.0f);
-    nvgRoundedRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f,
-                   mSize.x() + 1, mSize.y() + 1, mTheme->mWindowCornerRadius);
-    nvgStrokeColor(ctx, mTheme->mBorderLight);
-    nvgRoundedRect(ctx, mPos.x() - 1.0f, mPos.y() - 1.0f,
-                   mSize.x() + 2, mSize.y() + 2, mTheme->mWindowCornerRadius);
+    nvgStrokeWidth(ctx, 1);
+    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
+                   mSize.y() - 1, 0);
+    nvgStrokeColor(ctx, mTheme->mWindowPopup);
+    nvgStroke(ctx);
+
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
+                   mSize.y() - 1, mTheme->mButtonCornerRadius);
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgStroke(ctx);
 }
@@ -352,117 +360,92 @@ void ImageView::drawImageBorder(NVGcontext* ctx) const {
 void ImageView::drawHelpers(NVGcontext* ctx) const {
     // We need to apply mPos after the transformation to account for the position of the widget
     // relative to the parent.
-    Vector2f upperLeftCorner = positionForCoordinate(Vector2f(0, 0)) + positionF();
+    Vector2f upperLeftCorner = positionForCoordinate(Vector2f::Zero()) + positionF();
     Vector2f lowerRightCorner = positionForCoordinate(imageSizeF()) + positionF();
-    // Use the scissor method in NanoVG to display only the correct part of the grid.
-    Vector2f scissorPosition = upperLeftCorner.array().max(positionF().array());
-    Vector2f sizeOffsetDifference = sizeF() - mOffset;
-    Vector2f scissorSize = sizeOffsetDifference.array().min(sizeF().array());
-    nvgSave(ctx);
-    nvgScissor(ctx, scissorPosition.x(), scissorPosition.y(), scissorSize.x(), scissorSize.y());
     if (gridVisible())
         drawPixelGrid(ctx, upperLeftCorner, lowerRightCorner, mScale);
     if (pixelInfoVisible())
         drawPixelInfo(ctx, mScale);
-    nvgRestore(ctx);
 }
 
 void ImageView::drawPixelGrid(NVGcontext* ctx, const Vector2f& upperLeftCorner,
-                              const Vector2f& lowerRightCorner, const float stride) {
+                              const Vector2f& lowerRightCorner, float stride) {
     nvgBeginPath(ctx);
-    // Draw the vertical lines for the grid
-    float currentX = std::floor(upperLeftCorner.x());
+
+    // Draw the vertical grid lines
+    float currentX = upperLeftCorner.x();
     while (currentX <= lowerRightCorner.x()) {
-        nvgMoveTo(ctx, std::floor(currentX), std::floor(upperLeftCorner.y()));
-        nvgLineTo(ctx, std::floor(currentX), std::floor(lowerRightCorner.y()));
+        nvgMoveTo(ctx, std::round(currentX), std::round(upperLeftCorner.y()));
+        nvgLineTo(ctx, std::round(currentX), std::round(lowerRightCorner.y()));
         currentX += stride;
     }
-    // Draw the horizontal lines for the grid.
-    float currentY = std::floor(upperLeftCorner.y());
+
+    // Draw the horizontal grid lines
+    float currentY = upperLeftCorner.y();
     while (currentY <= lowerRightCorner.y()) {
-        nvgMoveTo(ctx, std::floor(upperLeftCorner.x()), std::floor(currentY));
-        nvgLineTo(ctx, std::floor(lowerRightCorner.x()), std::floor(currentY));
+        nvgMoveTo(ctx, std::round(upperLeftCorner.x()), std::round(currentY));
+        nvgLineTo(ctx, std::round(lowerRightCorner.x()), std::round(currentY));
         currentY += stride;
     }
+
     nvgStrokeWidth(ctx, 1.0f);
-    nvgStrokeColor(ctx, Color(1.0f, 1.0f, 1.0f, 1.0f));
+    nvgStrokeColor(ctx, Color(1.0f, 1.0f, 1.0f, 0.2f));
     nvgStroke(ctx);
 }
 
-void ImageView::drawPixelInfo(NVGcontext* ctx, const float stride) const {
+void ImageView::drawPixelInfo(NVGcontext* ctx, float stride) const {
     // Extract the image coordinates at the two corners of the widget.
-    Vector2f currentPixelF = clampedImageCoordinateAt(Vector2f::Zero());
-    Vector2f lastPixelF = clampedImageCoordinateAt(sizeF());
-    // Round the top left coordinates down and bottom down coordinates up.
-    // This is done so that the edge information does not pop up suddenly when it gets in range.
-    currentPixelF = currentPixelF.unaryExpr([](float x) { return std::floor(x); });
-    lastPixelF = lastPixelF.unaryExpr([](float x) { return std::ceil(x); });
-    Vector2i currentPixel = currentPixelF.cast<int>();
-    Vector2i lastPixel = lastPixelF.cast<int>();
+    Vector2i topLeft = clampedImageCoordinateAt(Vector2f::Zero())
+                           .unaryExpr([](float x) { return std::floor(x); })
+                           .cast<int>();
+
+    Vector2i bottomRight = clampedImageCoordinateAt(sizeF())
+                               .unaryExpr([](float x) { return std::ceil(x); })
+                               .cast<int>();
 
     // Extract the positions for where to draw the text.
-    Vector2f currentCellPosition = (positionF() + positionForCoordinate(currentPixelF));
+    Vector2f currentCellPosition =
+        (positionF() + positionForCoordinate(topLeft.cast<float>()));
+
     float xInitialPosition = currentCellPosition.x();
-    int xInitialIndex = currentPixel.x();
+    int xInitialIndex = topLeft.x();
 
     // Properly scale the pixel information for the given stride.
     auto fontSize = stride * mFontScaleFactor;
     static constexpr float maxFontSize = 30.0f;
     fontSize = fontSize > maxFontSize ? maxFontSize : fontSize;
-    nvgSave(ctx);
     nvgBeginPath(ctx);
     nvgFontSize(ctx, fontSize);
     nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
     nvgFontFace(ctx, "sans");
-    while (currentPixel.y() != lastPixel.y()) {
-        while (currentPixel.x() != lastPixel.x()) {
-            writePixelInfo(ctx, currentCellPosition, currentPixel, stride);
+    while (topLeft.y() != bottomRight.y()) {
+        while (topLeft.x() != bottomRight.x()) {
+            writePixelInfo(ctx, currentCellPosition, topLeft, stride, fontSize);
             currentCellPosition.x() += stride;
-            ++currentPixel.x();
+            ++topLeft.x();
         }
         currentCellPosition.x() = xInitialPosition;
         currentCellPosition.y() += stride;
-        ++currentPixel.y();
-        currentPixel.x() = xInitialIndex;
+        ++topLeft.y();
+        topLeft.x() = xInitialIndex;
     }
-    nvgRestore(ctx);
 }
 
 void ImageView::writePixelInfo(NVGcontext* ctx, const Vector2f& cellPosition,
-                               const Vector2i& pixel, const float stride) const {
+                               const Vector2i& pixel, float stride, float fontSize) const {
     auto pixelData = mPixelInfoCallback(pixel);
-    auto pixelDataRows = splitString(pixelData.first, "\n");
+    auto pixelDataRows = tokenize(pixelData.first);
 
     // If no data is provided for this pixel then simply return.
     if (pixelDataRows.empty())
         return;
 
     nvgFillColor(ctx, pixelData.second);
-    auto padding = stride / 10;
-    auto maxSize = stride - 2 * padding;
-
-    // Measure the size of a single line of text.
-    float bounds[4];
-    nvgTextBoxBounds(ctx, 0.0f, 0.0f, maxSize, pixelDataRows.front().data(), nullptr, bounds);
-    auto rowHeight = bounds[3] - bounds[1];
-    auto totalRowsHeight = rowHeight * pixelDataRows.size();
-
-    // Choose the initial y offset and the index for the past the last visible row.
-    auto yOffset = 0.0f;
-    auto lastIndex = 0;
-
-    if (totalRowsHeight > maxSize) {
-        yOffset = padding;
-        lastIndex = (int) (maxSize / rowHeight);
-    } else {
-        yOffset = (stride - totalRowsHeight) / 2;
-        lastIndex = (int) pixelDataRows.size();
-    }
-
-    for (int i = 0; i != lastIndex; ++i) {
+    float yOffset = (stride - fontSize * pixelDataRows.size()) / 2;
+    for (size_t i = 0; i != pixelDataRows.size(); ++i) {
         nvgText(ctx, cellPosition.x() + stride / 2, cellPosition.y() + yOffset,
                 pixelDataRows[i].data(), nullptr);
-        yOffset += rowHeight;
+        yOffset += fontSize;
     }
 }
 

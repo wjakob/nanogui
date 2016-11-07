@@ -141,10 +141,10 @@ private:
     void drawImageBorder(NVGcontext* ctx) const;
     void drawHelpers(NVGcontext* ctx) const;
     static void drawPixelGrid(NVGcontext* ctx, const Vector2f& upperLeftCorner,
-                              const Vector2f& lowerRightCorner, const float stride);
-    void drawPixelInfo(NVGcontext* ctx, const float stride) const;
+                              const Vector2f& lowerRightCorner, float stride);
+    void drawPixelInfo(NVGcontext* ctx, float stride) const;
     void writePixelInfo(NVGcontext* ctx, const Vector2f& cellPosition,
-                        const Vector2i& pixel, const float stride) const;
+                        const Vector2i& pixel, float stride, float fontSize) const;
 
     // Image parameters.
     GLShader mShader;
