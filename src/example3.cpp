@@ -78,6 +78,8 @@ int main(int /* argc */, char ** /* argv */) {
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // Create a nanogui screen and pass the glfw pointer to initialize
     screen = new Screen();
@@ -112,7 +114,6 @@ int main(int /* argc */, char ** /* argv */) {
     screen->setVisible(true);
     screen->performLayout();
     nanoguiWindow->center();
-
 
     glfwSetCursorPosCallback(window,
             [](GLFWwindow *, double x, double y) {
