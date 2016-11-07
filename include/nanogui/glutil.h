@@ -20,6 +20,10 @@
 namespace half_float { class half; }
 #endif
 
+#ifndef GL_HALF_FLOAT
+#  define GL_HALF_FLOAT 0x140B
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 // bypass template specializations
