@@ -76,17 +76,21 @@ void Window::draw(NVGcontext *ctx) {
                                   : mTheme->mWindowFillUnfocused);
     nvgFill(ctx);
 
+
     /* Draw a drop shadow */
     NVGpaint shadowPaint = nvgBoxGradient(
         ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
 
+    nvgSave(ctx);
+    nvgResetScissor(ctx);
     nvgBeginPath(ctx);
     nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);
     nvgFill(ctx);
+    nvgRestore(ctx);
 
     if (!mTitle.empty()) {
         /* Draw header */
@@ -109,7 +113,6 @@ void Window::draw(NVGcontext *ctx) {
         nvgSave(ctx);
         nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
         nvgStroke(ctx);
-        nvgResetScissor(ctx);
         nvgRestore(ctx);
 
         nvgBeginPath(ctx);
