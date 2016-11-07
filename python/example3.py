@@ -12,8 +12,6 @@ import nanogui
 from nanogui import *
 import time
 
-quit = False
-
 
 class TestApp(Screen):
     def __init__(self):
@@ -33,8 +31,6 @@ class TestApp(Screen):
         b = Button(window, "Quit")
 
         def cb2():
-            global quit
-            quit = True
             self.setVisible(False)
         b.setCallback(cb2)
 
@@ -54,7 +50,7 @@ if __name__ == "__main__":
     for i in range(10):
         print(i)
         time.sleep(1)
-        if quit:
+        if not nanogui.active():
             break
 
     h.join()

@@ -2539,6 +2539,8 @@ static const char *__doc_nanogui_Window_setTitle = R"doc(Set the window title)do
 
 static const char *__doc_nanogui_Window_title = R"doc(Return the window title)doc";
 
+static const char *__doc_nanogui_active = R"doc(Return whether or not a main loop is currently active)doc";
+
 static const char *__doc_nanogui_chdir_to_bundle_parent =
 R"doc(Move to the application bundle's parent directory
 
@@ -2678,13 +2680,14 @@ R"doc(Load a directory of PNG images and upload them to the GPU (suitable
 for use with ImagePanel))doc";
 
 static const char *__doc_nanogui_lookAt =
-R"doc(Creates a "look at" matrix for modeling say a camera.
+R"doc(Creates a "look at" matrix that describes the position and orientation
+of e.g. a camera
 
-Parameter ``eye``:
+Parameter ``origin``:
     The position of the camera.
 
-Parameter ``center``:
-    The gaze direction of the camera.
+Parameter ``target``:
+    The gaze target of the camera.
 
 Parameter ``up``:
     The up vector of the camera.
@@ -2692,9 +2695,7 @@ Parameter ``up``:
 ```
 Warning:
 These are used to form an orthonormal basis.  The first basis vector is
-defined as ``f = (center - eye).normalized()``, so ``eye`` cannot be
-equal to ``center``.  Additionally, ``center`` and ``up`` should be
-perpendicular.
+defined as ``f = (target - origin).normalized()``.
 
 ```)doc";
 
@@ -2762,10 +2763,10 @@ Parameter ``bottom``:
 Parameter ``top``:
     The top border of the viewport.
 
-Parameter ``zNear``:
+Parameter ``nearVal``:
     The near plane.
 
-Parameter ``zFar``:
+Parameter ``farVal``:
     The far plane.)doc";
 
 static const char *__doc_nanogui_project =
@@ -2840,15 +2841,11 @@ static const char *__doc_nanogui_ref_ref_3 = R"doc(Copy constructor)doc";
 static const char *__doc_nanogui_ref_ref_4 = R"doc(Move constructor)doc";
 
 static const char *__doc_nanogui_scale =
-R"doc(Convenience column-wise matrix scaling function.
+R"doc(Construct homogeneous coordinate scaling matrix
 
-Returns a matrix that is the piecewise scaling of m's columns with
-vector v. Column 0 of ``m`` is scaled by ``v(0)``, column 1 by
-``v(1)``, and column 2 by ``v(2)``. Column 3 is the original column 3
-of ``m``.
-
-Parameter ``m``:
-    The matrix that will be copied and then scaled for the return.
+Returns a 3D homogeneous coordinate matrix that scales the X, Y, and Z
+components with the corresponding entries of the 3D vector ``v``. The
+``w`` component is left unchanged
 
 Parameter ``v``:
     The vector representing the scaling for each axis.)doc";
@@ -2856,12 +2853,11 @@ Parameter ``v``:
 static const char *__doc_nanogui_shutdown = R"doc(Static shutdown; should be called before the application terminates.)doc";
 
 static const char *__doc_nanogui_translate =
-R"doc(Convenience matrix translation function.
+R"doc(Construct homogeneous coordinate translation matrix
 
-Returns a matrix that is the translation of m by v.
-
-Parameter ``m``:
-    The matrix that will be copied and then translated.
+Returns a 3D homogeneous coordinate matrix that translates the X, Y,
+and Z components by the corresponding entries of the 3D vector ``v``.
+The ``w`` component is left unchanged
 
 Parameter ``v``:
     The vector representing the translation for each axis.)doc";

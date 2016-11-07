@@ -103,10 +103,9 @@ public:
 #if defined(__APPLE__) || defined(__linux__)
 static void (*sigint_handler_prev)(int) = nullptr;
 static void sigint_handler(int sig) {
+    nanogui::leave();
     signal(sig, sigint_handler_prev);
     raise(sig);
-    nanogui::leave();
-    signal(sig, sigint_handler);
 }
 #endif
 
@@ -158,7 +157,9 @@ PYBIND11_PLUGIN(nanogui) {
                     handle->sema.notify();
 
                     /* Enter main loop */
+                    sigint_handler_prev = signal(SIGINT, sigint_handler);
                     mainloop(handle->refresh);
+                    signal(SIGINT, sigint_handler_prev);
 
                     /* Handshake 2: Wait for signal from new thread */
                     handle->sema.wait();
@@ -187,13 +188,24 @@ PYBIND11_PLUGIN(nanogui) {
             return handle;
         } else {
             py::gil_scoped_release release;
+
+            #if defined(__APPLE__) || defined(__linux__)
+                sigint_handler_prev = signal(SIGINT, sigint_handler);
+            #endif
+
             mainloop(refresh);
+
+            #if defined(__APPLE__) || defined(__linux__)
+                signal(SIGINT, sigint_handler_prev);
+            #endif
+
             return nullptr;
         }
     }, py::arg("refresh") = 50, py::arg("detach") = py::none(),
        D(mainloop), py::keep_alive<0, 2>());
 
     m.def("leave", &nanogui::leave, D(leave));
+    m.def("active", &nanogui::active, D(active));
     m.def("file_dialog", &nanogui::file_dialog, D(file_dialog));
     #if defined(__APPLE__)
         m.def("chdir_to_bundle_parent", &nanogui::chdir_to_bundle_parent);
@@ -233,10 +245,6 @@ PYBIND11_PLUGIN(nanogui) {
     register_formhelper(m);
     register_misc(m);
     register_glutil(m);
-
-    #if defined(__APPLE__) || defined(__linux__)
-        sigint_handler_prev = signal(SIGINT, sigint_handler);
-    #endif
 
     return m.ptr();
 }

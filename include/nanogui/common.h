@@ -444,6 +444,9 @@ extern NANOGUI_EXPORT void mainloop(int refresh = 50);
 /// Request the application main loop to terminate (e.g. if you detached mainloop).
 extern NANOGUI_EXPORT void leave();
 
+/// Return whether or not a main loop is currently active
+extern NANOGUI_EXPORT bool active();
+
 /**
  * \brief Open a native file open/save dialog.
  *
