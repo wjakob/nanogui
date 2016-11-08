@@ -48,7 +48,7 @@ static void setUniformPy(GLShader &sh, const std::string &name, py::object arg, 
     py::array value_ = py::array::ensure(arg);
     auto dtype = value_.dtype();
     if (dtype.kind() == 'f') {
-        auto value = py::array_t<float, py::array::forcecast>(value_);
+        auto value = py::array_t<float, py::array::forcecast | py::array::c_style>(value_);
         if (!value.check())
             throw py::type_error("setUniform(): invalid argument!");
 
