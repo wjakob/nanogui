@@ -318,8 +318,8 @@ def generateDoxygenXML(stripPath):
     from subprocess import PIPE, Popen
     try:
         doxygen_cmd = ["doxygen", "-"]# "-" tells Doxygen to read configs from stdin
-        doxygen_proc = Popen(doxygen_cmd, stdin=PIPE)
-        doxygen_proc.communicate(input=r'''
+        doxygen_proc  = Popen(doxygen_cmd, stdin=PIPE)
+        doxygen_input = r'''
             # Make this the same as what you tell exhale.
             OUTPUT_DIRECTORY       = doxyoutput
             # If you need this to be YES, exhale will probably break.
@@ -354,7 +354,11 @@ def generateDoxygenXML(stripPath):
             PREDEFINED            += DOXYGEN_SHOULD_SKIP_THIS
             PREDEFINED            += DOXYGEN_DOCUMENTATION_BUILD
             PREDEFINED            += NANOGUI_EXPORT
-        ''' % stripPath)
+        ''' % stripPath
+        # In python 3 strings and bytes are no longer interchangeable
+        if sys.version[0] == "3":
+            doxygen_input = bytes(doxygen_input, 'ASCII')
+        doxygen_proc.communicate(input=doxygen_input)
         doxygen_proc.stdin.close()
         if doxygen_proc.wait() != 0:
             raise RuntimeError("Non-zero return code from 'doxygen'...")
