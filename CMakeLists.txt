@@ -69,9 +69,9 @@ if (NANOGUI_BUILD_PYTHON)
   list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_PYTHON)
 endif()
 
-# Shared library mode: add NANOGUI_SHARED flag to all targets
+# Shared library mode: add dllimport/dllexport flags to all symbols
 if (NANOGUI_BUILD_SHARED)
-  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_SHARED)
+  list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_SHARED -DNVG_SHARED -DGLAD_GLAPI_EXPORT)
 endif()
 
 if (MSVC)
@@ -326,7 +326,7 @@ add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   $<TARGET_OBJECTS:glfw_objects>
 )
 
-if (${NANOGUI_LIBRARY_TYPE} MATCHES "SHARED")
+if (NANOGUI_BUILD_SHARED)
   set_property(TARGET nanogui-obj PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
