@@ -46,7 +46,7 @@ help:
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/ doxyoutput/ generated_api/ __pycache__/ *.pyc
 
 .PHONY: html
 html:
