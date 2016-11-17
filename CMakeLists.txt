@@ -246,19 +246,28 @@ endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
-# Run simple C converter to put font files into the data segment
-add_executable(bin2c resources/bin2c.c)
-set(bin2c_cmdline nanogui_resources.cpp nanogui_resources.h)
+
+# Run simple cmake converter to put font files into the data segment
+
+# Glob up resource files
 file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
-foreach(file ${resources})
-  list(APPEND bin2c_cmdline ${file})
-endforeach()
+
+# Concatenate resource files into a comma separated string
+string (REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
+string (REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
+
+# Create command line for running bin2c cmake script
+set(bin2c_cmdline
+  -DOUTPUT_C=nanogui_resources.cpp
+  -DOUTPUT_H=nanogui_resources.h
+  "-DINPUT_FILES=${resources_string}"
+  -P "${CMAKE_CURRENT_SOURCE_DIR}/resources/bin2c.cmake")
 
 # Run bin2c on resource files
 add_custom_command(
   OUTPUT nanogui_resources.cpp nanogui_resources.h
-  COMMAND $<TARGET_FILE:bin2c> ARGS ${bin2c_cmdline}
-  DEPENDS bin2c ${resources}
+  COMMAND ${CMAKE_COMMAND} ARGS ${bin2c_cmdline}
+  DEPENDS ${resources}
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
 
