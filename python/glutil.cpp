@@ -49,9 +49,6 @@ static void setUniformPy(GLShader &sh, const std::string &name, py::object arg, 
     auto dtype = value_.dtype();
     if (dtype.kind() == 'f') {
         auto value = py::array_t<float, py::array::forcecast | py::array::c_style>(value_);
-        if (!value.check())
-            throw py::type_error("setUniform(): invalid argument!");
-
         if (value.ndim() == 0 || (value.ndim() == 1 && value.shape(0) == 1))
             glUniform1fv(id, 1, value.data());
         else if (value.ndim() == 1 && value.shape(0) == 2)
@@ -68,8 +65,6 @@ static void setUniformPy(GLShader &sh, const std::string &name, py::object arg, 
             throw py::type_error("setUniform(): invalid dimension/size!");
     } else if (dtype.kind() == 'i') {
         auto value = py::array_t<int, py::array::forcecast>(value_);
-        if (!value.check())
-            throw py::type_error("setUniform(): invalid argument!");
 
         if (value.ndim() == 0 || (value.ndim() == 1 && value.shape(0) == 1))
             glUniform1iv(id, 1, value.data());
@@ -83,8 +78,6 @@ static void setUniformPy(GLShader &sh, const std::string &name, py::object arg, 
             throw py::type_error("setUniform(): invalid dimension/size!");
     } else if (dtype.kind() == 'u') {
         auto value = py::array_t<unsigned int, py::array::forcecast>(value_);
-        if (!value.check())
-            throw py::type_error("setUniform(): invalid argument!");
 
         if (value.ndim() == 0 || (value.ndim() == 1 && value.shape(0) == 1))
             glUniform1uiv(id, 1, value.data());
