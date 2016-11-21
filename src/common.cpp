@@ -78,7 +78,11 @@ void mainloop(int refresh) {
                 std::chrono::milliseconds time(refresh);
                 while (mainloop_active) {
                     std::this_thread::sleep_for(time);
+#ifndef NANOVG_GLES2_IMPLEMENTATION
+#ifndef NANOVG_GL2_IMPLEMENTATION
                     glfwPostEmptyEvent();
+#endif
+#endif
                 }
             }
         );
