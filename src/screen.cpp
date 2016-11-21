@@ -32,7 +32,7 @@
 #endif
 
 /* Allow enforcing the GL2 implementation of NanoVG */
-#define NANOVG_GL3_IMPLEMENTATION
+//#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 
 NAMESPACE_BEGIN(nanogui)
