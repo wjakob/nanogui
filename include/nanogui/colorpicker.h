@@ -39,6 +39,8 @@ protected:
     std::function<void(const Color &)> mCallback;
     ColorWheel *mColorWheel;
     Button *mPickButton;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)
