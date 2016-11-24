@@ -139,7 +139,7 @@ void register_glutil(py::module &m) {
 
     py::class_<Arcball>(m, "Arcball", D(Arcball))
         .def(py::init<float>(), py::arg("speedFactor") = 2.f, D(Arcball, Arcball))
-        .def(py::init<const Quaternionf>(), D(Arcball, Arcball, 2))
+        .def(py::init<const Quaternionf &>(), D(Arcball, Arcball, 2))
         .def("state", &Arcball::state, D(Arcball, state))
         .def("setState", &Arcball::setState, D(Arcball, setState))
         .def("size", &Arcball::size, D(Arcball, size))
