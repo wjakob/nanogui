@@ -43,4 +43,8 @@ void chdir_to_bundle_parent() {
     chdir([path fileSystemRepresentation]);
 }
 
+void disable_saved_application_state_osx() {
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"NSQuitAlwaysKeepsWindows"];
+}
+
 NAMESPACE_END(nanogui)

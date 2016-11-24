@@ -31,10 +31,18 @@ NAMESPACE_BEGIN(nanogui)
 
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
+#if defined(__APPLE__)
+  extern void disable_saved_application_state_osx();
+#endif
+
 void init() {
     #if !defined(_WIN32)
         /* Avoid locale-related number parsing issues */
         setlocale(LC_NUMERIC, "C");
+    #endif
+
+    #if defined(__APPLE__)
+        disable_saved_application_state_osx();
     #endif
 
     glfwSetErrorCallback(
