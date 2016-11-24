@@ -113,7 +113,7 @@ void mainloop(int refresh) {
         glfwPollEvents();
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-        abort();
+        leave();
     }
 
     if (refresh > 0)
