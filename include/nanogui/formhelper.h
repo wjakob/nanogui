@@ -151,7 +151,7 @@ public:
 
     /// Add a new data widget controlled using custom getter/setter functions
     template <typename Type> detail::FormWidget<Type> *
-    addVariable(const std::string &label, const std::function<void(Type)> &setter,
+    addVariable(const std::string &label, const std::function<void(const Type &)> &setter,
                 const std::function<Type()> &getter, bool editable = true) {
         Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
         auto widget = new detail::FormWidget<Type>(mWindow);
@@ -180,7 +180,7 @@ public:
     template <typename Type> detail::FormWidget<Type> *
     addVariable(const std::string &label, Type &value, bool editable = true) {
         return addVariable<Type>(label,
-            [&](Type v) { value = v; },
+            [&](const Type & v) { value = v; },
             [&]() -> Type { return value; },
             editable
         );
@@ -281,8 +281,8 @@ public:
     FormWidget(Widget *p) : ComboBox(p) { }
     T value() const { return (T) selectedIndex(); }
     void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
-    void setCallback(const std::function<void(T)> &cb) {
-        ComboBox::setCallback([cb](int v) { cb((T) v); });
+    void setCallback(const std::function<void(const T &)> &cb) {
+        ComboBox::setCallback([cb](int v) { cb((const T &) v); });
     }
     void setEditable(bool e) { setEnabled(e); }
 public:
