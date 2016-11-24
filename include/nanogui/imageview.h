@@ -168,7 +168,7 @@ private:
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

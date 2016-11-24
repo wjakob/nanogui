@@ -120,7 +120,7 @@ protected:
     float mTextOffset;
     double mLastClick;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -233,7 +233,7 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -347,7 +347,7 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

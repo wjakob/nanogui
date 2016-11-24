@@ -70,7 +70,7 @@ protected:
     int mAnchorHeight;
     Side mSide;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -61,7 +61,7 @@ protected:
     Region mDragRegion;
     std::function<void(const Color &)> mCallback;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -257,7 +257,7 @@ protected:
     int mPostGroupSpacing = 5;
     int mVariableSpacing = 5;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_BEGIN(detail)
@@ -273,7 +273,7 @@ public:
     void setEditable(bool e) { setEnabled(e); }
     bool value() const { return checked(); }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <typename T> class FormWidget<T, typename std::is_enum<T>::type> : public ComboBox {
@@ -286,21 +286,21 @@ public:
     }
     void setEditable(bool e) { setEnabled(e); }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
 public:
     FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
 public:
     FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <> class FormWidget<std::string, std::true_type> : public TextBox {
@@ -310,7 +310,7 @@ public:
         TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
     }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <> class FormWidget<Color, std::true_type> : public ColorPicker {
@@ -320,7 +320,7 @@ public:
     void setEditable(bool e) { setEnabled(e); }
     Color value() const { return color(); }
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

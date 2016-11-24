@@ -416,7 +416,7 @@ protected:
     Vector2i mSize;
     int mSamples;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 //  ----------------------------------------------------
@@ -507,7 +507,7 @@ protected:
     Quaternionf mQuat, mIncr;
     float mSpeedFactor;
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 //  ----------------------------------------------------
