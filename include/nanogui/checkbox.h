@@ -48,6 +48,8 @@ protected:
     std::string mCaption;
     bool mPushed, mChecked;
     std::function<void(bool)> mCallback;
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

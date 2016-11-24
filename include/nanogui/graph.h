@@ -56,6 +56,8 @@ protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
     VectorXf mValues;
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -55,6 +55,8 @@ protected:
     std::vector<std::string> mItems, mItemsShort;
     std::function<void(int)> mCallback;
     int mSelectedIndex;
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -83,6 +83,8 @@ public:
     Color mWindowPopupTransparent;
 protected:
     virtual ~Theme() { };
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

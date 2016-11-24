@@ -198,6 +198,8 @@ protected:
     std::string mCaption;
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -344,6 +344,8 @@ public:
 
     /// Allows for conversion between this Color and NanoVG's representation.
     inline operator const NVGcolor &() const;
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 // skip the forward declarations for the docs
