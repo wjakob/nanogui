@@ -35,6 +35,10 @@
 //#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 
+#if defined(NANOVG_GL2_IMPLEMENTATION) || defined(NANOVG_GLES2_IMPLEMENTATION)
+#define NANOVG_CURSOR_DISABLED
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 std::map<GLFWwindow *, Screen *> __nanogui_screens;
@@ -141,9 +145,14 @@ static float get_pixel_ratio(GLFWwindow *window) {
 
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
+#ifndef NANOVG_CURSOR_DISABLED
+      mCursor(Cursor::Arrow),
+#endif
+      mBackground(0.3f, 0.3f, 0.32f, 1.f),
       mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+#ifndef NANOVG_CURSOR_DISABLED
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+#endif
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
@@ -151,9 +160,14 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
+#ifndef NANOVG_CURSOR_DISABLED
+      mCursor(Cursor::Arrow),
+#endif
+      mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
+#ifndef NANOVG_CURSOR_DISABLED
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+#endif
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
        Default value is an OpenGL 3.3 core profile context. */
@@ -375,8 +389,10 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mProcessEvents = true;
     __nanogui_screens[mGLFWWindow] = this;
 
+#ifndef NANOVG_CURSOR_DISABLED
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
+#endif
 
     /// Fixes retina display-related font rendering issue (#185)
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
@@ -385,10 +401,12 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
 Screen::~Screen() {
     __nanogui_screens.erase(mGLFWWindow);
+#ifndef NANOVG_CURSOR_DISABLED
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
             glfwDestroyCursor(mCursors[i]);
     }
+#endif
     if (mNVGContext)
         nvgDeleteContext(mNVGContext);
     if (mGLFWWindow && mShutdownGLFWOnDestruct)
@@ -548,11 +566,13 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         p -= Vector2i(1, 2);
 
         if (!mDragActive) {
+#ifndef NANOVG_CURSOR_DISABLED
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
                 glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
             }
+#endif
         } else {
             ret = mDragWidget->mouseDragEvent(
                 p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
@@ -596,10 +616,12 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
                 mMousePos - mDragWidget->parent()->absolutePosition(), button,
                 false, mModifiers);
 
+#ifndef NANOVG_CURSOR_DISABLED
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
             glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
         }
+#endif
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
