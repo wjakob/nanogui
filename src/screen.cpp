@@ -43,6 +43,29 @@ std::map<GLFWwindow *, Screen *> __nanogui_screens;
 static bool gladInitialized = false;
 #endif
 
+inline NVGcontext* nvgCreateContext(int flags) {
+#if defined NANOVG_GL2_IMPLEMENTATION
+  return nvgCreateGL2(flags);
+#elif defined NANOVG_GL3_IMPLEMENTATION
+  return nvgCreateGL3(flags);
+#elif defined NANOVG_GLES2_IMPLEMENTATION
+  return nvgCreateGLES2(flags);
+#elif defined NANOVG_GLES3_IMPLEMENTATION
+  return nvgCreateGLES3(flags);
+#endif
+}
+inline void nvgDeleteContext(NVGcontext* ctx) {
+#if defined NANOVG_GL2_IMPLEMENTATION
+  nvgDeleteGL2(ctx);
+#elif defined NANOVG_GL3_IMPLEMENTATION
+  nvgDeleteGL3(ctx);
+#elif defined NANOVG_GLES2_IMPLEMENTATION
+  nvgDeleteGLES2(ctx);
+#elif defined NANOVG_GLES3_IMPLEMENTATION
+  nvgDeleteGLES3(ctx);
+#endif
+}
+
 /* Calculate pixel ratio for hi-dpi devices. */
 static float get_pixel_ratio(GLFWwindow *window) {
 #if defined(_WIN32)
@@ -240,6 +263,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
+#ifndef NANOVG_GL2_IMPLEMENTATION
+#ifndef NANOVG_GLES2_IMPLEMENTATION
     glfwSetDropCallback(mGLFWWindow,
         [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
@@ -251,6 +276,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
             s->dropCallbackEvent(count, filenames);
         }
     );
+#endif
+#endif
 
     glfwSetScrollCallback(mGLFWWindow,
         [](GLFWwindow *w, double x, double y) {
@@ -335,7 +362,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     flags |= NVG_DEBUG;
 #endif
 
-    mNVGContext = nvgCreateGL3(flags);
+    mNVGContext = nvgCreateContext(flags);
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
 
@@ -363,7 +390,7 @@ Screen::~Screen() {
             glfwDestroyCursor(mCursors[i]);
     }
     if (mNVGContext)
-        nvgDeleteGL3(mNVGContext);
+        nvgDeleteContext(mNVGContext);
     if (mGLFWWindow && mShutdownGLFWOnDestruct)
         glfwDestroyWindow(mGLFWWindow);
 }
