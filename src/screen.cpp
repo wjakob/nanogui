@@ -426,7 +426,11 @@ void Screen::drawWidgets() {
 #endif
 
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
+#ifndef NANOVG_GL2_IMPLEMENTATION
+#ifndef NANOVG_GLES2_IMPLEMENTATION
     glBindSampler(0, 0);
+#endif
+#endif
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
