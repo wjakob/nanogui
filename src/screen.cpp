@@ -31,13 +31,7 @@
 #  include <GLFW/glfw3native.h>
 #endif
 
-/* Allow enforcing the GL2 implementation of NanoVG */
-//#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
-
-#if defined(NANOVG_GL2_IMPLEMENTATION) || defined(NANOVG_GLES2_IMPLEMENTATION)
-#define NANOVG_CURSOR_DISABLED
-#endif
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -145,12 +139,12 @@ static float get_pixel_ratio(GLFWwindow *window) {
 
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
       mCursor(Cursor::Arrow),
 #endif
       mBackground(0.3f, 0.3f, 0.32f, 1.f),
       mShutdownGLFWOnDestruct(false), mFullscreen(false) {
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 #endif
 }
@@ -160,12 +154,12 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
       mCursor(Cursor::Arrow),
 #endif
       mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 #endif
 
@@ -277,8 +271,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-#ifndef NANOVG_GL2_IMPLEMENTATION
-#ifndef NANOVG_GLES2_IMPLEMENTATION
+#if !defined(NANOVG_GL2_IMPLEMENTATION) && !defined(NANOVG_GLES2_IMPLEMENTATION)
     glfwSetDropCallback(mGLFWWindow,
         [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
@@ -290,7 +283,6 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
             s->dropCallbackEvent(count, filenames);
         }
     );
-#endif
 #endif
 
     glfwSetScrollCallback(mGLFWWindow,
@@ -389,7 +381,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mProcessEvents = true;
     __nanogui_screens[mGLFWWindow] = this;
 
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
 #endif
@@ -401,7 +393,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
 Screen::~Screen() {
     __nanogui_screens.erase(mGLFWWindow);
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
             glfwDestroyCursor(mCursors[i]);
@@ -470,10 +462,8 @@ void Screen::drawWidgets() {
 #endif
 
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
-#ifndef NANOVG_GL2_IMPLEMENTATION
-#ifndef NANOVG_GLES2_IMPLEMENTATION
+#if !defined(NANOVG_GL2_IMPLEMENTATION) && !defined(NANOVG_GLES2_IMPLEMENTATION)
     glBindSampler(0, 0);
-#endif
 #endif
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
@@ -570,7 +560,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         p -= Vector2i(1, 2);
 
         if (!mDragActive) {
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
@@ -620,7 +610,7 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
                 mMousePos - mDragWidget->parent()->absolutePosition(), button,
                 false, mModifiers);
 
-#ifndef NANOVG_CURSOR_DISABLED
+#if !defined(NANOGUI_CURSOR_DISABLED)
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
             glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
