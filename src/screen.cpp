@@ -42,24 +42,24 @@ static bool gladInitialized = false;
 #endif
 
 inline NVGcontext* nvgCreateContext(int flags) {
-#if defined NANOVG_GL2_IMPLEMENTATION
+#if defined(NANOVG_GL2_IMPLEMENTATION)
   return nvgCreateGL2(flags);
-#elif defined NANOVG_GL3_IMPLEMENTATION
+#elif defined(NANOVG_GL3_IMPLEMENTATION)
   return nvgCreateGL3(flags);
-#elif defined NANOVG_GLES2_IMPLEMENTATION
+#elif defined(NANOVG_GLES2_IMPLEMENTATION)
   return nvgCreateGLES2(flags);
-#elif defined NANOVG_GLES3_IMPLEMENTATION
+#elif defined(NANOVG_GLES3_IMPLEMENTATION)
   return nvgCreateGLES3(flags);
 #endif
 }
 inline void nvgDeleteContext(NVGcontext* ctx) {
-#if defined NANOVG_GL2_IMPLEMENTATION
+#if defined(NANOVG_GL2_IMPLEMENTATION)
   nvgDeleteGL2(ctx);
-#elif defined NANOVG_GL3_IMPLEMENTATION
+#elif defined(NANOVG_GL3_IMPLEMENTATION)
   nvgDeleteGL3(ctx);
-#elif defined NANOVG_GLES2_IMPLEMENTATION
+#elif defined(NANOVG_GLES2_IMPLEMENTATION)
   nvgDeleteGLES2(ctx);
-#elif defined NANOVG_GLES3_IMPLEMENTATION
+#elif defined(NANOVG_GLES3_IMPLEMENTATION)
   nvgDeleteGLES3(ctx);
 #endif
 }
