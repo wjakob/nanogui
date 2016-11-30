@@ -50,6 +50,8 @@ inline NVGcontext* nvgCreateContext(int flags) {
   return nvgCreateGLES2(flags);
 #elif defined(NANOVG_GLES3_IMPLEMENTATION)
   return nvgCreateGLES3(flags);
+#else
+#error No NANOVG_GL*_IMPLEMENTATION macro defined
 #endif
 }
 inline void nvgDeleteContext(NVGcontext* ctx) {
@@ -61,6 +63,8 @@ inline void nvgDeleteContext(NVGcontext* ctx) {
   nvgDeleteGLES2(ctx);
 #elif defined(NANOVG_GLES3_IMPLEMENTATION)
   nvgDeleteGLES3(ctx);
+#else
+#error No NANOVG_GL*_IMPLEMENTATION macro defined
 #endif
 }
 
