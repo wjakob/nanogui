@@ -13,6 +13,7 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <unordered_map>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -35,6 +36,13 @@ public:
     bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
+
+    /// Is this window minimized
+    bool minimized() const { return mMinimized; }
+    /// Set minimized state
+    void setMinimized(bool minimized);
+    /// Toggle minimize - minimize or expand window depending on the current minimized state
+    void toggleMinimized(){ setMinimized(!mMinimized); }
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -62,11 +70,21 @@ public:
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
+
+    /// Internal helper function to restore mChildren visible states from mChildrenVisibleStates
+    void restoreChildrenVisibleStates();
+    /// Internal helper function to save mChildren visible states to mChildrenVisibleStates
+    void saveChildrenVisibleStates();
+    /// Internal helper function to set visible false for all mChildren
+    void hideAllChildren(bool hideButtonPanel=false);
 protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mMinimized;
+    Vector2i mNotMinimizedSize;
+    std::unordered_map<Widget *, bool> mChildrenVisibleStates;
 };
 
 NAMESPACE_END(nanogui)
