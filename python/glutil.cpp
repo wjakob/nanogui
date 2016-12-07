@@ -108,7 +108,7 @@ void register_glutil(py::module &m) {
         .def("free", &GLShader::free, D(GLShader, free))
         .def("attrib", &GLShader::attrib, py::arg("name"),
              py::arg("warn") = true, D(GLShader, attrib))
-        .def("uniform", &GLShader::attrib, py::arg("name"),
+        .def("uniform", &GLShader::uniform, py::arg("name"),
              py::arg("warn") = true, D(GLShader, uniform))
         .def("uploadAttrib", &uploadAttribPy, py::arg("name"),
              py::arg("M"), py::arg("version") = -1)
