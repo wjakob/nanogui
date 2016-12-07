@@ -415,6 +415,8 @@ protected:
     GLuint mFramebuffer, mDepth, mColor;
     Vector2i mSize;
     int mSamples;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 //  ----------------------------------------------------
@@ -504,6 +506,8 @@ protected:
     Vector2i mSize;
     Quaternionf mQuat, mIncr;
     float mSpeedFactor;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 //  ----------------------------------------------------
