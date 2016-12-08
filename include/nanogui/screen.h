@@ -123,7 +123,7 @@ public:
     virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
     /// Window resize event handler
-    virtual bool resizeEvent(const Vector2i& size) { if (mResizeCallback) mResizeCallback(size); return false; }
+    virtual bool resizeEvent(const Vector2i& size);
 
     /// Set the resize callback
     std::function<void(Vector2i)> resizeCallback() const { return mResizeCallback; }
