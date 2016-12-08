@@ -457,8 +457,10 @@ bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
 }
 
 bool Screen::resizeEvent(const Vector2i& size) {
-    if (mResizeCallback)
+    if (mResizeCallback) {
         mResizeCallback(size);
+        return true;
+    }
     return false;
 }
 
