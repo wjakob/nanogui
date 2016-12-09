@@ -46,6 +46,7 @@ void register_widget(py::module &m) {
         .def("__getitem__", (Widget* (Widget::*)(int)) &Widget::childAt, D(Widget, childAt))
         .def("removeChild", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild))
         .def("removeChild", (void(Widget::*)(const Widget *)) &Widget::removeChild, D(Widget, removeChild, 2))
+        .def("__delitem__", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild, 2))
         .def("window", &Widget::window, D(Widget, window))
         .def("setId", &Widget::setId, D(Widget, setId))
         .def("id", &Widget::id, D(Widget, id))
