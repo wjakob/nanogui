@@ -413,7 +413,7 @@ if (NANOGUI_BUILD_PYTHON)
   # Try to autodetect Python (can be overridden manually if needed)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
   set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
-  find_package(PythonLibsNew ${MITSUBA_PYTHON_VERSION})
+  find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
     set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)

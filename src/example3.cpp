@@ -78,6 +78,14 @@ int main(int /* argc */, char ** /* argv */) {
         return -1;
     }
     glfwMakeContextCurrent(window);
+
+#if defined(NANOGUI_GLAD)
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        throw std::runtime_error("Could not initialize GLAD!");
+    }
+    glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
+#endif
+
     glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 

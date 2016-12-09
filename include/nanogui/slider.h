@@ -57,6 +57,8 @@ protected:
     std::pair<float, float> mRange;
     std::pair<float, float> mHighlightedRange;
     Color mHighlightColor;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

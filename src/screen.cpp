@@ -310,6 +310,9 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
+
+    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
+    nvgEndFrame(mNVGContext);
 }
 
 Screen::~Screen() {
