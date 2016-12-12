@@ -48,6 +48,7 @@ public:
     int mTabControlWidth;
     int mTabButtonHorizontalPadding;
     int mTabButtonVerticalPadding;
+    int mResizeAreaOffset;
 
     /* Generic colors */
     Color mDropShadow;

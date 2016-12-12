@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
-    Window(Widget *parent, const std::string &title = "Untitled");
+    Window(Widget *parent, const std::string &title = "Untitled", bool resizable = false);
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
@@ -35,6 +35,11 @@ public:
     bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
+
+    /// Is this a resizable window?
+    bool resizable() const { return mResizable; }
+    /// Set whether or not this window is resizable
+    void setResizable(bool resizable) { mResizable = resizable; }
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -49,6 +54,8 @@ public:
     virtual void draw(NVGcontext *ctx) override;
     /// Handle window drag events
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    /// Handle a mouse motion event (default implementation: propagate to children)
+    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     /// Handle mouse events recursively and bring the current window to the top
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
     /// Accept scroll events and propagate them to the widget under the mouse cursor
@@ -62,11 +69,18 @@ public:
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
+
+    virtual int checkHorizontalResize(const Vector2i &mousePos);
+    virtual int checkVerticalResize(const Vector2i &mousePos);
 protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mResize;
+    Vector2i mResizeDir;
+    Vector2i mMinSize;
+    bool mResizable;
 };
 
 NAMESPACE_END(nanogui)

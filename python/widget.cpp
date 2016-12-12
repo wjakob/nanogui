@@ -92,7 +92,9 @@ void register_widget(py::module &m) {
         .def("setModal", &Window::setModal, D(Window, setModal))
         .def("dispose", &Window::dispose, D(Window, dispose))
         .def("buttonPanel", &Window::buttonPanel, D(Window, buttonPanel))
-        .def("center", &Window::center, D(Window, center));
+        .def("center", &Window::center, D(Window, center))
+        .def("resizable", &Window::resizable, D(Window, resizable))
+        .def("setResizable", &Window::setResizable, D(Window, setResizable));
 
     py::class_<Screen, Widget, ref<Screen>, PyScreen>(m, "Screen", D(Screen))
         .def(py::init<const Vector2i &, const std::string &, bool, bool, int, int, int, int, int, unsigned int, unsigned int>(),
