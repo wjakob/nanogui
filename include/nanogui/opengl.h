@@ -34,6 +34,16 @@
 #include <GLFW/glfw3.h>
 #include <nanovg.h>
 
+// Special treatment of linux Nvidia opengl headers
+#if !defined(_WIN32) && !defined(__APPLE__)
+  #if !defined(GL_UNIFORM_BUFFER)
+    #warning NanoGUI suspects you have the NVIDIA OpenGL headers installed.  \
+             Compilation will likely fail. If it does, you have two choices: \
+             (1) Re-install the mesa-libGL header files.                     \
+             (2) Compile with NANOGUI_USE_GLAD.
+  #endif
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 /// Allows for conversion between nanogui::Color and the NanoVG NVGcolor class.
