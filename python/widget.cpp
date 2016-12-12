@@ -109,6 +109,8 @@ void register_widget(py::module &m) {
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
         .def("resizeEvent", &Screen::resizeEvent, py::arg("size"), D(Screen, resizeEvent))
+        .def("resizeCallback", &Screen::resizeCallback)
+        .def("setResizeCallback", &Screen::setResizeCallback)
         .def("dropEvent", &Screen::dropEvent, D(Screen, dropEvent))
         .def("mousePos", &Screen::mousePos, D(Screen, mousePos))
         .def("pixelRatio", &Screen::pixelRatio, D(Screen, pixelRatio))

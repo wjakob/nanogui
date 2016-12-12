@@ -123,7 +123,11 @@ public:
     virtual bool keyboardCharacterEvent(unsigned int codepoint);
 
     /// Window resize event handler
-    virtual bool resizeEvent(const Vector2i &) { return false; }
+    virtual bool resizeEvent(const Vector2i& size);
+
+    /// Set the resize callback
+    std::function<void(Vector2i)> resizeCallback() const { return mResizeCallback; }
+    void setResizeCallback(const std::function<void(Vector2i)> &callback) { mResizeCallback = callback; }
 
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }
@@ -198,6 +202,7 @@ protected:
     std::string mCaption;
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
+    std::function<void(Vector2i)> mResizeCallback;
 };
 
 NAMESPACE_END(nanogui)
