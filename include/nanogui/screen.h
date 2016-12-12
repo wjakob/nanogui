@@ -16,6 +16,10 @@
 
 #include <nanogui/widget.h>
 
+#if defined(NANOVG_GL2_IMPLEMENTATION) || defined(NANOVG_GLES2_IMPLEMENTATION)
+#define NANOGUI_CURSOR_DISABLED
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 /**
@@ -187,8 +191,10 @@ public:
 protected:
     GLFWwindow *mGLFWWindow;
     NVGcontext *mNVGContext;
+#if !defined(NANOGUI_CURSOR_DISABLED)
     GLFWcursor *mCursors[(int) Cursor::CursorCount];
     Cursor mCursor;
+#endif
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;
     float mPixelRatio;
