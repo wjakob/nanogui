@@ -70,7 +70,7 @@ Code Style Requirements
 
     .. code-block:: cpp
 
-       for(auto &&c : myVec) {
+       for (auto &&c : myVec) {
            // ... computation ...
        }
   - **No**:

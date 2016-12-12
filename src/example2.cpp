@@ -33,7 +33,7 @@ Color colval(0.5f, 0.5f, 0.7f, 1.f);
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    {
+    /* scoped variables */ {
         bool use_gl_4_1 = false;// Set to true to create an OpenGL 4.1 context.
         Screen *screen = nullptr;
 
@@ -44,8 +44,7 @@ int main(int /* argc */, char ** /* argv */) {
                                 /*resizable*/true, /*fullscreen*/false, /*colorBits*/8,
                                 /*alphaBits*/8, /*depthBits*/24, /*stencilBits*/8,
                                 /*nSamples*/0, /*glMajor*/4, /*glMinor*/1);
-        }
-        else {
+        } else {
             screen = new Screen(Vector2i(500, 700), "NanoGUI test");
         }
 
