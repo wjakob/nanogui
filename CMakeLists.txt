@@ -400,11 +400,6 @@ if(NANOGUI_BUILD_EXAMPLE)
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-  if (NANOGUI_INSTALL)
-    install(TARGETS example1 example2 example3 example4
-            RUNTIME DESTINATION bin)
-  endif()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
