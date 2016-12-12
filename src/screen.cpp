@@ -310,6 +310,10 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
+
+    /// Fixes retina display-related font rendering issue (#185)
+    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
+    nvgEndFrame(mNVGContext);
 }
 
 Screen::~Screen() {
@@ -452,6 +456,14 @@ bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
         for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
             if ((*it)->focused() && (*it)->keyboardCharacterEvent(codepoint))
                 return true;
+    }
+    return false;
+}
+
+bool Screen::resizeEvent(const Vector2i& size) {
+    if (mResizeCallback) {
+        mResizeCallback(size);
+        return true;
     }
     return false;
 }

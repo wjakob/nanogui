@@ -95,6 +95,8 @@ private:
     TabHeader* mHeader;
     StackedWidget* mContent;
     std::function<void(int)> mCallback;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -203,6 +203,8 @@ protected:
     int mResolution;
     Vector2i mSpacing;
     int mMargin;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**

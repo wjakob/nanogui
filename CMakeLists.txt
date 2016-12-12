@@ -247,19 +247,28 @@ endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
-# Run simple C converter to put font files into the data segment
-add_executable(bin2c resources/bin2c.c)
-set(bin2c_cmdline nanogui_resources.cpp nanogui_resources.h)
+
+# Run simple cmake converter to put font files into the data segment
+
+# Glob up resource files
 file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
-foreach(file ${resources})
-  list(APPEND bin2c_cmdline ${file})
-endforeach()
+
+# Concatenate resource files into a comma separated string
+string (REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
+string (REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
+
+# Create command line for running bin2c cmake script
+set(bin2c_cmdline
+  -DOUTPUT_C=nanogui_resources.cpp
+  -DOUTPUT_H=nanogui_resources.h
+  "-DINPUT_FILES=${resources_string}"
+  -P "${CMAKE_CURRENT_SOURCE_DIR}/resources/bin2c.cmake")
 
 # Run bin2c on resource files
 add_custom_command(
   OUTPUT nanogui_resources.cpp nanogui_resources.h
-  COMMAND $<TARGET_FILE:bin2c> ARGS ${bin2c_cmdline}
-  DEPENDS bin2c ${resources}
+  COMMAND ${CMAKE_COMMAND} ARGS ${bin2c_cmdline}
+  DEPENDS ${resources}
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
 
@@ -400,11 +409,6 @@ if(NANOGUI_BUILD_EXAMPLE)
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-  if (NANOGUI_INSTALL)
-    install(TARGETS example1 example2 example3 example4
-            RUNTIME DESTINATION bin)
-  endif()
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
@@ -412,8 +416,8 @@ if (NANOGUI_BUILD_PYTHON)
 
   # Try to autodetect Python (can be overridden manually if needed)
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
-  set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
-  find_package(PythonLibsNew ${MITSUBA_PYTHON_VERSION})
+  set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+  find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
     set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
