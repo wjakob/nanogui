@@ -206,7 +206,7 @@ void Widget::draw(NVGcontext *ctx) {
     for (auto child : mChildren) {
         if (child->visible()) {
             nvgSave(ctx);
-            nvgScissor(ctx, child->mPos.x(), child->mPos.y(), child->mSize.x(), child->mSize.y());
+            nvgIntersectScissor(ctx, child->mPos.x(), child->mPos.y(), child->mSize.x(), child->mSize.y());
             child->draw(ctx);
             nvgRestore(ctx);
         }
