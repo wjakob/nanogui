@@ -478,8 +478,6 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     bool ret = false;
     mLastInteraction = glfwGetTime();
     try {
-        p -= Vector2i(1, 2);
-
         if (!mDragActive) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
