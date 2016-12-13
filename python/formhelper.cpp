@@ -17,7 +17,7 @@ void register_formhelper(py::module &m) {
              py::arg("cb"), D(FormHelper, addGroup))
         .def("addBoolVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(bool) > &setter,
+                const std::function<void(const bool &) > &setter,
                 const std::function<bool(void) > &getter, bool editable) -> CheckBox* {
                 return h.addVariable(label, setter, getter, editable);
              },
@@ -25,7 +25,7 @@ void register_formhelper(py::module &m) {
              py::arg("editable") = true)
         .def("addIntVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(int64_t) > &setter,
+                const std::function<void(const int64_t &) > &setter,
                 const std::function<int64_t(void) > &getter, bool editable) -> Int64Box* {
                 return h.addVariable(label, setter, getter, editable);
              },
@@ -33,7 +33,7 @@ void register_formhelper(py::module &m) {
              py::arg("editable") = true)
         .def("addDoubleVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(double) > &setter,
+                const std::function<void(const double &) > &setter,
                 const std::function<double(void) > &getter, bool editable) -> FloatBox<double>* {
                 return h.addVariable(label, setter, getter, editable);
              },
@@ -41,7 +41,7 @@ void register_formhelper(py::module &m) {
              py::arg("editable") = true)
         .def("addStringVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(std::string) > &setter,
+                const std::function<void(const std::string &) > &setter,
                 const std::function<std::string(void) > &getter, bool editable) -> TextBox* {
                 return h.addVariable(label, setter, getter, editable);
              },
@@ -49,7 +49,7 @@ void register_formhelper(py::module &m) {
              py::arg("editable") = true)
         .def("addColorVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(Color) > &setter,
+                const std::function<void(const Color &) > &setter,
                 const std::function<Color(void) > &getter, bool editable) -> ColorPicker* {
                 return h.addVariable(label, setter, getter, editable);
              },
@@ -57,10 +57,10 @@ void register_formhelper(py::module &m) {
              py::arg("editable") = true)
         .def("addEnumVariable",
              [](FormHelper &h, const std::string &label,
-                const std::function<void(int) > &setter,
+                const std::function<void(const int &) > &setter,
                 const std::function<int(void) > &getter, bool editable) -> ComboBox* {
                 return h.addVariable(label,
-                        reinterpret_cast<const std::function<void(DummyEnum)>&>(setter),
+                        reinterpret_cast<const std::function<void(const DummyEnum &)>&>(setter),
                         reinterpret_cast<const std::function<DummyEnum(void)>&>(getter),
                         editable);
              },

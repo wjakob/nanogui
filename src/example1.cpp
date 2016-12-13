@@ -417,7 +417,7 @@ public:
         layout->setSpacing(0, 10);
         window->setLayout(layout);
 
-        {
+        /* FP widget */ {
             new Label(window, "Floating point :", "sans-bold");
             textBox = new TextBox(window);
             textBox->setEditable(true);
@@ -429,7 +429,7 @@ public:
             textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
         }
 
-        {
+        /* Positive integer widget */ {
             new Label(window, "Positive integer :", "sans-bold");
             auto intBox = new IntBox<int>(window);
             intBox->setEditable(true);
@@ -444,7 +444,7 @@ public:
             intBox->setValueIncrement(2);
         }
 
-        {
+        /* Checkbox widget */ {
             new Label(window, "Checkbox :", "sans-bold");
 
             cb = new CheckBox(window, "Check me");
@@ -584,7 +584,7 @@ int main(int /* argc */, char ** /* argv */) {
     try {
         nanogui::init();
 
-        {
+        /* scoped variables */ {
             nanogui::ref<ExampleApplication> app = new ExampleApplication();
             app->drawAll();
             app->setVisible(true);

@@ -108,7 +108,7 @@ void register_glutil(py::module &m) {
         .def("free", &GLShader::free, D(GLShader, free))
         .def("attrib", &GLShader::attrib, py::arg("name"),
              py::arg("warn") = true, D(GLShader, attrib))
-        .def("uniform", &GLShader::attrib, py::arg("name"),
+        .def("uniform", &GLShader::uniform, py::arg("name"),
              py::arg("warn") = true, D(GLShader, uniform))
         .def("uploadAttrib", &uploadAttribPy, py::arg("name"),
              py::arg("M"), py::arg("version") = -1)
@@ -139,7 +139,7 @@ void register_glutil(py::module &m) {
 
     py::class_<Arcball>(m, "Arcball", D(Arcball))
         .def(py::init<float>(), py::arg("speedFactor") = 2.f, D(Arcball, Arcball))
-        .def(py::init<const Quaternionf>(), D(Arcball, Arcball, 2))
+        .def(py::init<const Quaternionf &>(), D(Arcball, Arcball, 2))
         .def("state", &Arcball::state, D(Arcball, state))
         .def("setState", &Arcball::setState, D(Arcball, setState))
         .def("size", &Arcball::size, D(Arcball, size))

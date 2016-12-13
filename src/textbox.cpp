@@ -154,7 +154,8 @@ void TextBox::draw(NVGcontext* ctx) {
         nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * 1.2f);
 
         bool spinning = mMouseDownPos.x() != -1;
-        {
+
+        /* up button */ {
             bool hover = mMouseFocus && spinArea(mMousePos) == SpinArea::Top;
             nvgFillColor(ctx, (mEnabled && (hover || spinning)) ? mTheme->mTextColor : mTheme->mDisabledTextColor);
             auto icon = utf8(ENTYPO_ICON_CHEVRON_UP);
@@ -163,7 +164,8 @@ void TextBox::draw(NVGcontext* ctx) {
                              mPos.y() + mSize.y()/2.f - xSpacing/2.f);
             nvgText(ctx, iconPos.x(), iconPos.y(), icon.data(), nullptr);
         }
-        {
+
+        /* down button */ {
             bool hover = mMouseFocus && spinArea(mMousePos) == SpinArea::Bottom;
             nvgFillColor(ctx, (mEnabled && (hover || spinning)) ? mTheme->mTextColor : mTheme->mDisabledTextColor);
             auto icon = utf8(ENTYPO_ICON_CHEVRON_DOWN);
