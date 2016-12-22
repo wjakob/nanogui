@@ -142,25 +142,16 @@ public:
     bool operator!=(const T* ptr) const { return m_ptr != ptr; }
 
     /// Access the object referenced by this reference
-    T* operator->() { return m_ptr; }
-
-    /// Access the object referenced by this reference
-    const T* operator->() const { return m_ptr; }
+    T* operator->() const { return m_ptr; }
 
     /// Return a C++ reference to the referenced object
-    T& operator*() { return *m_ptr; }
-
-    /// Return a const C++ reference to the referenced object
-    const T& operator*() const { return *m_ptr; }
+    T& operator*() const { return *m_ptr; }
 
     /// Return a pointer to the referenced object
-    operator T* () { return m_ptr; }
-
-    /// Return a const pointer to the referenced object
-    T* get() { return m_ptr; }
+    operator T* () const { return m_ptr; }
 
     /// Return a pointer to the referenced object
-    const T* get() const { return m_ptr; }
+    T* get() const { return m_ptr; }
 
     /// Check if the object is defined
     operator bool() const { return m_ptr != nullptr; }
