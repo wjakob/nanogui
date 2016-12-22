@@ -154,7 +154,7 @@ public:
     T* get() const { return m_ptr; }
 
     /// Check if the object is defined
-    operator bool() const { return m_ptr != nullptr; }
+    explicit operator bool() const { return m_ptr != nullptr; }
 private:
     T *m_ptr = nullptr;
 };
