@@ -2,7 +2,7 @@
 #
 # This file was generated on/around (date -Ru):
 #
-#             Tue, 08 Nov 2016 07:18:48 +0000
+#             Sun, 15 Jan 2017 05:53:44 +0000
 #
 # Copyright (c) 2016, Stephen McDowell
 # All rights reserved.
@@ -1007,10 +1007,11 @@ class ExhaleNode:
                     opening_li = '<li>'
                 # turn double underscores into underscores, then underscores into hyphens
                 html_link = self.link_name.replace("__", "_").replace("_", "-")
-                # should always have two parts
+                # should always have at least two parts (templates will have more)
                 title_as_link_parts = self.title.split(" ")
                 qualifier = title_as_link_parts[0]
-                link_title = title_as_link_parts[1]
+                link_title = " ".join(title_as_link_parts[1:])
+                link_title = link_title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 html_link = '{} <a href="{}.html#{}">{}</a>'.format(qualifier,
                                                                     self.file_name.split('.rst')[0],
                                                                     html_link,
@@ -1154,10 +1155,11 @@ class ExhaleNode:
                     opening_li = '<li>'
                 # turn double underscores into underscores, then underscores into hyphens
                 html_link = self.link_name.replace("__", "_").replace("_", "-")
-                # should always have two parts
+                # should always have at least two parts (templates will have more)
                 title_as_link_parts = self.title.split(" ")
                 qualifier = title_as_link_parts[0]
-                link_title = title_as_link_parts[1]
+                link_title = " ".join(title_as_link_parts[1:])
+                link_title = link_title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 html_link = '{} <a href="{}.html#{}">{}</a>'.format(qualifier,
                                                                     self.file_name.split('.rst')[0],
                                                                     html_link,

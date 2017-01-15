@@ -151,22 +151,36 @@ NAMESPACE_BEGIN(detail)
  */
 template <typename T, typename SFINAE = void> struct serialization_traits { };
 
-// bypass template specializations for now
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/// Serialization id for ``int8_t`` is ``u8``.
 template <> struct serialization_traits<int8_t>           { const char *type_id = "u8";  };
+/// Serialization id for ``uint8_t`` is ``s8``.
 template <> struct serialization_traits<uint8_t>          { const char *type_id = "s8";  };
+/// Serialization id for ``int16_t`` is ``u16``.
 template <> struct serialization_traits<int16_t>          { const char *type_id = "u16"; };
+/// Serialization id for ``uint16_t`` is ``s16``.
 template <> struct serialization_traits<uint16_t>         { const char *type_id = "s16"; };
+/// Serialization id for ``int32_t`` is ``u32``.
 template <> struct serialization_traits<int32_t>          { const char *type_id = "u32"; };
+/// Serialization id for ``uint32_t`` is ``s32``.
 template <> struct serialization_traits<uint32_t>         { const char *type_id = "s32"; };
+/// Serialization id for ``int64_t`` is ``u64``.
 template <> struct serialization_traits<int64_t>          { const char *type_id = "u64"; };
+/// Serialization id for ``uint64_t`` is ``s64``.
 template <> struct serialization_traits<uint64_t>         { const char *type_id = "s64"; };
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/// Serialization id for ``half_float::half`` is ``f16``.
 template <> struct serialization_traits<half_float::half> { const char *type_id = "f16"; };
+#endif
+/// Serialization id for ``float`` is ``f32``.
 template <> struct serialization_traits<float>            { const char *type_id = "f32"; };
+/// Serialization id for ``double`` is ``f64``.
 template <> struct serialization_traits<double>           { const char *type_id = "f64"; };
+/// Serialization id for ``bool`` is ``b8``.
 template <> struct serialization_traits<bool>             { const char *type_id = "b8";  };
+/// Serialization id for ``char`` is ``c8``.
 template <> struct serialization_traits<char>             { const char *type_id = "c8";  };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T> struct serialization_traits<T> :
     serialization_traits<typename std::underlying_type<T>::type,
                          typename std::enable_if<std::is_enum<T>::value>::type> { };
