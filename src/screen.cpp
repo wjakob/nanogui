@@ -488,8 +488,8 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
             }
         } else {
             ret = mDragWidget->mouseDragEvent(
-                p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
-                mMouseState, mModifiers);
+                (mDragWidget->parent() != nullptr) ? p - mDragWidget->parent()->absolutePosition() : p,
+                p - mMousePos, mMouseState, mModifiers);
         }
 
         if (!ret)
@@ -526,8 +526,8 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
         if (mDragActive && action == GLFW_RELEASE &&
             dropWidget != mDragWidget)
             mDragWidget->mouseButtonEvent(
-                mMousePos - mDragWidget->parent()->absolutePosition(), button,
-                false, mModifiers);
+                (mDragWidget->parent() != nullptr) ? mMousePos - mDragWidget->parent()->absolutePosition() : mMousePos,
+                button, false, mModifiers);
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
@@ -536,8 +536,6 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
-            if (mDragWidget == this)
-                mDragWidget = nullptr;
             mDragActive = mDragWidget != nullptr;
             if (!mDragActive)
                 updateFocus(nullptr);
