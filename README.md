@@ -11,6 +11,8 @@ thanks to [NanoVG](https://github.com/memononen/NanoVG) by Mikko Mononen.
 Python bindings of all functionality are provided using
 [pybind11](https://github.com/wjakob/pybind11).
 
+- [Documentation](https://nanogui.readthedocs.io)
+
 ## Example screenshot
 ![Screenshot](https://github.com/wjakob/nanogui/raw/master/resources/screenshot.png "Screenshot")
 
