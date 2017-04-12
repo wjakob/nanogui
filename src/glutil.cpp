@@ -403,13 +403,14 @@ void GLFramebuffer::downloadTGA(const std::string &filename) {
 
     uint32_t rowSize = mSize.x() * 4;
     uint32_t halfHeight = mSize.y() / 2;
-    uint8_t *line = (uint8_t *) alloca(rowSize);
+    uint8_t *line = new uint8_t [rowSize];
     for (uint32_t i=0, j=mSize.y()-1; i<halfHeight; ++i) {
         memcpy(line, temp + i * rowSize, rowSize);
         memcpy(temp + i * rowSize, temp + j * rowSize, rowSize);
         memcpy(temp + j * rowSize, line, rowSize);
         j--;
     }
+    delete [] line;
 
     FILE *tga = fopen(filename.c_str(), "wb");
     if (tga == nullptr)
