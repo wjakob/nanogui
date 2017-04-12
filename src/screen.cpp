@@ -105,6 +105,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
+    mSize = size;
+
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
        Default value is an OpenGL 3.3 core profile context. */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
