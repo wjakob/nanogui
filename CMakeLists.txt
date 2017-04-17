@@ -442,7 +442,9 @@ if (NANOGUI_BUILD_PYTHON)
     python/glutil.cpp
     python/nanovg.cpp
     python/python.h python/py_doc.h
-    ${LIBNANOGUI_PYTHON_EXTRA_SOURCE})
+    ${LIBNANOGUI_PYTHON_EXTRA_SOURCE}
+    # NanoVG part of Python module
+    ext/nanovg/src/nanovg.c)
 
   add_library(nanogui-python SHARED $<TARGET_OBJECTS:nanogui-python-obj>)
   set_property(TARGET nanogui-python-obj PROPERTY POSITION_INDEPENDENT_CODE ON)
