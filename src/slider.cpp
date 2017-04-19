@@ -113,13 +113,13 @@ void Slider::draw(NVGcontext* ctx) {
         mTheme->mBorderLight);
 
     nvgBeginPath(ctx);
-    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr);
+    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr*mKnobRadKoeff.outter);
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgFillPaint(ctx, knob);
     nvgStroke(ctx);
     nvgFill(ctx);
     nvgBeginPath(ctx);
-    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr/2);
+    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr*mKnobRadKoeff.inner);
     nvgFillColor(ctx, Color(150, mEnabled ? 255 : 100));
     nvgStrokePaint(ctx, knobReverse);
     nvgStroke(ctx);

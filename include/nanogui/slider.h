@@ -50,8 +50,17 @@ public:
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 
+    void setKnobOutterRadiusKoeff(float koeff) { mKnobRadKoeff.outter = koeff; }
+    void setKnobInnerRadiusKoeff(float koeff) { mKnobRadKoeff.inner = koeff; }
+
 protected:
     float mValue;
+
+    struct {
+        float outter=1.f;
+        float inner=0.5f;
+    } mKnobRadKoeff;
+
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
     std::pair<float, float> mRange;
