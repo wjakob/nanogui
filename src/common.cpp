@@ -89,11 +89,9 @@ void mainloop(int refresh) {
                 break;
             }
 
-	    
             /* Wait for mouse/keyboard event or timeout (in sec) */
-	    const double timeout = std::max(refresh, 0) / 1000.0;
-
-	    glfwWaitEventsTimeout(timeout);
+            const double timeout = std::max(refresh, 0) / 1000.0;
+            glfwWaitEventsTimeout(timeout);
         }
 
         /* Process events once more */
