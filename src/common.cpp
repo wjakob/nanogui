@@ -12,6 +12,8 @@
 #include <nanogui/screen.h>
 
 #if defined(_WIN32)
+/* disable min and max macro from windows.h */
+#define NOMINMAX
 #include <windows.h>
 #endif
 
