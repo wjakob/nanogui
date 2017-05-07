@@ -444,18 +444,18 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     float yScaleRight = 0.5f;
     float xScaleRight = 1.0f - xScaleLeft - rightWidth / theme()->mTabControlWidth;
-    auto leftControlsPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x() - theme()->mTabControlWidth, 0);
+    Vector2f leftControlsPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x() - theme()->mTabControlWidth, 0);
     Vector2f rightIconPos = leftControlsPos + Vector2f(xScaleRight*theme()->mTabControlWidth, yScaleRight*mSize.cast<float>().y());
     nvgText(ctx, rightIconPos.x(), rightIconPos.y() + 1, iconRight.data(), nullptr);
 }
 
 TabHeader::ClickLocation TabHeader::locateClick(const Vector2i& p) {
-    auto leftDistance = (p - mPos).array();
-    bool hitLeft = (leftDistance >= 0).all() && (leftDistance < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
+    Vector2i leftDistance = p - mPos;
+    bool hitLeft = (leftDistance.array() >= 0).all() && (leftDistance.array() < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
     if (hitLeft)
         return ClickLocation::LeftControls;
-    auto rightDistance = (p - (mPos + Vector2i(mSize.x() - theme()->mTabControlWidth, 0))).array();
-    bool hitRight = (rightDistance >= 0).all() && (rightDistance < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
+    Vector2i rightDistance = (p - (mPos + Vector2i(mSize.x() - theme()->mTabControlWidth, 0)));
+    bool hitRight = (rightDistance.array() >= 0).all() && (rightDistance.array() < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
     if (hitRight)
         return ClickLocation::RightControls;
     return ClickLocation::TabButtons;
