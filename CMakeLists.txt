@@ -336,10 +336,27 @@ add_library(nanogui-obj OBJECT
   src/serializer.cpp
 )
 
-add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-  $<TARGET_OBJECTS:nanogui-obj>
-  $<TARGET_OBJECTS:glfw_objects>
-)
+# XCode has a serious bug where the XCode project produces an invalid target that will not get
+# linked if it consists only of objects from object libraries, it will not generate any
+# products (executables, libraries). The only work around is to add a dummy source
+# file to the library definition. This is an XCode, not a CMake bug.
+# see https://itk.org/Bug/view.php?id=14044
+if(CMAKE_GENERATOR STREQUAL Xcode)
+  set(XCODE_DUMMY ${CMAKE_BINARY_DIR}/xcode_dummy.cpp)
+  file(WRITE ${XCODE_DUMMY} "")
+  add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
+    ${XCODE_DUMMY}
+    $<TARGET_OBJECTS:nanogui-obj>
+    $<TARGET_OBJECTS:glfw_objects>
+  )
+else()
+  add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
+    $<TARGET_OBJECTS:nanogui-obj>
+    $<TARGET_OBJECTS:glfw_objects>
+  )
+endif()
+
+
 
 if (NANOGUI_BUILD_SHARED)
   set_property(TARGET nanogui-obj PROPERTY POSITION_INDEPENDENT_CODE ON)

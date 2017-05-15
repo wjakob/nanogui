@@ -49,7 +49,9 @@
 #  pragma warning(disable: 4457 4456 4005 4312)
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
+// the STB image functions are already defined in nanovg, if we import the header here,
+// get duplicate symbols if statically linking. 
+//#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #if defined(_WIN32)
