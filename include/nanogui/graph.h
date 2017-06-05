@@ -43,6 +43,9 @@ public:
     const Color &textColor() const { return mTextColor; }
     void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
+    bool fill() const { return mFill; }
+    void setFill(bool fill) { mFill = fill; }
+
     const VectorXf &values() const { return mValues; }
     VectorXf &values() { return mValues; }
     void setValues(const VectorXf &values) { mValues = values; }
@@ -56,6 +59,7 @@ protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
     VectorXf mValues;
+    bool mFill;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
