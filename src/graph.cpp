@@ -17,7 +17,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 Graph::Graph(Widget *parent, const std::string &caption)
-    : Widget(parent), mCaption(caption) {
+    : Widget(parent), mCaption(caption), mOffsetY(0), mScaleY(1) {
     mBackgroundColor = Color(20, 128);
     mForegroundColor = Color(255, 192, 0, 128);
     mTextColor = Color(240, 192);
@@ -43,7 +43,8 @@ void Graph::draw(NVGcontext *ctx) {
     for (size_t i = 0; i < (size_t) mValues.size(); i++) {
         float value = mValues[i];
         float vx = mPos.x() + i * mSize.x() / (float) (mValues.size() - 1);
-        float vy = mPos.y() + (1-value) * mSize.y();
+        value = (value+mOffsetY)*mScaleY;
+        float vy = mPos.y() + (1-value)*mSize.y();
         nvgLineTo(ctx, vx, vy);
     }
 
