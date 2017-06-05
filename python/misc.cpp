@@ -43,7 +43,7 @@ void register_misc(py::module &m) {
         .def("values", (VectorXf &(Graph::*)(void)) &Graph::values, D(Graph, values))
         .def("setValues", &Graph::setValues, D(Graph, setValues))
         .def("scaleY", &Graph::scaleY, D(Graph, scaleY))
-        .def("setScaleY", &Graph::setScaleY, D(Graph, setScaleY));
+        .def("setScaleY", &Graph::setScaleY, D(Graph, setScaleY))
         .def("offsetY", &Graph::offsetY, D(Graph, offsetY))
         .def("setOffsetY", &Graph::setOffsetY, D(Graph, setOffsetY));
 
