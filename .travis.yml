@@ -31,6 +31,7 @@ matrix:
     - os: osx
       compiler: clang
       script:
+        - cmake --version
         - cmake -DNANOGUI_PYTHON_VERSION=2.7
         - make -j 2
     - os: linux
