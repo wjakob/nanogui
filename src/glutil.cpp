@@ -47,7 +47,7 @@ static GLuint createShader_helper(GLint type, const std::string &name,
     glGetShaderiv(id, GL_COMPILE_STATUS, &status);
 
     if (status != GL_TRUE) {
-        char buffer[512];
+      char buffer[512] = { 0 };
         std::cerr << "Error while compiling ";
         if (type == GL_VERTEX_SHADER)
             std::cerr << "vertex shader";
