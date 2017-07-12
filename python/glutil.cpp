@@ -181,9 +181,30 @@ void register_glutil(py::module &m) {
                            GLenum dfactor) { glBlendFunc(sfactor, dfactor); },
            py::arg("sfactor"), py::arg("dfactor"));
     gl.def("Scissor", [](GLint x, GLint y, GLsizei w, GLsizei h) { glScissor(x, y, w, h); });
+    gl.def("Viewport", [](GLint x, GLint y, GLsizei w, GLsizei h) { glViewport(x, y, w, h); });
     gl.def("Cull", [](GLenum mode) { glCullFace(mode); });
     gl.def("PointSize", [](GLfloat size) { glPointSize(size); });
     gl.def("LineWidth", [](GLfloat size) { glLineWidth(size); });
+    gl.def("DepthMask", [](bool flag) { glDepthMask(flag); });
+
+    gl.def("ClearDepth", [](GLdouble depth) { glClearDepth(depth); });
+    gl.def("GenOneBuffer", []()->GLuint { GLuint vbo = 0; glGenBuffers(1, &vbo); return vbo; });
+    gl.def("BindBuffer", [](GLenum target, GLuint buffer) { glBindBuffer(target, buffer); }, py::arg("target"), py::arg("buffer"));
+    gl.def("BufferData", [](GLenum target, GLsizeiptr size, py::array data, GLenum usage) {
+      glBufferData(target, size, data.data(), usage); },
+      py::arg("target"), py::arg("size"), py::arg("data"), py::arg("usage"));
+    gl.def("BufferSubData", [](GLenum target, GLintptr offset, GLsizeiptr size, py::array data) {
+      glBufferSubData(target, offset, size, data.data()); },
+      py::arg("target"), py::arg("offset"), py::arg("size"), py::arg("data"));
+    gl.def("GenOneVertexArray", []()->GLuint {GLuint b = 0; glGenVertexArrays(1, &b); return b; });
+    gl.def("BindVertexArray", [](GLuint vbo) { glBindVertexArray(vbo); });
+    gl.def("EnableVertexAttribArray", [](GLuint vbo) { glEnableVertexAttribArray(vbo); });
+    gl.def("DisableVertexAttribArray", [](GLuint vbo) { glDisableVertexAttribArray(vbo); });
+    gl.def("VertexAttribPointer", [](GLuint index, GLint size, GLenum type, bool normalized, GLsizei stride, GLsizeiptr pointer) {
+      glVertexAttribPointer(index, size, type, normalized, stride, reinterpret_cast<const void *>(pointer)); },
+      py::arg("index"), py::arg("size"), py::arg("type"), py::arg("normalized"), py::arg("stride"), py::arg("pointer"));
+    gl.def("DrawArray", [](GLenum mode, GLint first, GLsizei count) { glDrawArrays(mode, first, count); },
+      py::arg("mode"), py::arg("first"), py::arg("count"));
 
     /* Primitive types */
     C(POINTS); C(LINE_STRIP); C(LINE_LOOP); C(LINES); C(LINE_STRIP_ADJACENCY);
@@ -191,7 +212,8 @@ void register_glutil(py::module &m) {
     C(TRIANGLE_STRIP_ADJACENCY); C(TRIANGLES_ADJACENCY);
 
     /* Depth testing */
-    C(DEPTH_TEST); C(NEVER); C(LESS); C(EQUAL); C(LEQUAL); C(GREATER);
+    C(DEPTH_TEST); C(DEPTH_CLAMP);
+    C(NEVER); C(LESS); C(EQUAL); C(LEQUAL); C(GREATER);
     C(NOTEQUAL); C(GEQUAL); C(ALWAYS);
 
     /* Blend functions */
@@ -207,6 +229,18 @@ void register_glutil(py::module &m) {
     /* Remaining glEnable/glDisable enums */
     C(SCISSOR_TEST); C(STENCIL_TEST); C(PROGRAM_POINT_SIZE);
     C(LINE_SMOOTH); C(POLYGON_SMOOTH); C(CULL_FACE);
+
+    /* Buffer types*/
+    C(ARRAY_BUFFER);
+
+    /* Vertex attribute types*/
+    C(FLOAT);
+
+    /* Usage types*/
+    C(STREAM_DRAW); C(STREAM_READ); C(STREAM_COPY);
+    C(STATIC_DRAW); C(STATIC_READ); C(STATIC_COPY);
+    C(DYNAMIC_DRAW); C(DYNAMIC_READ); C(DYNAMIC_COPY);
+
 }
 
 #endif
