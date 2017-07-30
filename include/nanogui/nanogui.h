@@ -23,6 +23,7 @@
 #include <nanogui/toolbutton.h>
 #include <nanogui/popup.h>
 #include <nanogui/popupbutton.h>
+#include <nanogui/contextmenu.h>
 #include <nanogui/combobox.h>
 #include <nanogui/progressbar.h>
 #include <nanogui/entypo.h>
