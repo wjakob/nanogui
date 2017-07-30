@@ -626,12 +626,10 @@ bool Screen::resizeCallbackEvent(int, int) {
 }
 
 void Screen::updateFocus(Widget *widget) {
-    for (auto w: mFocusPath) {
-        if (!w->focused())
-            continue;
-        w->focusEvent(false);
-    }
+    // Save old focus path
+    auto oldFocusPath = mFocusPath;
     mFocusPath.clear();
+    // Generate new focus path
     Widget *window = nullptr;
     while (widget) {
         mFocusPath.push_back(widget);
@@ -639,6 +637,13 @@ void Screen::updateFocus(Widget *widget) {
             window = widget;
         widget = widget->parent();
     }
+    // Send unfocus events to widgets losing focus.
+    for (auto w : oldFocusPath) {
+        if (!w->focused() || find(mFocusPath.begin(), mFocusPath.end(), w) != mFocusPath.end())
+            continue;
+        w->focusEvent(false);
+    }
+    // Send focus events to widgets gaining focus.
     for (auto it = mFocusPath.rbegin(); it != mFocusPath.rend(); ++it)
         (*it)->focusEvent(true);
 
