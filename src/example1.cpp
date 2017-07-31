@@ -51,6 +51,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <nanogui/contextmenu.h>
 
 #if defined(_WIN32)
 #  pragma warning(pop)
@@ -571,6 +572,28 @@ public:
         /* Draw 2 triangles starting at index 0 */
         mShader.drawIndexed(GL_TRIANGLES, 0, 2);
     }
+
+    bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override {
+        if (Widget::mouseButtonEvent(p, button, down, modifiers))
+            return true;
+        if(down && button==GLFW_MOUSE_BUTTON_RIGHT && findWidget(p)==this) {
+            auto menu = new nanogui::ContextMenu(this, true);
+            menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_CIRCLED_PLUS);
+
+            auto submenu = menu->addSubMenu("Submenu");
+            submenu->addItem("Subitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
+            auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
+            submenu->addItem("Subitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
+
+            subsubmenu->addItem("Subsubitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
+            subsubmenu->addItem("Subsubitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
+
+            menu->activate(p-mPos);
+            performLayout();
+        }
+        return true;
+    }
+
 private:
     nanogui::ProgressBar *mProgress;
     nanogui::GLShader mShader;
