@@ -463,7 +463,7 @@ void AdvancedGridLayout::computeLayout(NVGcontext *ctx, const Widget *widget,
                     continue;
                 if (totalStretch == 0)
                     throw std::runtime_error(
-                        "Advanced grid layout: no space to place widget: " +
+                        "Advanced grid layout: no space to place widget (anchor requires stretch > 0): " +
                         (std::string) anchor);
                 float amt = (targetSize - currentSize) / totalStretch;
                 for (int i = anchor.pos[axis];
