@@ -485,6 +485,37 @@ public:
             }
         });
 
+        window = new Window(this, "Text Truncation");
+        window->setPosition(Vector2i(710, 350));
+        window->setFixedWidth(220);
+        window->setLayout(new GroupLayout());
+
+        std::string longTitle = "A very, very, very, long button title";
+
+        new Label(window, "Truncate Head", "sans-bold");
+
+        b = new Button(window, longTitle);
+        b->setTextTruncation(TextTruncation::Head);
+        b->setTooltip(b->caption());
+
+        new Label(window, "Truncate Middle", "sans-bold");
+
+        b = new Button(window, longTitle);
+        b->setTextTruncation(TextTruncation::Middle);
+        b->setTooltip(b->caption());
+
+        new Label(window, "Truncate Tail", "sans-bold");
+
+        b = new Button(window, longTitle);
+        b->setTextTruncation(TextTruncation::Tail);
+        b->setTooltip(b->caption());
+
+        new Label(window, "Labels also", "sans-bold");
+
+        Label *l = new Label(window, "An even longer title, this time it's really, really long", "sans-bold");
+        l->setTextTruncation(TextTruncation::Tail);
+        l->setTooltip(b->caption());
+
         performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now

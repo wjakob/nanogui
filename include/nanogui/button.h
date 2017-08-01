@@ -15,6 +15,9 @@
 #include <nanogui/widget.h>
 
 NAMESPACE_BEGIN(nanogui)
+
+enum class TextTruncation;
+
 /**
  * \class Button button.h nanogui/button.h
  *
@@ -48,6 +51,9 @@ public:
 
     const Color &textColor() const { return mTextColor; }
     void setTextColor(const Color &textColor) { mTextColor = textColor; }
+
+    TextTruncation textTruncation() const { return mTextTruncation; }
+    void setTextTruncation(TextTruncation truncation) { mTextTruncation = truncation; }
 
     int icon() const { return mIcon; }
     void setIcon(int icon) { mIcon = icon; }
@@ -87,6 +93,7 @@ protected:
     int mFlags;
     Color mBackgroundColor;
     Color mTextColor;
+    TextTruncation mTextTruncation;
     std::function<void()> mCallback;
     std::function<void(bool)> mChangeCallback;
     std::vector<Button *> mButtonGroup;

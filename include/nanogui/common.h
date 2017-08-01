@@ -130,6 +130,17 @@ enum class Cursor {
     CursorCount
 };
 
+/// Text trunctation options (Label, Button etc).
+enum class TextTruncation {
+    None,
+    Head,
+    Middle,
+    Tail
+};
+
+/// Return a string truncated to fit in availableWidth. Uses font face and size currently set on ctx.
+extern NANOGUI_EXPORT std::string truncateText(NVGcontext *ctx, const std::string &text, TextTruncation truncation, int availableWidth);
+
 /* Import some common Eigen types */
 using Eigen::Vector2f;
 using Eigen::Vector3f;
