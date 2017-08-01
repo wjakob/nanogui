@@ -19,17 +19,16 @@
 #include "nanogui/theme.h"
 
 NAMESPACE_BEGIN(nanogui)
-ContextMenu::ContextMenu(Widget* parent, bool disposable)
+ContextMenu::ContextMenu(Widget *parent, bool disposable)
     : Widget(parent),
-        mBackgroundColor(0.3f, 1.0f),
-        mMarginColor(0.28f, 1.0f),
-        mHighlightColor(0.15f, 1.0f),
         mHighlightedItem(nullptr),
         mActiveSubmenu(nullptr),
         mRootMenu(nullptr),
         mDisposable(disposable),
-        mActivated(false) 
-{
+        mActivated(false),
+        mBackgroundColor(0.3f, 1.0f),
+        mMarginColor(0.28f, 1.0f),
+        mHighlightColor(0.15f, 1.0f) {
     mItemContainer = new Widget(this);
     mItemContainer->setPosition({0,0});
     mItemLayout = new AdvancedGridLayout({10,0,0}, {}, 2);
@@ -96,7 +95,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
         auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
         iconLbl->setFontSize(fontSize()+2);
         mItemLayout->setAnchor(iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
-    }        
+    }
     return mSubmenus[name];
 }
 
@@ -128,7 +127,7 @@ bool ContextMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int b
             // Deactivate current submenu unless we are still hovering it.
             if (mActiveSubmenu && !(isSubMenu_(w.first) && mSubmenus[w.first] == mActiveSubmenu)) {
                 deactivateSubmenu();
-            }            
+            }
             // Activate the item we are hovering
             if (isSubMenu_(w.first) && mSubmenus[w.first] != mActiveSubmenu) {
                 activateSubmenu(w.first);
@@ -150,7 +149,7 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
                 std::function<void()> cb = mItems[w.first];
                 if (mRootMenu)
                     mRootMenu->deactivate();
-                else 
+                else
                     deactivate();
                 if (cb) cb();
                 return true;
@@ -193,8 +192,8 @@ void ContextMenu::draw(NVGcontext* ctx) {
     nvgRect(ctx, 0.5f, 0.5f, w - 1, h - 0.5f);
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgStroke(ctx);
-        
-    if (mHighlightedItem) {        
+
+    if (mHighlightedItem) {
         nvgBeginPath(ctx);
         nvgRect(ctx, 1, mHighlightedItem->position().y() + 1, w - 2, mHighlightedItem->height() - 2);
         nvgFillColor(ctx, mHighlightColor);

@@ -19,9 +19,9 @@ NAMESPACE_BEGIN(nanogui)
 
 /**
  * \class ContextMenu contextmenu.h nanogui/contextmenu.h
- * 
+ *
  * \brief Nestable context menu.
- * 
+ *
  * A context menu may be used in either 'disposable' or 'non-disposable' mode.
  * In disposable mode, it may be created and activated on-the-fly in an event
  * handler, and the menu will automatically delete itself after use.
@@ -34,7 +34,7 @@ NAMESPACE_BEGIN(nanogui)
  *
  *    auto menu = new ContextMenu(this, true);
  *    menu->addItem("Item 1", [](){
- *      std::cout << "Item 1 clicked!" << std::endl; 
+ *      std::cout << "Item 1 clicked!" << std::endl;
  *    });
  *    auto submenu = menu->addSubMenu("Submenu 1");
  *    submenu->addItem("Subitem 1", [](){
@@ -67,7 +67,7 @@ public:
 
     /**
      * \brief Deactivate the context menu.
-     * 
+     *
      * This method is called automatically after an item is clicked. If the
      * context menu is disposable, it will be removed from its parent and
      * destroyed.
@@ -136,6 +136,6 @@ private:
     bool mUpdateLayout;
 
     Color mBackgroundColor, mMarginColor, mHighlightColor;
-};    
+};
 
 NAMESPACE_END(nanogui)
