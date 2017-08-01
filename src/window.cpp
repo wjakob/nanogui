@@ -142,17 +142,24 @@ void Window::draw(NVGcontext *ctx) {
 }
 
 void Window::dispose() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->disposeWindow(this);
+    screen()->disposeWindow(this);
 }
 
 void Window::center() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->centerWindow(this);
+    screen()->centerWindow(this);
+}
+
+Screen *Window::screen() const {
+    const Widget *parent = this->parent();
+    while (true) {
+        if (!parent)
+            throw std::runtime_error(
+                "Window:internal error (could not find parent screen)");
+        const Screen *screen = dynamic_cast<const Screen *>(parent);
+        if (screen)
+            return (Screen *)screen;
+        parent = parent->parent();
+    }
 }
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,

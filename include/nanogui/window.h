@@ -45,6 +45,9 @@ public:
     /// Center the window in the current \ref Screen
     void center();
 
+    /// Return the window's \ref Screen.
+    Screen *screen() const;
+
     /// Draw the window
     virtual void draw(NVGcontext *ctx) override;
     /// Handle window drag events

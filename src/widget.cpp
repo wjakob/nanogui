@@ -153,12 +153,26 @@ void Widget::addChild(Widget * widget) {
 
 void Widget::removeChild(const Widget *widget) {
     mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
+    if (widget->focused()) {
+        // Check for window on widget (which may be a Window).
+        Window *win = widget->window();
+        if (win)
+            win->screen()->updateFocus(nullptr);
+    }
+    // TODO: Clear focus for any descendents who may have focus!
     widget->decRef();
 }
 
 void Widget::removeChild(int index) {
     Widget *widget = mChildren[index];
     mChildren.erase(mChildren.begin() + index);
+    if (widget->focused()) {
+        // Check for window on widget (which may be a Window).
+        Window *win = widget->window();
+        if (win)
+            win->screen()->updateFocus(nullptr);
+    }
+    // TODO: Clear focus for any descendents who may have focus!
     widget->decRef();
 }
 
@@ -169,24 +183,24 @@ int Widget::childIndex(Widget *widget) const {
     return it - mChildren.begin();
 }
 
-Window *Widget::window() {
-    Widget *widget = this;
+Window *Widget::window() const {
+    const Widget *widget = this;
     while (true) {
         if (!widget)
             throw std::runtime_error(
                 "Widget:internal error (could not find parent window)");
-        Window *window = dynamic_cast<Window *>(widget);
+        const Window *window = dynamic_cast<const Window *>(widget);
         if (window)
-            return window;
+            return (Window *)window;
         widget = widget->parent();
     }
 }
 
 void Widget::requestFocus() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->updateFocus(this);
+    Window *win = window();
+    if (win) {
+        win->screen()->updateFocus(this);
+    }
 }
 
 void Widget::draw(NVGcontext *ctx) {
