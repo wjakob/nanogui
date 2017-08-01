@@ -78,19 +78,21 @@ void Window::draw(NVGcontext *ctx) {
 
 
     /* Draw a drop shadow */
-    NVGpaint shadowPaint = nvgBoxGradient(
-        ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
-        mTheme->mDropShadow, mTheme->mTransparent);
+    if (ds > 0) {
+        NVGpaint shadowPaint = nvgBoxGradient(
+            ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
+            mTheme->mDropShadow, mTheme->mTransparent);
 
-    nvgSave(ctx);
-    nvgResetScissor(ctx);
-    nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
-    nvgPathWinding(ctx, NVG_HOLE);
-    nvgFillPaint(ctx, shadowPaint);
-    nvgFill(ctx);
-    nvgRestore(ctx);
+        nvgSave(ctx);
+        nvgResetScissor(ctx);
+        nvgBeginPath(ctx);
+        nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
+        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+        nvgPathWinding(ctx, NVG_HOLE);
+        nvgFillPaint(ctx, shadowPaint);
+        nvgFill(ctx);
+        nvgRestore(ctx);
+    }
 
     if (!mTitle.empty()) {
         /* Draw header */
