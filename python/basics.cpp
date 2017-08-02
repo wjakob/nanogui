@@ -26,11 +26,11 @@ void register_basics(py::module &m) {
 
     py::class_<Popup, Window, ref<Popup>, PyPopup> popup(m, "Popup", D(Popup));
     popup
-        .def(py::init<Widget *, Window *>(), py::arg("parent"), py::arg("parentWindow"), D(Popup, Popup))
+        .def(py::init<Widget *, Window *, bool>(), py::arg("parent"), py::arg("parentWindow"), py::arg("showArrow") = true, D(Popup, Popup))
         .def("anchorPos", &Popup::anchorPos, D(Popup, anchorPos))
         .def("setAnchorPos", &Popup::setAnchorPos, D(Popup, setAnchorPos))
-        .def("anchorHeight", &Popup::anchorHeight, D(Popup, anchorHeight))
-        .def("setAnchorHeight", &Popup::setAnchorHeight, D(Popup, setAnchorHeight))
+        .def("anchorOffset", &Popup::anchorOffset, D(Popup, anchorOffset))
+        .def("setAnchorOffset", &Popup::setAnchorOffset, D(Popup, setAnchorOffset))
         .def("parentWindow", (Window*(Popup::*)(void)) &Popup::parentWindow, D(Popup, parentWindow))
         .def("side", &Popup::side, D(Popup, side))
         .def("setSide", &Popup::setSide, D(Popup, setSide));
@@ -38,6 +38,8 @@ void register_basics(py::module &m) {
     py::enum_<Popup::Side>(popup, "Side", D(Popup, Side))
         .value("Left", Popup::Side::Left)
         .value("Right", Popup::Side::Right)
+        .value("Top", Popup::Side::Top)
+        .value("Bottom", Popup::Side::Bottom)
         .export_values();
 
     py::class_<MessageDialog, Window, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", D(MessageDialog));

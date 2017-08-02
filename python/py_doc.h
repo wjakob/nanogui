@@ -1498,8 +1498,8 @@ static const char *__doc_nanogui_Popup_Side_Left = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_Side_Right = R"doc()doc";
 
-static const char *__doc_nanogui_Popup_anchorHeight =
-R"doc(Return the anchor height; this determines the vertical shift relative
+static const char *__doc_nanogui_Popup_anchorOffset =
+R"doc(Return the anchor offset; this determines the vertical/horizontal shift relative
 to the anchor position)doc";
 
 static const char *__doc_nanogui_Popup_anchorPos =
@@ -1510,7 +1510,7 @@ static const char *__doc_nanogui_Popup_draw = R"doc(Draw the popup window)doc";
 
 static const char *__doc_nanogui_Popup_load = R"doc()doc";
 
-static const char *__doc_nanogui_Popup_mAnchorHeight = R"doc()doc";
+static const char *__doc_nanogui_Popup_mAnchorOffset = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_mAnchorPos = R"doc()doc";
 
@@ -1530,8 +1530,8 @@ static const char *__doc_nanogui_Popup_refreshRelativePlacement = R"doc(Internal
 
 static const char *__doc_nanogui_Popup_save = R"doc()doc";
 
-static const char *__doc_nanogui_Popup_setAnchorHeight =
-R"doc(Set the anchor height; this determines the vertical shift relative to
+static const char *__doc_nanogui_Popup_setAnchorOffset =
+R"doc(Set the anchor height; this determines the vertical/horizontal shift relative to
 the anchor position)doc";
 
 static const char *__doc_nanogui_Popup_setAnchorPos =
