@@ -163,6 +163,9 @@ bool Popup::load(Serializer &s) {
     const std::vector<std::string> keys = s.keys();
     if (std::find(keys.begin(), keys.end(), "anchorOffset") != keys.end()) {
         if (!s.get("anchorOffset", mAnchorOffset)) return false;
+    } else if (std::find(keys.begin(), keys.end(), "anchorHeight") != keys.end()) {
+        // Read anchorHeight into anchorOffset (for backwards compatibility).
+        if (!s.get("anchorHeight", mAnchorOffset)) return false;
     }
     return true;
 }
