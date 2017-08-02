@@ -68,6 +68,12 @@ public:
     Color mButtonGradientTopPushed;
     Color mButtonGradientBotPushed;
 
+    /* VScrollPanel colors */
+    Color mScrollerGradientTop;
+    Color mScrollerGradientBot;
+    Color mTrackGradientTop;
+    Color mTrackGradientBot;
+
     /* Window colors */
     Color mWindowFillUnfocused;
     Color mWindowFillFocused;

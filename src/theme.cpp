@@ -50,6 +50,11 @@ Theme::Theme(NVGcontext *ctx) {
     mButtonGradientTopPushed          = Color(41, 255);
     mButtonGradientBotPushed          = Color(29, 255);
 
+    mScrollerGradientTop              = Color(220, 100);
+    mScrollerGradientBot              = Color(128, 100);
+    mTrackGradientTop                 = Color(0, 32);
+    mTrackGradientBot                 = Color(0, 92);
+
     /* Window-related */
     mWindowFillUnfocused              = Color(43, 230);
     mWindowFillFocused                = Color(45, 230);
