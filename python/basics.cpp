@@ -22,6 +22,8 @@ void register_basics(py::module &m) {
         .def("setFont", &Label::setFont, D(Label, setFont))
         .def("color", &Label::color, D(Label, color))
         .def("setColor", &Label::setColor, D(Label, setColor))
+        .def("textAlignment", &Label::textAlignment, D(Label, textAlignment))
+        .def("setTextAlignment", &Label::setTextAlignment, D(Label, setTextAlignment))
         .def("textTruncation", &Label::textTruncation, D(Label, textTruncation))
         .def("setTextTruncation", &Label::setTextTruncation, D(Label, setTextTruncation));
 

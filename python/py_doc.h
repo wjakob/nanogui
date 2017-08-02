@@ -296,9 +296,13 @@ static const char *__doc_nanogui_Button_setIconPosition = R"doc()doc";
 
 static const char *__doc_nanogui_Button_setPushed = R"doc()doc";
 
+static const char *__doc_nanogui_Button_setTextAlignment = R"doc()doc";
+
 static const char *__doc_nanogui_Button_setTextColor = R"doc()doc";
 
 static const char *__doc_nanogui_Button_setTextTruncation = R"doc()doc";
+
+static const char *__doc_nanogui_Button_textAlignment = R"doc()doc";
 
 static const char *__doc_nanogui_Button_textColor = R"doc()doc";
 
@@ -1402,7 +1406,11 @@ R"doc(Set the currently active font (2 are available by default: 'sans' and
 
 static const char *__doc_nanogui_Label_setTheme = R"doc(Set the Theme used to draw this widget)doc";
 
+static const char *__doc_nanogui_Label_setTextAlignment = R"doc()doc";
+
 static const char *__doc_nanogui_Label_setTextTruncation = R"doc()doc";
+
+static const char *__doc_nanogui_Label_textAlignment = R"doc()doc";
 
 static const char *__doc_nanogui_Label_textTruncation = R"doc()doc";
 
@@ -2028,15 +2036,15 @@ if there is no such tab.)doc";
 
 static const char *__doc_nanogui_TabWidget_tab_2 = R"doc()doc";
 
+static const char *__doc_nanogui_TextAlignment = R"doc(Text alignment options (Label, Button, TextBox).)doc";
+
+static const char *__doc_nanogui_TextAlignment_Center = R"doc()doc";
+
+static const char *__doc_nanogui_TextAlignment_Left = R"doc()doc";
+
+static const char *__doc_nanogui_TextAlignment_Right = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox = R"doc(Fancy text box with builtin regular expression-based validation.)doc";
-
-static const char *__doc_nanogui_TextBox_Alignment = R"doc(How to align the text in the text box.)doc";
-
-static const char *__doc_nanogui_TextBox_Alignment_Center = R"doc()doc";
-
-static const char *__doc_nanogui_TextBox_Alignment_Left = R"doc()doc";
-
-static const char *__doc_nanogui_TextBox_Alignment_Right = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_SpinArea = R"doc(The location (if any) for the spin area.)doc";
 

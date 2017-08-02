@@ -33,11 +33,6 @@ void register_textbox(py::module &m) {
         .def("callback", &TextBox::callback, D(TextBox, callback))
         .def("setCallback", &TextBox::setCallback, D(TextBox, setCallback));
 
-    py::enum_<TextBox::Alignment>(tbox, "Alignment", D(TextBox, Alignment))
-        .value("Left", TextBox::Alignment::Left)
-        .value("Center", TextBox::Alignment::Center)
-        .value("Right", TextBox::Alignment::Right);
-
     py::class_<Int64Box, TextBox, ref<Int64Box>, PyInt64Box>(m, "IntBox", D(IntBox))
         .def(py::init<Widget *, int64_t>(), py::arg("parent"), py::arg("value") = (int64_t) 0, D(IntBox, IntBox))
         .def("value", &Int64Box::value, D(IntBox, value))
