@@ -254,7 +254,12 @@ bool Button::load(Serializer &s) {
     if (!s.get("flags", mFlags)) return false;
     if (!s.get("backgroundColor", mBackgroundColor)) return false;
     if (!s.get("textColor", mTextColor)) return false;
-    if (!s.get("textTruncation", mTextTruncation)) return false;
+
+    // "new" fields
+    const std::vector<std::string> keys = s.keys();
+    if (std::find(keys.begin(), keys.end(), "textTruncation") != keys.end()) {
+        if (!s.get("textTruncation", mTextTruncation)) return false;
+    }
     return true;
 }
 

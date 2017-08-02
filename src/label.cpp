@@ -82,7 +82,12 @@ bool Label::load(Serializer &s) {
     if (!s.get("caption", mCaption)) return false;
     if (!s.get("font", mFont)) return false;
     if (!s.get("color", mColor)) return false;
-    if (!s.get("textTruncation", mTextTruncation)) return false;
+
+    // "new" fields
+    const std::vector<std::string> keys = s.keys();
+    if (std::find(keys.begin(), keys.end(), "textTruncation") != keys.end()) {
+        if (!s.get("textTruncation", mTextTruncation)) return false;
+    }
     return true;
 }
 
