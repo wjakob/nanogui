@@ -324,7 +324,7 @@ public:
         });
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
-        textBox->setAlignment(TextBox::Alignment::Right);
+        textBox->setAlignment(TextAlignment::Right);
 
         window = new Window(this, "Misc. widgets");
         window->setPosition(Vector2i(425,15));
@@ -408,7 +408,7 @@ public:
         });
 
         window = new Window(this, "Grid of small widgets");
-        window->setPosition(Vector2i(425, 300));
+        window->setPosition(Vector2i(15, 530));
         GridLayout *layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
@@ -486,7 +486,7 @@ public:
         });
 
         window = new Window(this, "Text Truncation");
-        window->setPosition(Vector2i(710, 350));
+        window->setPosition(Vector2i(425, 300));
         window->setFixedWidth(220);
         window->setLayout(new GroupLayout());
 
@@ -512,9 +512,38 @@ public:
 
         new Label(window, "Labels also", "sans-bold");
 
-        Label *l = new Label(window, "An even longer title, this time it's really, really long", "sans-bold");
+        Label *l = new Label(window, "An even longer title, this time it's really, really long");
         l->setTextTruncation(TextTruncation::Tail);
         l->setTooltip(b->caption());
+
+        window = new Window(this, "Text Alignment");
+        window->setPosition(Vector2i(710, 350));
+        window->setFixedWidth(220);
+        window->setLayout(new GroupLayout());
+
+        new Label(window, "Button caption alignment", "sans-bold");
+
+        b = new Button(window, "Left aligned", ENTYPO_ICON_ROCKET);
+        b->setTextAlignment(TextAlignment::Left);
+
+        b = new Button(window, "Left aligned 2", ENTYPO_ICON_ROCKET);
+        b->setTextAlignment(TextAlignment::Left);
+        b->setIconPosition(Button::IconPosition::Right);
+
+        b = new Button(window, "Right aligned", ENTYPO_ICON_ROCKET);
+        b->setTextAlignment(TextAlignment::Right);
+
+        b = new Button(window, "Right aligned 2", ENTYPO_ICON_ROCKET);
+        b->setTextAlignment(TextAlignment::Right);
+        b->setIconPosition(Button::IconPosition::Left);
+
+        new Label(window, "Label text alignment", "sans-bold");
+
+        l = new Label(window, "Center alignment");
+        l->setTextAlignment(TextAlignment::Center);
+
+        l = new Label(window, "Right alignment");
+        l->setTextAlignment(TextAlignment::Right);
 
         performLayout();
 

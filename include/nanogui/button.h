@@ -55,6 +55,9 @@ public:
     TextTruncation textTruncation() const { return mTextTruncation; }
     void setTextTruncation(TextTruncation truncation) { mTextTruncation = truncation; }
 
+    TextAlignment textAlignment() const { return mTextAlignment; }
+    void setTextAlignment(TextAlignment alignment) { mTextAlignment = alignment; }
+
     int icon() const { return mIcon; }
     void setIcon(int icon) { mIcon = icon; }
 
@@ -94,6 +97,7 @@ protected:
     Color mBackgroundColor;
     Color mTextColor;
     TextTruncation mTextTruncation;
+    TextAlignment mTextAlignment;
     std::function<void()> mCallback;
     std::function<void(bool)> mChangeCallback;
     std::vector<Button *> mButtonGroup;

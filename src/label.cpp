@@ -17,7 +17,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
-    : Widget(parent), mCaption(caption), mFont(font), mTextTruncation(TextTruncation::None) {
+    : Widget(parent), mCaption(caption), mFont(font), mTextTruncation(TextTruncation::None),
+      mTextAlignment(TextAlignment::Left) {
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
         mColor = mTheme->mTextColor;
@@ -61,11 +62,33 @@ void Label::draw(NVGcontext *ctx) {
     std::string caption = truncateText(ctx, mCaption, mTextTruncation, width());
 
     if (mFixedSize.x() > 0) {
-        nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-        nvgTextBox(ctx, mPos.x(), mPos.y(), mFixedSize.x(), caption.c_str(), nullptr);
+        Vector2f textOrigin = Vector2f(mPos.x(), mPos.y());
+        int textAlign = NVG_ALIGN_LEFT;
+
+        if (mTextAlignment == TextAlignment::Center) {
+            textAlign = NVG_ALIGN_CENTER;
+            textOrigin.x() += mFixedSize.x() * 0.5f;
+        } else if (mTextAlignment == TextAlignment::Right) {
+            textAlign = NVG_ALIGN_RIGHT;
+            textOrigin.x() += mFixedSize.x();
+        }
+
+        nvgTextAlign(ctx, textAlign | NVG_ALIGN_TOP);
+        nvgTextBox(ctx, textOrigin.x(), textOrigin.y(), mFixedSize.x(), caption.c_str(), nullptr);
     } else {
-        nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-        nvgText(ctx, mPos.x(), mPos.y() + mSize.y() * 0.5f, caption.c_str(), nullptr);
+        Vector2f textOrigin = Vector2f(mPos.x(), mPos.y() + mSize.y() * 0.5f);
+        int textAlign = NVG_ALIGN_LEFT;
+
+        if (mTextAlignment == TextAlignment::Center) {
+            textAlign = NVG_ALIGN_CENTER;
+            textOrigin.x() += mSize.x() * 0.5f;
+        } else if (mTextAlignment == TextAlignment::Right) {
+            textAlign = NVG_ALIGN_RIGHT;
+            textOrigin.x() += mSize.x();
+        }
+
+        nvgTextAlign(ctx, textAlign | NVG_ALIGN_MIDDLE);
+        nvgText(ctx, textOrigin.x(), textOrigin.y(), caption.c_str(), nullptr);
     }
 }
 
@@ -75,6 +98,7 @@ void Label::save(Serializer &s) const {
     s.set("font", mFont);
     s.set("color", mColor);
     s.set("textTruncation", mTextTruncation);
+    s.set("textAlignment", mTextAlignment);
 }
 
 bool Label::load(Serializer &s) {
@@ -87,6 +111,9 @@ bool Label::load(Serializer &s) {
     const std::vector<std::string> keys = s.keys();
     if (std::find(keys.begin(), keys.end(), "textTruncation") != keys.end()) {
         if (!s.get("textTruncation", mTextTruncation)) return false;
+    }
+    if (std::find(keys.begin(), keys.end(), "textAlignment") != keys.end()) {
+        if (!s.get("textAlignment", mTextAlignment)) return false;
     }
     return true;
 }

@@ -138,6 +138,12 @@ enum class TextTruncation {
     Tail
 };
 
+enum class TextAlignment {
+    Left,
+    Center,
+    Right
+};
+
 /// Return a string truncated to fit in availableWidth. Uses font face and size currently set on ctx.
 extern NANOGUI_EXPORT std::string truncateText(NVGcontext *ctx, const std::string &text, TextTruncation truncation, int availableWidth);
 
