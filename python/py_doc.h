@@ -298,7 +298,11 @@ static const char *__doc_nanogui_Button_setPushed = R"doc()doc";
 
 static const char *__doc_nanogui_Button_setTextColor = R"doc()doc";
 
+static const char *__doc_nanogui_Button_setTextTruncation = R"doc()doc";
+
 static const char *__doc_nanogui_Button_textColor = R"doc()doc";
+
+static const char *__doc_nanogui_Button_textTruncation = R"doc()doc";
 
 static const char *__doc_nanogui_CheckBox = R"doc(Two-state check box widget.)doc";
 
@@ -1398,6 +1402,10 @@ R"doc(Set the currently active font (2 are available by default: 'sans' and
 
 static const char *__doc_nanogui_Label_setTheme = R"doc(Set the Theme used to draw this widget)doc";
 
+static const char *__doc_nanogui_Label_setTextTruncation = R"doc()doc";
+
+static const char *__doc_nanogui_Label_textTruncation = R"doc()doc";
+
 static const char *__doc_nanogui_Layout = R"doc(Basic interface of a layout engine.)doc";
 
 static const char *__doc_nanogui_Layout_performLayout = R"doc()doc";
@@ -2153,6 +2161,16 @@ static const char *__doc_nanogui_TextBox_unitsImage = R"doc()doc";
 static const char *__doc_nanogui_TextBox_updateCursor = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_value = R"doc()doc";
+
+static const char *__doc_nanogui_TextTruncation = R"doc(Text trunctation options (Label, Button etc).)doc";
+
+static const char *__doc_nanogui_TextTruncation_None = R"doc()doc";
+
+static const char *__doc_nanogui_TextTruncation_Head = R"doc()doc";
+
+static const char *__doc_nanogui_TextTruncation_Middle = R"doc()doc";
+
+static const char *__doc_nanogui_TextTruncation_Tail = R"doc()doc";
 
 static const char *__doc_nanogui_Theme = R"doc(Storage class for basic theme-related properties.)doc";
 

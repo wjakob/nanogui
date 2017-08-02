@@ -232,6 +232,12 @@ PYBIND11_PLUGIN(nanogui) {
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
+    py::enum_<TextTruncation>(m, "TextTruncation", D(TextTruncation))
+        .value("None", TextTruncation::None)
+        .value("Head", TextTruncation::Head)
+        .value("Middle", TextTruncation::Middle)
+        .value("Tail", TextTruncation::Tail);
+
     register_constants(m);
     register_eigen(m);
     register_widget(m);
