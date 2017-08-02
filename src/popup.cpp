@@ -13,16 +13,30 @@
 #include <nanogui/popup.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/screen.h>
 #include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
-Popup::Popup(Widget *parent, Window *parentWindow)
+static const int kArrowSize = 15;
+
+Popup::Popup(Widget *parent, Window *parentWindow, bool showArrow)
     : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {
+      mAnchorPos(Vector2i::Zero()), mAnchorOffset(0), mSide(Side::Right), mShowArrow(showArrow) {
+}
+
+int Popup::actualAnchorOffset() const {
+    if (mSide == Side::Left || mSide == Side::Right) {
+        return (mAnchorOffset > 0 ? mAnchorOffset : 30); // top (with optional offset)
+    }
+    else {
+        return mSize.x() / 2 + mAnchorOffset; // middle (with optional offset).
+    }
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
+    if (mParentWindow)
+        refreshRelativePlacement();
     if (mLayout || mChildren.size() != 1) {
         Widget::performLayout(ctx);
     } else {
@@ -32,12 +46,38 @@ void Popup::performLayout(NVGcontext *ctx) {
     }
     if (mSide == Side::Left)
         mAnchorPos[0] -= size()[0];
+    else if (mSide == Side::Top)
+        mAnchorPos[1] -= size()[1];
 }
 
 void Popup::refreshRelativePlacement() {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
-    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+
+    Vector2i arrowOffset = Vector2i(0, 0);
+    if ( mShowArrow ) {
+        switch(mSide) {
+            case Side::Left:
+                arrowOffset.x() -= kArrowSize;
+                break;
+            case Side::Right:
+                arrowOffset.x() += kArrowSize;
+                break;
+            case Side::Top:
+                arrowOffset.y() -= kArrowSize;
+                break;
+            case Side::Bottom:
+                arrowOffset.y() += kArrowSize;
+                break;
+        }
+    }
+
+    mPos = mParentWindow->position() + mAnchorPos + arrowOffset;
+
+    if (mSide == Side::Left || mSide == Side::Right)
+        mPos -= Vector2i(0, actualAnchorOffset());
+    else
+        mPos -= Vector2i(actualAnchorOffset(), 0);
 }
 
 void Popup::draw(NVGcontext* ctx) {
@@ -66,20 +106,43 @@ void Popup::draw(NVGcontext* ctx) {
     /* Draw window */
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
-
-    Vector2i base = mPos + Vector2i(0, mAnchorHeight);
-    int sign = -1;
-    if (mSide == Side::Left) {
-        base.x() += mSize.x();
-        sign = 1;
-    }
-
-    nvgMoveTo(ctx, base.x() + 15*sign, base.y());
-    nvgLineTo(ctx, base.x() - 1*sign, base.y() - 15);
-    nvgLineTo(ctx, base.x() - 1*sign, base.y() + 15);
-
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
+
+    if(mShowArrow) {
+        nvgBeginPath(ctx);
+
+        Vector2i base = mPos;
+        if (mSide == Side::Left || mSide == Side::Right) {
+            base += Vector2i(0, actualAnchorOffset());
+
+            int sign = -1;
+            if (mSide == Side::Left) {
+                base.x() += mSize.x();
+                sign = 1;
+            }
+
+            nvgMoveTo(ctx, base.x() + kArrowSize*sign, base.y());
+            nvgLineTo(ctx, base.x() - 1*sign, base.y() - kArrowSize);
+            nvgLineTo(ctx, base.x() - 1*sign, base.y() + kArrowSize);
+        }
+        else {
+            base += Vector2i(actualAnchorOffset(), 0);
+
+            int sign = -1;
+            if (mSide == Side::Top) {
+                base.y() += mSize.y();
+                sign = 1;
+            }
+
+            nvgMoveTo(ctx, base.x(), base.y() + kArrowSize*sign);
+            nvgLineTo(ctx, base.x() + kArrowSize, base.y() - 1*sign);
+            nvgLineTo(ctx, base.x() - kArrowSize, base.y() - 1*sign);
+        }
+
+        nvgFill(ctx);
+    }
+
     nvgRestore(ctx);
 
     Widget::draw(ctx);
@@ -88,15 +151,19 @@ void Popup::draw(NVGcontext* ctx) {
 void Popup::save(Serializer &s) const {
     Window::save(s);
     s.set("anchorPos", mAnchorPos);
-    s.set("anchorHeight", mAnchorHeight);
+    s.set("anchorOffset", mAnchorOffset);
     s.set("side", mSide);
 }
 
 bool Popup::load(Serializer &s) {
     if (!Window::load(s)) return false;
     if (!s.get("anchorPos", mAnchorPos)) return false;
-    if (!s.get("anchorHeight", mAnchorHeight)) return false;
     if (!s.get("side", mSide)) return false;
+    // "new" fields
+    const std::vector<std::string> keys = s.keys();
+    if (std::find(keys.begin(), keys.end(), "anchorOffset") != keys.end()) {
+        if (!s.get("anchorOffset", mAnchorOffset)) return false;
+    }
     return true;
 }
 

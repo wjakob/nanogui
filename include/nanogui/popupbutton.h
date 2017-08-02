@@ -28,10 +28,15 @@ public:
     PopupButton(Widget *parent, const std::string &caption = "Untitled",
                 int buttonIcon = 0);
 
+    /// Set the chevron icon which appears on the right-hand side of the button.
     void setChevronIcon(int icon) { mChevronIcon = icon; }
+    /// Returns the chevron icon which appears on the right-hand side of the button.
     int chevronIcon() const { return mChevronIcon; }
 
+    /// Set the side of the parent window at which popup will appear.
+    /// Will also set the appropriate chevron icon.
     void setSide(Popup::Side popupSide);
+    /// Return the side of the parent window at which popup will appear.
     Popup::Side side() const { return mPopup->side(); }
 
     Popup *popup() { return mPopup; }

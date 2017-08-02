@@ -27,20 +27,20 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Popup : public Window {
 public:
-    enum Side { Left = 0, Right };
+    enum Side { Left = 0, Right, Top, Bottom };
 
     /// Create a new popup parented to a screen (first argument) and a parent window
-    Popup(Widget *parent, Window *parentWindow);
+    Popup(Widget *parent, Window *parentWindow, bool showArrow = true);
 
     /// Return the anchor position in the parent window; the placement of the popup is relative to it
     void setAnchorPos(const Vector2i &anchorPos) { mAnchorPos = anchorPos; }
     /// Set the anchor position in the parent window; the placement of the popup is relative to it
     const Vector2i &anchorPos() const { return mAnchorPos; }
 
-    /// Set the anchor height; this determines the vertical shift relative to the anchor position
-    void setAnchorHeight(int anchorHeight) { mAnchorHeight = anchorHeight; }
-    /// Return the anchor height; this determines the vertical shift relative to the anchor position
-    int anchorHeight() const { return mAnchorHeight; }
+    /// Set the anchor height; this determines the vertical/horizontal shift relative to the anchor position
+    void setAnchorOffset(int anchorOffset) { mAnchorOffset = anchorOffset; }
+    /// Return the anchor offset; this determines the vertical/horizontal shift relative to the anchor position
+    int anchorOffset() const { return mAnchorOffset; }
 
     /// Set the side of the parent window at which popup will appear
     void setSide(Side popupSide) { mSide = popupSide; }
@@ -64,11 +64,14 @@ protected:
     /// Internal helper function to maintain nested window position values
     virtual void refreshRelativePlacement() override;
 
+    virtual int actualAnchorOffset() const;
+
 protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
-    int mAnchorHeight;
+    int mAnchorOffset;
     Side mSide;
+    bool mShowArrow;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
