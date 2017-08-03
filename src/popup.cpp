@@ -55,7 +55,7 @@ void Popup::refreshRelativePlacement() {
     mVisible &= mParentWindow->visibleRecursive();
 
     Vector2i arrowOffset = Vector2i(0, 0);
-    if ( mShowArrow ) {
+    if (mShowArrow) {
         switch(mSide) {
             case Side::Left:
                 arrowOffset.x() -= kArrowSize;
@@ -109,7 +109,7 @@ void Popup::draw(NVGcontext* ctx) {
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);
 
-    if(mShowArrow) {
+    if (mShowArrow) {
         nvgBeginPath(ctx);
 
         Vector2i base = mPos;
