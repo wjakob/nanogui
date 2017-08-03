@@ -21,6 +21,7 @@
 #include <chrono>
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 
 #if !defined(_WIN32)
     #include <locale.h>
