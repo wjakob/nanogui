@@ -203,22 +203,19 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     return result;
 }
 
-inline std::string ltrim(const std::string &s)
-{
+inline std::string ltrim(const std::string &s) {
     auto isspace = [](int c) { return std::isspace(c); };
     auto wsfront = std::find_if_not(s.begin(), s.end(), isspace);
     return std::string(wsfront, s.end());
 }
 
-inline std::string rtrim(const std::string &s)
-{
+inline std::string rtrim(const std::string &s) {
     auto isspace = [](int c) { return std::isspace(c); };
     auto wsback = std::find_if_not(s.rbegin(), s.rend(), isspace);
     return std::string(s.begin(), wsback.base());
 }
 
-inline std::string trim(const std::string &s)
-{
+inline std::string trim(const std::string &s) {
     auto isspace = [](int c) { return std::isspace(c); };
     auto  wsfront = std::find_if_not(s.begin(), s.end(), isspace);
     return std::string(wsfront, std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront), isspace).base());
