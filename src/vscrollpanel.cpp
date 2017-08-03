@@ -74,12 +74,10 @@ Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
     return size;
 }
 
-bool VScrollPanel::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
-{
+bool VScrollPanel::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     if (down
         && p.x() > (mPos.x() + mSize.x() - kScrollerWidth - 1)
-        && !mChildren.empty() && mChildPreferredHeight > mSize.y())
-    {
+        && !mChildren.empty() && mChildPreferredHeight > mSize.y()) {
         float scrollh = scrollerHeight();
         int scrollerPos = mScroll * (height() - scrollh);
         float delta = (height() + scrollh) / (float)mChildPreferredHeight;
