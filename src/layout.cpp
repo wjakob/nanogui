@@ -20,8 +20,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-void Layout::performLayout(NVGcontext *ctx, Widget *widget) const
-{
+void Layout::performLayout(NVGcontext *ctx, Widget *widget) const {
     for (auto c : widget->children()) {
         Vector2i pref = c->preferredSize(ctx), fix = c->fixedSize();
         c->setSize(Vector2i(
@@ -32,8 +31,7 @@ void Layout::performLayout(NVGcontext *ctx, Widget *widget) const
     }
 }
 
-Vector2i Layout::preferredSize(NVGcontext * /*ctx*/, const Widget *widget) const
-{
+Vector2i Layout::preferredSize(NVGcontext * /*ctx*/, const Widget *widget) const {
     Vector2i size = widget->size();
     Vector2i fix = widget->fixedSize();
     if (fix[0])
