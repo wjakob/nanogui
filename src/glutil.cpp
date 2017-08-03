@@ -175,7 +175,7 @@ void GLShader::uploadAttrib(const std::string &name, size_t size, int dim,
         Buffer &buffer = it->second;
         bufferID = it->second.id;
         buffer.version = version;
-        buffer.size = size;
+        buffer.size = (GLuint)size;
         buffer.compSize = compSize;
     } else {
         glGenBuffers(1, &bufferID);
@@ -184,7 +184,7 @@ void GLShader::uploadAttrib(const std::string &name, size_t size, int dim,
         buffer.glType = glType;
         buffer.dim = dim;
         buffer.compSize = compSize;
-        buffer.size = size;
+        buffer.size = (GLuint)size;
         buffer.version = version;
         mBufferObjects[name] = buffer;
     }

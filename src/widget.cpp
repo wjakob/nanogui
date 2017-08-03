@@ -166,7 +166,7 @@ int Widget::childIndex(Widget *widget) const {
     auto it = std::find(mChildren.begin(), mChildren.end(), widget);
     if (it == mChildren.end())
         return -1;
-    return it - mChildren.begin();
+    return (int)(it - mChildren.begin());
 }
 
 Window *Widget::window() {
