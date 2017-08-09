@@ -282,7 +282,7 @@ public:
     T value() const { return (T) selectedIndex(); }
     void setValue(T value) { setSelectedIndex((int) value); mSelectedIndex = (int) value; }
     void setCallback(const std::function<void(const T &)> &cb) {
-        ComboBox::setCallback([cb](int v) { cb((const T &) v); });
+        ComboBox::setCallback([cb](int v) { cb((T) v); });
     }
     void setEditable(bool e) { setEnabled(e); }
 public:

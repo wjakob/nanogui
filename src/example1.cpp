@@ -250,7 +250,7 @@ public:
         auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
         mCurrentImage = 0;
         // Change the active textures.
-        imgPanel->setCallback([this, imageView, imgPanel](int i) {
+        imgPanel->setCallback([this, imageView](int i) {
             imageView->bindImage(mImagesData[i].first.texture());
             mCurrentImage = i;
             cout << "Selected item " << i << '\n';
