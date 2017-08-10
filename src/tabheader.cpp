@@ -178,7 +178,7 @@ void TabHeader::addTab(int index, const std::string &label) {
 int TabHeader::removeTab(const std::string &label) {
     auto element = std::find_if(mTabButtons.begin(), mTabButtons.end(),
                                 [&](const TabButton& tb) { return label == tb.label(); });
-    int index = (int)std::distance(mTabButtons.begin(), element);
+    int index = (int) std::distance(mTabButtons.begin(), element);
     if (element == mTabButtons.end())
         return -1;
     mTabButtons.erase(element);
@@ -204,7 +204,7 @@ int TabHeader::tabIndex(const std::string &label) {
                            [&](const TabButton& tb) { return label == tb.label(); });
     if (it == mTabButtons.end())
         return -1;
-    return (int)(it - mTabButtons.begin());
+    return (int) (it - mTabButtons.begin());
 }
 
 void TabHeader::ensureTabVisible(int index) {
@@ -252,8 +252,8 @@ void TabHeader::ensureTabVisible(int index) {
         ++last;
     }
 
-    mVisibleStart = (int)std::distance(mTabButtons.begin(), first);
-    mVisibleEnd = (int)std::distance(mTabButtons.begin(), last);
+    mVisibleStart = (int) std::distance(mTabButtons.begin(), first);
+    mVisibleEnd = (int) std::distance(mTabButtons.begin(), last);
 }
 
 std::pair<Vector2i, Vector2i> TabHeader::visibleButtonArea() const {
@@ -344,7 +344,7 @@ bool TabHeader::mouseButtonEvent(const Vector2i &p, int button, bool down, int m
                 return true;
 
             // Update the active tab and invoke the callback.
-            setActiveTab((int)std::distance(mTabButtons.begin(), firstInvisible));
+            setActiveTab((int) std::distance(mTabButtons.begin(), firstInvisible));
             return true;
         }
     }
@@ -398,7 +398,7 @@ void TabHeader::calculateVisibleEnd() {
         currentPosition += tb.size().x();
         return currentPosition > lastPosition;
     });
-    mVisibleEnd = (int)std::distance(mTabButtons.begin(), firstInvisible);
+    mVisibleEnd = (int) std::distance(mTabButtons.begin(), firstInvisible);
 }
 
 void TabHeader::drawControls(NVGcontext* ctx) {
