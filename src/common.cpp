@@ -12,6 +12,8 @@
 #include <nanogui/screen.h>
 
 #if defined(_WIN32)
+/* disable min and max macro from windows.h */
+#define NOMINMAX
 #include <windows.h>
 #endif
 
@@ -20,6 +22,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <algorithm>
 
 #if !defined(_WIN32)
     #include <locale.h>
@@ -67,23 +70,6 @@ void mainloop(int refresh) {
 
     mainloop_active = true;
 
-    std::thread refresh_thread;
-    if (refresh > 0) {
-        /* If there are no mouse/keyboard events, try to refresh the
-           view roughly every 50 ms (default); this is to support animations
-           such as progress bars while keeping the system load
-           reasonably low */
-        refresh_thread = std::thread(
-            [refresh]() {
-                std::chrono::milliseconds time(refresh);
-                while (mainloop_active) {
-                    std::this_thread::sleep_for(time);
-                    glfwPostEmptyEvent();
-                }
-            }
-        );
-    }
-
     try {
         while (mainloop_active) {
             int numScreens = 0;
@@ -105,8 +91,9 @@ void mainloop(int refresh) {
                 break;
             }
 
-            /* Wait for mouse/keyboard or empty refresh events */
-            glfwWaitEvents();
+            /* Wait for mouse/keyboard event or timeout (in sec) */
+            const double timeout = std::max(refresh, 0) / 1000.0;
+            glfwWaitEventsTimeout(timeout);
         }
 
         /* Process events once more */
@@ -115,9 +102,6 @@ void mainloop(int refresh) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         leave();
     }
-
-    if (refresh > 0)
-        refresh_thread.join();
 }
 
 void leave() {
