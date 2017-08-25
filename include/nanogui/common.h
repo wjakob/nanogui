@@ -12,6 +12,17 @@
 
 #pragma once
 
+#if defined(_WIN32)
+#  if defined(NANOGUI_BUILD)
+     /* Quench a few warnings on when compiling NanoGUI on Windows */
+#    pragma warning(disable : 4127) // warning C4127: conditional expression is constant
+#    pragma warning(disable : 4244) // warning C4244: conversion from X to Y, possible loss of data
+#  endif
+#  pragma warning(disable : 4251) // warning C4251: class X needs to have dll-interface to be used by clients of class Y
+#  pragma warning(disable : 4714) // warning C4714: function X marked as __forceinline not inlined
+#  pragma warning(disable : 4127) // warning C4127: conditional expression is constant
+#endif
+
 #include <Eigen/Core>
 #include <stdint.h>
 #include <array>
@@ -83,16 +94,6 @@
  * ``NvOptimusEnablement`` as ``1``.
  */
 #define NANOGUI_FORCE_DISCRETE_GPU()
-#endif
-
-#if defined(_WIN32)
-#if defined(NANOGUI_BUILD)
-/* Quench a few warnings on when compiling NanoGUI on Windows */
-#pragma warning(disable : 4127) // warning C4127: conditional expression is constant
-#pragma warning(disable : 4244) // warning C4244: conversion from X to Y, possible loss of data
-#endif
-#pragma warning(disable : 4251) // warning C4251: class X needs to have dll-interface to be used by clients of class Y
-#pragma warning(disable : 4714) // warning C4714: function X marked as __forceinline not inlined
 #endif
 
 // These will produce broken links in the docs build

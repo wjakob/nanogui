@@ -376,8 +376,8 @@ void Screen::drawWidgets() {
     glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
 
 #if defined(_WIN32) || defined(__linux__)
-    mSize = (mSize / mPixelRatio).cast<int>();
-    mFBSize = (mSize * mPixelRatio).cast<int>();
+    mSize = (mSize.cast<float>() / mPixelRatio).cast<int>();
+    mFBSize = (mSize.cast<float>() * mPixelRatio).cast<int>();
 #else
     /* Recompute pixel ratio on OSX */
     if (mSize[0])
