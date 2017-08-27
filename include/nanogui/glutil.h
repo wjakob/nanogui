@@ -220,6 +220,11 @@ public:
         glUniformMatrix3fv(uniform(name, warn), 1, GL_FALSE, affine.template cast<float>().data());
     }
 
+    /// Initialize a uniform parameter with a boolean value
+    void setUniform(const std::string &name, bool value, bool warn = true) {
+        glUniform1i(uniform(name, warn), (int)value);
+    }
+
     /// Initialize a uniform parameter with an integer value
     template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
     void setUniform(const std::string &name, T value, bool warn = true) {
