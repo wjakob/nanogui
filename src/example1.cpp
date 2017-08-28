@@ -194,6 +194,12 @@ public:
         popup->setLayout(new GroupLayout());
         new CheckBox(popup, "Another check box");
 
+        popupBtn = new PopupButton(window, "Popup Below");
+        // Using PopupButton::setSide will automatically set the appropriate chevron icon.
+        popupBtn->setSide(Popup::Bottom);
+        popupBtn->popup()->setLayout(new GroupLayout());
+        new Label(popupBtn->popup(), "Just another label...");
+
         window = new Window(this, "Basic widgets");
         window->setPosition(Vector2i(200, 15));
         window->setLayout(new GroupLayout());
