@@ -202,6 +202,29 @@ public:
         glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.template cast<float>().data());
     }
 
+    /// Initialize a uniform parameter with a 3x3 affine transform (float)
+    template <typename T>
+    void setUniform(const std::string &name, const Eigen::Transform<T, 3, 3> &affine, bool warn = true) {
+        glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, affine.template cast<float>().data());
+    }
+
+    /// Initialize a uniform parameter with a 3x3 matrix (float)
+    template <typename T>
+    void setUniform(const std::string &name, const Eigen::Matrix<T, 3, 3> &mat, bool warn = true) {
+        glUniformMatrix3fv(uniform(name, warn), 1, GL_FALSE, mat.template cast<float>().data());
+    }
+
+    /// Initialize a uniform parameter with a 2x2 affine transform (float)
+    template <typename T>
+    void setUniform(const std::string &name, const Eigen::Transform<T, 2, 2> &affine, bool warn = true) {
+        glUniformMatrix3fv(uniform(name, warn), 1, GL_FALSE, affine.template cast<float>().data());
+    }
+
+    /// Initialize a uniform parameter with a boolean value
+    void setUniform(const std::string &name, bool value, bool warn = true) {
+        glUniform1i(uniform(name, warn), (int)value);
+    }
+
     /// Initialize a uniform parameter with an integer value
     template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
     void setUniform(const std::string &name, T value, bool warn = true) {

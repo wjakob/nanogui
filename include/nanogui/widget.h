@@ -162,6 +162,9 @@ public:
     /// Walk up the hierarchy and return the parent window
     Window *window();
 
+    /// Walk up the hierarchy and return the parent screen
+    Screen *screen();
+
     /// Associate this widget with an ID value (optional)
     void setId(const std::string &id) { mId = id; }
     /// Return the ID value associated with this widget, if any

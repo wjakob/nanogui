@@ -166,7 +166,7 @@ int Widget::childIndex(Widget *widget) const {
     auto it = std::find(mChildren.begin(), mChildren.end(), widget);
     if (it == mChildren.end())
         return -1;
-    return it - mChildren.begin();
+    return (int) (it - mChildren.begin());
 }
 
 Window *Widget::window() {
@@ -178,6 +178,19 @@ Window *Widget::window() {
         Window *window = dynamic_cast<Window *>(widget);
         if (window)
             return window;
+        widget = widget->parent();
+    }
+}
+
+Screen *Widget::screen() {
+    Widget *widget = this;
+    while (true) {
+        if (!widget)
+            throw std::runtime_error(
+                "Widget:internal error (could not find parent screen)");
+        Screen *screen = dynamic_cast<Screen *>(widget);
+        if (screen)
+            return screen;
         widget = widget->parent();
     }
 }

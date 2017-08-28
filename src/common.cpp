@@ -12,7 +12,7 @@
 #include <nanogui/screen.h>
 
 #if defined(_WIN32)
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 #include <nanogui/opengl.h>
@@ -22,9 +22,9 @@
 #include <iostream>
 
 #if !defined(_WIN32)
-    #include <locale.h>
-    #include <signal.h>
-    #include <sys/dir.h>
+#  include <locale.h>
+#  include <signal.h>
+#  include <sys/dir.h>
 #endif
 
 NAMESPACE_BEGIN(nanogui)

@@ -289,6 +289,11 @@ if (APPLE OR CMAKE_SYSTEM MATCHES "Linux")
   list(APPEND LIBNANOGUI_PYTHON_EXTRA_SOURCE ext/coro/coro.c)
 endif()
 
+if (APPLE)
+  # Use automatic reference counting for Objective-C portions
+  add_compile_options(-fobjc-arc)
+endif()
+
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
 # Compile main NanoGUI library
