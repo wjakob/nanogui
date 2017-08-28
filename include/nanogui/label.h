@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+enum class TextTruncation;
+
 /**
  * \class Label label.h nanogui/label.h
  *
@@ -44,6 +46,16 @@ public:
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
 
+    /// Get the label text truncation
+    TextTruncation textTruncation() const { return mTextTruncation; }
+    /// Set the label text truncation
+    void setTextTruncation(TextTruncation truncation) { mTextTruncation = truncation; }
+
+    /// Get the label text alignment
+    TextAlignment textAlignment() const { return mTextAlignment; }
+    /// Set the label text alignment
+    void setTextAlignment(TextAlignment alignment) { mTextAlignment = alignment; }
+
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme) override;
 
@@ -59,6 +71,8 @@ protected:
     std::string mCaption;
     std::string mFont;
     Color mColor;
+    TextTruncation mTextTruncation;
+    TextAlignment mTextAlignment;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

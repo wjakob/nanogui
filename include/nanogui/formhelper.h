@@ -291,21 +291,21 @@ public:
 
 template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
 public:
-    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
 public:
-    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <> class FormWidget<std::string, std::true_type> : public TextBox {
 public:
-    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextBox::Alignment::Left); }
+    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextAlignment::Left); }
     void setCallback(const std::function<void(const std::string&)> &cb) {
         TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
     }

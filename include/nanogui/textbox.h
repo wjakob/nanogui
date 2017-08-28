@@ -21,6 +21,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+enum class TextAlignment;
+
 /**
  * \class TextBox textbox.h nanogui/textbox.h
  *
@@ -28,13 +30,6 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
-    /// How to align the text in the text box.
-    enum class Alignment {
-        Left,
-        Center,
-        Right
-    };
-
     TextBox(Widget *parent, const std::string &value = "Untitled");
 
     bool editable() const { return mEditable; }
@@ -49,8 +44,8 @@ public:
     const std::string &defaultValue() const { return mDefaultValue; }
     void setDefaultValue(const std::string &defaultValue) { mDefaultValue = defaultValue; }
 
-    Alignment alignment() const { return mAlignment; }
-    void setAlignment(Alignment align) { mAlignment = align; }
+    TextAlignment alignment() const { return mAlignment; }
+    void setAlignment(TextAlignment align) { mAlignment = align; }
 
     const std::string &units() const { return mUnits; }
     void setUnits(const std::string &units) { mUnits = units; }
@@ -104,7 +99,7 @@ protected:
     bool mCommitted;
     std::string mValue;
     std::string mDefaultValue;
-    Alignment mAlignment;
+    TextAlignment mAlignment;
     std::string mUnits;
     std::string mFormat;
     int mUnitsImage;

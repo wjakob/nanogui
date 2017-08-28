@@ -19,7 +19,7 @@ from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, GridLayout, \
-                    Alignment, Orientation, TabWidget, IntBox, GLShader
+                    Alignment, Orientation, TextAlignment, TabWidget, IntBox, GLShader
 
 from nanogui import gl, glfw, entypo
 
@@ -201,7 +201,7 @@ class TestApp(Screen):
         textBox.setValue("50")
         textBox.setUnits("%")
         textBox.setFontSize(20)
-        textBox.setAlignment(TextBox.Alignment.Right)
+        textBox.setAlignment(TextAlignment.Right)
 
         def cb(value):
             textBox.setValue("%i" % int(value * 100))
