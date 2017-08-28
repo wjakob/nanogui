@@ -178,10 +178,10 @@ public:
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 6));
 
-        b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
-        b = new ToolButton(tools, ENTYPO_ICON_FF);
-        b = new ToolButton(tools, ENTYPO_ICON_COMPASS);
-        b = new ToolButton(tools, ENTYPO_ICON_INSTALL);
+        new ToolButton(tools, ENTYPO_ICON_CLOUD);
+        new ToolButton(tools, ENTYPO_ICON_FF);
+        new ToolButton(tools, ENTYPO_ICON_COMPASS);
+        new ToolButton(tools, ENTYPO_ICON_INSTALL);
 
         new Label(window, "Popup buttons", "sans-bold");
         PopupButton *popupBtn = new PopupButton(window, "Popup", ENTYPO_ICON_EXPORT);
