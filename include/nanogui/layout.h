@@ -157,7 +157,8 @@ public:
                int margin = 0, int spacing = 0)
         : mOrientation(orientation), mResolution(resolution), mMargin(margin) {
         mDefaultAlignment[0] = mDefaultAlignment[1] = alignment;
-        mSpacing = Vector2i::Constant(spacing);
+        mSpacing[0] = mSpacing[1] = spacing;
+        mStretch[0] = mStretch[1] = 1;
     }
 
     Orientation orientation() const { return mOrientation; }
@@ -174,6 +175,12 @@ public:
 
     int margin() const { return mMargin; }
     void setMargin(int margin) { mMargin = margin; }
+
+    // Normally the grid layout's widget is expanded to fit the parent widget.
+    // To restrict stretch in one or both dimensions, set to 0.
+    int stretch(int axis) const { return mStretch[axis]; }
+    void setStretch(int axis, int stretch) { mStretch[axis] = stretch; }
+    void setStretch(int stretch) { mStretch[0] = mStretch[1] = stretch; }
 
     Alignment alignment(int axis, int item) const {
         if (item < (int) mAlignment[axis].size())
@@ -201,7 +208,8 @@ protected:
     Alignment mDefaultAlignment[2];
     std::vector<Alignment> mAlignment[2];
     int mResolution;
-    Vector2i mSpacing;
+    int mSpacing[2];
+    int mStretch[2];
     int mMargin;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

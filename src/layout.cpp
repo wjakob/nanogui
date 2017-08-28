@@ -267,8 +267,11 @@ void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     if (window && !window->title().empty())
         extra[1] += widget->theme()->mWindowHeaderHeight - mMargin / 2;
 
-    /* Strech to size provided by \c widget */
+    /* Stretch to size provided by \c widget */
     for (int i = 0; i < 2; i++) {
+        if (mStretch[i] == 0)
+            continue;
+
         int gridSize = 2 * mMargin + extra[i];
         for (int s : grid[i]) {
             gridSize += s;
