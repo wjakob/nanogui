@@ -41,8 +41,8 @@ enum class Orientation {
  */
 class NANOGUI_EXPORT Layout : public Object {
 public:
-    virtual void performLayout(NVGcontext *ctx, Widget *widget) const = 0;
-    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
+    virtual void performLayout(NVGcontext *ctx, Widget *widget) const;
+    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const;
 protected:
     virtual ~Layout() { }
 };
