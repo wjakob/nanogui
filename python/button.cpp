@@ -24,6 +24,8 @@ void register_button(py::module &m) {
         .def("setFlags", &Button::setFlags, D(Button, setFlags))
         .def("iconPosition", &Button::iconPosition, D(Button, iconPosition))
         .def("setIconPosition", &Button::setIconPosition, D(Button, setIconPosition))
+        .def("textTruncation", &Button::textTruncation, D(Button, textTruncation))
+        .def("setTextTruncation", &Button::setTextTruncation, D(Button, setTextTruncation))
         .def("pushed", &Button::pushed, D(Button, pushed))
         .def("setPushed", &Button::setPushed, D(Button, setPushed))
         .def("callback", &Button::callback, D(Button, callback))
