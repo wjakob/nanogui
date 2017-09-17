@@ -49,7 +49,7 @@ public:
         }
 
         unsigned idx = 0;
-        while(all_kids.size() > 0) {
+        while (all_kids.size() > 0) {
             // grab the next widget
             auto *c = all_kids.back();
             all_kids.pop_back();
