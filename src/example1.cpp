@@ -571,7 +571,7 @@ public:
         /* Draw 2 triangles starting at index 0 */
         mShader.drawIndexed(GL_TRIANGLES, 0, 2);
     }
-private:
+protected:
     nanogui::ProgressBar *mProgress;
     nanogui::GLShader mShader;
 
@@ -579,6 +579,8 @@ private:
     imagesDataType mImagesData;
     int mCurrentImage;
 };
+
+#if !defined(NANOGUI_EXAMPLE_5_BYPASS) // example5 includes this file directly
 
 int main(int /* argc */, char ** /* argv */) {
     try {
@@ -604,3 +606,5 @@ int main(int /* argc */, char ** /* argv */) {
 
     return 0;
 }
+
+#endif // NANOGUI_EXAMPLE_5_BYPASS

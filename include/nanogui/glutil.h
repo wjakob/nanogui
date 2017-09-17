@@ -1,6 +1,4 @@
 /*
-    nanogui/glutil.h -- Convenience classes for accessing OpenGL >= 3.x
-
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
@@ -8,7 +6,11 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
-/** \file */
+/**
+ * \file nanogui/glutil.h
+ *
+ * \brief Convenience classes for accessing OpenGL >= 3.x
+ */
 
 #pragma once
 
@@ -16,8 +18,8 @@
 #include <Eigen/Geometry>
 #include <map>
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-namespace half_float { class half; }
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    namespace half_float { class half; }
 #endif
 
 #ifndef GL_HALF_FLOAT
@@ -26,28 +28,84 @@ namespace half_float { class half; }
 
 NAMESPACE_BEGIN(nanogui)
 
-// bypass template specializations
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 NAMESPACE_BEGIN(detail)
-template <typename T> struct type_traits;
-template <> struct type_traits<uint32_t> { enum { type = GL_UNSIGNED_INT, integral = 1 }; };
-template <> struct type_traits<int32_t> { enum { type = GL_INT, integral = 1 }; };
-template <> struct type_traits<uint16_t> { enum { type = GL_UNSIGNED_SHORT, integral = 1 }; };
-template <> struct type_traits<int16_t> { enum { type = GL_SHORT, integral = 1 }; };
-template <> struct type_traits<uint8_t> { enum { type = GL_UNSIGNED_BYTE, integral = 1 }; };
-template <> struct type_traits<int8_t> { enum { type = GL_BYTE, integral = 1 }; };
-template <> struct type_traits<double> { enum { type = GL_DOUBLE, integral = 0 }; };
-template <> struct type_traits<float> { enum { type = GL_FLOAT, integral = 0 }; };
-template <> struct type_traits<half_float::half> { enum { type = GL_HALF_FLOAT, integral = 0 }; };
-template <typename T> struct serialization_helper;
-NAMESPACE_END(detail)
 
+/**
+ * Base template class for correlating CPU numeric types and OpenGL numeric types.
+ *
+ * \tparam T
+ *     The numeric type serialization is being enabled for.
+ */
+template <typename T> struct type_traits;
+
+/// \ref type_traits specialization for unsigned 32 bit integers.
+template <> struct type_traits<uint32_t> {
+    static constexpr auto type     = GL_UNSIGNED_INT;///< ``GL_UNSIGNED_INT``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for signed 32 bit integers.
+template <> struct type_traits<int32_t> {
+    static constexpr auto type     = GL_INT;///< ``GL_INT``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for unsigned 16 bit integers.
+template <> struct type_traits<uint16_t> {
+    static constexpr auto type     = GL_UNSIGNED_SHORT;///< ``GL_UNSIGNED_SHORT``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for signed 16 bit integers.
+template <> struct type_traits<int16_t> {
+    static constexpr auto type     = GL_SHORT;///< ``GL_SHORT``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for unsigned 8 bit integers.
+template <> struct type_traits<uint8_t> {
+    static constexpr auto type     = GL_UNSIGNED_BYTE;///< ``GL_UNSIGNED_BYTE``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for signed 8 bit integers.
+template <> struct type_traits<int8_t> {
+    static constexpr auto type     = GL_BYTE;///< ``GL_BYTE``
+    static constexpr auto integral = 1;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for ``double``.
+template <> struct type_traits<double> {
+    static constexpr auto type     = GL_DOUBLE;///< ``GL_DOUBLE``
+    static constexpr auto integral = 0;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for ``float``.
+template <> struct type_traits<float> {
+    static constexpr auto type     = GL_FLOAT;///< ``GL_FLOAT``
+    static constexpr auto integral = 0;///< ``1`` for integral, ``0`` for floating point.
+};
+
+/// \ref type_traits specialization for ``half_float::half``.
+template <> struct type_traits<half_float::half> {
+    static constexpr auto type     = GL_HALF_FLOAT;///< ``GL_HALF_FLOAT``
+    static constexpr auto integral = 0;///< ``1`` for integral, ``0`` for floating point.
+};
+
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    // documented in nanogui/serializer/core.h
+    template <typename T> struct serialization_helper;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-using Eigen::Quaternionf;
+NAMESPACE_END(detail)
 
-class GLUniformBuffer;
+/// Type alias to allow ``Eigen::Quaternionf`` to be used as ``nanogui::Quaternionf``.
+typedef Eigen::Quaternionf Quaternionf;
+
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    // forward declaration for GLShader
+    class GLUniformBuffer;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 //  ----------------------------------------------------
 
