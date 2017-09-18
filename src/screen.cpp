@@ -480,6 +480,12 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     try {
         p -= Vector2i(1, 2);
 
+        // Make sure mDragWidget isn't the only remaining reference
+        if (mDragActive && mDragWidget->getRefCount() == 1) {
+            mDragActive = false;
+            mDragWidget = nullptr;
+        }
+
         if (!mDragActive) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
@@ -522,6 +528,12 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
         else
             mMouseState &= ~(1 << button);
 
+        // Make sure mDragWidget isn't the only remaining reference
+        if (mDragActive && mDragWidget->getRefCount() == 1) {
+            mDragActive = false;
+            mDragWidget = nullptr;
+        }
+
         auto dropWidget = findWidget(mMousePos);
         if (mDragActive && action == GLFW_RELEASE &&
             dropWidget != mDragWidget)
@@ -536,7 +548,7 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
-            if (mDragWidget == this)
+            if (mDragWidget.get() == this)
                 mDragWidget = nullptr;
             mDragActive = mDragWidget != nullptr;
             if (!mDragActive)
@@ -649,7 +661,7 @@ void Screen::updateFocus(Widget *widget) {
 void Screen::disposeWindow(Window *window) {
     if (std::find(mFocusPath.begin(), mFocusPath.end(), window) != mFocusPath.end())
         mFocusPath.clear();
-    if (mDragWidget == window)
+    if (mDragWidget.get() == window)
         mDragWidget = nullptr;
     removeChild(window);
 }
