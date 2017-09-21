@@ -20,8 +20,9 @@
 namespace half_float { class half; }
 #endif
 
-#ifndef GL_HALF_FLOAT
-#  define GL_HALF_FLOAT 0x140B
+#if !defined(GL_HALF_FLOAT) || defined(DOXYGEN_DOCUMENTATION_BUILD)
+    /// Ensures that ``GL_HALF_FLOAT`` is defined properly for all platforms.
+    #define GL_HALF_FLOAT 0x140B
 #endif
 
 NAMESPACE_BEGIN(nanogui)

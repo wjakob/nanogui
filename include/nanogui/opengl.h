@@ -51,10 +51,37 @@ inline Color::operator const NVGcolor &() const {
     return reinterpret_cast<const NVGcolor &>(*this->data());
 }
 
-/// Determine whether an icon ID is a texture loaded via nvgImageIcon
+/**
+ * \brief Determine whether an icon ID is a texture loaded via ``nvgImageIcon``.
+ *
+ * \rst
+ * The implementation defines all ``value < 1024`` as image icons, and
+ * everything ``>= 1024`` as an Entypo icon (see :ref:`file_nanogui_entypo.h`).
+ * The value ``1024`` exists to provide a generous buffer on how many images
+ * may have been loaded by NanoVG.
+ * \endrst
+ *
+ * \param value
+ *     The integral value of the icon.
+ *
+ * \return
+ *     Whether or not this is an image icon.
+ */
 inline bool nvgIsImageIcon(int value) { return value < 1024; }
 
-/// Determine whether an icon ID is a font-based icon (e.g. from the entypo.ttf font)
+/**
+ * \brief Determine whether an icon ID is a font-based icon (e.g. from ``entypo.ttf``).
+ *
+ * \rst
+ * See :func:`nanogui::nvgIsImageIcon` for details.
+ * \endrst
+ *
+ * \param value
+ *     The integral value of the icon.
+ *
+ * \return
+ *     Whether or not this is a font icon (from ``entypo.ttf``).
+ */
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 NAMESPACE_END(nanogui)
