@@ -14,15 +14,17 @@ import math
 import time
 import gc
 
-from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
+from nanogui import Color, ColorPicker, Screen, Window, GroupLayout, BoxLayout, \
                     ToolButton, Label, Button, Widget, \
-                    PopupButton, CheckBox, MessageDialog, VScrollPanel, \
+                    Popup, PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, GridLayout, \
                     Alignment, Orientation, TabWidget, IntBox, GLShader
 
 from nanogui import gl, glfw, entypo
 
+# A simple counter, used for dynamic tab creation with TabWidget callback
+counter = 1
 
 class TestApp(Screen):
     def __init__(self):
@@ -73,10 +75,17 @@ class TestApp(Screen):
         popup.setLayout(GroupLayout())
         Label(popup, "Arbitrary widgets can be placed here")
         CheckBox(popup, "A check box")
+        # popup right
         popupBtn = PopupButton(popup, "Recursive popup", entypo.ICON_FLASH)
-        popup = popupBtn.popup()
-        popup.setLayout(GroupLayout())
-        CheckBox(popup, "Another check box")
+        popupRight = popupBtn.popup()
+        popupRight.setLayout(GroupLayout())
+        CheckBox(popupRight, "Another check box")
+        # popup left
+        popupBtn = PopupButton(popup, "Recursive popup", entypo.ICON_FLASH)
+        popupBtn.setSide(Popup.Side.Left)
+        popupLeft = popupBtn.popup()
+        popupLeft.setLayout(GroupLayout())
+        CheckBox(popupLeft, "Another check box");
 
         window = Window(self, "Basic widgets")
         window.setPosition((200, 15))
@@ -235,6 +244,35 @@ class TestApp(Screen):
         graph.setValues(values)
         tabWidget.setActiveTab(0)
 
+        # Dummy tab used to represent the last tab button.
+        tabWidget.createTab("+")
+
+        def tab_cb(index):
+            if index == (tabWidget.tabCount()-1):
+                global counter
+                # When the "+" tab has been clicked, simply add a new tab.
+                tabName  = "Dynamic {0}".format(counter)
+                layerDyn = tabWidget.createTab(index, tabName)
+                layerDyn.setLayout(GroupLayout())
+                Label(layerDyn, "Function graph widget", "sans-bold")
+                graphDyn = Graph(layerDyn, "Dynamic function")
+
+                graphDyn.setHeader("E = 2.35e-3")
+                graphDyn.setFooter("Iteration {0}".format(index*counter))
+                valuesDyn = [0.5 * abs((0.5 * math.sin(i / 10.0 + counter)) +
+                                       (0.5 * math.cos(i / 23.0 + 1 + counter)))
+                             for i in range(100)]
+                graphDyn.setValues(valuesDyn)
+                counter += 1
+                # We must invoke perform layout from the screen instance to keep everything in order.
+                # This is essential when creating tabs dynamically.
+                self.performLayout()
+                # Ensure that the newly added header is visible on screen
+                tabWidget.ensureTabVisible(index)
+
+        tabWidget.setCallback(tab_cb)
+        tabWidget.setActiveTab(0);
+
         window = Window(self, "Grid of small widgets")
         window.setPosition((425, 300))
         layout = GridLayout(Orientation.Horizontal, 2,
@@ -278,32 +316,58 @@ class TestApp(Screen):
         cobo.setFontSize(16)
         cobo.setFixedSize((100, 20))
 
-        Label(window, "Color button :", "sans-bold")
-        popupBtn = PopupButton(window, "", 0)
-        popupBtn.setBackgroundColor(Color(1, 0.47, 0, 1))
-        popupBtn.setFontSize(16)
-        popupBtn.setFixedSize((100, 20))
-        popup = popupBtn.popup()
-        popup.setLayout(GroupLayout())
+        Label(window, "Color picker :", "sans-bold");
+        cp = ColorPicker(window, Color(255, 120, 0, 255));
+        cp.setFixedSize((100, 20));
 
-        colorwheel = ColorWheel(popup)
-        colorwheel.setColor(popupBtn.backgroundColor())
+        def cp_final_cb(color):
+            print(
+                "ColorPicker Final Callback: [{0}, {1}, {2}, {3}]".format(color.r,
+                                                                          color.g,
+                                                                          color.b,
+                                                                          color.w)
+            )
 
-        colorBtn = Button(popup, "Pick")
-        colorBtn.setFixedSize((100, 25))
-        c = colorwheel.color()
-        colorBtn.setBackgroundColor(c)
+        cp.setFinalCallback(cp_final_cb)
 
-        def cb(value):
-            colorBtn.setBackgroundColor(value)
+        # setup a fast callback for the color picker widget on a new window
+        # for demonstrative purposes
+        window = Window(self, "Color Picker Fast Callback")
+        window.setPosition((425, 300))
+        layout = GridLayout(Orientation.Horizontal, 2,
+                            Alignment.Middle, 15, 5)
+        layout.setColAlignment(
+            [Alignment.Maximum, Alignment.Fill])
+        layout.setSpacing(0, 10)
+        window.setLayout(layout)
+        window.setPosition((425, 500))
+        Label(window, "Combined: ");
+        b = Button(window, "ColorWheel", entypo.ICON_500PX)
+        Label(window, "Red: ")
+        redIntBox = IntBox(window)
+        redIntBox.setEditable(False)
+        Label(window, "Green: ")
+        greenIntBox = IntBox(window)
+        greenIntBox.setEditable(False)
+        Label(window, "Blue: ")
+        blueIntBox = IntBox(window)
+        blueIntBox.setEditable(False)
+        Label(window, "Alpha: ")
+        alphaIntBox = IntBox(window)
 
-        colorwheel.setCallback(cb)
+        def cp_fast_cb(color):
+            b.setBackgroundColor(color)
+            b.setTextColor(color.contrastingColor())
+            red = int(color.r * 255.0)
+            redIntBox.setValue(red)
+            green = int(color.g * 255.0)
+            greenIntBox.setValue(green)
+            blue = int(color.b * 255.0)
+            blueIntBox.setValue(blue)
+            alpha = int(color.w * 255.0)
+            alphaIntBox.setValue(alpha)
 
-        def cb(pushed):
-            if (pushed):
-                popupBtn.setBackgroundColor(colorBtn.backgroundColor())
-                popupBtn.setPushed(False)
-        colorBtn.setChangeCallback(cb)
+        cp.setCallback(cp_fast_cb)
 
         self.performLayout()
 

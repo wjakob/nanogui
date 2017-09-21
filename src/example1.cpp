@@ -31,6 +31,7 @@
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
+#include <nanogui/colorpicker.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <iostream>
@@ -189,10 +190,17 @@ public:
         popup->setLayout(new GroupLayout());
         new Label(popup, "Arbitrary widgets can be placed here");
         new CheckBox(popup, "A check box");
+        // popup right
         popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
-        popup = popupBtn->popup();
-        popup->setLayout(new GroupLayout());
-        new CheckBox(popup, "Another check box");
+        Popup *popupRight = popupBtn->popup();
+        popupRight->setLayout(new GroupLayout());
+        new CheckBox(popupRight, "Another check box");
+        // popup left
+        popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
+        popupBtn->setSide(Popup::Side::Left);
+        Popup *popupLeft = popupBtn->popup();
+        popupLeft->setLayout(new GroupLayout());
+        new CheckBox(popupLeft, "Another check box");
 
         window = new Window(this, "Basic widgets");
         window->setPosition(Vector2i(200, 15));
@@ -458,31 +466,52 @@ public:
         cobo->setFontSize(16);
         cobo->setFixedSize(Vector2i(100,20));
 
-        new Label(window, "Color button :", "sans-bold");
-        popupBtn = new PopupButton(window, "", 0);
-        popupBtn->setBackgroundColor(Color(255, 120, 0, 255));
-        popupBtn->setFontSize(16);
-        popupBtn->setFixedSize(Vector2i(100, 20));
-        popup = popupBtn->popup();
-        popup->setLayout(new GroupLayout());
-
-        ColorWheel *colorwheel = new ColorWheel(popup);
-        colorwheel->setColor(popupBtn->backgroundColor());
-
-        Button *colorBtn = new Button(popup, "Pick");
-        colorBtn->setFixedSize(Vector2i(100, 25));
-        Color c = colorwheel->color();
-        colorBtn->setBackgroundColor(c);
-
-        colorwheel->setCallback([colorBtn](const Color &value) {
-            colorBtn->setBackgroundColor(value);
+        new Label(window, "Color picker :", "sans-bold");
+        auto cp = new ColorPicker(window, {255, 120, 0, 255});
+        cp->setFixedSize({100, 20});
+        cp->setFinalCallback([](const Color &c) {
+            std::cout << "ColorPicker Final Callback: ["
+                      << c.r() << ", "
+                      << c.g() << ", "
+                      << c.b() << ", "
+                      << c.w() << "]" << std::endl;
         });
+        // setup a fast callback for the color picker widget on a new window
+        // for demonstrative purposes
+        window = new Window(this, "Color Picker Fast Callback");
+        layout =
+            new GridLayout(Orientation::Horizontal, 2,
+                           Alignment::Middle, 15, 5);
+        layout->setColAlignment(
+            { Alignment::Maximum, Alignment::Fill });
+        layout->setSpacing(0, 10);
+        window->setLayout(layout);
+        window->setPosition(Vector2i(425, 500));
+        new Label(window, "Combined: ");
+        b = new Button(window, "ColorWheel", ENTYPO_ICON_500PX);
+        new Label(window, "Red: ");
+        auto redIntBox = new IntBox<int>(window);
+        redIntBox->setEditable(false);
+        new Label(window, "Green: ");
+        auto greenIntBox = new IntBox<int>(window);
+        greenIntBox->setEditable(false);
+        new Label(window, "Blue: ");
+        auto blueIntBox = new IntBox<int>(window);
+        blueIntBox->setEditable(false);
+        new Label(window, "Alpha: ");
+        auto alphaIntBox = new IntBox<int>(window);
+        cp->setCallback([b,redIntBox,blueIntBox,greenIntBox,alphaIntBox](const Color &c) {
+            b->setBackgroundColor(c);
+            b->setTextColor(c.contrastingColor());
+            int red = (int) (c.r() * 255.0f);
+            redIntBox->setValue(red);
+            int green = (int) (c.g() * 255.0f);
+            greenIntBox->setValue(green);
+            int blue = (int) (c.b() * 255.0f);
+            blueIntBox->setValue(blue);
+            int alpha = (int) (c.w() * 255.0f);
+            alphaIntBox->setValue(alpha);
 
-        colorBtn->setChangeCallback([colorBtn, popupBtn](bool pushed) {
-            if (pushed) {
-                popupBtn->setBackgroundColor(colorBtn->backgroundColor());
-                popupBtn->setPushed(false);
-            }
         });
 
         performLayout();
