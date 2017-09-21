@@ -34,7 +34,9 @@ For Windows, the process is nearly the same:
 
    # Specify VS Version AND 64bit, otherwise it defaults to 32.
    # The version number and year may be different for you, Win64
-   # can be appended to any of them.
+   # can be appended to any of them.  Execute `cmake -G` to get
+   # a listing of the available generators.
+   #
    # 32 bit Windows builds are /not/ supported
    $ cmake -G "Visual Studio 14 2015 Win64" ..
 
@@ -101,7 +103,196 @@ following (assuming the target you are building is called ``myTarget``):
    # against NanoGUI, we need to link against those as well.
    target_link_libraries(myTarget nanogui ${NANOGUI_EXTRA_LIBS})
 
-.. nanogui_compiling_the_docs:
+Advanced Compilation Details
+----------------------------------------------------------------------------------------
+
+NanoGUI and Python
+****************************************************************************************
+
+Although it is |year|, you may still for example wish to build the Python bindings for
+Python 2.7.  The variable you would set **before** ``add_subdirectory`` is
+``NANOGUI_PYTHON_VERSION``.  For example,
+
+.. code-block:: cmake
+
+   set(NANOGUI_PYTHON_VERSION "2.7")
+   # can also use minor versions
+   set(NANOGUI_PYTHON_VERSION "3.6.2")
+
+
+NanoGUI and Eigen
+****************************************************************************************
+
+NanoGUI uses Eigen_ internally for various vector types.  Eigen is an advanced header
+only template library, which NanoGUI vendors in the ``ext`` folder.  It is important to
+understand the implication of Eigen being header only: **only one version of Eigen can
+be included**.
+
+There is a CMake bypass variable available in NanoGUI: ``NANOGUI_EIGEN_INCLUDE_DIR``.
+You would set this variable **before** ``add_subdirectory``.  Since you will want to
+provide the same kind of bypass for users of your library, the following snippet is a
+good starting point.  For this example code:
+
+1. The parent CMake project is called ``myproj``.  A good CMake practice to adopt is to
+   prefix your project's name to any variables you intend to expose.  This allows parent
+   projects to know where the variable came from, and avoids name collisions.
+2. First ``find_package`` is used to try and find Eigen.  The philosophy is that the
+   user is responsible for ensuring that the version of Eigen they want to use will be
+   found.
+3. Since NanoGUI needs to remain self-contained, the side-effect is that even if the
+   user does *not* have Eigen installed, you can fallback and use the one vendored with
+   NanoGUI.
+4. The following directory structure:
+
+   .. code-block:: none
+
+      myproj/
+          CMakeLists.txt         <- Where this example code is
+          ext/
+              nanogui/
+                  CMakeLists.txt <- NanoGUI's build system
+                  ext/
+                      eigen/     <- NanoGUI's internal copy of Eigen
+
+
+.. code-block:: cmake
+
+   # `if NOT` is what enables the same bypass for your project
+   if(NOT MYPROJ_EIGEN3_INCLUDE_DIR)
+     # Grab or find the Eigen3 include directory.
+     find_package(Eigen3 QUIET)
+     if(EIGEN3_INCLUDE_DIR)
+       set(MYPROJ_EIGEN3_INCLUDE_DIR ${EIGEN3_INCLUDE_DIR})
+     else()
+       # use the internal NanoGUI copy of Eigen
+       set(MYPROJ_EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanogui/ext/eigen)
+     endif()
+   endif()
+
+   message(STATUS "Using Eigen3 from directory: ${MYPROJ_EIGEN3_INCLUDE_DIR}")
+   set(NANOGUI_EIGEN_INCLUDE_DIR ${EIGEN3_INCLUDE_DIR} CACHE BOOL " " FORCE)
+   # set any other NanoGUI specific variables you need (shown in above sections)
+   add_subdirectory(ext/nanogui)
+
+   # include it for your project as well (or append to a list
+   # and include that list later, depending on your setup)
+   include_directories(${MYPROJ_EIGEN3_INCLUDE_DIR})
+
+.. _Eigen: https://eigen.tuxfamily.org/dox/
+
+NanoGUI, GLFW, and Other Projects
+****************************************************************************************
+
+Suppose you want to use NanoGUI as your GUI toolkit, but you also have another library
+you want to use that depends on ``glfw``.  Call the second library Foo.  Generally
+speaking, it is unlikely that library Foo will provide you with mechanisms to explicitly
+specify where ``glfw`` comes from.  You could try to work on a patch with the developers
+of library Foo to allow this to be overridden, but you may need to maintain your own
+fork of library Foo.  There is just as much justification to allow the bypass as there
+is to not want it in a build system.
+
+Since NanoGUI merges the ``glfw`` objects into the library being built, you can actually
+just specify ``nanogui`` as the ``glfw`` dependency directly.  So lets suppose that
+library Foo was looking for ``glfw`` like this:
+
+.. code-block:: cmake
+
+   find_package(GLFW3)
+   if(GLFW3_FOUND)
+     include_directories(${GLFW3_INCLUDE_DIRS})
+     target_link_libraries(foo ${GLFW3_LIBRARIES})
+   endif()
+
+You can cheat around this pretty easily.  For the modification to library Foo's build
+system, all we do is wrap ``find_package``:
+
+.. code-block:: diff
+
+   + if(NOT GLFW3_FOUND)
+       find_package(GLFW3)
+   + endif()
+     if(GLFW3_FOUND)
+       include_directories(${GLFW3_INCLUDE_DIRS})
+       target_link_libraries(foo ${GLFW3_LIBRARIES})
+     endif()
+
+Now that ``find_package`` will only execute if ``NOT GLFW3_FOUND``, in your build system
+you make sure to set all three ``glfw`` variables (found, include, and libraries).  It
+might look something like this:
+
+.. code-block:: cmake
+
+   # ... any other nanogui configs ...
+   # same directory structure as Eigen example
+   add_subdirectory(ext/nanogui)
+
+   # nanogui needs to be added first so the 'nanogui' target is defined
+   # and can be used in the generator expression for the libraries
+   set(GLFW3_FOUND ON)
+   set(GLFW3_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanogui/ext/glfw/include)
+   set(GLFW3_LIBRARIES $<TARGET_FILE:nanogui>)
+
+   add_subdirectory(ext/foo)
+
+   # IMPORTANT! You need to force NanoGUI to build first
+   # Assuming their library target is called 'foo'
+   add_dependencies(foo nanogui)
+
+
+Depending on what you need to do, the above may not be sufficient.  But it is at least
+a starting point to being able to "share" NanoGUI as the vendor of ``glfw``.
+
+.. _nanogui_including_custom_fonts:
+
+Including Custom Fonts
+****************************************************************************************
+
+NanoGUI uses the Roboto_ font for text, and Entypo_ font for icons.  If you wish to add
+your own custom font, all you need is a True Type file (a ``.ttf`` extension).  NanoGUI
+will glob all fonts found in ``resources`` by expanding ``resources/*.ttf``.  So if you
+had the directory structure
+
+.. code-block:: none
+
+   myproject/
+       CMakeLists.txt      <- where this code is
+       fonts/
+           superfont.ttf
+       ext/
+           nanogui/
+               resources/
+
+You simply need to copy the ``superfont.ttf`` to NanoGUI's resources directory:
+
+.. code-block:: cmake
+
+   file(
+     COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts/superfont.ttf
+     DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanogui/resources/superfont.ttf
+   )
+
+When you build the code, there should be a file ``nanogui_resources.h`` generated.  If
+everything worked, your new font should have been included.
+
+.. note::
+
+   Since NanoGUI can support images as icons, you will want to make sure that the
+   *codepoint* for any *icon* fonts you create is greater than ``1024``.  See
+   :func:`nanogui::nvgIsImageIcon`.
+
+.. tip::
+
+   Some widgets allow you to set fonts directly, but if you want to apply the font
+   globally, you should create a sub-class of :class:`nanogui::Theme` and explicitly
+   call :func:`nanogui::Widget::setTheme` for each widget you create.
+
+.. _Roboto: https://fonts.google.com/specimen/Roboto
+
+.. _Entypo: http://www.entypo.com
+
+.. _utf8: http://www.utf8-chartable.de/
+
+.. _nanogui_compiling_the_docs:
 
 Compiling the Documentation
 ----------------------------------------------------------------------------------------
@@ -113,11 +304,11 @@ html.  So you will need to first
 1. Install Doxygen for your operating system.  On Unix based systems, this
    should be available through your package manager (apt-get, brew, dnf, etc).
 
-2. Install Sphinx, Breathe, and the theme:
+2. Install Sphinx, Breathe, Exhale, and the theme:
 
    .. code-block:: py
 
-      pip install breathe sphinx_rtd_theme
+      pip3 install exhale sphinx_rtd_theme
 
 Now that you have the relevant tools, you can build the documentation with
 

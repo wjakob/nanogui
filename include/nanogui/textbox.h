@@ -25,6 +25,11 @@ NAMESPACE_BEGIN(nanogui)
  * \class TextBox textbox.h nanogui/textbox.h
  *
  * \brief Fancy text box with builtin regular expression-based validation.
+ *
+ * \remark
+ *     This class overrides \ref nanogui::Widget::mIconExtraScale to be ``0.8f``,
+ *     which affects all subclasses of this Widget.  Subclasses must explicitly
+ *     set a different value if needed (e.g., in their constructor).
  */
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
@@ -66,8 +71,10 @@ public:
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme) override;
 
-    /// Set the change callback
+    /// The callback to execute when the value of this TextBox has changed.
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
+
+    /// Sets the callback to execute when the value of this TextBox has changed.
     void setCallback(const std::function<bool(const std::string& str)> &callback) { mCallback = callback; }
 
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
