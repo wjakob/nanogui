@@ -63,7 +63,7 @@ class TestApp(Screen):
                                   Alignment.Middle, 0, 6))
 
         ToolButton(tools, entypo.ICON_CLOUD)
-        ToolButton(tools, entypo.ICON_FF)
+        ToolButton(tools, entypo.ICON_CONTROLLER_FAST_FORWARD)
         ToolButton(tools, entypo.ICON_COMPASS)
         ToolButton(tools, entypo.ICON_INSTALL)
 

@@ -179,7 +179,7 @@ public:
                                        Alignment::Middle, 0, 6));
 
         b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
-        b = new ToolButton(tools, ENTYPO_ICON_FF);
+        b = new ToolButton(tools, ENTYPO_ICON_CONTROLLER_FAST_FORWARD);
         b = new ToolButton(tools, ENTYPO_ICON_COMPASS);
         b = new ToolButton(tools, ENTYPO_ICON_INSTALL);
 
