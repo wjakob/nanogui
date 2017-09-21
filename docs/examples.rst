@@ -49,6 +49,8 @@ C++ side, and how to detach the NanoGUI ``mainloop()`` on the Python side.
 - `Example 3 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example3.cpp>`_
 - `Example 3 in Python <https://github.com/wjakob/nanogui/blob/master/python/example3.py>`_
 
+.. _nanogui_example_4:
+
 Example 4
 ----------------------------------------------------------------------------------------
 
@@ -57,6 +59,24 @@ arbitrary sequence of OpenGL commands into a NanoGUI widget.
 
 - `Example 4 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example4.cpp>`_
 - `Example 4 in Python <https://github.com/wjakob/nanogui/blob/master/python/example4.py>`_
+
+.. _nanogui_example_icons:
+
+Example Icons
+----------------------------------------------------------------------------------------
+
+NanoGUI includes various icons made available from :ref:`file_nanogui_entypo.h`,
+courtesy of `Daniel Bruce's Entypo <http://www.entypo.com/>`_ glyphs.  The file level
+documentation is useful as a reference for selecting an icon, but the web rendering may
+be misleading --- NanoGUI uses a dark background for widgets by default.
+
+Run the ``exampleIcon`` executable to see what the icons look like in NanoGUI.  The
+setup of this file may also be helpful in understanding how to control the
+:class:`nanogui::VScrollPanel`.
+
+- `Example Icons in C++ <https://github.com/wjakob/nanogui/blob/master/src/example_icons.cpp>`_
+- `Example Icons in Python <https://github.com/wjakob/nanogui/blob/master/python/example_icons.py>`_
+
 
 .. _nanogui_example_repository:
 
