@@ -146,6 +146,30 @@ static const char *__doc_nanogui_Arcball_matrix = R"doc()doc";
 
 static const char *__doc_nanogui_Arcball_motion = R"doc()doc";
 
+static const char *__doc_nanogui_Arcball_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Arcball_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Arcball_setSize = R"doc()doc";
 
 static const char *__doc_nanogui_Arcball_setSpeedFactor = R"doc()doc";
@@ -272,6 +296,30 @@ static const char *__doc_nanogui_Button_mTextColor = R"doc()doc";
 
 static const char *__doc_nanogui_Button_mouseButtonEvent = R"doc()doc";
 
+static const char *__doc_nanogui_Button_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Button_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Button_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_Button_pushed = R"doc()doc";
@@ -324,6 +372,30 @@ static const char *__doc_nanogui_CheckBox_mPushed = R"doc()doc";
 
 static const char *__doc_nanogui_CheckBox_mouseButtonEvent = R"doc()doc";
 
+static const char *__doc_nanogui_CheckBox_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_CheckBox_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_CheckBox_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_CheckBox_pushed = R"doc()doc";
@@ -366,23 +438,101 @@ The method for the alpha component is **always** ``w()``.
 You can and should still use the various convenience methods such as
 ``any()``, ``all()``, ``head<index>()``, etc provided by Eigen.)doc";
 
-static const char *__doc_nanogui_ColorPicker = R"doc(Push button with a popup to tweak a color value.)doc";
+static const char *__doc_nanogui_ColorPicker =
+R"doc(Push button with a popup to tweak a color value. This widget was
+contributed by Christian Schueller.)doc";
 
-static const char *__doc_nanogui_ColorPicker_ColorPicker = R"doc()doc";
+static const char *__doc_nanogui_ColorPicker_ColorPicker =
+R"doc(Attaches a ColorPicker to the specified parent.
 
-static const char *__doc_nanogui_ColorPicker_callback = R"doc(Set the change callback)doc";
+Parameter ``parent``:
+    The Widget to add this ColorPicker to.
 
-static const char *__doc_nanogui_ColorPicker_color = R"doc(Get the current color)doc";
+Parameter ``color``:
+    The color initially selected by this ColorPicker (default: Red).)doc";
 
-static const char *__doc_nanogui_ColorPicker_mCallback = R"doc()doc";
+static const char *__doc_nanogui_ColorPicker_callback = R"doc(The callback executed when the ColorWheel changes.)doc";
 
-static const char *__doc_nanogui_ColorPicker_mColorWheel = R"doc()doc";
+static const char *__doc_nanogui_ColorPicker_color = R"doc(Get the current Color selected for this ColorPicker.)doc";
 
-static const char *__doc_nanogui_ColorPicker_mPickButton = R"doc()doc";
+static const char *__doc_nanogui_ColorPicker_finalCallback =
+R"doc(The callback to execute when a new Color is selected on the ColorWheel
+**and** the user clicks the nanogui::ColorPicker::mPickButton or
+nanogui::ColorPicker::mResetButton.)doc";
 
-static const char *__doc_nanogui_ColorPicker_setCallback = R"doc()doc";
+static const char *__doc_nanogui_ColorPicker_mCallback = R"doc(The "fast" callback executed when the ColorWheel has changed.)doc";
 
-static const char *__doc_nanogui_ColorPicker_setColor = R"doc(Set the current color)doc";
+static const char *__doc_nanogui_ColorPicker_mColorWheel =
+R"doc(The ColorWheel for this ColorPicker (the actual widget allowing
+selection).)doc";
+
+static const char *__doc_nanogui_ColorPicker_mFinalCallback =
+R"doc(The callback to execute when a new Color is selected on the ColorWheel
+**and** the user clicks the nanogui::ColorPicker::mPickButton or
+nanogui::ColorPicker::mResetButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_mPickButton =
+R"doc(The Button used to signal that the current value on the ColorWheel is
+the desired color to be chosen. The default value for the caption of
+this Button is ``"Pick"``. You can change it using
+nanogui::ColorPicker::setPickButtonCaption if you need.
+
+The color of this Button will not affect nanogui::ColorPicker::color
+until the user has actively selected by clicking this pick button.
+Similarly, the nanogui::ColorPicker::mCallback function is only called
+when a user selects a new Color using by clicking this Button.)doc";
+
+static const char *__doc_nanogui_ColorPicker_mResetButton =
+R"doc(Remains the Color of the active color selection, until the user picks
+a new Color on the ColorWheel **and** selects the
+nanogui::ColorPicker::mPickButton. The default value for the caption
+of this Button is ``"Reset"``. You can change it using
+nanogui::ColorPicker::setResetButtonCaption if you need.)doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_operator_new_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorPicker_pickButtonCaption = R"doc(The current caption of the nanogui::ColorPicker::mPickButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_resetButtonCaption = R"doc(The current caption of the nanogui::ColorPicker::mResetButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_setCallback =
+R"doc(Sets the callback is executed as the ColorWheel itself is changed. Set
+this callback if you need to receive updates for the ColorWheel
+changing before the user clicks nanogui::ColorPicker::mPickButton or
+nanogui::ColorPicker::mPickButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_setColor = R"doc(Set the current Color selected for this ColorPicker.)doc";
+
+static const char *__doc_nanogui_ColorPicker_setFinalCallback =
+R"doc(The callback to execute when a new Color is selected on the ColorWheel
+**and** the user clicks the nanogui::ColorPicker::mPickButton or
+nanogui::ColorPicker::mResetButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_setPickButtonCaption = R"doc(Sets the current caption of the nanogui::ColorPicker::mPickButton.)doc";
+
+static const char *__doc_nanogui_ColorPicker_setResetButtonCaption = R"doc(Sets the current caption of the nanogui::ColorPicker::mResetButton.)doc";
 
 static const char *__doc_nanogui_ColorWheel = R"doc(Fancy analog widget to select a color value.)doc";
 
@@ -423,6 +573,30 @@ static const char *__doc_nanogui_ColorWheel_mWhite = R"doc()doc";
 static const char *__doc_nanogui_ColorWheel_mouseButtonEvent = R"doc()doc";
 
 static const char *__doc_nanogui_ColorWheel_mouseDragEvent = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ColorWheel_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_ColorWheel_preferredSize = R"doc()doc";
 
@@ -560,6 +734,30 @@ static const char *__doc_nanogui_Color_operator_assign = R"doc(Assign a color ve
 
 static const char *__doc_nanogui_Color_operator_const_NVGcolor = R"doc(Allows for conversion between this Color and NanoVG's representation.)doc";
 
+static const char *__doc_nanogui_Color_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Color_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Color_r = R"doc(Return a reference to the red channel)doc";
 
 static const char *__doc_nanogui_Color_r_2 = R"doc(Return a reference to the red channel (const version))doc";
@@ -589,6 +787,30 @@ static const char *__doc_nanogui_ComboBox_mItems = R"doc()doc";
 static const char *__doc_nanogui_ComboBox_mItemsShort = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_mSelectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ComboBox_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_ComboBox_save = R"doc()doc";
 
@@ -647,6 +869,30 @@ static const char *__doc_nanogui_FloatBox_mouseDragEvent = R"doc()doc";
 static const char *__doc_nanogui_FloatBox_numberFormat = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_numberFormat_2 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_FloatBox_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_FloatBox_scrollEvent = R"doc()doc";
 
@@ -739,6 +985,30 @@ static const char *__doc_nanogui_FormHelper_mWidgetFontSize = R"doc()doc";
 
 static const char *__doc_nanogui_FormHelper_mWindow = R"doc()doc";
 
+static const char *__doc_nanogui_FormHelper_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_FormHelper_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_FormHelper_refresh = R"doc(Cause all widgets to re-synchronize with the underlying variable state)doc";
 
 static const char *__doc_nanogui_FormHelper_setFixedSize = R"doc(Specify a fixed size for newly added widgets)doc";
@@ -787,6 +1057,30 @@ static const char *__doc_nanogui_GLCanvas_mBackgroundColor = R"doc()doc";
 
 static const char *__doc_nanogui_GLCanvas_mDrawBorder = R"doc()doc";
 
+static const char *__doc_nanogui_GLCanvas_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GLCanvas_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_GLCanvas_save = R"doc(Save and load widget properties)doc";
 
 static const char *__doc_nanogui_GLCanvas_setBackgroundColor = R"doc(Set the background color)doc";
@@ -820,6 +1114,30 @@ static const char *__doc_nanogui_GLFramebuffer_mFramebuffer = R"doc()doc";
 static const char *__doc_nanogui_GLFramebuffer_mSamples = R"doc()doc";
 
 static const char *__doc_nanogui_GLFramebuffer_mSize = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GLFramebuffer_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_GLFramebuffer_ready = R"doc(Return whether or not the framebuffer object has been initialized)doc";
 
@@ -933,23 +1251,31 @@ static const char *__doc_nanogui_GLShader_resetAttribVersion = R"doc(Reset the v
 
 static const char *__doc_nanogui_GLShader_setUniform = R"doc(Initialize a uniform parameter with a 4x4 matrix (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_10 = R"doc(Initialize a uniform buffer with a uniform buffer object)doc";
+static const char *__doc_nanogui_GLShader_setUniform_10 = R"doc(Initialize a uniform parameter with a 3D vector (int))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_2 = R"doc(Initialize a uniform parameter with an integer value)doc";
+static const char *__doc_nanogui_GLShader_setUniform_11 = R"doc(Initialize a uniform parameter with a 3D vector (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_3 = R"doc(Initialize a uniform parameter with a floating point value)doc";
+static const char *__doc_nanogui_GLShader_setUniform_12 = R"doc(Initialize a uniform parameter with a 4D vector (int))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_4 = R"doc(Initialize a uniform parameter with a 2D vector (int))doc";
+static const char *__doc_nanogui_GLShader_setUniform_13 = R"doc(Initialize a uniform parameter with a 4D vector (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_5 = R"doc(Initialize a uniform parameter with a 2D vector (float))doc";
+static const char *__doc_nanogui_GLShader_setUniform_14 = R"doc(Initialize a uniform buffer with a uniform buffer object)doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_6 = R"doc(Initialize a uniform parameter with a 3D vector (int))doc";
+static const char *__doc_nanogui_GLShader_setUniform_2 = R"doc(Initialize a uniform parameter with a 3x3 affine transform (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_7 = R"doc(Initialize a uniform parameter with a 3D vector (float))doc";
+static const char *__doc_nanogui_GLShader_setUniform_3 = R"doc(Initialize a uniform parameter with a 3x3 matrix (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_8 = R"doc(Initialize a uniform parameter with a 4D vector (int))doc";
+static const char *__doc_nanogui_GLShader_setUniform_4 = R"doc(Initialize a uniform parameter with a 2x2 affine transform (float))doc";
 
-static const char *__doc_nanogui_GLShader_setUniform_9 = R"doc(Initialize a uniform parameter with a 4D vector (float))doc";
+static const char *__doc_nanogui_GLShader_setUniform_5 = R"doc(Initialize a uniform parameter with a boolean value)doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_6 = R"doc(Initialize a uniform parameter with an integer value)doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_7 = R"doc(Initialize a uniform parameter with a floating point value)doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_8 = R"doc(Initialize a uniform parameter with a 2D vector (int))doc";
+
+static const char *__doc_nanogui_GLShader_setUniform_9 = R"doc(Initialize a uniform parameter with a 2D vector (float))doc";
 
 static const char *__doc_nanogui_GLShader_shareAttrib =
 R"doc(Create a symbolic link to an attribute of another GLShader. This
@@ -1017,6 +1343,30 @@ static const char *__doc_nanogui_Graph_mTextColor = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_mValues = R"doc()doc";
 
+static const char *__doc_nanogui_Graph_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Graph_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_save = R"doc()doc";
@@ -1069,6 +1419,30 @@ static const char *__doc_nanogui_GridLayout_mResolution = R"doc()doc";
 static const char *__doc_nanogui_GridLayout_mSpacing = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_margin = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_GridLayout_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_GridLayout_orientation = R"doc()doc";
 
@@ -1168,6 +1542,30 @@ static const char *__doc_nanogui_ImagePanel_mouseButtonEvent = R"doc()doc";
 
 static const char *__doc_nanogui_ImagePanel_mouseMotionEvent = R"doc()doc";
 
+static const char *__doc_nanogui_ImagePanel_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ImagePanel_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_ImagePanel_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_ImagePanel_setCallback = R"doc()doc";
@@ -1258,6 +1656,30 @@ static const char *__doc_nanogui_ImageView_moveOffset = R"doc(Moves the offset b
 
 static const char *__doc_nanogui_ImageView_offset = R"doc()doc";
 
+static const char *__doc_nanogui_ImageView_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_ImageView_performLayout = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_pixelInfoCallback = R"doc()doc";
@@ -1344,6 +1766,30 @@ static const char *__doc_nanogui_IntBox_mouseButtonEvent = R"doc()doc";
 
 static const char *__doc_nanogui_IntBox_mouseDragEvent = R"doc()doc";
 
+static const char *__doc_nanogui_IntBox_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_IntBox_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_IntBox_scrollEvent = R"doc()doc";
 
 static const char *__doc_nanogui_IntBox_setCallback = R"doc()doc";
@@ -1383,6 +1829,30 @@ static const char *__doc_nanogui_Label_mCaption = R"doc()doc";
 static const char *__doc_nanogui_Label_mColor = R"doc()doc";
 
 static const char *__doc_nanogui_Label_mFont = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Label_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_Label_preferredSize = R"doc(Compute the size needed to fully display the label)doc";
 
@@ -1425,6 +1895,30 @@ static const char *__doc_nanogui_MessageDialog_mMessageLabel = R"doc()doc";
 static const char *__doc_nanogui_MessageDialog_messageLabel = R"doc()doc";
 
 static const char *__doc_nanogui_MessageDialog_messageLabel_2 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_MessageDialog_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_MessageDialog_setCallback = R"doc()doc";
 
@@ -1472,6 +1966,30 @@ static const char *__doc_nanogui_PopupButton_mChevronIcon = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_mPopup = R"doc()doc";
 
+static const char *__doc_nanogui_PopupButton_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_PopupButton_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_PopupButton_performLayout = R"doc()doc";
 
 static const char *__doc_nanogui_PopupButton_popup = R"doc()doc";
@@ -1518,6 +2036,30 @@ static const char *__doc_nanogui_Popup_mParentWindow = R"doc()doc";
 
 static const char *__doc_nanogui_Popup_mSide = R"doc()doc";
 
+static const char *__doc_nanogui_Popup_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Popup_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Popup_parentWindow = R"doc(Return the parent window of the popup)doc";
 
 static const char *__doc_nanogui_Popup_parentWindow_2 = R"doc(Return the parent window of the popup)doc";
@@ -1551,6 +2093,30 @@ static const char *__doc_nanogui_ProgressBar_draw = R"doc()doc";
 static const char *__doc_nanogui_ProgressBar_load = R"doc()doc";
 
 static const char *__doc_nanogui_ProgressBar_mValue = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ProgressBar_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_ProgressBar_preferredSize = R"doc()doc";
 
@@ -1692,6 +2258,8 @@ static const char *__doc_nanogui_Screen_mPixelRatio = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mProcessEvents = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_mResizeCallback = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_mShutdownGLFWOnDestruct = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mouseButtonCallbackEvent = R"doc()doc";
@@ -1702,11 +2270,37 @@ static const char *__doc_nanogui_Screen_moveWindowToFront = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_nvgContext = R"doc(Return a pointer to the underlying nanoVG draw context)doc";
 
+static const char *__doc_nanogui_Screen_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Screen_performLayout = R"doc(Compute the layout of all widgets)doc";
 
 static const char *__doc_nanogui_Screen_pixelRatio =
 R"doc(Return the ratio between pixel and device coordinates (e.g. >= 2 on
 Mac Retina displays))doc";
+
+static const char *__doc_nanogui_Screen_resizeCallback = R"doc(Set the resize callback)doc";
 
 static const char *__doc_nanogui_Screen_resizeCallbackEvent = R"doc()doc";
 
@@ -1717,6 +2311,8 @@ static const char *__doc_nanogui_Screen_scrollCallbackEvent = R"doc()doc";
 static const char *__doc_nanogui_Screen_setBackground = R"doc(Set the screen's background color)doc";
 
 static const char *__doc_nanogui_Screen_setCaption = R"doc(Set the window title bar caption)doc";
+
+static const char *__doc_nanogui_Screen_setResizeCallback = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_setShutdownGLFWOnDestruct = R"doc()doc";
 
@@ -1760,6 +2356,30 @@ static const char *__doc_nanogui_Slider_mouseButtonEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_mouseDragEvent = R"doc()doc";
 
+static const char *__doc_nanogui_Slider_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Slider_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Slider_preferredSize = R"doc()doc";
 
 static const char *__doc_nanogui_Slider_range = R"doc()doc";
@@ -1787,6 +2407,30 @@ static const char *__doc_nanogui_StackedWidget_StackedWidget = R"doc()doc";
 static const char *__doc_nanogui_StackedWidget_addChild = R"doc()doc";
 
 static const char *__doc_nanogui_StackedWidget_mSelectedIndex = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_StackedWidget_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_StackedWidget_performLayout = R"doc()doc";
 
@@ -1902,6 +2546,30 @@ static const char *__doc_nanogui_TabHeader_onArrowLeft = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_onArrowRight = R"doc()doc";
 
+static const char *__doc_nanogui_TabHeader_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TabHeader_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_TabHeader_overflowing = R"doc()doc";
 
 static const char *__doc_nanogui_TabHeader_performLayout = R"doc()doc";
@@ -1987,6 +2655,30 @@ static const char *__doc_nanogui_TabWidget_mCallback = R"doc()doc";
 static const char *__doc_nanogui_TabWidget_mContent = R"doc()doc";
 
 static const char *__doc_nanogui_TabWidget_mHeader = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TabWidget_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_TabWidget_performLayout = R"doc()doc";
 
@@ -2114,6 +2806,30 @@ static const char *__doc_nanogui_TextBox_mouseDragEvent = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mouseMotionEvent = R"doc()doc";
 
+static const char *__doc_nanogui_TextBox_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox_pasteFromClipboard = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_position2CursorIndex = R"doc()doc";
@@ -2158,93 +2874,258 @@ static const char *__doc_nanogui_Theme = R"doc(Storage class for basic theme-rel
 
 static const char *__doc_nanogui_Theme_Theme = R"doc()doc";
 
-static const char *__doc_nanogui_Theme_mBorderDark = R"doc()doc";
+static const char *__doc_nanogui_Theme_mBorderDark =
+R"doc(The dark border color (default: intensity=``29``, alpha=``255``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mBorderLight = R"doc()doc";
+static const char *__doc_nanogui_Theme_mBorderLight =
+R"doc(The light border color (default: intensity=``92``, alpha=``255``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mBorderMedium = R"doc()doc";
+static const char *__doc_nanogui_Theme_mBorderMedium =
+R"doc(The medium border color (default: intensity=``35``, alpha=``255``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonCornerRadius = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonCornerRadius =
+R"doc(Rounding radius for Button (and derived types) widgets (default:
+``2``).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonFontSize = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonFontSize = R"doc(The font size for buttons (default: ``20``).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientBotFocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientBotFocused =
+R"doc(The bottom gradient color for buttons in focus (default:
+intensity=``48``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientBotPushed = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientBotPushed =
+R"doc(The bottom gradient color for buttons currently pushed (default:
+intensity=``29``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientBotUnfocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientBotUnfocused =
+R"doc(The bottom gradient color for buttons not in focus (default:
+intensity=``58``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientTopFocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientTopFocused =
+R"doc(The top gradient color for buttons in focus (default:
+intensity=``64``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientTopPushed = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientTopPushed =
+R"doc(The top gradient color for buttons currently pushed (default:
+intensity=``41``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mButtonGradientTopUnfocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mButtonGradientTopUnfocused =
+R"doc(The top gradient color for buttons not in focus (default:
+intensity=``74``, alpha=``255``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mDisabledTextColor = R"doc()doc";
+static const char *__doc_nanogui_Theme_mCheckBoxIcon = R"doc(Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).)doc";
 
-static const char *__doc_nanogui_Theme_mDropShadow = R"doc()doc";
+static const char *__doc_nanogui_Theme_mDisabledTextColor =
+R"doc(The disable dtext color (default: intensity=``255``, alpha=``80``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mFontBold = R"doc()doc";
+static const char *__doc_nanogui_Theme_mDropShadow =
+R"doc(The color of the drop shadow drawn behind widgets (default:
+intensity=``0``, alpha=``128``; see nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mFontIcons = R"doc()doc";
+static const char *__doc_nanogui_Theme_mFontBold =
+R"doc(The bold font face (default: ``"sans-bold"`` from
+``resources/roboto_regular.ttf``).)doc";
 
-static const char *__doc_nanogui_Theme_mFontNormal = R"doc()doc";
+static const char *__doc_nanogui_Theme_mFontIcons =
+R"doc(The icon font face (default: ``"icons"`` from
+``resources/entypo.ttf``).)doc";
 
-static const char *__doc_nanogui_Theme_mIconColor = R"doc()doc";
+static const char *__doc_nanogui_Theme_mFontNormal =
+R"doc(The standard font face (default: ``"sans"`` from
+``resources/roboto_regular.ttf``).)doc";
 
-static const char *__doc_nanogui_Theme_mStandardFontSize = R"doc()doc";
+static const char *__doc_nanogui_Theme_mIconColor = R"doc(The icon color (default: nanogui::Theme::mTextColor).)doc";
 
-static const char *__doc_nanogui_Theme_mTabBorderWidth = R"doc()doc";
+static const char *__doc_nanogui_Theme_mIconScale =
+R"doc(The amount of scaling that is applied to each icon to fit the size of
+NanoGUI widgets. The default value is ``0.77f``, setting to e.g.
+higher than ``1.0f`` is generally discouraged.)doc";
 
-static const char *__doc_nanogui_Theme_mTabButtonHorizontalPadding = R"doc()doc";
+static const char *__doc_nanogui_Theme_mMessageAltButtonIcon =
+R"doc(Icon to use on MessageDialog alt button (default:
+``ENTYPO_ICON_CIRCLE_WITH_CROSS``).)doc";
 
-static const char *__doc_nanogui_Theme_mTabButtonVerticalPadding = R"doc()doc";
+static const char *__doc_nanogui_Theme_mMessageInformationIcon =
+R"doc(Icon to use for informational MessageDialog widgets (default:
+``ENTYPO_ICON_INFO_WITH_CIRCLE``).)doc";
 
-static const char *__doc_nanogui_Theme_mTabControlWidth = R"doc()doc";
+static const char *__doc_nanogui_Theme_mMessagePrimaryButtonIcon =
+R"doc(Icon to use on MessageDialog primary button (default:
+``ENTYPO_ICON_CHECK``).)doc";
 
-static const char *__doc_nanogui_Theme_mTabInnerMargin = R"doc()doc";
+static const char *__doc_nanogui_Theme_mMessageQuestionIcon =
+R"doc(Icon to use for interrogative MessageDialog widgets (default:
+``ENTYPO_ICON_HELP_WITH_CIRCLE``).)doc";
 
-static const char *__doc_nanogui_Theme_mTabMaxButtonWidth = R"doc()doc";
+static const char *__doc_nanogui_Theme_mMessageWarningIcon =
+R"doc(Icon to use for warning MessageDialog widgets (default:
+``ENTYPO_ICON_WARNING``).)doc";
 
-static const char *__doc_nanogui_Theme_mTabMinButtonWidth = R"doc()doc";
+static const char *__doc_nanogui_Theme_mPopupChevronLeftIcon =
+R"doc(Icon to use for PopupButton widgets opening to the left (default:
+``ENTYPO_ICON_CHEVRON_LEFT``).)doc";
 
-static const char *__doc_nanogui_Theme_mTextBoxFontSize = R"doc()doc";
+static const char *__doc_nanogui_Theme_mPopupChevronRightIcon =
+R"doc(Icon to use for PopupButton widgets opening to the right (default:
+``ENTYPO_ICON_CHEVRON_RIGHT``).)doc";
 
-static const char *__doc_nanogui_Theme_mTextColor = R"doc()doc";
+static const char *__doc_nanogui_Theme_mStandardFontSize =
+R"doc(The font size for all widgets other than buttons and textboxes
+(default: `` 16``).)doc";
 
-static const char *__doc_nanogui_Theme_mTextColorShadow = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabBorderWidth = R"doc(The border width for TabHeader widgets (default: ``0.75f``).)doc";
 
-static const char *__doc_nanogui_Theme_mTransparent = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabButtonHorizontalPadding =
+R"doc(The amount of horizontal padding for a TabHeader widget (default:
+``10``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowCornerRadius = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabButtonVerticalPadding =
+R"doc(The amount of vertical padding for a TabHeader widget (default:
+``2``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowDropShadowSize = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabControlWidth =
+R"doc(Used to help specify what lies "in bound" for a TabHeader widget
+(default: ``20``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowFillFocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabHeaderLeftIcon =
+R"doc(Icon to indicate hidden tabs to the left on a TabHeader (default:
+``ENTYPO_ICON_ARROW_BOLD_LEFT``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowFillUnfocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabHeaderRightIcon =
+R"doc(Icon to indicate hidden tabs to the right on a TabHeader (default:
+``ENTYPO_ICON_ARROW_BOLD_RIGHT``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowHeaderGradientBot = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabInnerMargin = R"doc(The inner margin on a TabHeader widget (default: ``5``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowHeaderGradientTop = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabMaxButtonWidth = R"doc(The maximum size for buttons on a TabHeader widget (default: ``160``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowHeaderHeight = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTabMinButtonWidth = R"doc(The minimum size for buttons on a TabHeader widget (default: ``20``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowHeaderSepBot = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTextBoxDownIcon =
+R"doc(Icon to use when a TextBox has a down toggle (e.g. IntBox) (default:
+``ENTYPO_ICON_CHEVRON_DOWN``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowHeaderSepTop = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTextBoxFontSize = R"doc(The font size for text boxes (default: ``20``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowPopup = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTextBoxUpIcon =
+R"doc(Icon to use when a TextBox has an up toggle (e.g. IntBox) (default:
+``ENTYPO_ICON_CHEVRON_UP``).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowPopupTransparent = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTextColor =
+R"doc(The text color (default: intensity=``255``, alpha=``160``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowTitleFocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTextColorShadow =
+R"doc(The text shadow color (default: intensity=``0``, alpha=``160``; see
+nanogui::Color::Color(int,int)).)doc";
 
-static const char *__doc_nanogui_Theme_mWindowTitleUnfocused = R"doc()doc";
+static const char *__doc_nanogui_Theme_mTransparent =
+R"doc(The transparency color (default: intensity=``0``, alpha=``0``; see
+nanogui::Color::Color(int,int)).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowCornerRadius = R"doc(Rounding radius for Window widget corners (default: ``2``).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowDropShadowSize =
+R"doc(Size of drop shadow rendered behind the Window widgets (default:
+``10``).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowFillFocused =
+R"doc(The fill color for a Window that is in focus (default:
+intensity=``45``, alpha=``230``; see nanogui::Color::Color(int,int)).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowFillUnfocused =
+R"doc(The fill color for a Window that is not in focus (default:
+intensity=``43``, alpha=``230``; see nanogui::Color::Color(int,int)).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowHeaderGradientBot =
+R"doc(The bottom gradient color for Window headings (default:
+nanogui::Theme::mButtonGradientBotUnfocused).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowHeaderGradientTop =
+R"doc(The top gradient color for Window headings (default:
+nanogui::Theme::mButtonGradientTopUnfocused).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowHeaderHeight = R"doc(Default size of Window widget titles (default: ``30``).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowHeaderSepBot =
+R"doc(The Window header bottom separation color (default:
+nanogui::Theme::mBorderDark).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowHeaderSepTop =
+R"doc(The Window header top separation color (default:
+nanogui::Theme::mBorderLight).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowPopup =
+R"doc(The popup window color (default: intensity=``50``, alpha=``255``; see
+nanogui::Color::Color(int,int))).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowPopupTransparent =
+R"doc(The transparent popup window color (default: intensity=``50``,
+alpha=``0``; see nanogui::Color::Color(int,int))).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowTitleFocused =
+R"doc(The title color for a Window that is in focus (default:
+intensity=``255``, alpha=``190``; see nanogui::Color::Color(int,int)).)doc";
+
+static const char *__doc_nanogui_Theme_mWindowTitleUnfocused =
+R"doc(The title color for a Window that is not in focus (default:
+intensity=``220``, alpha=``160``; see nanogui::Color::Color(int,int)).)doc";
+
+static const char *__doc_nanogui_Theme_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Theme_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_ToolButton = R"doc(Simple radio+toggle button with an icon.)doc";
 
 static const char *__doc_nanogui_ToolButton_ToolButton = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_ToolButton_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_UniformBufferStd140 =
 R"doc(Helper class for accumulating uniform buffer data following the
@@ -2273,6 +3154,30 @@ static const char *__doc_nanogui_VScrollPanel_mScroll = R"doc()doc";
 static const char *__doc_nanogui_VScrollPanel_mUpdateLayout = R"doc()doc";
 
 static const char *__doc_nanogui_VScrollPanel_mouseDragEvent = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_VScrollPanel_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_VScrollPanel_performLayout = R"doc()doc";
 
@@ -2344,6 +3249,20 @@ static const char *__doc_nanogui_Widget_hasFontSize = R"doc(Return whether the f
 
 static const char *__doc_nanogui_Widget_height = R"doc(Return the height of the widget)doc";
 
+static const char *__doc_nanogui_Widget_iconExtraScale =
+R"doc(The amount of extra scaling applied to *icon* fonts. See
+nanogui::Widget::mIconExtraScale.)doc";
+
+static const char *__doc_nanogui_Widget_icon_scale =
+R"doc(Convenience definition for subclasses to get the full icon scale for
+this class of Widget. It simple returns the value ``mTheme->mIconScale
+* this->mIconExtraScale``.
+
+Remark:
+    See also: nanogui::Theme::mIconScale and
+    nanogui::Widget::mIconExtraScale. This tiered scaling strategy may
+    not be appropriate with fonts other than ``entypo.ttf``.)doc";
+
 static const char *__doc_nanogui_Widget_id = R"doc(Return the ID value associated with this widget, if any)doc";
 
 static const char *__doc_nanogui_Widget_keyboardCharacterEvent = R"doc(Handle text input (UTF-32 format) (default implementation: do nothing))doc";
@@ -2360,13 +3279,49 @@ static const char *__doc_nanogui_Widget_mChildren = R"doc()doc";
 
 static const char *__doc_nanogui_Widget_mCursor = R"doc()doc";
 
-static const char *__doc_nanogui_Widget_mEnabled = R"doc()doc";
+static const char *__doc_nanogui_Widget_mEnabled =
+R"doc(Whether or not this Widget is currently enabled. Various different
+kinds of derived types use this to determine whether or not user input
+will be accepted. For example, when ``mEnabled == false``, the state
+of a CheckBox cannot be changed, or a TextBox will not allow new
+input.)doc";
 
 static const char *__doc_nanogui_Widget_mFixedSize = R"doc()doc";
 
 static const char *__doc_nanogui_Widget_mFocused = R"doc()doc";
 
 static const char *__doc_nanogui_Widget_mFontSize = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_mIconExtraScale =
+R"doc(The amount of extra icon scaling used in addition the the theme's
+default icon font scale. Default value is ``1.0``, which implies that
+nanogui::Widget::icon_scale simply returns the value of
+nanogui::Theme::mIconScale.
+
+Most widgets do not need extra scaling, but some (e.g., CheckBox,
+TextBox) need to adjust the Theme's default icon scaling
+(nanogui::Theme::mIconScale) to properly display icons within their
+bounds (upscale, or downscale).
+
+```
+Note:
+When using ``nvgFontSize`` for icons in subclasses, make sure to call
+the :func:`nanogui::Widget::icon_scale` function.  Expected usage when
+*drawing* icon fonts is something like:
+virtual void draw(NVGcontext *ctx) {
+// fontSize depends on the kind of Widget.  Search for `FontSize`
+// in the Theme class (e.g., standard vs button)
+float ih = fontSize;
+// assuming your Widget has a declared `mIcon`
+if (nvgIsFontIcon(mIcon)) {
+ih *= icon_scale();
+nvgFontFace(ctx, "icons");
+nvgFontSize(ctx, ih);
+/// remaining drawing code (see button.cpp for more)
+}
+}
+
+```)doc";
 
 static const char *__doc_nanogui_Widget_mId = R"doc()doc";
 
@@ -2384,7 +3339,9 @@ static const char *__doc_nanogui_Widget_mTheme = R"doc()doc";
 
 static const char *__doc_nanogui_Widget_mTooltip = R"doc()doc";
 
-static const char *__doc_nanogui_Widget_mVisible = R"doc()doc";
+static const char *__doc_nanogui_Widget_mVisible =
+R"doc(Whether or not this Widget is currently visible. When a Widget is not
+currently visible, no time is wasted executing its drawing method.)doc";
 
 static const char *__doc_nanogui_Widget_mouseButtonEvent =
 R"doc(Handle a mouse button event (default implementation: propagate to
@@ -2399,6 +3356,30 @@ fact, but do nothing))doc";
 static const char *__doc_nanogui_Widget_mouseMotionEvent =
 R"doc(Handle a mouse motion event (default implementation: propagate to
 children))doc";
+
+static const char *__doc_nanogui_Widget_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Widget_operator_new_5 = R"doc()doc";
 
 static const char *__doc_nanogui_Widget_parent = R"doc(Return the parent widget)doc";
 
@@ -2419,6 +3400,8 @@ static const char *__doc_nanogui_Widget_removeChild_2 = R"doc(Remove a child wid
 static const char *__doc_nanogui_Widget_requestFocus = R"doc(Request the focus to be moved to this widget)doc";
 
 static const char *__doc_nanogui_Widget_save = R"doc(Save the state of the widget into the given Serializer instance)doc";
+
+static const char *__doc_nanogui_Widget_screen = R"doc(Walk up the hierarchy and return the parent screen)doc";
 
 static const char *__doc_nanogui_Widget_scrollEvent =
 R"doc(Handle a mouse scroll event (default implementation: propagate to
@@ -2446,6 +3429,10 @@ static const char *__doc_nanogui_Widget_setFocused = R"doc(Set whether or not th
 static const char *__doc_nanogui_Widget_setFontSize = R"doc(Set the font size of this widget)doc";
 
 static const char *__doc_nanogui_Widget_setHeight = R"doc(Set the height of the widget)doc";
+
+static const char *__doc_nanogui_Widget_setIconExtraScale =
+R"doc(Sets the amount of extra scaling applied to *icon* fonts. See
+nanogui::Widget::mIconExtraScale.)doc";
 
 static const char *__doc_nanogui_Widget_setId = R"doc(Associate this widget with an ID value (optional))doc";
 
@@ -2517,6 +3504,30 @@ top)doc";
 
 static const char *__doc_nanogui_Window_mouseDragEvent = R"doc(Handle window drag events)doc";
 
+static const char *__doc_nanogui_Window_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_Window_operator_new_5 = R"doc()doc";
+
 static const char *__doc_nanogui_Window_performLayout =
 R"doc(Invoke the associated layout generator to properly place child
 widgets, if any)doc";
@@ -2558,6 +3569,78 @@ static const char *__doc_nanogui_detail_FormWidget_FormWidget = R"doc()doc";
 static const char *__doc_nanogui_detail_FormWidget_FormWidget_2 = R"doc()doc";
 
 static const char *__doc_nanogui_detail_FormWidget_FormWidget_3 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_10 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_11 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_12 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_13 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_14 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_15 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_16 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_17 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_18 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_19 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_20 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_21 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_3 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_4 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_5 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_6 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_7 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_8 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_delete_9 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_10 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_11 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_12 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_13 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_14 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_15 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_2 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_3 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_4 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_5 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_6 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_7 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_8 = R"doc()doc";
+
+static const char *__doc_nanogui_detail_FormWidget_operator_new_9 = R"doc()doc";
 
 static const char *__doc_nanogui_detail_FormWidget_setCallback = R"doc()doc";
 
