@@ -32,7 +32,7 @@ NAMESPACE_BEGIN(detail)
  *
  * \rst
  * The primary serialization helper class; preliminary specializations
- * are in :ref:`file_include_nanogui_serializer_core.h`, see :ref:`class_nanogui__Serializer`.
+ * are in :ref:`file_nanogui_serializer_core.h`, see :class:`nanogui::Serializer`.
  * \endrst
  */
 template <typename T> struct serialization_helper;

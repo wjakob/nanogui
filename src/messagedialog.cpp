@@ -12,7 +12,6 @@
 #include <nanogui/messagedialog.h>
 #include <nanogui/layout.h>
 #include <nanogui/button.h>
-#include <nanogui/entypo.h>
 #include <nanogui/label.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -30,9 +29,9 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
                                     Alignment::Middle, 10, 15));
     int icon = 0;
     switch (type) {
-        case Type::Information: icon = ENTYPO_ICON_CIRCLED_INFO; break;
-        case Type::Question: icon = ENTYPO_ICON_CIRCLED_HELP; break;
-        case Type::Warning: icon = ENTYPO_ICON_WARNING; break;
+        case Type::Information: icon = mTheme->mMessageInformationIcon; break;
+        case Type::Question: icon = mTheme->mMessageQuestionIcon; break;
+        case Type::Warning: icon = mTheme->mMessageWarningIcon; break;
     }
     Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), "icons");
     iconLabel->setFontSize(50);
@@ -43,10 +42,10 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
                                     Alignment::Middle, 0, 15));
 
     if (altButton) {
-        Button *button = new Button(panel2, altButtonText, ENTYPO_ICON_CIRCLED_CROSS);
+        Button *button = new Button(panel2, altButtonText, mTheme->mMessageAltButtonIcon);
         button->setCallback([&] { if (mCallback) mCallback(1); dispose(); });
     }
-    Button *button = new Button(panel2, buttonText, ENTYPO_ICON_CHECK);
+    Button *button = new Button(panel2, buttonText, mTheme->mMessagePrimaryButtonIcon);
     button->setCallback([&] { if (mCallback) mCallback(0); dispose(); });
     center();
     requestFocus();

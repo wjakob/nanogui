@@ -1,13 +1,9 @@
 NanoGUI
 ========================================================================================
 
-NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x or higher. It
-supports automatic layout generation, stateful C++11 lambdas callbacks, a variety of
-useful widget types and Retina-capable rendering on Apple devices thanks to NanoVG_ by
-Mikko Mononen. Python bindings of all functionality are provided using pybind11_.
-
-.. _NanoVG: https://github.com/memononen/NanoVG
-.. _pybind11: https://github.com/wjakob/pybind11
+.. include:: ../README.rst
+   :start-after: begin_brief_description
+   :end-before:  end_brief_description
 
 Example Screenshot
 ----------------------------------------------------------------------------------------
@@ -19,21 +15,9 @@ Example Screenshot
 Description
 ----------------------------------------------------------------------------------------
 
-NanoGUI builds on GLFW_ for cross-platform OpenGL context creation and event handling,
-GLAD_ to use OpenGL 3.x or higher Windows, Eigen_ for basic vector types, and NanoVG_ to
-draw 2D primitives.
-
-Note that the dependency library NanoVG already includes some basic example code to draw
-good-looking static widgets; what NanoGUI does is to flesh it out into a complete GUI
-toolkit with event handling, layout generation, etc.
-
-NanoGUI currently works on Mac OS X (Clang) Linux (GCC or Clang) and Windows (Visual
-Studio ≥ 2015); it requires a recent C++11 capable compiler. All dependencies are
-jointly built using a CMake-based build system.
-
-.. _GLFW: http://www.glfw.org/
-.. _GLAD: https://github.com/Dav1dde/glad
-.. _Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
+.. include:: ../README.rst
+   :start-after: begin_long_description
+   :end-before:  end_long_description
 
 "Simple mode"
 ----------------------------------------------------------------------------------------
@@ -49,11 +33,14 @@ AntTweakBar-style variable manipulators using just a few lines of code. Refer to
 License
 ----------------------------------------------------------------------------------------
 
-NanoGUI is provided under a BSD-style license that can be found in the LICENSE_ file. By
-using, distributing, or contributing to this project, you agree to the terms and
-conditions of this license.
+.. include:: ../README.rst
+   :start-after: begin_license
+   :end-before:  end_license
 
-.. _LICENSE: https://github.com/wjakob/nanogui/blob/master/LICENSE.txt
+.. note::
+
+   The CC BY-SA 4.0 license should not be an issue for most projects.  However, you can
+   adopt a different font for icons if you need.  See :ref:`nanogui_including_custom_fonts`.
 
 Contents
 ========================================================================================
@@ -64,7 +51,7 @@ Contents
    usage
    compilation
    examples
-   generated_api/library_root
+   api/library_root
    contributing
 
 

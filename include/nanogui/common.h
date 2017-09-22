@@ -1,6 +1,4 @@
 /*
-    nanogui/common.h -- common definitions used by NanoGUI
-
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
@@ -8,7 +6,11 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
-/** \file */
+/**
+ * \file nanogui/common.h
+ *
+ * \brief Common definitions used by NanoGUI.
+ */
 
 #pragma once
 
@@ -82,7 +84,7 @@
 #endif
 
 /* Force usage of discrete GPU on laptops (macro must be invoked in main application) */
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(DOXYGEN_DOCUMENTATION_BUILD)
 #define NANOGUI_FORCE_DISCRETE_GPU() \
     extern "C" { \
         __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1; \
@@ -97,7 +99,7 @@
 #endif
 
 // These will produce broken links in the docs build
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 struct NVGcontext { /* Opaque handle type, never de-referenced within NanoGUI */ };
 struct GLFWwindow { /* Opaque handle type, never de-referenced within NanoGUI */ };
@@ -109,45 +111,53 @@ struct GLFWcursor;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 // Define command key for windows/mac/linux
-#ifdef __APPLE__
-/// If on OSX, maps to ``GLFW_MOD_SUPER``.  Otherwise, maps to ``GLFW_MOD_CONTROL``.
-#define SYSTEM_COMMAND_MOD GLFW_MOD_SUPER
+#if defined(__APPLE__) || defined(DOXYGEN_DOCUMENTATION_BUILD)
+    /// If on OSX, maps to ``GLFW_MOD_SUPER``.  Otherwise, maps to ``GLFW_MOD_CONTROL``.
+    #define SYSTEM_COMMAND_MOD GLFW_MOD_SUPER
 #else
-/// If on OSX, maps to ``GLFW_MOD_SUPER``.  Otherwise, maps to ``GLFW_MOD_CONTROL``.
-#define SYSTEM_COMMAND_MOD GLFW_MOD_CONTROL
+    #define SYSTEM_COMMAND_MOD GLFW_MOD_CONTROL
 #endif
 
 NAMESPACE_BEGIN(nanogui)
 
-/// Cursor shapes available to use in GLFW.
+/// Cursor shapes available to use in GLFW.  Shape of actual cursor determined by Operating System.
 enum class Cursor {
-    Arrow = 0,
-    IBeam,
-    Crosshair,
-    Hand,
-    HResize,
-    VResize,
-    /// Not a cursor --- should always be last: enables a loop over the cursor types.
-    CursorCount
+    Arrow = 0,  ///< The arrow cursor.
+    IBeam,      ///< The I-beam cursor.
+    Crosshair,  ///< The crosshair cursor.
+    Hand,       ///< The hand cursor.
+    HResize,    ///< The horizontal resize cursor.
+    VResize,    ///< The vertical resize cursor.
+    CursorCount ///< Not a cursor --- should always be last: enables a loop over the cursor types.
 };
 
 /* Import some common Eigen types */
-using Eigen::Vector2f;
-using Eigen::Vector3f;
-using Eigen::Vector4f;
-using Eigen::Vector2i;
-using Eigen::Vector3i;
-using Eigen::Vector4i;
-using Eigen::Matrix3f;
-using Eigen::Matrix4f;
-using Eigen::VectorXf;
-using Eigen::MatrixXf;
+/// Type alias to allow ``Eigen::Vector2f`` to be used as ``nanogui::Vector2f``.
+using Vector2f = Eigen::Vector2f;
+/// Type alias to allow ``Eigen::Vector3f`` to be used as ``nanogui::Vector3f``.
+using Vector3f = Eigen::Vector3f;
+/// Type alias to allow ``Eigen::Vector4f`` to be used as ``nanogui::Vector4f``.
+using Vector4f = Eigen::Vector4f;
+/// Type alias to allow ``Eigen::Vector2i`` to be used as ``nanogui::Vector2i``.
+using Vector2i = Eigen::Vector2i;
+/// Type alias to allow ``Eigen::Vector3i`` to be used as ``nanogui::Vector3i``.
+using Vector3i = Eigen::Vector3i;
+/// Type alias to allow ``Eigen::Vector4i`` to be used as ``nanogui::Vector4i``.
+using Vector4i = Eigen::Vector4i;
+/// Type alias to allow ``Eigen::Matrix3f`` to be used as ``nanogui::Matrix3f``.
+using Matrix3f = Eigen::Matrix3f;
+/// Type alias to allow ``Eigen::Matrix4f`` to be used as ``nanogui::Matrix4f``.
+using Matrix4f = Eigen::Matrix4f;
+/// Type alias to allow ``Eigen::VectorXf`` to be used as ``nanogui::VectorXf``.
+using VectorXf = Eigen::VectorXf;
+/// Type alias to allow ``Eigen::MatrixXf`` to be used as ``nanogui::MatrixXf``.
+using MatrixXf = Eigen::MatrixXf;
 
 /**
  * Convenience typedef for things like index buffers.  You would use it the same
  * as ``Eigen::MatrixXf``, only it is storing ``uint32_t`` instead of ``float``.
  */
-typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
+using MatrixXu = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;
 
 /**
  * \class Color common.h nanogui/common.h
@@ -416,7 +426,7 @@ extern NANOGUI_EXPORT void shutdown();
  *     specify a negative value here.
  *
  * \param detach
- *     This pararameter only exists in the Python bindings. When the active
+ *     This parameter only exists in the Python bindings. When the active
  *     \c Screen instance is provided via the \c detach parameter, the
  *     ``mainloop()`` function becomes non-blocking and returns
  *     immediately (in this case, the main loop runs in parallel on a newly
@@ -480,7 +490,7 @@ extern NANOGUI_EXPORT void chdir_to_bundle_parent();
  *
  * \rst
  * NanoGUI uses this to convert the icon character codes
- * defined in :ref:`file_include_nanogui_entypo.h`.
+ * defined in :ref:`file_nanogui_entypo.h`.
  * \endrst
  *
  * \param c
@@ -494,6 +504,7 @@ extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)
+
 /// Helper function used by nvgImageIcon
 extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 

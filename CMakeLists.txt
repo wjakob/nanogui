@@ -395,16 +395,18 @@ endif()
 
 # Build example application if desired
 if(NANOGUI_BUILD_EXAMPLE)
-  add_executable(example1 src/example1.cpp)
-  add_executable(example2 src/example2.cpp)
-  add_executable(example3 src/example3.cpp)
-  add_executable(example4 src/example4.cpp)
-  add_executable(example5 src/example5.cpp)
-  target_link_libraries(example1 nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example2 nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example3 nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example4 nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example5 nanogui ${NANOGUI_EXTRA_LIBS})
+  add_executable(example1      src/example1.cpp)
+  add_executable(example2      src/example2.cpp)
+  add_executable(example3      src/example3.cpp)
+  add_executable(example4      src/example4.cpp)
+  add_executable(example5      src/example5.cpp)
+  add_executable(example_icons src/example_icons.cpp)
+  target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example5      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -434,7 +436,8 @@ if (NANOGUI_BUILD_PYTHON)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui-python-obj OBJECT
     python/main.cpp
-    python/constants.cpp
+    python/constants_glfw.cpp
+    python/constants_entypo.cpp
     python/eigen.cpp
     python/widget.cpp
     python/layout.cpp

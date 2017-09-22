@@ -23,7 +23,9 @@ void register_misc(py::module &m) {
         .def("color", &ColorPicker::color, D(ColorPicker, color))
         .def("setColor", &ColorPicker::setColor, D(ColorPicker, setColor))
         .def("callback", &ColorPicker::callback, D(ColorPicker, callback))
-        .def("setCallback", &ColorPicker::setCallback, D(ColorPicker, setCallback));
+        .def("setCallback", &ColorPicker::setCallback, D(ColorPicker, setCallback))
+        .def("finalCallback", &ColorPicker::finalCallback, D(ColorPicker, finalCallback))
+        .def("setFinalCallback", &ColorPicker::setFinalCallback, D(ColorPicker, setFinalCallback));
 
     py::class_<Graph, Widget, ref<Graph>, PyGraph>(m, "Graph", D(Graph))
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),

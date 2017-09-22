@@ -1,8 +1,4 @@
 /*
-    nanogui/layout.h -- A collection of useful layout managers
-
-    The grid layout was contributed by Christian Schueller.
-
     NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
@@ -10,7 +6,12 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
-/** \file */
+/**
+ * \file nanogui/layout.h
+ *
+ * \brief A collection of useful layout managers.  The \ref nanogui::GridLayout
+ *        was contributed by Christian Schueller.
+ */
 
 #pragma once
 
@@ -22,16 +23,16 @@ NAMESPACE_BEGIN(nanogui)
 
 /// The different kinds of alignments a layout can perform.
 enum class Alignment : uint8_t {
-    Minimum = 0,
-    Middle,
-    Maximum,
-    Fill
+    Minimum = 0, ///< Take only as much space as is required.
+    Middle,      ///< Center align.
+    Maximum,     ///< Take as much space as is allowed.
+    Fill         ///< Fill according to preferred sizes.
 };
 
 /// The direction of data flow for a layout.
 enum class Orientation {
-    Horizontal = 0,
-    Vertical
+    Horizontal = 0, ///< Layout expands on horizontal axis.
+    Vertical        ///< Layout expands on vertical axis.
 };
 
 /**
@@ -41,9 +42,34 @@ enum class Orientation {
  */
 class NANOGUI_EXPORT Layout : public Object {
 public:
+    /**
+     * Performs any and all resizing applicable.
+     *
+     * \param ctx
+     *     The ``NanoVG`` context being used for drawing.
+     *
+     * \param widget
+     *     The Widget this layout is controlling sizing for.
+     */
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const = 0;
+
+    /**
+     * The preferred size for this layout.
+     *
+     * \param ctx
+     *     The ``NanoVG`` context being used for drawing.
+     *
+     * \param widget
+     *     The Widget this layout's preferred size is considering.
+     *
+     * \return
+     *     The preferred size, accounting for things such as spacing, padding
+     *     for icons, etc.
+     */
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
+
 protected:
+    /// Default destructor (exists for inheritance).
     virtual ~Layout() { }
 };
 
@@ -61,6 +87,9 @@ public:
     /**
      * \brief Construct a box layout which packs widgets in the given \c Orientation
      *
+     * \param orientation
+     *     The Orientation this BoxLayout expands along
+     *
      * \param alignment
      *     Widget alignment perpendicular to the chosen orientation
      *
@@ -73,26 +102,48 @@ public:
     BoxLayout(Orientation orientation, Alignment alignment = Alignment::Middle,
               int margin = 0, int spacing = 0);
 
+    /// The Orientation this BoxLayout is using.
     Orientation orientation() const { return mOrientation; }
+
+    /// Sets the Orientation of this BoxLayout.
     void setOrientation(Orientation orientation) { mOrientation = orientation; }
 
+    /// The Alignment of this BoxLayout.
     Alignment alignment() const { return mAlignment; }
+
+    /// Sets the Alignment of this BoxLayout.
     void setAlignment(Alignment alignment) { mAlignment = alignment; }
 
+    /// The margin of this BoxLayout.
     int margin() const { return mMargin; }
+
+    /// Sets the margin of this BoxLayout.
     void setMargin(int margin) { mMargin = margin; }
 
+    /// The spacing this BoxLayout is using to pad in between widgets.
     int spacing() const { return mSpacing; }
+
+    /// Sets the spacing of this BoxLayout.
     void setSpacing(int spacing) { mSpacing = spacing; }
 
     /* Implementation of the layout interface */
+    /// See \ref Layout::preferredSize.
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+
+    /// See \ref Layout::performLayout.
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
+    /// The Orientation of this BoxLayout.
     Orientation mOrientation;
+
+    /// The Alignment of this BoxLayout.
     Alignment mAlignment;
+
+    /// The margin of this BoxLayout.
     int mMargin;
+
+    /// The spacing between widgets of this BoxLayout.
     int mSpacing;
 };
 
@@ -110,31 +161,68 @@ protected:
  */
 class NANOGUI_EXPORT GroupLayout : public Layout {
 public:
+    /**
+     * Creates a GroupLayout.
+     *
+     * \param margin
+     *     The margin around the widgets added.
+     *
+     * \param spacing
+     *     The spacing between widgets added.
+     *
+     * \param groupSpacing
+     *     The spacing between groups (groups are defined by each Label added).
+     *
+     * \param groupIndent
+     *     The amount to indent widgets in a group (underneath a Label).
+     */
     GroupLayout(int margin = 15, int spacing = 6, int groupSpacing = 14,
                 int groupIndent = 20)
         : mMargin(margin), mSpacing(spacing), mGroupSpacing(groupSpacing),
           mGroupIndent(groupIndent) {}
 
+    /// The margin of this GroupLayout.
     int margin() const { return mMargin; }
+
+    /// Sets the margin of this GroupLayout.
     void setMargin(int margin) { mMargin = margin; }
 
+    /// The spacing between widgets of this GroupLayout.
     int spacing() const { return mSpacing; }
+
+    /// Sets the spacing between widgets of this GroupLayout.
     void setSpacing(int spacing) { mSpacing = spacing; }
 
+    /// The indent of widgets in a group (underneath a Label) of this GroupLayout.
     int groupIndent() const { return mGroupIndent; }
+
+    /// Sets the indent of widgets in a group (underneath a Label) of this GroupLayout.
     void setGroupIndent(int groupIndent) { mGroupIndent = groupIndent; }
 
+    /// The spacing between groups of this GroupLayout.
     int groupSpacing() const { return mGroupSpacing; }
+
+    /// Sets the spacing between groups of this GroupLayout.
     void setGroupSpacing(int groupSpacing) { mGroupSpacing = groupSpacing; }
 
     /* Implementation of the layout interface */
+    /// See \ref Layout::preferredSize.
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+
+    /// See \ref Layout::performLayout.
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
+    /// The margin of this GroupLayout.
     int mMargin;
+
+    /// The spacing between widgets of this GroupLayout.
     int mSpacing;
+
+    /// The spacing between groups of this GroupLayout.
     int mGroupSpacing;
+
+    /// The indent amount of a group under its defining Label of this GroupLayout.
     int mGroupIndent;
 };
 
@@ -151,7 +239,24 @@ protected:
  */
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
-    /// Create a 2-column grid layout by default
+    /**
+     * Create a 2-column grid layout by default.
+     *
+     * \param orientation
+     *     The fixed dimension of this GridLayout.
+     *
+     * \param resolution
+     *     The number of rows or columns in the grid (depending on the Orientation).
+     *
+     * \param alignment
+     *     How widgets should be aligned within each grid cell.
+     *
+     * \param margin
+     *     The amount of spacing to add around the border of the grid.
+     *
+     * \param spacing
+     *     The amount of spacing between widgets added to the grid.
+     */
     GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
                Alignment alignment = Alignment::Middle,
                int margin = 0, int spacing = 0)
@@ -160,21 +265,39 @@ public:
         mSpacing = Vector2i::Constant(spacing);
     }
 
+    /// The Orientation of this GridLayout.
     Orientation orientation() const { return mOrientation; }
+
+    /// Sets the Orientation of this GridLayout.
     void setOrientation(Orientation orientation) {
         mOrientation = orientation;
     }
 
+    /// The number of rows or columns (depending on the Orientation) of this GridLayout.
     int resolution() const { return mResolution; }
+
+    /// Sets the number of rows or columns (depending on the Orientation) of this GridLayout.
     void setResolution(int resolution) { mResolution = resolution; }
 
+    /// The spacing at the specified axis (row or column number, depending on the Orientation).
     int spacing(int axis) const { return mSpacing[axis]; }
+
+    /// Sets the spacing for a specific axis.
     void setSpacing(int axis, int spacing) { mSpacing[axis] = spacing; }
+
+    /// Sets the spacing for all axes.
     void setSpacing(int spacing) { mSpacing[0] = mSpacing[1] = spacing; }
 
+    /// The margin around this GridLayout.
     int margin() const { return mMargin; }
+
+    /// Sets the margin of this GridLayout.
     void setMargin(int margin) { mMargin = margin; }
 
+    /**
+     * The Alignment of the specified axis (row or column number, depending on
+     * the Orientation) at the specified index of that row or column.
+     */
     Alignment alignment(int axis, int item) const {
         if (item < (int) mAlignment[axis].size())
             return mAlignment[axis][item];
@@ -182,26 +305,47 @@ public:
             return mDefaultAlignment[axis];
     }
 
+    /// Sets the Alignment of the columns.
     void setColAlignment(Alignment value) { mDefaultAlignment[0] = value; }
+
+    /// Sets the Alignment of the rows.
     void setRowAlignment(Alignment value) { mDefaultAlignment[1] = value; }
+
+    /// Use this to set variable Alignment for columns.
     void setColAlignment(const std::vector<Alignment> &value) { mAlignment[0] = value; }
+
+    /// Use this to set variable Alignment for rows.
     void setRowAlignment(const std::vector<Alignment> &value) { mAlignment[1] = value; }
 
     /* Implementation of the layout interface */
+    /// See \ref Layout::preferredSize.
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+
+    /// See \ref Layout::performLayout.
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
-    // Compute the maximum row and column sizes
+    /// Compute the maximum row and column sizes
     void computeLayout(NVGcontext *ctx, const Widget *widget,
                        std::vector<int> *grid) const;
 
 protected:
+    /// The Orientation defining this GridLayout.
     Orientation mOrientation;
+
+    /// The default Alignment for this GridLayout.
     Alignment mDefaultAlignment[2];
+
+    /// The actual Alignment being used.
     std::vector<Alignment> mAlignment[2];
+
+    /// The number of rows or columns before starting a new one, depending on the Orientation.
     int mResolution;
+
+    /// The spacing used for each dimension.
     Vector2i mSpacing;
+
+    /// The margin around this GridLayout.
     int mMargin;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -249,12 +393,14 @@ public:
      * \brief Helper struct to coordinate anchor points for the layout.
      */
     struct Anchor {
-        uint8_t pos[2];
-        uint8_t size[2];
-        Alignment align[2];
+        uint8_t pos[2];    ///< The ``(x, y)`` position.
+        uint8_t size[2];   ///< The ``(x, y)`` size.
+        Alignment align[2];///< The ``(x, y)`` Alignment.
 
+        /// Creates a ``0`` Anchor.
         Anchor() { }
 
+        /// Create an Anchor at position ``(x, y)`` with specified Alignment.
         Anchor(int x, int y, Alignment horiz = Alignment::Fill,
               Alignment vert = Alignment::Fill) {
             pos[0] = (uint8_t) x; pos[1] = (uint8_t) y;
@@ -262,6 +408,7 @@ public:
             align[0] = horiz; align[1] = vert;
         }
 
+        /// Create an Anchor at position ``(x, y)`` of size ``(w, h)`` with specified alignments.
         Anchor(int x, int y, int w, int h,
               Alignment horiz = Alignment::Fill,
               Alignment vert = Alignment::Fill) {
@@ -270,6 +417,7 @@ public:
             align[0] = horiz; align[1] = vert;
         }
 
+        /// Allows for printing out Anchor position, size, and alignment.
         operator std::string() const {
             char buf[50];
             NANOGUI_SNPRINTF(buf, 50, "Format[pos=(%i, %i), size=(%i, %i), align=(%i, %i)]",
@@ -278,9 +426,13 @@ public:
         }
     };
 
+    /// Creates an AdvancedGridLayout with specified columns, rows, and margin.
     AdvancedGridLayout(const std::vector<int> &cols = {}, const std::vector<int> &rows = {}, int margin = 0);
 
+    /// The margin of this AdvancedGridLayout.
     int margin() const { return mMargin; }
+
+    /// Sets the margin of this AdvancedGridLayout.
     void setMargin(int margin) { mMargin = margin; }
 
     /// Return the number of cols
@@ -313,17 +465,34 @@ public:
     }
 
     /* Implementation of the layout interface */
+    /// See \ref Layout::preferredSize.
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+
+    /// See \ref Layout::performLayout.
     virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
+    /// Computes the layout
     void computeLayout(NVGcontext *ctx, const Widget *widget,
                        std::vector<int> *grid) const;
 
 protected:
-    std::vector<int> mCols, mRows;
-    std::vector<float> mColStretch, mRowStretch;
+    /// The columns of this AdvancedGridLayout.
+    std::vector<int> mCols;
+
+    /// The rows of this AdvancedGridLayout.
+    std::vector<int> mRows;
+
+    /// The stretch for each column of this AdvancedGridLayout.
+    std::vector<float> mColStretch;
+
+    /// The stretch for each row of this AdvancedGridLayout.
+    std::vector<float> mRowStretch;
+
+    /// The mapping of widgets to their specified anchor points.
     std::unordered_map<const Widget *, Anchor> mAnchor;
+
+    /// The margin around this AdvancedGridLayout.
     int mMargin;
 };
 

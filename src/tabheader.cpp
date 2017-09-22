@@ -14,7 +14,6 @@
 #include <nanogui/tabheader.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
-#include <nanogui/entypo.h>
 #include <numeric>
 
 NAMESPACE_BEGIN(nanogui)
@@ -407,10 +406,10 @@ void TabHeader::drawControls(NVGcontext* ctx) {
 
     // Draw the arrow.
     nvgBeginPath(ctx);
-    auto iconLeft = utf8(ENTYPO_ICON_LEFT_BOLD);
+    auto iconLeft = utf8(mTheme->mTabHeaderLeftIcon);
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     float ih = fontSize;
-    ih *= 1.5f;
+    ih *= icon_scale();
     nvgFontSize(ctx, ih);
     nvgFontFace(ctx, "icons");
     NVGcolor arrowColor;
@@ -429,10 +428,10 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     active = mVisibleEnd != tabCount();
     // Draw the arrow.
     nvgBeginPath(ctx);
-    auto iconRight = utf8(ENTYPO_ICON_RIGHT_BOLD);
+    auto iconRight = utf8(mTheme->mTabHeaderRightIcon);
     fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     ih = fontSize;
-    ih *= 1.5f;
+    ih *= icon_scale();
     nvgFontSize(ctx, ih);
     nvgFontFace(ctx, "icons");
     float rightWidth = nvgTextBounds(ctx, 0, 0, iconRight.data(), nullptr, nullptr);

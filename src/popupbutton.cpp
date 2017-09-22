@@ -10,7 +10,6 @@
 */
 
 #include <nanogui/popupbutton.h>
-#include <nanogui/entypo.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/serializer/core.h>
@@ -18,8 +17,9 @@
 NAMESPACE_BEGIN(nanogui)
 
 PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
-    : Button(parent, caption, buttonIcon),
-      mChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_RIGHT) {
+    : Button(parent, caption, buttonIcon) {
+
+    mChevronIcon = mTheme->mPopupChevronRightIcon;
 
     setFlags(Flags::ToggleButton | Flags::PopupButton);
 
@@ -27,6 +27,8 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonI
     mPopup = new Popup(parentWindow->parent(), window());
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
+
+    mIconExtraScale = 0.8f;// widget override
 }
 
 Vector2i PopupButton::preferredSize(NVGcontext *ctx) const {
@@ -45,7 +47,7 @@ void PopupButton::draw(NVGcontext* ctx) {
         NVGcolor textColor =
             mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
 
-        nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * 1.5f);
+        nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
         nvgFontFace(ctx, "icons");
         nvgFillColor(ctx, mEnabled ? textColor : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
@@ -76,11 +78,11 @@ void PopupButton::performLayout(NVGcontext *ctx) {
 
 void PopupButton::setSide(Popup::Side side) {
     if (mPopup->side() == Popup::Right &&
-        mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_RIGHT)
-        setChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_LEFT);
+        mChevronIcon == mTheme->mPopupChevronRightIcon)
+        setChevronIcon(mTheme->mPopupChevronLeftIcon);
     else if (mPopup->side() == Popup::Left &&
-             mChevronIcon == ENTYPO_ICON_CHEVRON_SMALL_LEFT)
-        setChevronIcon(ENTYPO_ICON_CHEVRON_SMALL_RIGHT);
+             mChevronIcon == mTheme->mPopupChevronLeftIcon)
+        setChevronIcon(mTheme->mPopupChevronRightIcon);
     mPopup->setSide(side);
 }
 
