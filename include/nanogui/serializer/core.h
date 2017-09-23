@@ -1,7 +1,4 @@
 /*
-    nanogui/serializer/core.h -- helper class to serialize
-    the full state of an application to a convenient binary format
-
     NanoGUI was developed by Wenzel Jakob <wenzel@inf.ethz.ch>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
@@ -9,7 +6,12 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
 */
-/** \file */
+/**
+ * \file nanogui/serializer/core.h
+ *
+ * \brief Helper class to serialize the full state of an application to a
+ *        convenient binary format.
+ */
 
 #pragma once
 
@@ -63,6 +65,10 @@ static const int serialized_header_size =
  * Note that this header file just provides the basics; the files
  * ``nanogui/serializer/opengl.h``, and ``nanogui/serializer/sparse.h`` must
  * be included to serialize the respective data types.
+ *
+ * \rst
+ * .. tip:: See :ref:`nanogui_example_5` for example usage of this class.
+ * \endrst
  */
 class Serializer {
 protected:
@@ -170,6 +176,7 @@ public:
         return true;
     }
 protected:
+    /// The core ``set`` method; intended use only by public ``set`` method.
     void set_base(const std::string &name, const std::string &type_id) {
         if (!mWrite)
             throw std::runtime_error("\"" + mFilename + "\": not open for writing!");
@@ -183,6 +190,7 @@ protected:
         mTOC[fullName] = std::make_pair(type_id, (uint64_t) mFile.tellp());
     }
 
+    /// The core ``get`` method; intended use only by public ``get`` method.
     bool get_base(const std::string &name, const std::string &type_id) {
         if (mWrite)
             throw std::runtime_error("\"" + mFilename +
@@ -215,6 +223,7 @@ protected:
         return true;
     }
 
+    /// Writes the TOC (heading information) for the serialized file.
     void writeTOC() {
         uint64_t trailer_offset = (uint64_t) mFile.tellp();
         uint32_t nItems = (uint32_t) mTOC.size();
@@ -237,6 +246,7 @@ protected:
         }
     }
 
+    /// Reads the TOC (heading information) for the serialized file.
     void readTOC() {
         uint64_t trailer_offset = 0;
         uint32_t nItems = 0;
@@ -264,6 +274,7 @@ protected:
         }
     }
 
+    /// Reads in the serialized file's data.
     void read(void *p, size_t size) {
         mFile.read((char *) p, size);
         if (!mFile.good())
@@ -272,6 +283,7 @@ protected:
                                      std::to_string(size) + " bytes.");
     }
 
+    /// Writes out the serialized file's data.
     void write(const void *p, size_t size) {
         mFile.write((char *) p, size);
         if (!mFile.good())
@@ -280,6 +292,7 @@ protected:
                 std::to_string(size) + " bytes.");
     }
 
+    /// Seeks to a specific position in the serialized file.
     void seek(size_t pos) {
         if (mWrite)
             mFile.seekp(pos);

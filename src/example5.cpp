@@ -1,5 +1,5 @@
 /*
-    src/example5.cpp -- example of how to use the same serialzer to save the
+    src/example5.cpp -- example of how to use the same serializer to save the
     state of many different widgets using the `push` and `pop` feature of
     the Serializer class to create "namespaces" for each widget being saved.
 
@@ -25,24 +25,26 @@
 
 /*
  * NOTE: not everything appears to get saved / restored.  The image selected,
- *       what the combobox has selected, etc.  Feel free to investigate and
- *       submit a PR if those clases are not serializing fully.  The original
- *       author of this file is not willing to indulge anymore.
+ *       what the ComboBox has selected, etc.  Feel free to investigate and
+ *       submit a PR with fixes to the `load` / `save` methods for those classes.
  */
 
 // ExampleApplication is what is defined in example 1
 class ExtendedExampleApplication : public ExampleApplication {
 public:
     ExtendedExampleApplication() : ExampleApplication() {
-        // At this point, all of the widgets we are going to save / load are
-        // now created.  This is pretty silly, but since Example 1 uses many
-        // of the possible widgets, it's also a good test.
-        //
-        // In your own code, you'll likely only need to serialize one or two
-        // widgets or a shader.  In this code, we're going to serialize every
-        // child widget, as well as the shader.
+        /* At this point, all of the widgets we are going to save / load are
+         * now created (because the ExampleAppication from "example1.cpp" has
+         * finished).  This is slightly odd, but since Example 1 uses many
+         * of the possible widgets, it's also a good test.
+         *
+         * In your own code, you'll likely only need to serialize one or two
+         * widgets or a shader.  In this code, we're going to serialize every
+         * child widget, as well as show how you might approach serializing
+         * components of a shader.
+         */
 
-        // first add all direct descendents of this ExtendedExampleApplication
+        // first add all direct descendants of this ExtendedExampleApplication
         std::vector<nanogui::Widget*> all_kids;
         for (auto *c : mChildren) {
             all_kids.emplace_back(c);
@@ -54,21 +56,22 @@ public:
             auto *c = all_kids.back();
             all_kids.pop_back();
 
-            // add it to the map
+            // add it to the map; give each child a unique "namespace"
             auto name = mSerialFilename + std::string("_child_") + std::to_string(idx++);
             mSerialMap[name] = c;
 
-            // add all children of this one to the list of all_kids
+            // add all children of current child `c` one to the list of all_kids
             for (auto *child : c->children()) {
                 all_kids.emplace_back(child);
             }
         }
 
+        // add some simple controls to load / save
         auto window = new nanogui::Window(this, "Serialization");
         window->setLayout(new nanogui::GroupLayout());
 
-        // example1 is 1024x768
-        window->setPosition({600, 600});
+        // example1 is 1024x768, putting this in bottom right corner
+        window->setPosition({700, 640});
 
         auto b = new nanogui::Button(window, "Save Example 5 state now?");
         b->setCallback([&]() {
@@ -81,13 +84,20 @@ public:
                 serializer.pop();
             }
 
-            // the shader MVP is set in the draw loop using the time
-            // but in real code you would `mShader.downloadAttrib` to
-            // actually capture the state of something
-            //
-            // basically, if there is no `save` method, push a name onto
-            // the serializer, and explicitly set things.  See the Serializer
-            // docs, set and get are template functions.
+            /* The shader MVP is set in the draw loop using the time but in real
+             * code you would `mShader.downloadAttrib` to actually capture the
+             * state of something.
+             *
+             * Basically, if there is no `save` method of a given Widget, push a
+             * name onto the Serializer, and explicitly set things.  See the
+             * Serializer docs, set and get are template functions.
+             *
+             * Note that the same names you push / set here must be identical to
+             * what you use to get when loading from the Serializer.  In this
+             * example it is simple enough to just write it out manually, but
+             * in your own code you would want to create variables to hold the
+             * name you are pushing / setting / getting to avoid typos.
+             */
             serializer.push("the_shader_time");
             serializer.set<float>("glfwTime", (float) glfwGetTime());
             serializer.pop();
@@ -100,8 +110,10 @@ public:
 
         });
 
+        // add a button to load the state
         b = new nanogui::Button(window, "Restore previous Example 5 state now?");
         b->setCallback([&]() {
+            // make sure there is something to load
             if (!atLeastOneSave) {
                 new nanogui::MessageDialog(
                     this, nanogui::MessageDialog::Type::Information, "Oops!",
@@ -139,11 +151,11 @@ public:
             /* Vertex shader */
             "#version 330\n"
 
-            "uniform uint uint32_t_test    = 0;\n"
+            "uniform uint uint32_t_test    = 0u;\n"
             "uniform int int32_t_test      = 0;\n"
-            "uniform uint uint16_t_test    = 0;\n"
+            "uniform uint uint16_t_test    = 0u;\n"
             "uniform int int16_t_test      = 0;\n"
-            "uniform uint uint8_t_test     = 0;\n"
+            "uniform uint uint8_t_test     = 0u;\n"
             "uniform int int8_t_test       = 0;\n"
             "uniform float floating64_test = 0;\n"
             "uniform float floating32_test = 0;\n"
@@ -182,7 +194,7 @@ public:
         );
 
         mSerialShader.bind();
-        // upload uniform, downloading is non-trivial and so is avoided.
+        // upload uniforms, downloading is non-trivial and so is avoided.
         // this tests the internal serialization structs just by compiling
         mSerialShader.setUniform<uint32_t>("uint32_t_test", (uint32_t) 2);
         mSerialShader.setUniform<int32_t>("int32_t_test",   (int32_t) -2);
@@ -201,26 +213,28 @@ public:
     ~ExtendedExampleApplication() { mSerialShader.free(); }
 
 protected:
-    // Map of names to widgets.  We're going to save each widget in their own
-    // "namespace" in the serializer so that everything is saved rather than
-    // potentially overwriting some things
+    /* Map of names to widgets.  We're going to save each widget in their own
+     * "namespace" in the serializer so that everything is saved rather than
+     * potentially overwriting some things.
+     */
     std::map<std::string, nanogui::Widget*> mSerialMap;
 
-    // this example will continuously overwrite the same file, in your own code
-    // you'll probably want to create new files or something if you want to
-    // be able to save and load multiple different snapshots
+    /* This example will continuously overwrite the same file, in your own code
+     * you'll probably want to create new files or something if you want to
+     * be able to save and load multiple different snapshots.
+     */
     std::string mSerialFilename = "nanogui_example_5_serialized";
 
-    // since we're using the same file each time, make sure that we've saved
-    // at least once before loading
+    /* Since we're using the same file each time, make sure that we've saved at
+     * least once before loading.
+     */
     bool atLeastOneSave = false;
 
-    // serialization shader test, does nothing
+    // Serialization shader test, does nothing
     nanogui::GLShader mSerialShader;
 };
 
-// same as example1 loop, only uses `ExtendedExampleApplication` instead of
-// the original `ExampleApplication`.
+// same as example1 loop, only uses `ExtendedExampleApplication`
 int main(int /* argc */, char ** /* argv */) {
     try {
         nanogui::init();

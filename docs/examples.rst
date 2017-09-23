@@ -44,7 +44,7 @@ Example 3
 ----------------------------------------------------------------------------------------
 
 The third example program demonstrates how to manage OpenGL / GLFW on your own for the
-C++ side, and how to detach the NanoGUI ``mainloop()`` on the Python side.
+C++ side, and how to detach the NanoGUI :func:`~nanogui::mainloop()` on the Python side.
 
 - `Example 3 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example3.cpp>`_
 - `Example 3 in Python <https://github.com/wjakob/nanogui/blob/master/python/example3.py>`_
@@ -60,6 +60,21 @@ arbitrary sequence of OpenGL commands into a NanoGUI widget.
 - `Example 4 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example4.cpp>`_
 - `Example 4 in Python <https://github.com/wjakob/nanogui/blob/master/python/example4.py>`_
 
+.. _nanogui_example_5:
+
+Example 5
+----------------------------------------------------------------------------------------
+
+The fifth example program demonstrates how to use the same :class:`~nanogui::Serializer`
+to save the state of many different widgets using the
+:func:`Serializer::push <nanogui::Serializer::push>` and
+:func:`Serializer::pop <nanogui::Serializer::pop>` feature to create "namespaces" for
+each :class:`~nanogui::Widget` being saved.
+
+See the ``NOTE`` at the top of the class definition.
+
+- `Example 5 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example5.cpp>`_
+
 .. _nanogui_example_icons:
 
 Example Icons
@@ -70,9 +85,9 @@ courtesy of `Daniel Bruce's Entypo <http://www.entypo.com/>`_ glyphs.  The file 
 documentation is useful as a reference for selecting an icon, but the web rendering may
 be misleading --- NanoGUI uses a dark background for widgets by default.
 
-Run the ``exampleIcon`` executable to see what the icons look like in NanoGUI.  The
+Run the ``example_icon`` executable to see what the icons look like in NanoGUI.  The
 setup of this file may also be helpful in understanding how to control the
-:class:`nanogui::VScrollPanel`.
+:class:`~nanogui::VScrollPanel`.
 
 - `Example Icons in C++ <https://github.com/wjakob/nanogui/blob/master/src/example_icons.cpp>`_
 - `Example Icons in Python <https://github.com/wjakob/nanogui/blob/master/python/example_icons.py>`_

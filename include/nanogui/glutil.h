@@ -101,7 +101,7 @@ template <> struct type_traits<half_float::half> {
 NAMESPACE_END(detail)
 
 /// Type alias to allow ``Eigen::Quaternionf`` to be used as ``nanogui::Quaternionf``.
-typedef Eigen::Quaternionf Quaternionf;
+using Quaternionf = Eigen::Quaternionf;
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     // forward declaration for GLShader
