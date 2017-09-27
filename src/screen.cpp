@@ -62,25 +62,38 @@ static float get_pixel_ratio(GLFWwindow *window) {
     if (GetDpiForMonitor_) {
         uint32_t dpiX, dpiY;
         if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
-            return std::round(dpiX / 96.0);
+            return dpiX / 96.0;
     }
     return 1.f;
 #elif defined(__linux__)
     (void) window;
 
-    /* Try to read the pixel ratio from GTK */
-    FILE *fp = popen("gsettings get org.gnome.desktop.interface scaling-factor", "r");
-    if (!fp)
-        return 1;
+    float ratio = 1.0f;
+    FILE *fp;
+    /* Try to read the pixel ratio from KDEs config */
+    auto currentDesktop = std::getenv("XDG_CURRENT_DESKTOP");
+    if (currentDesktop && currentDesktop == std::string("KDE")) {
+        fp = popen("kreadconfig5 --group KScreen --key ScaleFactor", "r");
+        if (!fp)
+            return 1;
 
-    int ratio = 1;
-    if (fscanf(fp, "uint32 %i", &ratio) != 1)
-        return 1;
+        if (fscanf(fp, "%f", &ratio) != 1)
+            return 1;
+    } else {
+        /* Try to read the pixel ratio from GTK */
+        fp = popen("gsettings get org.gnome.desktop.interface scaling-factor", "r");
+        if (!fp)
+            return 1;
 
+        int ratioInt = 1;
+        if (fscanf(fp, "uint32 %i", &ratioInt) != 1)
+            return 1;
+        ratio = ratioInt;
+    }
     if (pclose(fp) != 0)
         return 1;
-
     return ratio >= 1 ? ratio : 1;
+
 #else
     Vector2i fbSize, size;
     glfwGetFramebufferSize(window, &fbSize[0], &fbSize[1]);
@@ -472,7 +485,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
 
 #if defined(_WIN32) || defined(__linux__)
-    p /= mPixelRatio;
+    p = (p.cast<float>() / mPixelRatio).cast<int>();
 #endif
 
     bool ret = false;
@@ -607,7 +620,7 @@ bool Screen::resizeCallbackEvent(int, int) {
     glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
 
 #if defined(_WIN32) || defined(__linux__)
-    size /= mPixelRatio;
+    size = (size.cast<float>() / mPixelRatio).cast<int>();
 #endif
 
     if (mFBSize == Vector2i(0, 0) || size == Vector2i(0, 0))
