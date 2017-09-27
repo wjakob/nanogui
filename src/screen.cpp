@@ -68,19 +68,32 @@ static float get_pixel_ratio(GLFWwindow *window) {
 #elif defined(__linux__)
     (void) window;
 
-    /* Try to read the pixel ratio from GTK */
-    FILE *fp = popen("gsettings get org.gnome.desktop.interface scaling-factor", "r");
-    if (!fp)
-        return 1;
-
-    int ratio = 1;
-    if (fscanf(fp, "uint32 %i", &ratio) != 1)
-        return 1;
-
+    float ratio = 1.0f;    
+    FILE *fp;
+    /* Try to read the pixel ratio from KDEs config */
+    auto currentDesktop = std::getenv("XDG_CURRENT_DESKTOP");
+    if (currentDesktop && currentDesktop == std::string("KDE")) {
+        fp = popen("kreadconfig5 --group KScreen --key ScaleFactor", "r");
+        if (!fp)
+            return 1;
+    
+        if (fscanf(fp, "%f", &ratio) != 1)
+            return 1;
+    } else {
+        /* Try to read the pixel ratio from GTK */
+        fp = popen("gsettings get org.gnome.desktop.interface scaling-factor", "r");
+        if (!fp)
+            return 1;
+    
+        int ratioInt = 1;
+        if (fscanf(fp, "uint32 %i", &ratioInt) != 1)
+            return 1;
+        ratio = ratioInt;
+    }
     if (pclose(fp) != 0)
         return 1;
-
     return ratio >= 1 ? ratio : 1;
+
 #else
     Vector2i fbSize, size;
     glfwGetFramebufferSize(window, &fbSize[0], &fbSize[1]);
