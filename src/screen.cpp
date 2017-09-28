@@ -485,7 +485,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
 
 #if defined(_WIN32) || defined(__linux__)
-    p /= mPixelRatio;
+    p = (p.cast<float>() / mPixelRatio).cast<int>();
 #endif
 
     bool ret = false;
@@ -620,7 +620,7 @@ bool Screen::resizeCallbackEvent(int, int) {
     glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
 
 #if defined(_WIN32) || defined(__linux__)
-    size /= mPixelRatio;
+    size = (size.cast<float>() / mPixelRatio).cast<int>();
 #endif
 
     if (mFBSize == Vector2i(0, 0) || size == Vector2i(0, 0))
