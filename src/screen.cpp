@@ -62,7 +62,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
     if (GetDpiForMonitor_) {
         uint32_t dpiX, dpiY;
         if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
-            return std::round(dpiX / 96.0);
+            return dpiX / 96.0;
     }
     return 1.f;
 #elif defined(__linux__)
