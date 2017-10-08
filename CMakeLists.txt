@@ -338,7 +338,6 @@ add_library(nanogui-obj OBJECT
   include/nanogui/serializer/core.h
   include/nanogui/serializer/opengl.h
   include/nanogui/serializer/sparse.h
-  src/serializer.cpp
 )
 
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
@@ -400,11 +399,13 @@ if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example2      src/example2.cpp)
   add_executable(example3      src/example3.cpp)
   add_executable(example4      src/example4.cpp)
+  add_executable(example5      src/example5.cpp)
   add_executable(example_icons src/example_icons.cpp)
   target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example5      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
