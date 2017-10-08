@@ -3,8 +3,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
-    std::string path = "";
+std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save, bool multiple) {
+    if (save && multiple) {
+        throw std::invalid_argument("save and multiple must not both be true.");
+    }
+
+    std::vector<std::string> result;
     if (save) {
         NSSavePanel *saveDlg = [NSSavePanel savePanel];
 
@@ -15,13 +19,13 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
         [saveDlg setAllowedFileTypes: types];
 
         if ([saveDlg runModal] == NSModalResponseOK)
-            path = [[[saveDlg URL] path] UTF8String];
+            result.emplace_back([[[saveDlg URL] path] UTF8String]);
     } else {
         NSOpenPanel *openDlg = [NSOpenPanel openPanel];
 
         [openDlg setCanChooseFiles:YES];
         [openDlg setCanChooseDirectories:NO];
-        [openDlg setAllowsMultipleSelection:NO];
+        [openDlg setAllowsMultipleSelection:multiple];
         NSMutableArray *types = [NSMutableArray new];
         for (size_t idx = 0; idx < filetypes.size(); ++idx)
             [types addObject: [NSString stringWithUTF8String: filetypes[idx].first.c_str()]];
@@ -30,12 +34,11 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 
         if ([openDlg runModal] == NSModalResponseOK) {
             for (NSURL* url in [openDlg URLs]) {
-                path = std::string((char*) [[url path] UTF8String]);
-                break;
+                result.emplace_back((char*) [[url path] UTF8String]);
             }
         }
     }
-    return path;
+    return result;
 }
 
 void chdir_to_bundle_parent() {

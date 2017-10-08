@@ -475,6 +475,25 @@ extern NANOGUI_EXPORT std::string
 file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
             bool save);
 
+/**
+ * \brief Open a native file open dialog, which allows multiple selection.
+ *
+ * \param filetypes
+ *     Pairs of permissible formats with descriptions like
+ *     ``("png", "Portable Network Graphics")``.
+ *
+ * \param save
+ *     Set to ``true`` if you would like subsequent file dialogs to open
+ *     at whatever folder they were in when they close this one.
+ *
+ * \param multiple
+ *     Set to ``true`` if you would like to be able to select multiple
+ *     files at once. May not be simultaneously true with \p save.
+ */
+extern NANOGUI_EXPORT std::vector<std::string>
+file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
+            bool save, bool multiple);
+
 #if defined(__APPLE__) || defined(DOXYGEN_DOCUMENTATION_BUILD)
 /**
  * \brief Move to the application bundle's parent directory
