@@ -209,7 +209,7 @@ PYBIND11_PLUGIN(nanogui) {
     m.def("leave", &nanogui::leave, D(leave));
     m.def("active", &nanogui::active, D(active));
     m.def("file_dialog", (std::string(*)(const std::vector<std::pair<std::string, std::string>> &, bool)) &nanogui::file_dialog, D(file_dialog));
-    m.def("file_dialog", (std::vector<std::string>(*)(const std::vector<std::pair<std::string, std::string>> &, bool, bool)) &nanogui::file_dialog, D(file_dialog));
+    m.def("file_dialog", (std::vector<std::string>(*)(const std::vector<std::pair<std::string, std::string>> &, bool, bool)) &nanogui::file_dialog, D(file_dialog, 2));
     #if defined(__APPLE__)
         m.def("chdir_to_bundle_parent", &nanogui::chdir_to_bundle_parent);
     #endif
