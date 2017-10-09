@@ -3928,6 +3928,21 @@ Parameter ``save``:
     Set to ``True`` if you would like subsequent file dialogs to open
     at whatever folder they were in when they close this one.)doc";
 
+static const char *__doc_nanogui_file_dialog_2 =
+R"doc(Open a native file open dialog, which allows multiple selection.
+
+Parameter ``filetypes``:
+    Pairs of permissible formats with descriptions like ``("png",
+    "Portable Network Graphics")``.
+
+Parameter ``save``:
+    Set to ``True`` if you would like subsequent file dialogs to open
+    at whatever folder they were in when they close this one.
+
+Parameter ``multiple``:
+    Set to ``True`` if you would like to be able to select multiple
+    files at once. May not be simultaneously true with \p save.)doc";
+
 static const char *__doc_nanogui_frustum =
 R"doc(Creates a perspective projection matrix.
 
