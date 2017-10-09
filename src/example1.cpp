@@ -50,7 +50,13 @@
 #  pragma warning(disable: 4457 4456 4005 4312)
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
+// On Unix, the STB functions get exported because they are included in nanovg,
+// importing them here causes static linking to fail because of duplicate symbols.
+// Windows does not export these in nanovg, so have to include the stb file
+// with implementation.
+#if defined(_WIN32)
+#  define STB_IMAGE_IMPLEMENTATION
+#endif
 #include <stb_image.h>
 
 #if defined(_WIN32)
