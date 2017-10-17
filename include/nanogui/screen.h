@@ -104,6 +104,9 @@ public:
     /// Set window size
     void setSize(const Vector2i& size);
 
+    /// Set window size limits
+    void setSizeLimits(const Vector2i& minsize, const Vector2i& maxsize);
+
     /// Draw the Screen contents
     virtual void drawAll();
 
