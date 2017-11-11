@@ -115,7 +115,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
-      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
+      mToolTipFont("sans"), mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
@@ -412,7 +412,7 @@ void Screen::drawWidgets() {
             int tooltipWidth = 150;
 
             float bounds[4];
-            nvgFontFace(mNVGContext, "sans");
+            nvgFontFace(mNVGContext, mToolTipFont.c_str());
             nvgFontSize(mNVGContext, 15.0f);
             nvgTextAlign(mNVGContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
             nvgTextLineHeight(mNVGContext, 1.1f);

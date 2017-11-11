@@ -40,7 +40,7 @@ public:
         Right
     };
 
-    TextBox(Widget *parent, const std::string &value = "Untitled");
+    TextBox(Widget *parent, const std::string &value = "Untitled", const std::string &font = "sans");
 
     bool editable() const { return mEditable; }
     void setEditable(bool editable);
@@ -53,6 +53,9 @@ public:
 
     const std::string &defaultValue() const { return mDefaultValue; }
     void setDefaultValue(const std::string &defaultValue) { mDefaultValue = defaultValue; }
+
+    const std::string &font() const { return mFont; }
+    void setFont(const std::string &font) { mFont = font; }
 
     Alignment alignment() const { return mAlignment; }
     void setAlignment(Alignment align) { mAlignment = align; }
@@ -111,6 +114,7 @@ protected:
     bool mCommitted;
     std::string mValue;
     std::string mDefaultValue;
+    std::string mFont;
     Alignment mAlignment;
     std::string mUnits;
     std::string mFormat;

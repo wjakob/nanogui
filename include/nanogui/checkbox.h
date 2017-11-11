@@ -44,15 +44,25 @@ public:
      *     unchecked.  Default parameter function does nothing.  See
      *     \ref nanogui::CheckBox::mPushed for the difference between "pushed"
      *     and "checked".
+     *
+     * \param font
+     *     The font to use for this CheckBox (default: ``"sans"``).
      */
     CheckBox(Widget *parent, const std::string &caption = "Untitled",
-             const std::function<void(bool)> &callback = std::function<void(bool)>());
+             const std::function<void(bool)> &callback = std::function<void(bool)>(),
+             const std::string &font = "sans");
 
     /// The caption of this CheckBox.
     const std::string &caption() const { return mCaption; }
 
     /// Sets the caption of this CheckBox.
     void setCaption(const std::string &caption) { mCaption = caption; }
+
+    /// Get the currently active font.
+    const std::string &font() const { return mFont; }
+
+    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold').
+    void setFont(const std::string &font) { mFont = font; }
 
     /// Whether or not this CheckBox is currently checked.
     const bool &checked() const { return mChecked; }
@@ -107,6 +117,9 @@ public:
 protected:
     /// The caption text of this CheckBox.
     std::string mCaption;
+
+    /// The font of this CheckBox (default value is ``"sans"``).
+    std::string mFont;
 
     /**
      * Internal tracking variable to distinguish between mouse click and release.

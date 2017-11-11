@@ -132,6 +132,11 @@ public:
     void performLayout(NVGcontext* ctx) override;
     void draw(NVGcontext* ctx) override;
 
+    /// Get the currently active font
+    const std::string &font() const { return mFont; }
+    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold')
+    void setFont(const std::string &font) { mFont = font; }
+
 private:
     // Helper image methods.
     void updateImageParameters();
@@ -167,6 +172,9 @@ private:
     // Image pixel data display members.
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
+
+    /// The font face to use when drawing text.
+    std::string mFont;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

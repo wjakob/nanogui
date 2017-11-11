@@ -18,8 +18,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+Window::Window(Widget *parent, const std::string &title, const std::string &font)
+    : Widget(parent), mTitle(title), mFont(font), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -29,7 +29,7 @@ Vector2i Window::preferredSize(NVGcontext *ctx) const {
         mButtonPanel->setVisible(true);
 
     nvgFontSize(ctx, 18.0f);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFace(ctx, mFont.c_str());
     float bounds[4];
     nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
 
@@ -122,7 +122,7 @@ void Window::draw(NVGcontext *ctx) {
         nvgStroke(ctx);
 
         nvgFontSize(ctx, 18.0f);
-        nvgFontFace(ctx, "sans-bold");
+        nvgFontFace(ctx, mFont.c_str());
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 
         nvgFontBlur(ctx, 2);

@@ -24,12 +24,17 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
-    Window(Widget *parent, const std::string &title = "Untitled");
+    Window(Widget *parent, const std::string &title = "Untitled", const std::string &font = "sans-bold");
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
     /// Set the window title
     void setTitle(const std::string &title) { mTitle = title; }
+
+    /// Get the font used to draw the title.
+    const std::string &font() const { return mFont; }
+    /// Set the font used to draw the title (2 are available by default: 'sans' and 'sans-bold').
+    void setFont(const std::string &font) { mFont = font; }
 
     /// Is this a model dialog?
     bool modal() const { return mModal; }
@@ -64,6 +69,7 @@ protected:
     virtual void refreshRelativePlacement();
 protected:
     std::string mTitle;
+    std::string mFont;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;

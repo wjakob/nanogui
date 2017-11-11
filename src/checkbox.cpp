@@ -17,8 +17,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
-                   const std::function<void(bool) > &callback)
-    : Widget(parent), mCaption(caption), mPushed(false), mChecked(false),
+                   const std::function<void(bool) > &callback, const std::string &font)
+    : Widget(parent), mCaption(caption), mFont(font), mPushed(false), mChecked(false),
       mCallback(callback) {
 
     mIconExtraScale = 1.2f;// widget override
@@ -50,7 +50,7 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
     if (mFixedSize != Vector2i::Zero())
         return mFixedSize;
     nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, mFont.c_str());
     return Vector2i(
         nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) +
             1.8f * fontSize(),
@@ -61,7 +61,7 @@ void CheckBox::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
     nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, mFont.c_str());
     nvgFillColor(ctx,
                  mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);

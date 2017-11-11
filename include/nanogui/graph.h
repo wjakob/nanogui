@@ -23,10 +23,15 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Graph : public Widget {
 public:
-    Graph(Widget *parent, const std::string &caption = "Untitled");
+    Graph(Widget *parent, const std::string &caption = "Untitled", const std::string &font = "sans");
 
     const std::string &caption() const { return mCaption; }
     void setCaption(const std::string &caption) { mCaption = caption; }
+
+    /// Get the currently active font
+    const std::string &font() const { return mFont; }
+    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold')
+    void setFont(const std::string &font) { mFont = font; }
 
     const std::string &header() const { return mHeader; }
     void setHeader(const std::string &header) { mHeader = header; }
@@ -53,7 +58,7 @@ public:
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:
-    std::string mCaption, mHeader, mFooter;
+    std::string mCaption, mFont, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
     VectorXf mValues;
 public:

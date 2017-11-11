@@ -23,13 +23,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-TextBox::TextBox(Widget *parent,const std::string &value)
+TextBox::TextBox(Widget *parent, const std::string &value, const std::string &font)
     : Widget(parent),
       mEditable(false),
       mSpinnable(false),
       mCommitted(true),
       mValue(value),
       mDefaultValue(""),
+      mFont(font),
       mAlignment(Alignment::Center),
       mUnits(""),
       mFormat(""),
@@ -114,7 +115,7 @@ void TextBox::draw(NVGcontext* ctx) {
     nvgStroke(ctx);
 
     nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, mFont.c_str());
     Vector2i drawPos(mPos.x(), mPos.y() + mSize.y() * 0.5f + 1);
 
     float xSpacing = mSize.y() * 0.3f;
@@ -176,7 +177,7 @@ void TextBox::draw(NVGcontext* ctx) {
         }
 
         nvgFontSize(ctx, fontSize());
-        nvgFontFace(ctx, "sans");
+        nvgFontFace(ctx, mFont.c_str());
     }
 
     switch (mAlignment) {

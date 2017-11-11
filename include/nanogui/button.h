@@ -51,14 +51,23 @@ public:
      *
      * \param icon
      *     The icon to display with this Button.  See \ref nanogui::Button::mIcon.
+     *
+     * \param font
+     *     The font to use for this Button (default: ``"sans-bold"``).
      */
-    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0, const std::string &font = "sans-bold");
 
     /// Returns the caption of this Button.
     const std::string &caption() const { return mCaption; }
 
     /// Sets the caption of this Button.
     void setCaption(const std::string &caption) { mCaption = caption; }
+
+    /// Get the currently active font.
+    const std::string &font() const { return mFont; }
+
+    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold').
+    void setFont(const std::string &font) { mFont = font; }
 
     /// Returns the background color of this Button.
     const Color &backgroundColor() const { return mBackgroundColor; }
@@ -132,6 +141,9 @@ public:
 protected:
     /// The caption of this Button.
     std::string mCaption;
+
+    /// The font of this Button (default value is ``"sans-bold"``).
+    std::string mFont;
 
     /**
      * \brief The icon of this Button (``0`` means no icon).
