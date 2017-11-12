@@ -84,10 +84,12 @@ void register_widget(py::module &m) {
         .def("draw", &Widget::draw, D(Widget, draw));
 
     py::class_<Window, Widget, ref<Window>, PyWindow>(m, "Window", D(Window))
-        .def(py::init<Widget *, const std::string>(), py::arg("parent"),
-             py::arg("title") = std::string("Untitled"), D(Window, Window))
+        .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
+             py::arg("title") = std::string("Untitled"), py::arg("font") = std::string("sans-bold"), D(Window, Window))
         .def("title", &Window::title, D(Window, title))
         .def("setTitle", &Window::setTitle, D(Window, setTitle))
+        .def("font", &Window::font, D(Window, font))
+        .def("setFont", &Window::setFont, D(Window, setFont))
         .def("modal", &Window::modal, D(Window, modal))
         .def("setModal", &Window::setModal, D(Window, setModal))
         .def("dispose", &Window::dispose, D(Window, dispose))
@@ -101,6 +103,8 @@ void register_widget(py::module &m) {
             py::arg("nSamples") = 0, py::arg("glMajor") = 3, py::arg("glMinor") = 3, D(Screen, Screen))
         .def("caption", &Screen::caption, D(Screen, caption))
         .def("setCaption", &Screen::setCaption, D(Screen, setCaption))
+        .def("tooltipFont", &Screen::tooltipFont, D(Screen, tooltipFont))
+        .def("setTooltipFont", &Screen::setTooltipFont, D(Screen, setTooltipFont))
         .def("background", &Screen::background, D(Screen, background))
         .def("setBackground", &Screen::setBackground, D(Screen, setBackground))
         .def("setVisible", &Screen::setVisible, D(Screen, setVisible))

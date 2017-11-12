@@ -28,10 +28,13 @@ void register_misc(py::module &m) {
         .def("setFinalCallback", &ColorPicker::setFinalCallback, D(ColorPicker, setFinalCallback));
 
     py::class_<Graph, Widget, ref<Graph>, PyGraph>(m, "Graph", D(Graph))
-        .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
-             py::arg("caption") = std::string("Untitled"), D(Graph, Graph))
+        .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
+             py::arg("caption") = std::string("Untitled"), py::arg("font") = std::string("sans"),
+             D(Graph, Graph))
         .def("caption", &Graph::caption, D(Graph, caption))
         .def("setCaption", &Graph::setCaption, D(Graph, setCaption))
+        .def("font", &Graph::font, D(Graph, font))
+        .def("setFont", &Graph::font, D(Graph, setFont))
         .def("header", &Graph::header, D(Graph, header))
         .def("setHeader", &Graph::setHeader, D(Graph, setHeader))
         .def("footer", &Graph::footer, D(Graph, footer))
@@ -78,7 +81,9 @@ void register_misc(py::module &m) {
         .def("zoom", &ImageView::zoom, D(ImageView, zoom))
         .def("gridVisible", &ImageView::gridVisible, D(ImageView, gridVisible))
         .def("pixelInfoVisible", &ImageView::pixelInfoVisible, D(ImageView, pixelInfoVisible))
-        .def("helpersVisible", &ImageView::helpersVisible, D(ImageView, helpersVisible));
+        .def("helpersVisible", &ImageView::helpersVisible, D(ImageView, helpersVisible))
+        .def("font", &ImageView::font, D(ImageView, font))
+        .def("setFont", &ImageView::setFont, D(ImageView, setFont));
 
     py::class_<ImagePanel, Widget, ref<ImagePanel>, PyImagePanel>(m, "ImagePanel", D(ImagePanel))
         .def(py::init<Widget *>(), py::arg("parent"), D(ImagePanel, ImagePanel))

@@ -93,11 +93,11 @@ public:
     void setCaption(const std::string &caption);
 
     /// Get the font name being used to draw tool tips for child widgets
-    const std::string &toolTipFont() const { return mToolTipFont; }
+    const std::string &tooltipFont() const { return mTooltipFont; }
 
     /// Set the font to be used to draw tool tips for child widgets
     /// (2 are available by default: 'sans' and 'sans-bold')
-    void setToolTipFont(const std::string &font) { mToolTipFont = font; }
+    void setTooltipFont(const std::string &font) { mTooltipFont = font; }
 
     /// Return the screen's background color
     const Color &background() const { return mBackground; }
@@ -208,7 +208,7 @@ protected:
     Color mBackground;
     std::string mCaption;
     /// The font to draw child widget's tool tips with (default: ``"sans"``).
-    std::string mToolTipFont;
+    std::string mTooltipFont;
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
     std::function<void(Vector2i)> mResizeCallback;

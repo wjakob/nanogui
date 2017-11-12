@@ -10,10 +10,12 @@ DECLARE_WIDGET(CheckBox);
 void register_button(py::module &m) {
     py::class_<Button, Widget, ref<Button>, PyButton> button(m, "Button", D(Button));
     button
-        .def(py::init<Widget *, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0, D(Button, Button))
+        .def(py::init<Widget *, const std::string &, int, const std::string &>(),
+             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0, py::arg("font") = std::string("sans-bold"), D(Button, Button))
         .def("caption", &Button::caption, D(Button, caption))
         .def("setCaption", &Button::setCaption, D(Button, setCaption))
+        .def("font", &Button::font, D(Button, font))
+        .def("setFont", &Button::setFont, D(Button, setFont))
         .def("backgroundColor", &Button::backgroundColor, D(Button, backgroundColor))
         .def("setBackgroundColor", &Button::setBackgroundColor, D(Button, setBackgroundColor))
         .def("textColor", &Button::textColor, D(Button, textColor))
@@ -65,11 +67,13 @@ void register_button(py::module &m) {
         .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
              py::arg("caption") = std::string("Untitled"),
              D(CheckBox, CheckBox))
-        .def(py::init<Widget *, const std::string &, const std::function<void(bool)>&>(),
-             py::arg("parent"), py::arg("caption"), py::arg("callback"),
+        .def(py::init<Widget *, const std::string &, const std::function<void(bool)>&, const std::string &>(),
+             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("callback"), py::arg("font") = std::string("sans"),
              D(CheckBox, CheckBox))
         .def("caption", &CheckBox::caption, D(CheckBox, caption))
         .def("setCaption", &CheckBox::setCaption, D(CheckBox, setCaption))
+        .def("font", &CheckBox::font, D(CheckBox, font))
+        .def("setFont", &CheckBox::setFont, D(CheckBox, setFont))
         .def("checked", &CheckBox::checked, D(CheckBox, checked))
         .def("setChecked", &CheckBox::setChecked, D(CheckBox, setChecked))
         .def("pushed", &CheckBox::pushed, D(CheckBox, pushed))
