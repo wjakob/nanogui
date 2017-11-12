@@ -425,16 +425,25 @@ public:
         layout->setSpacing(0, 10);
         window->setLayout(layout);
 
-        /* FP widget */ {
-            new Label(window, "Floating point :", "sans-bold");
+        /* TextBox */ {
+            new Label(window, "Text box :", "sans-bold");
             textBox = new TextBox(window);
             textBox->setEditable(true);
-            textBox->setFixedSize(Vector2i(100, 20));
-            textBox->setValue("50");
-            textBox->setUnits("GiB");
-            textBox->setDefaultValue("0.0");
+            textBox->setValue("editable text");
+            textBox->setDefaultValue("editable text");
             textBox->setFontSize(16);
-            textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
+        }
+
+        /* FP widget */ {
+            new Label(window, "Floating point :", "sans-bold");
+            auto floatBox = new FloatBox<float>(window);
+            floatBox->setEditable(true);
+            floatBox->setFixedSize(Vector2i(100, 20));
+            floatBox->setValue(50.0f);
+            floatBox->setUnits("GiB");
+            floatBox->setDefaultValue("50.0");
+            floatBox->setFontSize(16);
+            floatBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
         }
 
         /* Positive integer widget */ {
@@ -444,7 +453,7 @@ public:
             intBox->setFixedSize(Vector2i(100, 20));
             intBox->setValue(50);
             intBox->setUnits("Mhz");
-            intBox->setDefaultValue("0");
+            intBox->setDefaultValue("50");
             intBox->setFontSize(16);
             intBox->setFormat("[1-9][0-9]*");
             intBox->setSpinnable(true);

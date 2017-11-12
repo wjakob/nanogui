@@ -19,7 +19,7 @@ from nanogui import Color, ColorPicker, Screen, Window, GroupLayout, BoxLayout, 
                     Popup, PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, GridLayout, \
-                    Alignment, Orientation, TabWidget, IntBox, GLShader
+                    Alignment, Orientation, TabWidget, FloatBox, IntBox, GLShader
 
 from nanogui import gl, glfw, entypo
 
@@ -282,13 +282,20 @@ class TestApp(Screen):
         layout.setSpacing(0, 10)
         window.setLayout(layout)
 
+        Label(window, "Text box :", "sans-bold")
+        textBox = TextBox(window)
+        textBox.setEditable(True)
+        textBox.setValue("editable text")
+        textBox.setDefaultValue("editable text")
+        textBox.setFontSize(16)
+
         Label(window, "Floating point :", "sans-bold")
-        floatBox = TextBox(window)
+        floatBox = FloatBox(window)
         floatBox.setEditable(True)
         floatBox.setFixedSize((100, 20))
-        floatBox.setValue("50")
+        floatBox.setValue(50.0)
         floatBox.setUnits("GiB")
-        floatBox.setDefaultValue("0.0")
+        floatBox.setDefaultValue("50.0")
         floatBox.setFontSize(16)
         floatBox.setFormat("[-]?[0-9]*\\.?[0-9]+")
 
@@ -298,7 +305,7 @@ class TestApp(Screen):
         intBox.setFixedSize((100, 20))
         intBox.setValue(50)
         intBox.setUnits("Mhz")
-        intBox.setDefaultValue("0")
+        intBox.setDefaultValue("50")
         intBox.setFontSize(16)
         intBox.setFormat("[1-9][0-9]*")
         intBox.setSpinnable(True)
