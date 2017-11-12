@@ -94,6 +94,7 @@ void CheckBox::draw(NVGcontext *ctx) {
 void CheckBox::save(Serializer &s) const {
     Widget::save(s);
     s.set("caption", mCaption);
+    s.set("font", mFont);
     s.set("pushed", mPushed);
     s.set("checked", mChecked);
 }
@@ -101,6 +102,7 @@ void CheckBox::save(Serializer &s) const {
 bool CheckBox::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
+    if (!s.get("font", mFont)) return false;
     if (!s.get("pushed", mPushed)) return false;
     if (!s.get("checked", mChecked)) return false;
     return true;

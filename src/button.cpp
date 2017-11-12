@@ -221,6 +221,7 @@ void Button::draw(NVGcontext *ctx) {
 void Button::save(Serializer &s) const {
     Widget::save(s);
     s.set("caption", mCaption);
+    s.set("font", mFont);
     s.set("icon", mIcon);
     s.set("iconPosition", (int) mIconPosition);
     s.set("pushed", mPushed);
@@ -232,6 +233,7 @@ void Button::save(Serializer &s) const {
 bool Button::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
+    if (!s.get("font", mFont)) return false;
     if (!s.get("icon", mIcon)) return false;
     if (!s.get("iconPosition", mIconPosition)) return false;
     if (!s.get("pushed", mPushed)) return false;

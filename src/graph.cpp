@@ -85,6 +85,7 @@ void Graph::draw(NVGcontext *ctx) {
 void Graph::save(Serializer &s) const {
     Widget::save(s);
     s.set("caption", mCaption);
+    s.set("font", mFont);
     s.set("header", mHeader);
     s.set("footer", mFooter);
     s.set("backgroundColor", mBackgroundColor);
@@ -96,6 +97,7 @@ void Graph::save(Serializer &s) const {
 bool Graph::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
+    if (!s.get("font", mFont)) return false;
     if (!s.get("header", mHeader)) return false;
     if (!s.get("footer", mFooter)) return false;
     if (!s.get("backgroundColor", mBackgroundColor)) return false;
