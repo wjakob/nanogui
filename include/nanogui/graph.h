@@ -43,6 +43,12 @@ public:
     const Color &textColor() const { return mTextColor; }
     void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
+    float offsetY() const { return mOffsetY; }
+    void setOffsetY(float offsetY) { mOffsetY = offsetY; }
+
+    float scaleY() const { return mScaleY; }
+    void setScaleY(float scaleY) { mScaleY = scaleY; }
+
     const VectorXf &values() const { return mValues; }
     VectorXf &values() { return mValues; }
     void setValues(const VectorXf &values) { mValues = values; }
@@ -56,6 +62,7 @@ protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
     VectorXf mValues;
+    float mOffsetY, mScaleY;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

@@ -1509,6 +1509,14 @@ static const char *__doc_nanogui_Graph_values = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_values_2 = R"doc()doc";
 
+static const char *__doc_nanogui_Graph_setScaleY = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_scaleY = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_setOffsetY = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_offsetY = R"doc()doc";
+
 static const char *__doc_nanogui_GridLayout =
 R"doc(Grid layout.
 
