@@ -189,7 +189,7 @@ On RedHat/Fedora, make sure that you have installed the following packages
 
 .. code-block:: bash
 
-   $ sudo dnf install libXi-devel libXcursor-devel libXinerama-devel libXrandr-devel xorg-x11-server-devel
+   $ sudo dnf install cmake mesa-libGLU-devel libXi-devel libXcursor-devel libXinerama-devel libXrandr-devel xorg-x11-server-devel
 
 To also get the Python bindings, you'll need to run
 
