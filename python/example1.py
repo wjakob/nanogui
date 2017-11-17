@@ -312,6 +312,20 @@ class TestApp(Screen):
         intBox.setMinValue(1)
         intBox.setValueIncrement(2)
 
+        Label(window, "Monospace IntBox :", "sans-bold")
+        intBox = IntBox(window)
+        intBox.setFont("mono")
+        intBox.setEditable(True)
+        intBox.setFixedSize((100, 20))
+        intBox.setValue(50)
+        intBox.setUnits("Mhz")
+        intBox.setDefaultValue("50")
+        intBox.setFontSize(16)
+        intBox.setFormat("[1-9][0-9]*")
+        intBox.setSpinnable(True)
+        intBox.setMinValue(1)
+        intBox.setValueIncrement(2)
+
         Label(window, "Checkbox :", "sans-bold")
 
         cb = CheckBox(window, "Check me")
@@ -340,14 +354,13 @@ class TestApp(Screen):
         # setup a fast callback for the color picker widget on a new window
         # for demonstrative purposes
         window = Window(self, "Color Picker Fast Callback")
-        window.setPosition((425, 300))
         layout = GridLayout(Orientation.Horizontal, 2,
                             Alignment.Middle, 15, 5)
         layout.setColAlignment(
             [Alignment.Maximum, Alignment.Fill])
         layout.setSpacing(0, 10)
         window.setLayout(layout)
-        window.setPosition((425, 500))
+        window.setPosition((425, 530))
         Label(window, "Combined: ");
         b = Button(window, "ColorWheel", entypo.ICON_500PX)
         Label(window, "Red: ")

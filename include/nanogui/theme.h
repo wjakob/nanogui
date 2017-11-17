@@ -31,10 +31,14 @@ public:
     Theme(NVGcontext *ctx);
 
     /* Fonts */
-    /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
+    /// The standard font face (default: ``"sans"`` from ``resources/Roboto-Regular.ttf``).
     int mFontNormal;
-    /// The bold font face (default: ``"sans-bold"`` from ``resources/roboto_regular.ttf``).
+    /// The bold font face (default: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``).
     int mFontBold;
+    /// The standard monospace font face (default: ``"mono"`` from ``resources/RobotoMono-Regular.ttf``).
+    int mFontMonoNormal;
+    /// The standard bold monospace font face (default: ``"mono-bold"`` from ``resources/RobotoMono-Bold.ttf``).
+    int mFontMonoBold;
     /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
     int mFontIcons;
     /**

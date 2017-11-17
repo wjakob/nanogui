@@ -84,9 +84,14 @@ Theme::Theme(NVGcontext *ctx) {
                                    roboto_regular_ttf_size, 0);
     mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
                                  roboto_bold_ttf_size, 0);
+    mFontMonoNormal = nvgCreateFontMem(ctx, "mono", robotomono_regular_ttf,
+                                       robotomono_regular_ttf_size, 0);
+    mFontMonoBold = nvgCreateFontMem(ctx, "mono-bold", robotomono_bold_ttf,
+                                     robotomono_bold_ttf_size, 0);
     mFontIcons = nvgCreateFontMem(ctx, "icons", entypo_ttf,
                                   entypo_ttf_size, 0);
-    if (mFontNormal == -1 || mFontBold == -1 || mFontIcons == -1)
+    if (mFontNormal == -1 || mFontBold == -1 ||
+        mFontMonoNormal == -1 || mFontMonoBold == -1 || mFontIcons == -1)
         throw std::runtime_error("Could not load fonts!");
 }
 
