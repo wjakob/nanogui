@@ -68,6 +68,11 @@ public:
     /// Specify a regular expression specifying valid formats
     void setFormat(const std::string &format) { mFormat = format; }
 
+    /// Return the placeholder text to be displayed while the text box is empty.
+    const std::string &placeholder() const { return mPlaceholder; }
+    /// Specify a placeholder text to be displayed while the text box is empty.
+    void setPlaceholder(const std::string &placeholder) { mPlaceholder = placeholder; }
+
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme) override;
 
@@ -118,6 +123,7 @@ protected:
     std::function<bool(const std::string& str)> mCallback;
     bool mValidFormat;
     std::string mValueTemp;
+    std::string mPlaceholder;
     int mCursorPos;
     int mSelectionPos;
     Vector2i mMousePos;
