@@ -13,7 +13,7 @@
 
 /* Developer note: need to make a change to this file?
  * Please raise an Issue on GitHub describing what needs to change.  This file
- * was generated, so the scripts that generated it needs to update as well.
+ * was generated, so the scripts that generated it need to update as well.
  */
 
 #include <nanogui/nanogui.h>
@@ -22,9 +22,9 @@ using namespace nanogui;
 // add a button to the wrapper with a fixed size
 // `icon` should be the defined constant in nanogui/entypo.h
 // the button label will be the string that represents this
-#define ADD_BUTTON(icon)                                   \
-    auto b_##icon = new Button(wrapper, #icon, icon);      \
-    b_##icon->setIconPosition(Button::IconPosition::Left); \
+#define ADD_BUTTON(icon)                                           \
+    auto b_##icon = new Button(wrapper, #icon, icon, "mono-bold"); \
+    b_##icon->setIconPosition(Button::IconPosition::Left);         \
     b_##icon->setFixedWidth(half_width);
 
 int main(int /* argc */, char ** /* argv */) {

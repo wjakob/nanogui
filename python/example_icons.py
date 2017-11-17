@@ -11,7 +11,7 @@
 
 # Developer note: need to make a change to this file?
 # Please raise an Issue on GitHub describing what needs to change.  This file
-# was generated, so the scripts that generated it needs to update as well.
+# was generated, so the scripts that generated it need to update as well.
 
 import gc
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # of the icons -- see cpp example for alternative...
     for key in entypo.__dict__.keys():
         if key.startswith("ICON_"):
-            b = Button(wrapper, "entypo.{0}".format(key), entypo.__dict__[key])
+            b = Button(wrapper, "entypo.{0}".format(key), entypo.__dict__[key], "mono-bold")
             b.setIconPosition(Button.IconPosition.Left)
             b.setFixedWidth(half_width)
 
