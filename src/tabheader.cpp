@@ -443,8 +443,9 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     float yScaleRight = 0.5f;
     float xScaleRight = 1.0f - xScaleLeft - rightWidth / theme()->mTabControlWidth;
-    auto leftControlsPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x() - theme()->mTabControlWidth, 0);
-    Vector2f rightIconPos = leftControlsPos + Vector2f(xScaleRight*theme()->mTabControlWidth, yScaleRight*mSize.cast<float>().y());
+    Vector2f rightIconPos = mPos.cast<float>() + Vector2f(mSize.cast<float>().x(), mSize.cast<float>().y()*yScaleRight) -
+                            Vector2f(xScaleRight*theme()->mTabControlWidth + rightWidth, 0);
+
     nvgText(ctx, rightIconPos.x(), rightIconPos.y() + 1, iconRight.data(), nullptr);
 }
 
