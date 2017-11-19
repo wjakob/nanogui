@@ -449,24 +449,133 @@ public:
  * \struct Arcball glutil.h nanogui/glutil.h
  *
  * \brief Arcball helper class to interactively rotate objects on-screen.
+ *
+ * The Arcball class enables fluid interaction by representing rotations using
+ * a quaternion, and is setup to be used in conjunction with the existing
+ * mouse callbacks defined in \ref nanogui::Widget.  The Arcball operates by
+ * maintaining an "active" state which is typically controlled using a mouse
+ * button click / release.  A click pressed would call \ref Arcball::button
+ * with ``down = true``, and a click released with ``down = false``.  The high
+ * level mechanics are:
+ *
+ * 1. The Arcball is made active by calling \ref Arcball::button with a
+ *    specified click location, and ``down = true``.
+ * 2. As the user holds the mouse button down and drags, calls to
+ *    \ref Arcball::motion are issued.  Internally, the Arcball keeps track of
+ *    how far the rotation is from the start click.  During the active state,
+ *    \ref mQuat is not updated, call \ref Arcball::matrix to get the current
+ *    rotation for use in drawing updates.
+ * 3. The user releases the mouse button, and a call to \ref Arcball::button
+ *    with ``down = false``.  The Arcball is no longer active, and its internal
+ *    \ref mQuat is updated.
+ *
+ * A very simple \ref nanogui::Screen derived class to illustrate usage:
+ *
+ * \rst
+ * .. code-block:: cpp
+ *
+ *    class ArcballScreen : public nanogui::Screen {
+ *    public:
+ *        // Creating a 400x400 window
+ *        ArcballScreen() : nanogui::Screen({400, 400}, "ArcballDemo") {
+ *            mArcball.setSize(mSize);// Note 1
+ *        }
+ *
+ *        virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
+ *            // In this example, we are using the left mouse button
+ *            // to control the arcball motion
+ *            if (button == GLFW_MOUSE_BUTTON_1) {
+ *                mArcball.button(p, down);// Note 2
+ *                return true;
+ *            }
+ *            return false;
+ *        }
+ *
+ *        virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override {
+ *            if (button == GLFW_MOUSE_BUTTON_1) {
+ *                mArcball.motion(p);// Note 2
+ *                return true;
+ *            }
+ *            return false;
+ *        }
+ *
+ *        virtual void drawContents() override {
+ *            Matrix4f rotation = mArcball.matrix();
+ *            // ... do some drawing with the current rotation ...
+ *        }
+ *
+ *    protected:
+ *        nanogui::Arcball mArcball;
+ *    }
+ *
+ * **Note 1**
+ *     The user is responsible for setting the size with
+ *     :func:`Arcball::setSize <nanogui::Arcball::setSize>`, this does **not**
+ *     need to be the same as the Screen dimensions (e.g., you are using the
+ *     Arcball to control a specific ``glViewport``).
+ *
+ * **Note 2**
+ *     Be aware that the input vector ``p`` to
+ *     :func:`Widget::mouseButtonEvent <nanogui::Widget::mouseButtonEvent>`
+ *     and :func:`Widget::mouseMotionEvent <nanogui::Widget::mouseMotionEvent>`
+ *     are in the coordinates of the Screen dimensions (top left is ``(0, 0)``,
+ *     bottom right is ``(width, height)``).  If you are using the Arcball to
+ *     control a subregion of the Screen, you will want to transform the input
+ *     ``p`` before calling :func:`Arcball::button <nanogui::Arcball::button>`
+ *     or :func:`Arcball::motion <nanogui::Arcball::motion>`.  For example, if
+ *     controlling the right half of the screen, you might create
+ *     ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``.
+ * \endrst
  */
 struct Arcball {
+    /**
+     * \brief The default constructor.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
+     *    after construction.
+     * \endrst
+     *
+     * \param speedFactor
+     *     The speed at which the Arcball rotates (default: ``2.0``).  See also
+     *     \ref mSpeedFactor.
+     */
     Arcball(float speedFactor = 2.0f)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
           mQuat(Quaternionf::Identity()),
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(speedFactor) { }
 
+    /**
+     * Constructs an Arcball based off of the specified rotation.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
+     *    after construction.
+     * \endrst
+     */
     Arcball(const Quaternionf &quat)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
           mQuat(quat),
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(2.0f) { }
 
+    /**
+     * \brief The internal rotation of the Arcball.
+     *
+     * Call \ref Arcball::matrix for drawing loops, this method will not return
+     * any updates while \ref mActive is ``true``.
+     */
     Quaternionf &state() { return mQuat; }
 
+    /// ``const`` version of \ref Arcball::state.
     const Quaternionf &state() const { return mQuat; }
 
+    /// Sets the rotation of this Arcball.  The Arcball will be marked as **not** active.
     void setState(const Quaternionf &state) {
         mActive = false;
         mLastPos = Vector2i::Zero();
@@ -474,12 +583,38 @@ struct Arcball {
         mIncr = Quaternionf::Identity();
     }
 
+    /**
+     * \brief Sets the size of this Arcball.
+     *
+     * The size of the Arcball and the positions being provided in
+     * \ref Arcball::button and \ref Arcball::motion are directly related.
+     */
     void setSize(Vector2i size) { mSize = size; }
+
+    /// Returns the current size of this Arcball.
     const Vector2i &size() const { return mSize; }
+
+    /// Sets the speed at which this Arcball rotates.  See also \ref mSpeedFactor.
     void setSpeedFactor(float speedFactor) { mSpeedFactor = speedFactor; }
+
+    /// Returns the current speed at which this Arcball rotates.
     float speedFactor() const { return mSpeedFactor; }
+
+    /// Returns whether or not this Arcball is currently active.
     bool active() const { return mActive; }
 
+    /**
+     * \brief Signals a state change from active to non-active, or vice-versa.
+     *
+     * \param pos
+     *     The click location, should be in the same coordinate system as
+     *     specified by \ref mSize.
+     *
+     * \param pressed
+     *     When ``true``, this Arcball becomes active.  When ``false``, this
+     *     Arcball becomes non-active, and its internal \ref mQuat is updated
+     *     with the final rotation.
+     */
     void button(Vector2i pos, bool pressed) {
         mActive = pressed;
         mLastPos = pos;
@@ -488,11 +623,18 @@ struct Arcball {
         mIncr = Quaternionf::Identity();
     }
 
+    /**
+     * \brief When active, updates \ref mIncr corresponding to the specified
+     *        position.
+     *
+     * \param pos
+     *     Where the mouse has been dragged to.
+     */
     bool motion(Vector2i pos) {
         if (!mActive)
             return false;
 
-        /* Based on the rotation controller form AntTweakBar */
+        /* Based on the rotation controller from AntTweakBar */
         float invMinDim = 1.0f / mSize.minCoeff();
         float w = (float) mSize.x(), h = (float) mSize.y();
 
@@ -520,18 +662,57 @@ struct Arcball {
         return true;
     }
 
+    /**
+     * Returns the current rotation *including* the active motion, suitable for
+     * use with typical homogeneous matrix transformations.  The upper left 3x3
+     * block is the rotation matrix, with 0-0-0-1 as the right-most column /
+     * bottom row.
+     */
     Matrix4f matrix() const {
         Matrix4f result2 = Matrix4f::Identity();
         result2.block<3,3>(0, 0) = (mIncr * mQuat).toRotationMatrix();
         return result2;
     }
 
+    /**
+     * \brief Interrupts the current Arcball motion by calling
+     *        \ref Arcball::button with \ref mLastPos and ``false``.
+     *
+     * Use this method to "close" the state of the Arcball when a mouse release
+     * event is not available.  You would use this method if you need to stop
+     * the Arcball from updating its internal rotation, but the event stopping
+     * the rotation does **not** come from a mouse release.  For example, you
+     * have a callback that created a \ref nanogui::MessageDialog which will now
+     * be in focus.
+     */
+    void interrupt() { button(mLastPos, false); }
+
 protected:
+    /// Whether or not this Arcball is currently active.
     bool mActive;
+
+    /// The last click position (which triggered the Arcball to be active / non-active).
     Vector2i mLastPos;
+
+    /// The size of this Arcball.
     Vector2i mSize;
-    Quaternionf mQuat, mIncr;
+
+    /**
+     * The current stable state.  When this Arcball is active, represents the
+     * state of this Arcball when \ref Arcball::button was called with
+     * ``down = true``.
+     */
+    Quaternionf mQuat;
+
+    /// When active, tracks the overall update to the state.  Identity when non-active.
+    Quaternionf mIncr;
+
+    /**
+     * The speed at which this Arcball rotates.  Smaller values mean it rotates
+     * more slowly, higher values mean it rotates more quickly.
+     */
     float mSpeedFactor;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
