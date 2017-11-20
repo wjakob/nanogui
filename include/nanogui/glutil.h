@@ -64,6 +64,22 @@ class NANOGUI_EXPORT GLShader {
     template <typename T> friend struct detail::serialization_helper;
 #endif
 public:
+    /**
+     * \struct Buffer glutil.h nanogui/glutil.h
+     *
+     * A wrapper struct for maintaining various aspects of items being managed
+     * by OpenGL.  Buffers are created when \ref GLShader::uploadAttrib is
+     * called.
+     */
+    struct Buffer {
+        GLuint id;      ///< The identifier used with OpenGL.
+        GLuint glType;  ///< The OpenGL type of this buffer.
+        GLuint dim;     ///< The dimension of this buffer (typically the row width).
+        GLuint compSize;///< The size (in bytes) of an individual element in this buffer.
+        GLuint size;    ///< The total number of elements represented by this buffer.
+        int version;    ///< The current version if this buffer.
+    };
+
     /// Create an unitialized OpenGL shader
     GLShader()
         : mVertexShader(0), mFragmentShader(0), mGeometryShader(0),
@@ -114,10 +130,17 @@ public:
     /// Return the name of the shader
     const std::string &name() const { return mName; }
 
-    /// Set a preprocessor definition
+    /**
+     * Set a preprocessor definition.  Custom preprocessor definitions must be
+     * added **before** initializing the shader (e.g., via \ref initFromFiles).
+     * See also: \ref mDefinitions.
+     */
     void define(const std::string &key, const std::string &value) { mDefinitions[key] = value; }
 
-    /// Select this shader for subsequent draw calls
+    /**
+     * Select this shader for subsequent draw calls.  Simply executes ``glUseProgram``
+     * with \ref mProgramShader, and ``glBindVertexArray`` with \ref mVertexArrayObject.
+     */
     void bind();
 
     /// Release underlying OpenGL objects
@@ -285,6 +308,44 @@ public:
         return size;
     }
 
+    /**
+     * \brief (Advanced) Returns a reference to the specified \ref GLShader::Buffer.
+     *
+     * \rst
+     * .. danger::
+     *
+     *    Extreme caution must be exercised when using this method.  The user is
+     *    discouraged from explicitly storing the reference returned, as it can
+     *    change, become deprecated, or no longer reside in
+     *    :member:`mBufferObjects <nanogui::GLShader::mBufferObjects>`.
+     *
+     *    There are generally very few use cases that justify using this method
+     *    directly.  For example, if you need the version of a buffer, call
+     *    :func:`attribVersion <nanogui::GLShader::attribVersion>`.  If you want
+     *    to share data between :class:`GLShader <nanogui::GLShader>` objects,
+     *    call :func:`shareAttrib <nanogui::GLShader::shareAttrib>`.
+     *
+     *    One example use case for this method is sharing data between different
+     *    GPU pipelines such as CUDA or OpenCL.  When sharing data, you
+     *    typically need to map pointers between the API's.  The returned
+     *    buffer's :member:`Buffer::id <nanogui::GLShader::Buffer::id>` is the
+     *    ``GLuint`` you will want to map to the other API.
+     *
+     *    In short, only use this method if you absolutely need to.
+     * \endrst
+     *
+     * \param name
+     *     The name of the desired attribute.
+     *
+     * \return
+     *     A reference to the current buffer associated with ``name``.  Should
+     *     not be explicitly stored.
+     *
+     * \throws std::runtime_error
+     *     If ``name`` is not found.
+     */
+    const Buffer &attribBuffer(const std::string &name);
+
 public:
     /* Low-level API */
     void uploadAttrib(const std::string &name, size_t size, int dim,
@@ -294,27 +355,39 @@ public:
                        uint32_t compSize, GLuint glType, void *data);
 
 protected:
-    /**
-     * \struct Buffer glutil.h nanogui/glutil.h
-     *
-     * A wrapper struct for maintaining various aspects of items being managed
-     * by OpenGL.
-     */
-    struct Buffer {
-        GLuint id;
-        GLuint glType;
-        GLuint dim;
-        GLuint compSize;
-        GLuint size;
-        int version;
-    };
+    /// The registered name of this GLShader.
     std::string mName;
+
+    /// The vertex shader of this GLShader (as returned by ``glCreateShader``).
     GLuint mVertexShader;
+
+    /// The fragment shader of this GLShader (as returned by ``glCreateShader``).
     GLuint mFragmentShader;
+
+    /// The geometry shader (if requested) of this GLShader (as returned by ``glCreateShader``).
     GLuint mGeometryShader;
+
+    /// The OpenGL program (as returned by ``glCreateProgram``).
     GLuint mProgramShader;
+
+    /// The vertex array associated with this GLShader (as returned by ``glGenVertexArrays``).
     GLuint mVertexArrayObject;
+
+    /**
+     * The map of string names to buffer objects representing the various
+     * attributes that have been uploaded using \ref uploadAttrib.
+     */
     std::map<std::string, Buffer> mBufferObjects;
+
+    /**
+     * \rst
+     * The map of preprocessor names to values (if any have been created).  If
+     * a definition was added seeking to create ``#define WIDTH 256``, the key
+     * would be ``"WIDTH"`` and the value would be ``"256"``.  These definitions
+     * will be included automatically in the string that gets compiled for the
+     * vertex, geometry, and fragment shader code.
+     * \endrst
+     */
     std::map<std::string, std::string> mDefinitions;
 };
 
@@ -506,7 +579,7 @@ public:
  *
  *    protected:
  *        nanogui::Arcball mArcball;
- *    }
+ *    };
  *
  * **Note 1**
  *     The user is responsible for setting the size with
@@ -524,7 +597,8 @@ public:
  *     ``p`` before calling :func:`Arcball::button <nanogui::Arcball::button>`
  *     or :func:`Arcball::motion <nanogui::Arcball::motion>`.  For example, if
  *     controlling the right half of the screen, you might create
- *     ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``.
+ *     ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``, and then
+ *     call ``mArcball.motion(adjusted_click)``.
  * \endrst
  */
 struct Arcball {

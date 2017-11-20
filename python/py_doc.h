@@ -68,13 +68,13 @@ static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor_3 =
 R"doc(Create an Anchor at position ``(x, y)`` of size ``(w, h)`` with
 specified alignments.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc(< The ``(x, y)`` Alignment.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc(The ``(x, y)`` Alignment.)doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_Anchor_operator_int = R"doc(Allows for printing out Anchor position, size, and alignment.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc(< The ``(x, y)`` position.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc(The ``(x, y)`` position.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_size = R"doc(< The ``(x, y)`` size.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_size = R"doc(The ``(x, y)`` size.)doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_anchor = R"doc(Retrieve the anchor data structure for a given widget)doc";
 
@@ -116,13 +116,13 @@ static const char *__doc_nanogui_AdvancedGridLayout_setRowStretch = R"doc(Set th
 
 static const char *__doc_nanogui_Alignment = R"doc(The different kinds of alignments a layout can perform.)doc";
 
-static const char *__doc_nanogui_Alignment_Fill = R"doc(< Fill according to preferred sizes.)doc";
+static const char *__doc_nanogui_Alignment_Fill = R"doc(Fill according to preferred sizes.)doc";
 
-static const char *__doc_nanogui_Alignment_Maximum = R"doc(< Take as much space as is allowed.)doc";
+static const char *__doc_nanogui_Alignment_Maximum = R"doc(Take as much space as is allowed.)doc";
 
-static const char *__doc_nanogui_Alignment_Middle = R"doc(< Center align.)doc";
+static const char *__doc_nanogui_Alignment_Middle = R"doc(Center align.)doc";
 
-static const char *__doc_nanogui_Alignment_Minimum = R"doc(< Take only as much space as is required.)doc";
+static const char *__doc_nanogui_Alignment_Minimum = R"doc(Take only as much space as is required.)doc";
 
 static const char *__doc_nanogui_Arcball =
 R"doc(Arcball helper class to interactively rotate objects on-screen.
@@ -176,7 +176,7 @@ public:
     }
 protected:
     nanogui::Arcball mArcball;
-}
+};
 **Note 1**
  The user is responsible for setting the size with
  :func:`Arcball::setSize <nanogui::Arcball::setSize>`, this does **not**
@@ -192,7 +192,8 @@ protected:
  ``p`` before calling :func:`Arcball::button <nanogui::Arcball::button>`
  or :func:`Arcball::motion <nanogui::Arcball::motion>`.  For example, if
  controlling the right half of the screen, you might create
- ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``.
+ ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``, and then
+ call ``mArcball.motion(adjusted_click)``.
 
 ```)doc";
 
@@ -393,23 +394,23 @@ Parameter ``icon``:
 
 static const char *__doc_nanogui_Button_Flags = R"doc(Flags to specify the button behavior (can be combined with binary OR))doc";
 
-static const char *__doc_nanogui_Button_Flags_NormalButton = R"doc(< A normal Button.)doc";
+static const char *__doc_nanogui_Button_Flags_NormalButton = R"doc(A normal Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_PopupButton = R"doc(< A popup Button.)doc";
+static const char *__doc_nanogui_Button_Flags_PopupButton = R"doc(A popup Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc(< A radio Button.)doc";
+static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc(A radio Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc(< A toggle Button.)doc";
+static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc(A toggle Button.)doc";
 
 static const char *__doc_nanogui_Button_IconPosition = R"doc(The available icon positions.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_Left = R"doc(< Button icon on the far left.)doc";
+static const char *__doc_nanogui_Button_IconPosition_Left = R"doc(Button icon on the far left.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_LeftCentered = R"doc(< Button icon on the left, centered (depends on caption text length).)doc";
+static const char *__doc_nanogui_Button_IconPosition_LeftCentered = R"doc(Button icon on the left, centered (depends on caption text length).)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_Right = R"doc(< Button icon on the far right.)doc";
+static const char *__doc_nanogui_Button_IconPosition_Right = R"doc(Button icon on the far right.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_RightCentered = R"doc(< Button icon on the right, centered (depends on caption text length).)doc";
+static const char *__doc_nanogui_Button_IconPosition_RightCentered = R"doc(Button icon on the right, centered (depends on caption text length).)doc";
 
 static const char *__doc_nanogui_Button_backgroundColor = R"doc(Returns the background color of this Button.)doc";
 
@@ -1072,21 +1073,21 @@ static const char *__doc_nanogui_Cursor =
 R"doc(Cursor shapes available to use in GLFW. Shape of actual cursor
 determined by Operating System.)doc";
 
-static const char *__doc_nanogui_Cursor_Arrow = R"doc(< The arrow cursor.)doc";
+static const char *__doc_nanogui_Cursor_Arrow = R"doc(The arrow cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_Crosshair = R"doc(< The crosshair cursor.)doc";
+static const char *__doc_nanogui_Cursor_Crosshair = R"doc(The crosshair cursor.)doc";
 
 static const char *__doc_nanogui_Cursor_CursorCount =
-R"doc(< Not a cursor --- should always be last: enables a loop over the
-cursor types.)doc";
+R"doc(Not a cursor --- should always be last: enables a loop over the cursor
+types.)doc";
 
-static const char *__doc_nanogui_Cursor_HResize = R"doc(< The horizontal resize cursor.)doc";
+static const char *__doc_nanogui_Cursor_HResize = R"doc(The horizontal resize cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_Hand = R"doc(< The hand cursor.)doc";
+static const char *__doc_nanogui_Cursor_Hand = R"doc(The hand cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_IBeam = R"doc(< The I-beam cursor.)doc";
+static const char *__doc_nanogui_Cursor_IBeam = R"doc(The I-beam cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_VResize = R"doc(< The vertical resize cursor.)doc";
+static const char *__doc_nanogui_Cursor_VResize = R"doc(The vertical resize cursor.)doc";
 
 static const char *__doc_nanogui_FloatBox =
 R"doc(A specialization of TextBox representing floating point values.
@@ -1409,19 +1410,20 @@ associated vertex and index buffers from Eigen matrices.)doc";
 
 static const char *__doc_nanogui_GLShader_Buffer =
 R"doc(A wrapper struct for maintaining various aspects of items being
-managed by OpenGL.)doc";
+managed by OpenGL. Buffers are created when GLShader::uploadAttrib is
+called.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_compSize = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_compSize = R"doc(The size (in bytes) of an individual element in this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_dim = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_dim = R"doc(The dimension of this buffer (typically the row width).)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_glType = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_glType = R"doc(The OpenGL type of this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_id = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_id = R"doc(The identifier used with OpenGL.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_size = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_size = R"doc(The total number of elements represented by this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_version = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_version = R"doc(The current version if this buffer.)doc";
 
 static const char *__doc_nanogui_GLShader_GLShader = R"doc(Create an unitialized OpenGL shader)doc";
 
@@ -1429,13 +1431,52 @@ static const char *__doc_nanogui_GLShader_attrib =
 R"doc(Return the handle of a named shader attribute (-1 if it does not
 exist))doc";
 
+static const char *__doc_nanogui_GLShader_attribBuffer =
+R"doc((Advanced) Returns a reference to the specified GLShader::Buffer.
+
+```
+Danger:
+Extreme caution must be exercised when using this method.  The user is
+discouraged from explicitly storing the reference returned, as it can
+change, become deprecated, or no longer reside in
+:member:`mBufferObjects <nanogui::GLShader::mBufferObjects>`.
+There are generally very few use cases that justify using this method
+directly.  For example, if you need the version of a buffer, call
+:func:`attribVersion <nanogui::GLShader::attribVersion>`.  If you want
+to share data between :class:`GLShader <nanogui::GLShader>` objects,
+call :func:`shareAttrib <nanogui::GLShader::shareAttrib>`.
+One example use case for this method is sharing data between different
+GPU pipelines such as CUDA or OpenCL.  When sharing data, you
+typically need to map pointers between the API's.  The returned
+buffer's :member:`Buffer::id <nanogui::GLShader::Buffer::id>` is the
+``GLuint`` you will want to map to the other API.
+In short, only use this method if you absolutely need to.
+
+```
+
+Parameter ``name``:
+    The name of the desired attribute.
+
+Returns:
+    A reference to the current buffer associated with ``name``. Should
+    not be explicitly stored.
+
+Throws:
+    std::runtime_error If ``name`` is not found.)doc";
+
 static const char *__doc_nanogui_GLShader_attribVersion = R"doc(Return the version number of a given attribute)doc";
 
-static const char *__doc_nanogui_GLShader_bind = R"doc(Select this shader for subsequent draw calls)doc";
+static const char *__doc_nanogui_GLShader_bind =
+R"doc(Select this shader for subsequent draw calls. Simply executes
+``glUseProgram`` with mProgramShader, and ``glBindVertexArray`` with
+mVertexArrayObject.)doc";
 
 static const char *__doc_nanogui_GLShader_bufferSize = R"doc(Return the size of all registered buffers in bytes)doc";
 
-static const char *__doc_nanogui_GLShader_define = R"doc(Set a preprocessor definition)doc";
+static const char *__doc_nanogui_GLShader_define =
+R"doc(Set a preprocessor definition. Custom preprocessor definitions must be
+added **before** initializing the shader (e.g., via initFromFiles).
+See also: mDefinitions.)doc";
 
 static const char *__doc_nanogui_GLShader_downloadAttrib = R"doc(Download a vertex buffer object into an Eigen matrix)doc";
 
@@ -1487,21 +1528,39 @@ Parameter ``geometry_fname``:
 
 static const char *__doc_nanogui_GLShader_invalidateAttribs = R"doc(Invalidate the version numbers associated with attribute data)doc";
 
-static const char *__doc_nanogui_GLShader_mBufferObjects = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mBufferObjects =
+R"doc(The map of string names to buffer objects representing the various
+attributes that have been uploaded using uploadAttrib.)doc";
 
-static const char *__doc_nanogui_GLShader_mDefinitions = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mDefinitions =
+R"doc(```
+The map of preprocessor names to values (if any have been created).  If
+a definition was added seeking to create ``#define WIDTH 256``, the key
+would be ``"WIDTH"`` and the value would be ``"256"``.  These definitions
+will be included automatically in the string that gets compiled for the
+vertex, geometry, and fragment shader code.
 
-static const char *__doc_nanogui_GLShader_mFragmentShader = R"doc()doc";
+```)doc";
 
-static const char *__doc_nanogui_GLShader_mGeometryShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mFragmentShader =
+R"doc(The fragment shader of this GLShader (as returned by
+``glCreateShader``).)doc";
 
-static const char *__doc_nanogui_GLShader_mName = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mGeometryShader =
+R"doc(The geometry shader (if requested) of this GLShader (as returned by
+``glCreateShader``).)doc";
 
-static const char *__doc_nanogui_GLShader_mProgramShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mName = R"doc(The registered name of this GLShader.)doc";
 
-static const char *__doc_nanogui_GLShader_mVertexArrayObject = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mProgramShader = R"doc(The OpenGL program (as returned by ``glCreateProgram``).)doc";
 
-static const char *__doc_nanogui_GLShader_mVertexShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mVertexArrayObject =
+R"doc(The vertex array associated with this GLShader (as returned by
+``glGenVertexArrays``).)doc";
+
+static const char *__doc_nanogui_GLShader_mVertexShader =
+R"doc(The vertex shader of this GLShader (as returned by
+``glCreateShader``).)doc";
 
 static const char *__doc_nanogui_GLShader_name = R"doc(Return the name of the shader)doc";
 
@@ -2265,9 +2324,9 @@ static const char *__doc_nanogui_Object_m_refCount = R"doc()doc";
 
 static const char *__doc_nanogui_Orientation = R"doc(The direction of data flow for a layout.)doc";
 
-static const char *__doc_nanogui_Orientation_Horizontal = R"doc(< Layout expands on horizontal axis.)doc";
+static const char *__doc_nanogui_Orientation_Horizontal = R"doc(Layout expands on horizontal axis.)doc";
 
-static const char *__doc_nanogui_Orientation_Vertical = R"doc(< Layout expands on vertical axis.)doc";
+static const char *__doc_nanogui_Orientation_Vertical = R"doc(Layout expands on vertical axis.)doc";
 
 static const char *__doc_nanogui_Popup =
 R"doc(Popup window for combo boxes, popup buttons, nested dialogs etc.

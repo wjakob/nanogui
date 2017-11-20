@@ -553,6 +553,8 @@ else()
     list(APPEND MKDOC_CXX_FLAGS_LIST -I${value})
   endforeach()
 
+  # Make sure platform specific code gets kept in py_doc.h (specifically __doc_nanogui_chdir_to_bundle_parent)
+  list(APPEND MKDOC_COMPILE_DEFINITIONS "DOXYGEN_DOCUMENTATION_BUILD")
   foreach (value ${MKDOC_COMPILE_DEFINITIONS})
     list(APPEND MKDOC_CXX_FLAGS_LIST -D${value})
   endforeach()

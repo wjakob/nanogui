@@ -157,6 +157,8 @@ def process_comment(comment):
             s = s[2:].lstrip('*')
         elif s.endswith('*/'):
             s = s[:-2].rstrip('*')
+        elif s.startswith('///<'):
+            s = s[4:]
         elif s.startswith('///'):
             s = s[3:]
         if s.startswith('*'):
@@ -207,8 +209,8 @@ def process_comment(comment):
         'sa': 'See also',
         'see': 'See also',
         'extends': 'Extends',
-        'throw': 'Throws',
-        'throws': 'Throws'
+        'throws': 'Throws',
+        'throw': 'Throws'
     }.items():
         s = re.sub(r'\\%s\s*' % in_, r'\n\n$%s:\n\n' % out_, s)
 
