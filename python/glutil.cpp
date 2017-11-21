@@ -160,6 +160,7 @@ void register_glutil(py::module &m) {
         .def("button", &Arcball::button, py::arg("pos"), py::arg("pressed"), D(Arcball, button))
         .def("motion", &Arcball::motion, py::arg("pos"), D(Arcball, motion))
         .def("matrix", &Arcball::matrix, D(Arcball, matrix))
+        .def("activeState", &Arcball::activeState, D(Arcball, activeState))
         .def("interrupt", &Arcball::interrupt, D(Arcball, interrupt));
 
     m.def("project", &project, py::arg("obj"), py::arg("model"),

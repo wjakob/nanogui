@@ -257,12 +257,10 @@ def process_comment(comment):
                 if len(line) < 4:
                     result += line.strip()
                 else:
-                    # this is a .. code-block:: indentation (three spaces)
+                    # this is a .. code-block:: indentation (three spaces),
+                    # strip leading three spaces, preserve remaining indentation
                     if line.startswith('   '):
-                        if line[3] != ' ': # outer-most indentation level
-                            result += line[3:].strip() + '\n'
-                        else:
-                            result += line[3:].rstrip() + '\n'
+                        result += line[3:].rstrip() + '\n'
                     else:
                         result += line.strip() + '\n'
         else:

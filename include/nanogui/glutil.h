@@ -537,7 +537,9 @@ public:
  *    \ref Arcball::motion are issued.  Internally, the Arcball keeps track of
  *    how far the rotation is from the start click.  During the active state,
  *    \ref mQuat is not updated, call \ref Arcball::matrix to get the current
- *    rotation for use in drawing updates.
+ *    rotation for use in drawing updates.  Receiving the rotation as a matrix
+ *    will usually be more convenient for traditional pipelines, however you
+ *    can also acquire the active rotation using \ref Arcball::activeState.
  * 3. The user releases the mouse button, and a call to \ref Arcball::button
  *    with ``down = false``.  The Arcball is no longer active, and its internal
  *    \ref mQuat is updated.
@@ -573,7 +575,10 @@ public:
  *        }
  *
  *        virtual void drawContents() override {
+ *            // Option 1: acquire a 4x4 homogeneous rotation matrix
  *            Matrix4f rotation = mArcball.matrix();
+ *            // Option 2: acquire an equivalent quaternion
+ *            Quaternionf rotation = mArcball.activeState();
  *            // ... do some drawing with the current rotation ...
  *        }
  *
@@ -748,9 +753,12 @@ struct Arcball {
         return result2;
     }
 
+    /// Returns the current rotation *including* the active motion.
+    Quaternionf activeState() const { return mIncr * mQuat; }
+
     /**
      * \brief Interrupts the current Arcball motion by calling
-     *        \ref Arcball::button with \ref mLastPos and ``false``.
+     *        \ref Arcball::button with ``(0, 0)`` and ``false``.
      *
      * Use this method to "close" the state of the Arcball when a mouse release
      * event is not available.  You would use this method if you need to stop
@@ -759,7 +767,7 @@ struct Arcball {
      * have a callback that created a \ref nanogui::MessageDialog which will now
      * be in focus.
      */
-    void interrupt() { button(mLastPos, false); }
+    void interrupt() { button(Vector2i::Zero(), false); }
 
 protected:
     /// Whether or not this Arcball is currently active.

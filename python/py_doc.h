@@ -141,9 +141,11 @@ the mouse button down and drags, calls to Arcball::motion are issued.
 Internally, the Arcball keeps track of how far the rotation is from
 the start click. During the active state, mQuat is not updated, call
 Arcball::matrix to get the current rotation for use in drawing
-updates. 3. The user releases the mouse button, and a call to
-Arcball::button with ``down = false``. The Arcball is no longer
-active, and its internal mQuat is updated.
+updates. Receiving the rotation as a matrix will usually be more
+convenient for traditional pipelines, however you can also acquire the
+active rotation using Arcball::activeState. 3. The user releases the
+mouse button, and a call to Arcball::button with ``down = false``. The
+Arcball is no longer active, and its internal mQuat is updated.
 
 A very simple nanogui::Screen derived class to illustrate usage:
 
@@ -171,7 +173,10 @@ public:
         return false;
     }
     virtual void drawContents() override {
+        // Option 1: acquire a 4x4 homogeneous rotation matrix
         Matrix4f rotation = mArcball.matrix();
+        // Option 2: acquire an equivalent quaternion
+        Quaternionf rotation = mArcball.activeState();
         // ... do some drawing with the current rotation ...
     }
 protected:
@@ -223,6 +228,8 @@ after construction.
 
 static const char *__doc_nanogui_Arcball_active = R"doc(Returns whether or not this Arcball is currently active.)doc";
 
+static const char *__doc_nanogui_Arcball_activeState = R"doc(Returns the current rotation *including* the active motion.)doc";
+
 static const char *__doc_nanogui_Arcball_button =
 R"doc(Signals a state change from active to non-active, or vice-versa.
 
@@ -237,7 +244,7 @@ Parameter ``pressed``:
 
 static const char *__doc_nanogui_Arcball_interrupt =
 R"doc(Interrupts the current Arcball motion by calling Arcball::button with
-mLastPos and ``False``.
+``(0, 0)`` and ``False``.
 
 Use this method to "close" the state of the Arcball when a mouse
 release event is not available. You would use this method if you need
