@@ -14,7 +14,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/entypo.h>
-#include <nanogui_resources.h>
+#include <nanogui_resources.h> // provides nanogui::createFontMem
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -80,16 +80,12 @@ Theme::Theme(NVGcontext *ctx) {
     mTextBoxUpIcon                    = ENTYPO_ICON_CHEVRON_UP;
     mTextBoxDownIcon                  = ENTYPO_ICON_CHEVRON_DOWN;
 
-    mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
-                                   roboto_regular_ttf_size, 0);
-    mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
-                                 roboto_bold_ttf_size, 0);
-    mFontMonoNormal = nvgCreateFontMem(ctx, "mono", robotomono_regular_ttf,
-                                       robotomono_regular_ttf_size, 0);
-    mFontMonoBold = nvgCreateFontMem(ctx, "mono-bold", robotomono_bold_ttf,
-                                     robotomono_bold_ttf_size, 0);
-    mFontIcons = nvgCreateFontMem(ctx, "icons", entypo_ttf,
-                                  entypo_ttf_size, 0);
+    mFontNormal     = createFontMem(ctx, "sans", "Roboto-Regular.ttf");
+    mFontBold       = createFontMem(ctx, "sans-bold", "Roboto-Bold.ttf");
+    mFontMonoNormal = createFontMem(ctx, "mono", "RobotoMono-Regular.ttf");
+    mFontMonoBold   = createFontMem(ctx, "mono-bold", "RobotoMono-Bold.ttf");
+    mFontIcons      = createFontMem(ctx, "icons", "entypo.ttf");
+
     if (mFontNormal == -1 || mFontBold == -1 ||
         mFontMonoNormal == -1 || mFontMonoBold == -1 || mFontIcons == -1)
         throw std::runtime_error("Could not load fonts!");

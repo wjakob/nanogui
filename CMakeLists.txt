@@ -253,6 +253,14 @@ include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src
 # Glob up resource files
 file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
 
+# Parent projects can set this list to include additional fonts
+if (NANOGUI_EXTRA_RESOURCES)
+  # Add the fonts specified by the parent project to the list of fonts to embed
+  list(APPEND resources ${NANOGUI_EXTRA_RESOURCES})
+  # Allow parent projects to #include <nanogui_resources.h>
+  list(APPEND NANOGUI_EXTRA_INCS ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 # Concatenate resource files into a comma separated string
 string (REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
 string (REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
