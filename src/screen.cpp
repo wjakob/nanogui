@@ -255,16 +255,28 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
        a window from a Retina-capable screen to a normal
        screen on Mac OS X */
     glfwSetFramebufferSizeCallback(mGLFWWindow,
-        [](GLFWwindow* w, int width, int height) {
+        [](GLFWwindow *w, int width, int height) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
                 return;
-            Screen* s = it->second;
+            Screen *s = it->second;
 
             if (!s->mProcessEvents)
                 return;
 
             s->resizeCallbackEvent(width, height);
+        }
+    );
+
+    // notify when the screen has lost focus (e.g. application switch)
+    glfwSetWindowFocusCallback(mGLFWWindow,
+        [](GLFWwindow *w, int focused) {
+            auto it = __nanogui_screens.find(w);
+            if (it == __nanogui_screens.end())
+                return;
+
+            Screen *s = it->second;
+            s->focusEvent(static_cast<bool>(focused));
         }
     );
 
