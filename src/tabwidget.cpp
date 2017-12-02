@@ -85,14 +85,26 @@ void TabWidget::ensureTabVisible(int index) {
 
 const Widget *TabWidget::tab(const std::string &tabName) const {
     int index = mHeader->tabIndex(tabName);
-    if (index == mContent->childCount())
+    if (index == -1 || index == mContent->childCount())
         return nullptr;
     return mContent->children()[index];
 }
 
 Widget *TabWidget::tab(const std::string &tabName) {
     int index = mHeader->tabIndex(tabName);
-    if (index == mContent->childCount())
+    if (index == -1 || index == mContent->childCount())
+        return nullptr;
+    return mContent->children()[index];
+}
+
+const Widget *TabWidget::tab(int index) const {
+    if (index < 0 || index >= mContent->childCount())
+        return nullptr;
+    return mContent->children()[index];
+}
+
+Widget *TabWidget::tab(int index) {
+    if (index < 0 || index >= mContent->childCount())
         return nullptr;
     return mContent->children()[index];
 }

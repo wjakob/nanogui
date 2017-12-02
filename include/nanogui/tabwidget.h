@@ -28,7 +28,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
-    TabWidget(Widget* parent);
+    TabWidget(Widget *parent);
 
     void setActiveTab(int tabIndex);
     int activeTab() const;
@@ -42,8 +42,8 @@ public:
     const std::function<void(int)> &callback() const { return mCallback; }
 
     /// Creates a new tab with the specified name and returns a pointer to the layer.
-    Widget* createTab(const std::string &label);
-    Widget* createTab(int index, const std::string &label);
+    Widget *createTab(const std::string &label);
+    Widget *createTab(int index, const std::string &label);
 
     /// Inserts a tab at the end of the tabs collection and associates it with the provided widget.
     void addTab(const std::string &label, Widget *tab);
@@ -84,8 +84,53 @@ public:
      */
     void ensureTabVisible(int index);
 
-    const Widget* tab(const std::string &label) const;
-    Widget* tab(const std::string &label);
+    /**
+     * \brief Returns a ``const`` pointer to the Widget associated with the
+     *        specified label.
+     *
+     * \param label
+     *     The label used to create the tab.
+     *
+     * \return
+     *     The Widget associated with this label, or ``nullptr`` if not found.
+     */
+    const Widget *tab(const std::string &label) const;
+
+    /**
+     * \brief Returns a pointer to the Widget associated with the specified label.
+     *
+     * \param label
+     *     The label used to create the tab.
+     *
+     * \return
+     *     The Widget associated with this label, or ``nullptr`` if not found.
+     */
+    Widget *tab(const std::string &label);
+
+    /**
+     * \brief Returns a ``const`` pointer to the Widget associated with the
+     *        specified index.
+     *
+     * \param index
+     *     The current index of the desired Widget.
+     *
+     * \return
+     *     The Widget at the specified index, or ``nullptr`` if ``index`` is not
+     *     a valid index.
+     */
+    const Widget *tab(int index) const;
+
+    /**
+     * \brief Returns a pointer to the Widget associated with the specified index.
+     *
+     * \param index
+     *     The current index of the desired Widget.
+     *
+     * \return
+     *     The Widget at the specified index, or ``nullptr`` if ``index`` is not
+     *     a valid index.
+     */
+    Widget *tab(int index);
 
     virtual void performLayout(NVGcontext* ctx) override;
     virtual Vector2i preferredSize(NVGcontext* ctx) const override;
