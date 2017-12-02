@@ -45,6 +45,7 @@ void register_tabs(py::module &m) {
         .def("tabLabelAt", &TabWidget::tabLabelAt, D(TabWidget, tabLabelAt))
         .def("tabIndex", &TabWidget::tabIndex, D(TabWidget, tabIndex))
         .def("tab", (Widget * (TabWidget::*)(const std::string &)) &TabWidget::tab, D(TabWidget, tab))
+        .def("tab", (Widget * (TabWidget::*)(int)) &TabWidget::tab, D(TabWidget, tab))
         .def("ensureTabVisible", &TabWidget::ensureTabVisible, D(TabWidget, ensureTabVisible));
 }
 
