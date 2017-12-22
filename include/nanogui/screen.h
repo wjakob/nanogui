@@ -81,7 +81,7 @@ public:
            bool resizable = true, bool fullscreen = false, int colorBits = 8,
            int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
            int nSamples = 0,
-           unsigned int glMajor = 3, unsigned int glMinor = 3);
+           unsigned int glMajor = 3, unsigned int glMinor = 3, bool maximized = false);
 
     /// Release all resources
     virtual ~Screen();

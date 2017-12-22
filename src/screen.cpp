@@ -112,7 +112,7 @@ Screen::Screen()
 Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                bool fullscreen, int colorBits, int alphaBits, int depthBits,
                int stencilBits, int nSamples,
-               unsigned int glMajor, unsigned int glMinor)
+               unsigned int glMajor, unsigned int glMinor, bool maximized)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
@@ -134,6 +134,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     glfwWindowHint(GLFW_DEPTH_BITS, depthBits);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
+    glfwWindowHint(GLFW_MAXIMIZED, maximized ? GL_TRUE : GL_FALSE);
 
     if (fullscreen) {
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
