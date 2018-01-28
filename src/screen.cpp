@@ -276,7 +276,8 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                 return;
 
             Screen *s = it->second;
-            s->focusEvent(static_cast<bool>(focused));
+            // focused: 0 when false, 1 when true
+            s->focusEvent(focused != 0);
         }
     );
 
