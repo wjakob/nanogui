@@ -77,8 +77,8 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 # Two targets have now been defined: `glfw_objects`, which will be merged into
 # NanoGUI at the end, and `glfw`.  The `glfw` target is the library itself
 # (e.g., libglfw.so), but can be skipped as we do not need to link against it
-# (because we merge `glfw_objects` into NanoGUI).  This is required for XCode,
-# but preferable for all build systems (reduces build artifacts).
+# (because we merge `glfw_objects` into NanoGUI).  Skipping is required for
+# XCode, but preferable for all build systems (reduces build artifacts).
 set_target_properties(glfw PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 # Python support: add NANOGUI_PYTHON flag to all targets
