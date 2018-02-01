@@ -24,12 +24,29 @@
 NAMESPACE_BEGIN(nanogui)
 
 TabWidget::TabWidget(Widget* parent)
-    : Widget(parent), mHeader(new TabHeader(this)), mContent(new StackedWidget(this)) {
+    : Widget(parent)
+    , mHeader(new TabHeader(nullptr)) // create using nullptr, add children below
+    , mContent(new StackedWidget(nullptr)) {
+
+    // since TabWidget::addChild is going to throw an exception to prevent
+    // mis-use of this class, add the child directly
+    Widget::addChild(childCount(), mHeader);
+    Widget::addChild(childCount(), mContent);
+
     mHeader->setCallback([this](int i) {
         mContent->setSelectedIndex(i);
         if (mCallback)
             mCallback(i);
     });
+}
+
+void TabWidget::addChild(int /*index*/, Widget * /*widget*/) {
+    // there may only be two children: mHeader and mContent, created in the constructor
+    throw std::runtime_error(
+        "TabWidget: do not add children directly to the TabWidget, create tabs "
+        "and add children to the tabs.  See TabWidget class documentation for "
+        "example usage."
+    );
 }
 
 void TabWidget::setActiveTab(int tabIndex) {
