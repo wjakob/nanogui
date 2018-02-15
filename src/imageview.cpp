@@ -67,9 +67,9 @@ namespace {
 }
 
 ImageView::ImageView(Widget* parent, GLuint imageID)
-    : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
-    mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr),
-    mFont("sans") {
+    : FontWidget(parent, "", false), mImageID(imageID), mScale(1.0f),
+      mOffset(Vector2f::Zero()), mFixedScale(false), mFixedOffset(false),
+      mPixelInfoCallback(nullptr) {
 
     updateImageParameters();
     mShader.init("ImageViewShader", defaultImageViewVertexShader,
