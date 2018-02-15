@@ -17,7 +17,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
-    : Widget(parent), mCaption(caption), mFont(font) {
+    : FontWidget(parent, font, false), mCaption(caption) {
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
         mColor = mTheme->mTextColor;
@@ -26,7 +26,7 @@ Label::Label(Widget *parent, const std::string &caption, const std::string &font
 }
 
 void Label::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
+    FontWidget::setTheme(theme);
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
         mColor = mTheme->mTextColor;
@@ -67,16 +67,14 @@ void Label::draw(NVGcontext *ctx) {
 }
 
 void Label::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("caption", mCaption);
-    s.set("font", mFont);
     s.set("color", mColor);
 }
 
 bool Label::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
-    if (!s.get("font", mFont)) return false;
     if (!s.get("color", mColor)) return false;
     return true;
 }
