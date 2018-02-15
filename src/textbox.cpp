@@ -24,13 +24,12 @@
 NAMESPACE_BEGIN(nanogui)
 
 TextBox::TextBox(Widget *parent, const std::string &value, const std::string &font)
-    : Widget(parent),
+    : FontWidget(parent, font, false),
       mEditable(false),
       mSpinnable(false),
       mCommitted(true),
       mValue(value),
       mDefaultValue(""),
-      mFont(font),
       mAlignment(Alignment::Center),
       mUnits(""),
       mFormat(""),
@@ -631,7 +630,7 @@ TextBox::SpinArea TextBox::spinArea(const Vector2i & pos) {
 }
 
 void TextBox::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("editable", mEditable);
     s.set("spinnable", mSpinnable);
     s.set("committed", mCommitted);
@@ -648,7 +647,7 @@ void TextBox::save(Serializer &s) const {
 }
 
 bool TextBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("editable", mEditable)) return false;
     if (!s.get("spinnable", mSpinnable)) return false;
     if (!s.get("committed", mCommitted)) return false;

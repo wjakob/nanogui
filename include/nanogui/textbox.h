@@ -16,7 +16,7 @@
 #pragma once
 
 #include <nanogui/compat.h>
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 #include <sstream>
 
 NAMESPACE_BEGIN(nanogui)
@@ -31,7 +31,7 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT TextBox : public Widget {
+class NANOGUI_EXPORT TextBox : public FontWidget {
 public:
     /// How to align the text in the text box.
     enum class Alignment {
@@ -40,7 +40,7 @@ public:
         Right
     };
 
-    TextBox(Widget *parent, const std::string &value = "Untitled", const std::string &font = "sans");
+    TextBox(Widget *parent, const std::string &value = "Untitled", const std::string &font = "");
 
     bool editable() const { return mEditable; }
     void setEditable(bool editable);
@@ -53,9 +53,6 @@ public:
 
     const std::string &defaultValue() const { return mDefaultValue; }
     void setDefaultValue(const std::string &defaultValue) { mDefaultValue = defaultValue; }
-
-    const std::string &font() const { return mFont; }
-    void setFont(const std::string &font) { mFont = font; }
 
     Alignment alignment() const { return mAlignment; }
     void setAlignment(Alignment align) { mAlignment = align; }
@@ -114,7 +111,6 @@ protected:
     bool mCommitted;
     std::string mValue;
     std::string mDefaultValue;
-    std::string mFont;
     Alignment mAlignment;
     std::string mUnits;
     std::string mFormat;
