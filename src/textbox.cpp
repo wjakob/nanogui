@@ -54,7 +54,7 @@ void TextBox::setEditable(bool editable) {
 }
 
 void TextBox::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
+    FontWidget::setTheme(theme);
     if (mTheme)
         mFontSize = mTheme->mTextBoxFontSize;
 }
