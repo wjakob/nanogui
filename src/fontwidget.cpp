@@ -3,11 +3,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-FontWidget::FontWidget(Widget *parent, const std::string &font, bool isWindow)
+FontWidget::FontWidget(Widget *parent, const std::string &font, bool fontDefaultIsBold)
     : Widget(parent)
     , mFont(font)
     , mFontExplicit(font != "")
-    , mFontIsWindow(isWindow) {
+    , mFontDefaultIsBold(fontDefaultIsBold) {
 
     setDefaultFont();
 }
@@ -26,22 +26,22 @@ void FontWidget::save(Serializer &s) const {
     Widget::save(s);
     s.set("font", mFont);
     s.set("fontExplicit", mFontExplicit);
-    s.set("fontIsWindow", mFontIsWindow);
+    s.set("fontDefaultIsBold", mFontDefaultIsBold);
 }
 
 bool FontWidget::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("font", mFont)) return false;
     if (!s.get("fontExplicit", mFontExplicit)) return false;
-    if (!s.get("fontIsWindow", mFontIsWindow)) return false;
+    if (!s.get("fontDefaultIsBold", mFontDefaultIsBold)) return false;
     return true;
 }
 
 void FontWidget::setDefaultFont() {
     if (!mFontExplicit) {
-        if (mFontIsWindow) {
-            if (mTheme) mFont = mTheme->defaultWindowFont();
-            else        mFont = Theme::globalDefaultWindowFont();
+        if (mFontDefaultIsBold) {
+            if (mTheme) mFont = mTheme->defaultBoldFont();
+            else        mFont = Theme::globalDefaultBoldFont();
         }
         else {
             if (mTheme) mFont = mTheme->defaultFont();

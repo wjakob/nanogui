@@ -18,7 +18,7 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT FontWidget : public Widget {
 public:
-    FontWidget(Widget *parent, const std::string &font, bool isWindow = false);
+    FontWidget(Widget *parent, const std::string &font, bool fontDefaultIsBold);
 
     /**
      * \brief Set the font used to draw the text for this FontWidget.
@@ -61,17 +61,15 @@ protected:
 
 private:
     /**
-     * There are two default fonts in NanoGUI:
-     *
-     * 1. If the derived type of this FontWidget is \ref nanogui::Window, then
-     *    ``mFontIsWindow`` will be ``true``.  The default font face used will be
-     *    ``"sans-bold"`` (or \ref Theme::defaultWindowFont if using a derived
-     *    \ref Theme class).
-     * 2. If the derived type is anything else, then ``mFontIsWindow`` will be
-     *    ``false``.  The default font face used will be ``"sans"`` (or
-     *    \ref Theme::defaultFont if using a derived \ref Theme class).
+     * There are two default fonts in NanoGUI: ``"sans"`` and ``"sans-bold"``.
+     * When this variable is ``true``, the bold font will be used.  When
+     * ``false``, the regular font face will be used.  Subclasses are
+     * responsible for specifying this behavior when calling the parent class
+     * constructor (\ref FontWidget::FontWidget).  For example,
+     * \ref nanogui::Label will always set this to ``false``, whereas
+     * \ref nanogui::Button will always set this to ``true``.
      */
-    bool mFontIsWindow;
+    bool mFontDefaultIsBold;
 };
 
 NAMESPACE_END(nanogui)

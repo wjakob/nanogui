@@ -43,21 +43,29 @@ public:
      * what you are doing.
      */
     static std::string globalDefaultFont() { return "sans"; }
-    /// Similar to \ref globalDefaultFont, only ``sans-bold`` is used for \ref nanogui::Window.
-    static std::string globalDefaultWindowFont() { return "sans-bold"; }
-    /// The ``"sans"`` font.  Override in sub-classes to use a different font-face as the default.  Propagates to children.
+    /// Similar to \ref globalDefaultFont, only ``"sans-bold"`` is used.
+    static std::string globalDefaultBoldFont() { return "sans-bold"; }
+    /**
+     * The ``"sans"`` font.  Override in sub-classes to use a different
+     * font-face for widgets that use normal fonts by default (e.g.,
+     * \ref nanogui::Label).
+     */
     virtual std::string defaultFont() const { return Theme::globalDefaultFont(); }
-    /// The ``"sans-bold"`` font.  Override in sub-classes to use a different font-face for \ref nanogui::Window.
-    virtual std::string defaultWindowFont() const { return Theme::globalDefaultWindowFont(); }
-    /// The standard font face (default: ``"sans"`` from ``resources/Roboto-Regular.ttf``).
+    /**
+     * The ``"sans-bold"`` font.  Override in sub-classes to use a different
+     * font-face for widgets that use bold fonts by default (e.g.,
+     * \ref nanogui::Button).
+     */
+    virtual std::string defaultBoldFont() const { return Theme::globalDefaultBoldFont(); }
+    /// The standard font face: ``"sans"`` from ``resources/Roboto-Regular.ttf``.
     int mFontNormal;
-    /// The bold font face (default: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``).
+    /// The standard bold font face: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``.
     int mFontBold;
-    /// The standard monospace font face (default: ``"mono"`` from ``resources/RobotoMono-Regular.ttf``).
+    /// The standard monospace font face: ``"mono"`` from ``resources/RobotoMono-Regular.ttf``.
     int mFontMonoNormal;
-    /// The standard bold monospace font face (default: ``"mono-bold"`` from ``resources/RobotoMono-Bold.ttf``).
+    /// The standard bold monospace font face: ``"mono-bold"`` from ``resources/RobotoMono-Bold.ttf``.
     int mFontMonoBold;
-    /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
+    /// The icon font face: ``"icons"`` from ``resources/entypo.ttf``.
     int mFontIcons;
     /**
      * The amount of scaling that is applied to each icon to fit the size of
