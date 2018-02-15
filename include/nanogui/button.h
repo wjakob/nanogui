@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 
 NAMESPACE_BEGIN(nanogui)
 /**
@@ -22,7 +22,7 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief [Normal/Toggle/Radio/Popup] Button widget.
  */
-class NANOGUI_EXPORT Button : public Widget {
+class NANOGUI_EXPORT Button : public FontWidget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flags {
@@ -55,19 +55,13 @@ public:
      * \param font
      *     The font to use for this Button (default: ``"sans-bold"``).
      */
-    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0, const std::string &font = "sans-bold");
+    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0, const std::string &font = "");
 
     /// Returns the caption of this Button.
     const std::string &caption() const { return mCaption; }
 
     /// Sets the caption of this Button.
     void setCaption(const std::string &caption) { mCaption = caption; }
-
-    /// Get the currently active font.
-    const std::string &font() const { return mFont; }
-
-    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold').
-    void setFont(const std::string &font) { mFont = font; }
 
     /// Returns the background color of this Button.
     const Color &backgroundColor() const { return mBackgroundColor; }
@@ -141,9 +135,6 @@ public:
 protected:
     /// The caption of this Button.
     std::string mCaption;
-
-    /// The font of this Button (default value is ``"sans-bold"``).
-    std::string mFont;
 
     /**
      * \brief The icon of this Button (``0`` means no icon).

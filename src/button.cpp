@@ -17,7 +17,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 Button::Button(Widget *parent, const std::string &caption, int icon, const std::string &font)
-    : Widget(parent), mCaption(caption), mFont(font), mIcon(icon),
+    : FontWidget(parent, font, true), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
       mFlags(NormalButton), mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0)) { }
@@ -219,9 +219,8 @@ void Button::draw(NVGcontext *ctx) {
 }
 
 void Button::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("caption", mCaption);
-    s.set("font", mFont);
     s.set("icon", mIcon);
     s.set("iconPosition", (int) mIconPosition);
     s.set("pushed", mPushed);
@@ -231,9 +230,8 @@ void Button::save(Serializer &s) const {
 }
 
 bool Button::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
-    if (!s.get("font", mFont)) return false;
     if (!s.get("icon", mIcon)) return false;
     if (!s.get("iconPosition", mIconPosition)) return false;
     if (!s.get("pushed", mPushed)) return false;
