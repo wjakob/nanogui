@@ -18,8 +18,8 @@ NAMESPACE_BEGIN(nanogui)
 
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
                    const std::function<void(bool) > &callback, const std::string &font)
-    : Widget(parent), mCaption(caption), mFont(font), mPushed(false), mChecked(false),
-      mCallback(callback) {
+    : FontWidget(parent, font, false), mCaption(caption), mPushed(false),
+      mChecked(false), mCallback(callback) {
 
     mIconExtraScale = 1.2f;// widget override
 }
@@ -92,17 +92,15 @@ void CheckBox::draw(NVGcontext *ctx) {
 }
 
 void CheckBox::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("caption", mCaption);
-    s.set("font", mFont);
     s.set("pushed", mPushed);
     s.set("checked", mChecked);
 }
 
 bool CheckBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
-    if (!s.get("font", mFont)) return false;
     if (!s.get("pushed", mPushed)) return false;
     if (!s.get("checked", mChecked)) return false;
     return true;

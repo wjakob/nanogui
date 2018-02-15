@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -28,7 +28,7 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT CheckBox : public Widget {
+class NANOGUI_EXPORT CheckBox : public FontWidget {
 public:
     /**
      * Adds a CheckBox to the specified ``parent``.
@@ -50,19 +50,13 @@ public:
      */
     CheckBox(Widget *parent, const std::string &caption = "Untitled",
              const std::function<void(bool)> &callback = std::function<void(bool)>(),
-             const std::string &font = "sans");
+             const std::string &font = "");
 
     /// The caption of this CheckBox.
     const std::string &caption() const { return mCaption; }
 
     /// Sets the caption of this CheckBox.
     void setCaption(const std::string &caption) { mCaption = caption; }
-
-    /// Get the currently active font.
-    const std::string &font() const { return mFont; }
-
-    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold').
-    void setFont(const std::string &font) { mFont = font; }
 
     /// Whether or not this CheckBox is currently checked.
     const bool &checked() const { return mChecked; }
@@ -117,9 +111,6 @@ public:
 protected:
     /// The caption text of this CheckBox.
     std::string mCaption;
-
-    /// The font of this CheckBox (default value is ``"sans"``).
-    std::string mFont;
 
     /**
      * Internal tracking variable to distinguish between mouse click and release.
