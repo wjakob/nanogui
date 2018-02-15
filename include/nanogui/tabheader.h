@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 #include <vector>
 #include <string>
 #include <functional>
@@ -28,12 +28,10 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief A Tab navigable widget.
  */
-class NANOGUI_EXPORT TabHeader : public Widget {
+class NANOGUI_EXPORT TabHeader : public FontWidget {
 public:
-    TabHeader(Widget *parent, const std::string &font = "sans-bold");
+    TabHeader(Widget *parent, const std::string &font = "");
 
-    void setFont(const std::string& font) { mFont = font; }
-    const std::string& font() const { return mFont; }
     bool overflowing() const { return mOverflowing; }
 
     /**
@@ -173,7 +171,6 @@ private:
     int mActiveTab = 0;
     bool mOverflowing = false;
 
-    std::string mFont;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

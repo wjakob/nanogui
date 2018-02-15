@@ -147,7 +147,7 @@ void TabHeader::TabButton::drawInactiveBorderAt(NVGcontext *ctx, const Vector2i 
 
 
 TabHeader::TabHeader(Widget* parent, const std::string& font)
-    : Widget(parent), mFont(font) { }
+    : FontWidget(parent, font, true) { }
 
 void TabHeader::setActiveTab(int tabIndex) {
     assert(tabIndex < tabCount());
