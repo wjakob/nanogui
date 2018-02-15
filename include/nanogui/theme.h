@@ -31,6 +31,24 @@ public:
     Theme(NVGcontext *ctx);
 
     /* Fonts */
+    /**
+     * The ``"sans"`` font.  Some widgets allow for a user-specified font face
+     * (e.g., \ref nanogui::Label).  The default action is to use
+     * \ref Theme::defaultFont to set this, however in the event that a
+     * ``nanogui::Theme`` class is not available, this method is called instead.
+     * A ``nanogui::Theme`` class will not be available when no parent is
+     * specified.  For example,
+     * ``new nanogui::Label(nullptr, "Some Text")``.  Doing this is not
+     * explicitly forbidden, but is generally discouraged unless you really know
+     * what you are doing.
+     */
+    static std::string globalDefaultFont() { return "sans"; }
+    /// Similar to \ref globalDefaultFont, only ``sans-bold`` is used for \ref nanogui::Window.
+    static std::string globalDefaultWindowFont() { return "sans-bold"; }
+    /// The ``"sans"`` font.  Override in sub-classes to use a different font-face as the default.  Propagates to children.
+    virtual std::string defaultFont() const { return Theme::globalDefaultFont(); }
+    /// The ``"sans-bold"`` font.  Override in sub-classes to use a different font-face for \ref nanogui::Window.
+    virtual std::string defaultWindowFont() const { return Theme::globalDefaultWindowFont(); }
     /// The standard font face (default: ``"sans"`` from ``resources/Roboto-Regular.ttf``).
     int mFontNormal;
     /// The bold font face (default: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``).

@@ -19,7 +19,11 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title, const std::string &font)
-    : Widget(parent), mTitle(title), mFont(font), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+    : FontWidget(parent, font, true)
+    , mTitle(title)
+    , mButtonPanel(nullptr)
+    , mModal(false)
+    , mDrag(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -186,14 +190,14 @@ void Window::refreshRelativePlacement() {
 }
 
 void Window::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("title", mTitle);
     s.set("font", mFont);
     s.set("modal", mModal);
 }
 
 bool Window::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("title", mTitle)) return false;
     if (!s.get("font", mFont)) return false;
     if (!s.get("modal", mModal)) return false;

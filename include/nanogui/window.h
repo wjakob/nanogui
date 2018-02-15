@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -21,20 +21,28 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Top-level window widget.
  */
-class NANOGUI_EXPORT Window : public Widget {
+class NANOGUI_EXPORT Window : public FontWidget {
     friend class Popup;
 public:
-    Window(Widget *parent, const std::string &title = "Untitled", const std::string &font = "sans-bold");
+    /**
+     * \brief Creates a Window with the specified parent.
+     *
+     * \param parent
+     *     The parent of this Window (typically a \ref nanogui::Screen class).
+     *
+     * \param title
+     *     The title of the this Window.
+     *
+     * \param font
+     *     The font face to draw the Window title with.  If empty (``""``),
+     *     ``"sans-bold"`` will be used.
+     */
+    Window(Widget *parent, const std::string &title = "Untitled", const std::string &font = "");
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
     /// Set the window title
     void setTitle(const std::string &title) { mTitle = title; }
-
-    /// Get the font used to draw the title.
-    const std::string &font() const { return mFont; }
-    /// Set the font used to draw the title (2 are available by default: 'sans' and 'sans-bold').
-    void setFont(const std::string &font) { mFont = font; }
 
     /// Is this a model dialog?
     bool modal() const { return mModal; }
@@ -69,7 +77,6 @@ protected:
     virtual void refreshRelativePlacement();
 protected:
     std::string mTitle;
-    std::string mFont;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
