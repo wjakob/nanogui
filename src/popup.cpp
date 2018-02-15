@@ -20,6 +20,9 @@ NAMESPACE_BEGIN(nanogui)
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
       mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {
+    // Make sure the theme propagates to future children
+    if (mParentWindow)
+        this->setTheme(mParentWindow->theme());
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
