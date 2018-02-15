@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -21,17 +21,12 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple graph widget for showing a function plot.
  */
-class NANOGUI_EXPORT Graph : public Widget {
+class NANOGUI_EXPORT Graph : public FontWidget {
 public:
-    Graph(Widget *parent, const std::string &caption = "Untitled", const std::string &font = "sans");
+    Graph(Widget *parent, const std::string &caption = "Untitled", const std::string &font = "");
 
     const std::string &caption() const { return mCaption; }
     void setCaption(const std::string &caption) { mCaption = caption; }
-
-    /// Get the currently active font
-    const std::string &font() const { return mFont; }
-    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold')
-    void setFont(const std::string &font) { mFont = font; }
 
     const std::string &header() const { return mHeader; }
     void setHeader(const std::string &header) { mHeader = header; }
@@ -58,7 +53,7 @@ public:
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:
-    std::string mCaption, mFont, mHeader, mFooter;
+    std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
     VectorXf mValues;
 public:
