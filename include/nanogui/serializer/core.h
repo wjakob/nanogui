@@ -52,8 +52,19 @@ NAMESPACE_END(detail)
  * Note that this header file just provides the basics; the files
  * ``nanogui/serializer/opengl.h``, and ``nanogui/serializer/sparse.h`` must
  * be included to serialize the respective data types.
+ *
+ * \rst
+ * .. tip::
+ *
+ *    Refer to :ref:`nanogui_example_5` for possible usage of the Serializer
+ *    interface.  If trying to enable serialization of a custom widget, a good
+ *    starting place would be to look at the *implementation* of
+ *    :func:`Button::save <nanogui::Button::save>` and
+ *    :func:`Button::load <nanogui::Button::load>`.  The general theme: first
+ *    serialize the parent class, then serialize the derived class.
+ * \endrst
  */
-class Serializer {
+class NANOGUI_EXPORT Serializer {
 protected:
 // this friendship breaks the documentation
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

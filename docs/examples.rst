@@ -60,6 +60,22 @@ arbitrary sequence of OpenGL commands into a NanoGUI widget.
 - `Example 4 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example4.cpp>`_
 - `Example 4 in Python <https://github.com/wjakob/nanogui/blob/master/python/example4.py>`_
 
+.. _nanogui_example_5:
+
+Example 5
+----------------------------------------------------------------------------------------
+
+The fifth example program demonstrates the :class:`nanogui::Serializer` interface.  It
+serves as both an example of how to use "namespace" scoping with the serializer
+interface (via :func:`push <nanogui::Serializer::push>` and
+:func:`pop <nanogui::Serializer::pop>`), as well as a testing suite.  You will observe
+that some of the widgets do not serialize "correctly"; developers wishing to serialize
+a widget that does not work correctly are encouraged to use this example program to help
+test their new ``save`` and ``load`` methods and submit a pull request with the fixed
+saving and loading code.
+
+- `Example 5 in C++ <https://github.com/wjakob/nanogui/blob/master/src/example5.cpp>`_
+
 .. _nanogui_example_icons:
 
 Example Icons
