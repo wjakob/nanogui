@@ -68,13 +68,13 @@ static const char *__doc_nanogui_AdvancedGridLayout_Anchor_Anchor_3 =
 R"doc(Create an Anchor at position ``(x, y)`` of size ``(w, h)`` with
 specified alignments.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc(< The ``(x, y)`` Alignment.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_align = R"doc(The ``(x, y)`` Alignment.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_operator_basic_string = R"doc(Allows for printing out Anchor position, size, and alignment.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_operator_int = R"doc(Allows for printing out Anchor position, size, and alignment.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc(< The ``(x, y)`` position.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_pos = R"doc(The ``(x, y)`` position.)doc";
 
-static const char *__doc_nanogui_AdvancedGridLayout_Anchor_size = R"doc(< The ``(x, y)`` size.)doc";
+static const char *__doc_nanogui_AdvancedGridLayout_Anchor_size = R"doc(The ``(x, y)`` size.)doc";
 
 static const char *__doc_nanogui_AdvancedGridLayout_anchor = R"doc(Retrieve the anchor data structure for a given widget)doc";
 
@@ -116,39 +116,175 @@ static const char *__doc_nanogui_AdvancedGridLayout_setRowStretch = R"doc(Set th
 
 static const char *__doc_nanogui_Alignment = R"doc(The different kinds of alignments a layout can perform.)doc";
 
-static const char *__doc_nanogui_Alignment_Fill = R"doc(< Fill according to preferred sizes.)doc";
+static const char *__doc_nanogui_Alignment_Fill = R"doc(Fill according to preferred sizes.)doc";
 
-static const char *__doc_nanogui_Alignment_Maximum = R"doc(< Take as much space as is allowed.)doc";
+static const char *__doc_nanogui_Alignment_Maximum = R"doc(Take as much space as is allowed.)doc";
 
-static const char *__doc_nanogui_Alignment_Middle = R"doc(< Center align.)doc";
+static const char *__doc_nanogui_Alignment_Middle = R"doc(Center align.)doc";
 
-static const char *__doc_nanogui_Alignment_Minimum = R"doc(< Take only as much space as is required.)doc";
+static const char *__doc_nanogui_Alignment_Minimum = R"doc(Take only as much space as is required.)doc";
 
-static const char *__doc_nanogui_Arcball = R"doc(Arcball helper class to interactively rotate objects on-screen.)doc";
+static const char *__doc_nanogui_Arcball =
+R"doc(Arcball helper class to interactively rotate objects on-screen.
 
-static const char *__doc_nanogui_Arcball_Arcball = R"doc()doc";
+The Arcball class enables fluid interaction by representing rotations
+using a quaternion, and is setup to be used in conjunction with the
+existing mouse callbacks defined in nanogui::Widget. The Arcball
+operates by maintaining an "active" state which is typically
+controlled using a mouse button click / release. A click pressed would
+call Arcball::button with ``down = true``, and a click released with
+``down = false``. The high level mechanics are:
 
-static const char *__doc_nanogui_Arcball_Arcball_2 = R"doc()doc";
+1. The Arcball is made active by calling Arcball::button with a
+specified click location, and ``down = true``. 2. As the user holds
+the mouse button down and drags, calls to Arcball::motion are issued.
+Internally, the Arcball keeps track of how far the rotation is from
+the start click. During the active state, mQuat is not updated, call
+Arcball::matrix to get the current rotation for use in drawing
+updates. Receiving the rotation as a matrix will usually be more
+convenient for traditional pipelines, however you can also acquire the
+active rotation using Arcball::activeState. 3. The user releases the
+mouse button, and a call to Arcball::button with ``down = false``. The
+Arcball is no longer active, and its internal mQuat is updated.
 
-static const char *__doc_nanogui_Arcball_active = R"doc()doc";
+A very simple nanogui::Screen derived class to illustrate usage:
 
-static const char *__doc_nanogui_Arcball_button = R"doc()doc";
+```
+class ArcballScreen : public nanogui::Screen {
+public:
+    // Creating a 400x400 window
+    ArcballScreen() : nanogui::Screen({400, 400}, "ArcballDemo") {
+        mArcball.setSize(mSize);// Note 1
+    }
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
+        // In this example, we are using the left mouse button
+        // to control the arcball motion
+        if (button == GLFW_MOUSE_BUTTON_1) {
+            mArcball.button(p, down);// Note 2
+            return true;
+        }
+        return false;
+    }
+    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override {
+        if (button == GLFW_MOUSE_BUTTON_1) {
+            mArcball.motion(p);// Note 2
+            return true;
+        }
+        return false;
+    }
+    virtual void drawContents() override {
+        // Option 1: acquire a 4x4 homogeneous rotation matrix
+        Matrix4f rotation = mArcball.matrix();
+        // Option 2: acquire an equivalent quaternion
+        Quaternionf rotation = mArcball.activeState();
+        // ... do some drawing with the current rotation ...
+    }
+protected:
+    nanogui::Arcball mArcball;
+};
+**Note 1**
+ The user is responsible for setting the size with
+ :func:`Arcball::setSize <nanogui::Arcball::setSize>`, this does **not**
+ need to be the same as the Screen dimensions (e.g., you are using the
+ Arcball to control a specific ``glViewport``).
+**Note 2**
+ Be aware that the input vector ``p`` to
+ :func:`Widget::mouseButtonEvent <nanogui::Widget::mouseButtonEvent>`
+ and :func:`Widget::mouseMotionEvent <nanogui::Widget::mouseMotionEvent>`
+ are in the coordinates of the Screen dimensions (top left is ``(0, 0)``,
+ bottom right is ``(width, height)``).  If you are using the Arcball to
+ control a subregion of the Screen, you will want to transform the input
+ ``p`` before calling :func:`Arcball::button <nanogui::Arcball::button>`
+ or :func:`Arcball::motion <nanogui::Arcball::motion>`.  For example, if
+ controlling the right half of the screen, you might create
+ ``Vector2i adjusted_click(p.x() - (mSize.x() / 2), p.y())``, and then
+ call ``mArcball.motion(adjusted_click)``.
 
-static const char *__doc_nanogui_Arcball_mActive = R"doc()doc";
+```)doc";
 
-static const char *__doc_nanogui_Arcball_mIncr = R"doc()doc";
+static const char *__doc_nanogui_Arcball_Arcball =
+R"doc(The default constructor.
 
-static const char *__doc_nanogui_Arcball_mLastPos = R"doc()doc";
+```
+Note:
+Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
+after construction.
 
-static const char *__doc_nanogui_Arcball_mQuat = R"doc()doc";
+```
 
-static const char *__doc_nanogui_Arcball_mSize = R"doc()doc";
+Parameter ``speedFactor``:
+    The speed at which the Arcball rotates (default: ``2.0``). See
+    also mSpeedFactor.)doc";
 
-static const char *__doc_nanogui_Arcball_mSpeedFactor = R"doc()doc";
+static const char *__doc_nanogui_Arcball_Arcball_2 =
+R"doc(Constructs an Arcball based off of the specified rotation.
 
-static const char *__doc_nanogui_Arcball_matrix = R"doc()doc";
+```
+Note:
+Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
+after construction.
 
-static const char *__doc_nanogui_Arcball_motion = R"doc()doc";
+```)doc";
+
+static const char *__doc_nanogui_Arcball_active = R"doc(Returns whether or not this Arcball is currently active.)doc";
+
+static const char *__doc_nanogui_Arcball_activeState = R"doc(Returns the current rotation *including* the active motion.)doc";
+
+static const char *__doc_nanogui_Arcball_button =
+R"doc(Signals a state change from active to non-active, or vice-versa.
+
+Parameter ``pos``:
+    The click location, should be in the same coordinate system as
+    specified by mSize.
+
+Parameter ``pressed``:
+    When ``True``, this Arcball becomes active. When ``False``, this
+    Arcball becomes non-active, and its internal mQuat is updated with
+    the final rotation.)doc";
+
+static const char *__doc_nanogui_Arcball_interrupt =
+R"doc(Interrupts the current Arcball motion by calling Arcball::button with
+``(0, 0)`` and ``False``.
+
+Use this method to "close" the state of the Arcball when a mouse
+release event is not available. You would use this method if you need
+to stop the Arcball from updating its internal rotation, but the event
+stopping the rotation does **not** come from a mouse release. For
+example, you have a callback that created a nanogui::MessageDialog
+which will now be in focus.)doc";
+
+static const char *__doc_nanogui_Arcball_mActive = R"doc(Whether or not this Arcball is currently active.)doc";
+
+static const char *__doc_nanogui_Arcball_mIncr =
+R"doc(When active, tracks the overall update to the state. Identity when
+non-active.)doc";
+
+static const char *__doc_nanogui_Arcball_mLastPos =
+R"doc(The last click position (which triggered the Arcball to be active /
+non-active).)doc";
+
+static const char *__doc_nanogui_Arcball_mQuat =
+R"doc(The current stable state. When this Arcball is active, represents the
+state of this Arcball when Arcball::button was called with ``down =
+true``.)doc";
+
+static const char *__doc_nanogui_Arcball_mSize = R"doc(The size of this Arcball.)doc";
+
+static const char *__doc_nanogui_Arcball_mSpeedFactor =
+R"doc(The speed at which this Arcball rotates. Smaller values mean it
+rotates more slowly, higher values mean it rotates more quickly.)doc";
+
+static const char *__doc_nanogui_Arcball_matrix =
+R"doc(Returns the current rotation *including* the active motion, suitable
+for use with typical homogeneous matrix transformations. The upper
+left 3x3 block is the rotation matrix, with 0-0-0-1 as the right-most
+column / bottom row.)doc";
+
+static const char *__doc_nanogui_Arcball_motion =
+R"doc(When active, updates mIncr corresponding to the specified position.
+
+Parameter ``pos``:
+    Where the mouse has been dragged to.)doc";
 
 static const char *__doc_nanogui_Arcball_operator_delete = R"doc()doc";
 
@@ -174,17 +310,29 @@ static const char *__doc_nanogui_Arcball_operator_new_4 = R"doc()doc";
 
 static const char *__doc_nanogui_Arcball_operator_new_5 = R"doc()doc";
 
-static const char *__doc_nanogui_Arcball_setSize = R"doc()doc";
+static const char *__doc_nanogui_Arcball_setSize =
+R"doc(Sets the size of this Arcball.
 
-static const char *__doc_nanogui_Arcball_setSpeedFactor = R"doc()doc";
+The size of the Arcball and the positions being provided in
+Arcball::button and Arcball::motion are directly related.)doc";
 
-static const char *__doc_nanogui_Arcball_setState = R"doc()doc";
+static const char *__doc_nanogui_Arcball_setSpeedFactor = R"doc(Sets the speed at which this Arcball rotates. See also mSpeedFactor.)doc";
 
-static const char *__doc_nanogui_Arcball_size = R"doc()doc";
+static const char *__doc_nanogui_Arcball_setState =
+R"doc(Sets the rotation of this Arcball. The Arcball will be marked as
+**not** active.)doc";
 
-static const char *__doc_nanogui_Arcball_speedFactor = R"doc()doc";
+static const char *__doc_nanogui_Arcball_size = R"doc(Returns the current size of this Arcball.)doc";
 
-static const char *__doc_nanogui_Arcball_state = R"doc()doc";
+static const char *__doc_nanogui_Arcball_speedFactor = R"doc(Returns the current speed at which this Arcball rotates.)doc";
+
+static const char *__doc_nanogui_Arcball_state =
+R"doc(The internal rotation of the Arcball.
+
+Call Arcball::matrix for drawing loops, this method will not return
+any updates while mActive is ``True``.)doc";
+
+static const char *__doc_nanogui_Arcball_state_2 = R"doc(``const`` version of Arcball::state.)doc";
 
 static const char *__doc_nanogui_BoxLayout =
 R"doc(Simple horizontal/vertical box layout
@@ -253,23 +401,23 @@ Parameter ``icon``:
 
 static const char *__doc_nanogui_Button_Flags = R"doc(Flags to specify the button behavior (can be combined with binary OR))doc";
 
-static const char *__doc_nanogui_Button_Flags_NormalButton = R"doc(< A normal Button.)doc";
+static const char *__doc_nanogui_Button_Flags_NormalButton = R"doc(A normal Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_PopupButton = R"doc(< A popup Button.)doc";
+static const char *__doc_nanogui_Button_Flags_PopupButton = R"doc(A popup Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc(< A radio Button.)doc";
+static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc(A radio Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc(< A toggle Button.)doc";
+static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc(A toggle Button.)doc";
 
 static const char *__doc_nanogui_Button_IconPosition = R"doc(The available icon positions.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_Left = R"doc(< Button icon on the far left.)doc";
+static const char *__doc_nanogui_Button_IconPosition_Left = R"doc(Button icon on the far left.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_LeftCentered = R"doc(< Button icon on the left, centered (depends on caption text length).)doc";
+static const char *__doc_nanogui_Button_IconPosition_LeftCentered = R"doc(Button icon on the left, centered (depends on caption text length).)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_Right = R"doc(< Button icon on the far right.)doc";
+static const char *__doc_nanogui_Button_IconPosition_Right = R"doc(Button icon on the far right.)doc";
 
-static const char *__doc_nanogui_Button_IconPosition_RightCentered = R"doc(< Button icon on the right, centered (depends on caption text length).)doc";
+static const char *__doc_nanogui_Button_IconPosition_RightCentered = R"doc(Button icon on the right, centered (depends on caption text length).)doc";
 
 static const char *__doc_nanogui_Button_backgroundColor = R"doc(Returns the background color of this Button.)doc";
 
@@ -932,21 +1080,21 @@ static const char *__doc_nanogui_Cursor =
 R"doc(Cursor shapes available to use in GLFW. Shape of actual cursor
 determined by Operating System.)doc";
 
-static const char *__doc_nanogui_Cursor_Arrow = R"doc(< The arrow cursor.)doc";
+static const char *__doc_nanogui_Cursor_Arrow = R"doc(The arrow cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_Crosshair = R"doc(< The crosshair cursor.)doc";
+static const char *__doc_nanogui_Cursor_Crosshair = R"doc(The crosshair cursor.)doc";
 
 static const char *__doc_nanogui_Cursor_CursorCount =
-R"doc(< Not a cursor --- should always be last: enables a loop over the
-cursor types.)doc";
+R"doc(Not a cursor --- should always be last: enables a loop over the cursor
+types.)doc";
 
-static const char *__doc_nanogui_Cursor_HResize = R"doc(< The horizontal resize cursor.)doc";
+static const char *__doc_nanogui_Cursor_HResize = R"doc(The horizontal resize cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_Hand = R"doc(< The hand cursor.)doc";
+static const char *__doc_nanogui_Cursor_Hand = R"doc(The hand cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_IBeam = R"doc(< The I-beam cursor.)doc";
+static const char *__doc_nanogui_Cursor_IBeam = R"doc(The I-beam cursor.)doc";
 
-static const char *__doc_nanogui_Cursor_VResize = R"doc(< The vertical resize cursor.)doc";
+static const char *__doc_nanogui_Cursor_VResize = R"doc(The vertical resize cursor.)doc";
 
 static const char *__doc_nanogui_FloatBox =
 R"doc(A specialization of TextBox representing floating point values.
@@ -1031,9 +1179,9 @@ h->addGroup("Group 1");
 h->addVariable("integer variable", aInt);
 // Expose a float variable via setter/getter functions
 h->addVariable(
-[&](float value) { aFloat = value; },
-[&]() { return *aFloat; },
-"float variable");
+  [&](float value) { aFloat = value; },
+  [&]() { return *aFloat; },
+  "float variable");
 // add a new button
 h->addButton("Button", [&]() { std::cout << "Button pressed" << std::endl; });
 
@@ -1148,8 +1296,8 @@ that rendered objects don't spill into neighboring widgets.
 
 ```
 **Usage**
-Override :func:`nanogui::GLCanvas::drawGL` in subclasses to provide
-custom drawing code.  See :ref:`nanogui_example_4`.
+ Override :func:`nanogui::GLCanvas::drawGL` in subclasses to provide
+ custom drawing code.  See :ref:`nanogui_example_4`.
 
 ```)doc";
 
@@ -1269,19 +1417,20 @@ associated vertex and index buffers from Eigen matrices.)doc";
 
 static const char *__doc_nanogui_GLShader_Buffer =
 R"doc(A wrapper struct for maintaining various aspects of items being
-managed by OpenGL.)doc";
+managed by OpenGL. Buffers are created when GLShader::uploadAttrib is
+called.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_compSize = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_compSize = R"doc(The size (in bytes) of an individual element in this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_dim = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_dim = R"doc(The dimension of this buffer (typically the row width).)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_glType = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_glType = R"doc(The OpenGL type of this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_id = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_id = R"doc(The identifier used with OpenGL.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_size = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_size = R"doc(The total number of elements represented by this buffer.)doc";
 
-static const char *__doc_nanogui_GLShader_Buffer_version = R"doc()doc";
+static const char *__doc_nanogui_GLShader_Buffer_version = R"doc(The current version if this buffer.)doc";
 
 static const char *__doc_nanogui_GLShader_GLShader = R"doc(Create an unitialized OpenGL shader)doc";
 
@@ -1289,13 +1438,52 @@ static const char *__doc_nanogui_GLShader_attrib =
 R"doc(Return the handle of a named shader attribute (-1 if it does not
 exist))doc";
 
+static const char *__doc_nanogui_GLShader_attribBuffer =
+R"doc((Advanced) Returns a reference to the specified GLShader::Buffer.
+
+```
+Danger:
+Extreme caution must be exercised when using this method.  The user is
+discouraged from explicitly storing the reference returned, as it can
+change, become deprecated, or no longer reside in
+:member:`mBufferObjects <nanogui::GLShader::mBufferObjects>`.
+There are generally very few use cases that justify using this method
+directly.  For example, if you need the version of a buffer, call
+:func:`attribVersion <nanogui::GLShader::attribVersion>`.  If you want
+to share data between :class:`GLShader <nanogui::GLShader>` objects,
+call :func:`shareAttrib <nanogui::GLShader::shareAttrib>`.
+One example use case for this method is sharing data between different
+GPU pipelines such as CUDA or OpenCL.  When sharing data, you
+typically need to map pointers between the API's.  The returned
+buffer's :member:`Buffer::id <nanogui::GLShader::Buffer::id>` is the
+``GLuint`` you will want to map to the other API.
+In short, only use this method if you absolutely need to.
+
+```
+
+Parameter ``name``:
+    The name of the desired attribute.
+
+Returns:
+    A reference to the current buffer associated with ``name``. Should
+    not be explicitly stored.
+
+Throws:
+    std::runtime_error If ``name`` is not found.)doc";
+
 static const char *__doc_nanogui_GLShader_attribVersion = R"doc(Return the version number of a given attribute)doc";
 
-static const char *__doc_nanogui_GLShader_bind = R"doc(Select this shader for subsequent draw calls)doc";
+static const char *__doc_nanogui_GLShader_bind =
+R"doc(Select this shader for subsequent draw calls. Simply executes
+``glUseProgram`` with mProgramShader, and ``glBindVertexArray`` with
+mVertexArrayObject.)doc";
 
 static const char *__doc_nanogui_GLShader_bufferSize = R"doc(Return the size of all registered buffers in bytes)doc";
 
-static const char *__doc_nanogui_GLShader_define = R"doc(Set a preprocessor definition)doc";
+static const char *__doc_nanogui_GLShader_define =
+R"doc(Set a preprocessor definition. Custom preprocessor definitions must be
+added **before** initializing the shader (e.g., via initFromFiles).
+See also: mDefinitions.)doc";
 
 static const char *__doc_nanogui_GLShader_downloadAttrib = R"doc(Download a vertex buffer object into an Eigen matrix)doc";
 
@@ -1347,21 +1535,39 @@ Parameter ``geometry_fname``:
 
 static const char *__doc_nanogui_GLShader_invalidateAttribs = R"doc(Invalidate the version numbers associated with attribute data)doc";
 
-static const char *__doc_nanogui_GLShader_mBufferObjects = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mBufferObjects =
+R"doc(The map of string names to buffer objects representing the various
+attributes that have been uploaded using uploadAttrib.)doc";
 
-static const char *__doc_nanogui_GLShader_mDefinitions = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mDefinitions =
+R"doc(```
+The map of preprocessor names to values (if any have been created).  If
+a definition was added seeking to create ``#define WIDTH 256``, the key
+would be ``"WIDTH"`` and the value would be ``"256"``.  These definitions
+will be included automatically in the string that gets compiled for the
+vertex, geometry, and fragment shader code.
 
-static const char *__doc_nanogui_GLShader_mFragmentShader = R"doc()doc";
+```)doc";
 
-static const char *__doc_nanogui_GLShader_mGeometryShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mFragmentShader =
+R"doc(The fragment shader of this GLShader (as returned by
+``glCreateShader``).)doc";
 
-static const char *__doc_nanogui_GLShader_mName = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mGeometryShader =
+R"doc(The geometry shader (if requested) of this GLShader (as returned by
+``glCreateShader``).)doc";
 
-static const char *__doc_nanogui_GLShader_mProgramShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mName = R"doc(The registered name of this GLShader.)doc";
 
-static const char *__doc_nanogui_GLShader_mVertexArrayObject = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mProgramShader = R"doc(The OpenGL program (as returned by ``glCreateProgram``).)doc";
 
-static const char *__doc_nanogui_GLShader_mVertexShader = R"doc()doc";
+static const char *__doc_nanogui_GLShader_mVertexArrayObject =
+R"doc(The vertex array associated with this GLShader (as returned by
+``glGenVertexArrays``).)doc";
+
+static const char *__doc_nanogui_GLShader_mVertexShader =
+R"doc(The vertex shader of this GLShader (as returned by
+``glCreateShader``).)doc";
 
 static const char *__doc_nanogui_GLShader_name = R"doc(Return the name of the shader)doc";
 
@@ -2125,9 +2331,9 @@ static const char *__doc_nanogui_Object_m_refCount = R"doc()doc";
 
 static const char *__doc_nanogui_Orientation = R"doc(The direction of data flow for a layout.)doc";
 
-static const char *__doc_nanogui_Orientation_Horizontal = R"doc(< Layout expands on horizontal axis.)doc";
+static const char *__doc_nanogui_Orientation_Horizontal = R"doc(Layout expands on horizontal axis.)doc";
 
-static const char *__doc_nanogui_Orientation_Vertical = R"doc(< Layout expands on vertical axis.)doc";
+static const char *__doc_nanogui_Orientation_Vertical = R"doc(Layout expands on vertical axis.)doc";
 
 static const char *__doc_nanogui_Popup =
 R"doc(Popup window for combo boxes, popup buttons, nested dialogs etc.
@@ -3525,18 +3731,18 @@ Note:
 When using ``nvgFontSize`` for icons in subclasses, make sure to call
 the :func:`nanogui::Widget::icon_scale` function.  Expected usage when
 *drawing* icon fonts is something like:
-virtual void draw(NVGcontext *ctx) {
-// fontSize depends on the kind of Widget.  Search for `FontSize`
-// in the Theme class (e.g., standard vs button)
-float ih = fontSize;
-// assuming your Widget has a declared `mIcon`
-if (nvgIsFontIcon(mIcon)) {
-ih *= icon_scale();
-nvgFontFace(ctx, "icons");
-nvgFontSize(ctx, ih);
-/// remaining drawing code (see button.cpp for more)
-}
-}
+   virtual void draw(NVGcontext *ctx) {
+       // fontSize depends on the kind of Widget.  Search for `FontSize`
+       // in the Theme class (e.g., standard vs button)
+       float ih = fontSize;
+       // assuming your Widget has a declared `mIcon`
+       if (nvgIsFontIcon(mIcon)) {
+           ih *= icon_scale();
+           nvgFontFace(ctx, "icons");
+           nvgFontSize(ctx, ih);
+           /// remaining drawing code (see button.cpp for more)
+       }
+   }
 
 ```)doc";
 

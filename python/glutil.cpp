@@ -135,7 +135,17 @@ void register_glutil(py::module &m) {
              D(GLShader, drawIndexed), py::arg("type"),
              py::arg("offset"), py::arg("count"))
         .def("setUniform", &setUniformPy, py::arg("name"),
-             py::arg("value"), py::arg("warn") = true);
+             py::arg("value"), py::arg("warn") = true)
+        .def("attribBuffer", &GLShader::attribBuffer, D(GLShader, attribBuffer));
+
+    py::class_<GLShader::Buffer>(m, "Buffer", D(GLShader, Buffer))
+        .def(py::init<>())
+        .def_readonly("id", &GLShader::Buffer::id, D(GLShader, Buffer, id))
+        .def_readonly("glType", &GLShader::Buffer::glType, D(GLShader, Buffer, glType))
+        .def_readonly("dim", &GLShader::Buffer::dim, D(GLShader, Buffer, dim))
+        .def_readonly("compSize", &GLShader::Buffer::compSize, D(GLShader, Buffer, compSize))
+        .def_readonly("size", &GLShader::Buffer::size, D(GLShader, Buffer, size))
+        .def_readonly("version", &GLShader::Buffer::version, D(GLShader, Buffer, version));
 
     py::class_<Arcball>(m, "Arcball", D(Arcball))
         .def(py::init<float>(), py::arg("speedFactor") = 2.f, D(Arcball, Arcball))
@@ -149,7 +159,9 @@ void register_glutil(py::module &m) {
         .def("active", &Arcball::active, D(Arcball, active))
         .def("button", &Arcball::button, py::arg("pos"), py::arg("pressed"), D(Arcball, button))
         .def("motion", &Arcball::motion, py::arg("pos"), D(Arcball, motion))
-        .def("matrix", &Arcball::matrix, D(Arcball, matrix));
+        .def("matrix", &Arcball::matrix, D(Arcball, matrix))
+        .def("activeState", &Arcball::activeState, D(Arcball, activeState))
+        .def("interrupt", &Arcball::interrupt, D(Arcball, interrupt));
 
     m.def("project", &project, py::arg("obj"), py::arg("model"),
           py::arg("proj"), py::arg("viewportSize"), D(project));

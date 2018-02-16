@@ -14,6 +14,7 @@
 #        s = re.sub(r'\\endrst', r'```\n\n', s)
 #        s = re.sub(r'.. note::', r'Note:', s)
 #        s = re.sub(r'.. warning::', r'Warning:', s)
+#        s = re.sub(r'.. danger::', r'Danger:', s)
 #        s = re.sub(r'.. code-block::\s*\w*', r'', s)
 #
 #  - process_comment: near the end, have to treat .. code-block:: specially
@@ -39,22 +40,39 @@ import platform
 import re
 import textwrap
 
-# This file is tailored to the NanoGUI documentation build system, the clang
-# module required is present in a full recursive clone here.
-base_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-clang_parent_folder = os.path.join(base_path, "ext/pybind11/tools/")
-if not os.path.isdir(clang_parent_folder):
-    raise RuntimeError(
-         "The NanoGUI dependencies repository (pybind11, etc.) appear to be missing!\n"
-         "You probably did not clone the project with --recursive. It is possible to recover\n"
-         "by calling 'git submodule update --init --recursive'"
-    )
-else:
-    sys.path.insert(0, clang_parent_folder)
+# CMake generated target is explicitly calling `python3`, this sanity check is
+# to support the fact that some `pip3` installable `clang` libraries are
+# packaged for python3, but only actually work in python2.
+if sys.version[0] != "3":
+    raise RuntimeError("`mkdoc_rst.py` must be run with Python3.")
 
-# Now we can import clang
-from clang import cindex
-from clang.cindex import CursorKind
+
+# If user has `clang` already installed, try and use that.  There are a couple
+# of unofficial options for python **3**, two that seem to work are `clang-5`
+# and `libclang-py3`.  It likely depends on what you have installed on your
+# system, so your mileage will very likely vary.
+try:
+    from clang import cindex
+    from clang.cindex import CursorKind
+except:
+    # Fallback on pybind11
+    # This file is tailored to the NanoGUI documentation build system, the clang
+    # module required is present in a full recursive clone here.
+    base_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    clang_parent_folder = os.path.join(base_path, "ext/pybind11/tools/")
+    if not os.path.isdir(clang_parent_folder):
+        raise RuntimeError(
+             "The NanoGUI dependencies repository (pybind11, etc.) appear to be missing!\n"
+             "You probably did not clone the project with --recursive. It is possible to recover\n"
+             "by calling 'git submodule update --init --recursive'"
+        )
+    else:
+        sys.path.insert(0, clang_parent_folder)
+
+    # Now we can import clang
+    from clang import cindex
+    from clang.cindex import CursorKind
+
 from collections import OrderedDict
 from threading import Thread, Semaphore
 from multiprocessing import cpu_count
@@ -102,7 +120,14 @@ registered_names = dict()
 
 
 def d(s):
-    return s.decode('utf8')
+    if type(s) is bytes:
+        return s.decode('utf8')
+    elif type(s) is str:
+        return s
+    else:
+        raise RuntimeError(
+            "d(s): `s` cannot be decoded, it's type is: {0}".format(type(s))
+        )
 
 
 def sanitize_name(name):
@@ -132,6 +157,8 @@ def process_comment(comment):
             s = s[2:].lstrip('*')
         elif s.endswith('*/'):
             s = s[:-2].rstrip('*')
+        elif s.startswith('///<'):
+            s = s[4:]
         elif s.startswith('///'):
             s = s[3:]
         if s.startswith('*'):
@@ -158,6 +185,7 @@ def process_comment(comment):
     s = re.sub(r'\\endrst', r'```\n\n', s)
     s = re.sub(r'.. note::', r'Note:', s)
     s = re.sub(r'.. warning::', r'Warning:', s)
+    s = re.sub(r'.. danger::', r'Danger:', s)
     s = re.sub(r'.. code-block::\s*\w*', r'', s)
 
     s = re.sub(r'\\c\s+%s' % cpp_group, r'``\1``', s)
@@ -181,8 +209,8 @@ def process_comment(comment):
         'sa': 'See also',
         'see': 'See also',
         'extends': 'Extends',
-        'throw': 'Throws',
-        'throws': 'Throws'
+        'throws': 'Throws',
+        'throw': 'Throws'
     }.items():
         s = re.sub(r'\\%s\s*' % in_, r'\n\n$%s:\n\n' % out_, s)
 
@@ -229,9 +257,10 @@ def process_comment(comment):
                 if len(line) < 4:
                     result += line.strip()
                 else:
-                    # this is a .. code-block:: indentation (three spaces)
-                    if line.startswith('   ') and line[3] != ' ':
-                        result += line[3:].strip() + '\n'
+                    # this is a .. code-block:: indentation (three spaces),
+                    # strip leading three spaces, preserve remaining indentation
+                    if line.startswith('   '):
+                        result += line[3:].rstrip() + '\n'
                     else:
                         result += line.strip() + '\n'
         else:

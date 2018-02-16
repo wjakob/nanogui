@@ -296,6 +296,15 @@ void GLShader::free() {
     glDeleteShader(mGeometryShader); mGeometryShader = 0;
 }
 
+const GLShader::Buffer &GLShader::attribBuffer(const std::string &name) {
+    for (auto &pair : mBufferObjects) {
+        if (pair.first == name)
+            return pair.second;
+    }
+
+    throw std::runtime_error(mName + ": attribBuffer: " + name + " not found!");
+}
+
 //  ----------------------------------------------------
 
 void GLUniformBuffer::init() {
