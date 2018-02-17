@@ -58,7 +58,9 @@ void Window::performLayout(NVGcontext *ctx) {
         Widget::performLayout(ctx);
         for (auto w : mButtonPanel->children()) {
             w->setFixedSize(Vector2i(22, 22));
-            w->setFontSize(15);
+            auto *fw = dynamic_cast<FontWidget *>(w);
+            if (fw)
+                fw->setFontSize(15);
         }
         mButtonPanel->setVisible(true);
         mButtonPanel->setSize(Vector2i(width(), 22));

@@ -6,6 +6,7 @@ NAMESPACE_BEGIN(nanogui)
 FontWidget::FontWidget(Widget *parent, const std::string &font, bool fontDefaultIsBold)
     : Widget(parent)
     , mFont(font)
+    , mFontSize(-1)
     , mFontExplicit(font != "")
     , mFontDefaultIsBold(fontDefaultIsBold) {
 
@@ -22,9 +23,14 @@ void FontWidget::setTheme(Theme *theme) {
     setDefaultFont();
 }
 
+int FontWidget::fontSize() const {
+    return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
+}
+
 void FontWidget::save(Serializer &s) const {
     Widget::save(s);
     s.set("font", mFont);
+    s.set("fontSize", mFontSize);
     s.set("fontExplicit", mFontExplicit);
     s.set("fontDefaultIsBold", mFontDefaultIsBold);
 }
@@ -32,6 +38,7 @@ void FontWidget::save(Serializer &s) const {
 bool FontWidget::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("font", mFont)) return false;
+    if (!s.get("fontSize", mFontSize)) return false;
     if (!s.get("fontExplicit", mFontExplicit)) return false;
     if (!s.get("fontDefaultIsBold", mFontDefaultIsBold)) return false;
     return true;

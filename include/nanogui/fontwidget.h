@@ -35,6 +35,15 @@ public:
     /// Get the font used to draw the text for this FontWidget.
     const std::string &font() const { return mFont; }
 
+    /// Return current font size. If not set the default of the current theme will be returned
+    int fontSize() const;
+
+    /// Set the font size of this widget
+    void setFontSize(int fontSize) { mFontSize = fontSize; }
+
+    /// Return whether the font size is explicitly specified for this widget
+    bool hasFontSize() const { return mFontSize > 0; }
+
     /**
      * Set the \ref Theme used to draw this widget.  If \ref mFontExplicit is ``false``
      * then the \ref Theme::defaultWindowFont will overwrite \ref mFont.
@@ -50,6 +59,14 @@ protected:
 
     /// The current font face being used to draw text.
     std::string mFont;
+
+    /**
+     * Used to set the font size of a widget explicitly.  The initial value is
+     * ``-1``, and a negative number indicates that the theme's font size should
+     * be used instead.  Specifically, \ref fontSize will return
+     * \ref Theme::mStandardFontSize when ``mFontSize < 0``.
+     */
+    int mFontSize;
 
     /**
      * When the font is specified either via the constructor or \ref setFont,

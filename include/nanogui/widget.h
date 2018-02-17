@@ -186,13 +186,6 @@ public:
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
-    /// Return current font size. If not set the default of the current theme will be returned
-    int fontSize() const;
-    /// Set the font size of this widget
-    void setFontSize(int fontSize) { mFontSize = fontSize; }
-    /// Return whether the font size is explicitly specified for this widget
-    bool hasFontSize() const { return mFontSize > 0; }
-
     /**
      * The amount of extra scaling applied to *icon* fonts.
      * See \ref nanogui::Widget::mIconExtraScale.
@@ -297,7 +290,6 @@ protected:
     bool mEnabled;
     bool mFocused, mMouseFocus;
     std::string mTooltip;
-    int mFontSize;
 
     /**
      * \brief The amount of extra icon scaling used in addition the the theme's
