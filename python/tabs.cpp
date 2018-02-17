@@ -12,10 +12,8 @@ void register_tabs(py::module &m) {
         .def("selectedIndex", &StackedWidget::selectedIndex, D(StackedWidget, selectedIndex))
         .def("setSelectedIndex", &StackedWidget::setSelectedIndex, D(StackedWidget, setSelectedIndex));
 
-    py::class_<TabHeader, Widget, ref<TabHeader>, PyTabHeader>(m, "TabHeader", D(TabHeader))
+    py::class_<TabHeader, FontWidget, ref<TabHeader>, PyTabHeader>(m, "TabHeader", D(TabHeader))
         .def(py::init<Widget *, const std::string &>(), D(TabHeader, TabHeader))
-        .def("setFont", &TabHeader::setFont, D(TabHeader, setFont))
-        .def("font", &TabHeader::font, D(TabHeader, font))
         .def("overflowing", &TabHeader::overflowing, D(TabHeader, overflowing))
         .def("callback", &TabHeader::callback, D(TabHeader, callback))
         .def("setCallback", &TabHeader::setCallback, D(TabHeader, setCallback))

@@ -3,6 +3,7 @@
 #include "python.h"
 
 DECLARE_WIDGET(Widget);
+DECLARE_WIDGET(FontWidget);
 DECLARE_SCREEN(Screen);
 DECLARE_WIDGET(Window);
 
@@ -57,9 +58,6 @@ void register_widget(py::module &m) {
         .def("requestFocus", &Widget::requestFocus, D(Widget, requestFocus))
         .def("tooltip", &Widget::tooltip, D(Widget, tooltip))
         .def("setTooltip", &Widget::setTooltip, D(Widget, setTooltip))
-        .def("fontSize", &Widget::fontSize, D(Widget, fontSize))
-        .def("setFontSize", &Widget::setFontSize, D(Widget, setFontSize))
-        .def("hasFontSize", &Widget::hasFontSize, D(Widget, hasFontSize))
         .def("cursor", &Widget::cursor, D(Widget, cursor))
         .def("setCursor", &Widget::setCursor, D(Widget, setCursor))
         .def("findWidget", &Widget::findWidget, D(Widget, findWidget))
@@ -83,13 +81,21 @@ void register_widget(py::module &m) {
         .def("performLayout", &Widget::performLayout, D(Widget, performLayout))
         .def("draw", &Widget::draw, D(Widget, draw));
 
-    py::class_<Window, Widget, ref<Window>, PyWindow>(m, "Window", D(Window))
+    py::class_<FontWidget, Widget, ref<FontWidget>, PyFontWidget>(m, "FontWidget", D(FontWidget))
+        .def(py::init<Widget *, const std::string &, bool>(),
+            py::arg("parent"), py::arg("font"), py::arg("fontDefaultIsBold"))
+        .def("setFont", &FontWidget::setFont, D(FontWidget, setFont))
+        .def("font", &FontWidget::font, D(FontWidget, font))
+        .def("fontSize", &FontWidget::fontSize, D(FontWidget, fontSize))
+        .def("setFontSize", &FontWidget::setFontSize, D(FontWidget, setFontSize))
+        .def("hasFontSize", &FontWidget::hasFontSize, D(FontWidget, hasFontSize))
+        .def("setTheme", &FontWidget::setTheme, D(FontWidget, setTheme));
+
+    py::class_<Window, FontWidget, ref<Window>, PyWindow>(m, "Window", D(Window))
         .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
-             py::arg("title") = std::string("Untitled"), py::arg("font") = std::string("sans-bold"), D(Window, Window))
+             py::arg("title") = std::string("Untitled"), py::arg("font") = std::string(""), D(Window, Window))
         .def("title", &Window::title, D(Window, title))
         .def("setTitle", &Window::setTitle, D(Window, setTitle))
-        .def("font", &Window::font, D(Window, font))
-        .def("setFont", &Window::setFont, D(Window, setFont))
         .def("modal", &Window::modal, D(Window, modal))
         .def("setModal", &Window::setModal, D(Window, setModal))
         .def("dispose", &Window::dispose, D(Window, dispose))
