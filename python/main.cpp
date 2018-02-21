@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "python.h"
+#include <nanogui_resources.h>
 
 #if defined(__APPLE__) || defined(__linux__)
 #  include <coro.h>
@@ -40,6 +41,7 @@ namespace {
 extern void register_constants_glfw(py::module &m);
 extern void register_constants_entypo(py::module &m);
 extern void register_eigen(py::module &m);
+extern void register_theme(py::module &m);
 extern void register_widget(py::module &m);
 extern void register_layout(py::module &m);
 extern void register_basics(py::module &m);
@@ -215,6 +217,7 @@ PYBIND11_PLUGIN(nanogui) {
     #endif
     m.def("utf8", [](int c) { return std::string(utf8(c).data()); }, D(utf8));
     m.def("loadImageDirectory", &nanogui::loadImageDirectory, D(loadImageDirectory));
+    m.def("createFontMem", &nanogui::createFontMem, "Allows for (custom) themes to load fonts.");
 
     py::enum_<Cursor>(m, "Cursor", D(Cursor))
         .value("Arrow", Cursor::Arrow)
@@ -237,6 +240,7 @@ PYBIND11_PLUGIN(nanogui) {
     register_constants_glfw(m);
     register_constants_entypo(m);
     register_eigen(m);
+    register_theme(m);
     register_widget(m);
     register_layout(m);
     register_basics(m);

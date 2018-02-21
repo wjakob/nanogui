@@ -50,6 +50,7 @@ void register_misc(py::module &m) {
         .def(py::init<Widget *, GLuint>(), D(ImageView, ImageView))
         .def("bindImage", &ImageView::bindImage, D(ImageView, bindImage))
         .def("imageShader", &ImageView::imageShader, D(ImageView, imageShader))
+        .def("imageSize", &ImageView::imageSize, D(ImageView, imageSize))
         .def("scaledImageSize", &ImageView::scaledImageSize, D(ImageView, scaledImageSize))
         .def("offset", &ImageView::offset, D(ImageView, offset))
         .def("setOffset", &ImageView::setOffset, D(ImageView, setOffset))
