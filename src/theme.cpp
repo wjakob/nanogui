@@ -14,7 +14,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/entypo.h>
-#include <nanogui_resources.h> // provides nanogui::createFontMem
+#include <nanogui/resources.h> // provides nanogui::createFontMem
 
 NAMESPACE_BEGIN(nanogui)
 

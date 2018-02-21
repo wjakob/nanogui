@@ -266,15 +266,16 @@ string (REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
 string (REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
 
 # Create command line for running bin2c cmake script
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nanogui")
 set(bin2c_cmdline
-  -DOUTPUT_C=nanogui_resources.cpp
-  -DOUTPUT_H=nanogui_resources.h
+  -DOUTPUT_C=nanogui/resources.cpp
+  -DOUTPUT_H=nanogui/resources.h
   "-DINPUT_FILES=${resources_string}"
   -P "${CMAKE_CURRENT_SOURCE_DIR}/resources/bin2c.cmake")
 
 # Run bin2c on resource files
 add_custom_command(
-  OUTPUT nanogui_resources.cpp nanogui_resources.h
+  OUTPUT nanogui/resources.cpp nanogui/resources.h
   COMMAND ${CMAKE_COMMAND} ARGS ${bin2c_cmdline}
   DEPENDS ${resources}
   COMMENT "Running bin2c"
@@ -311,7 +312,7 @@ add_library(nanogui-obj OBJECT
   # Merge GLAD into the NanoGUI library (only if needed)
   ${LIBNANOGUI_EXTRA_SOURCE}
   # Fonts etc.
-  nanogui_resources.cpp
+  "${CMAKE_CURRENT_BINARY_DIR}/nanogui/resources.cpp"
   include/nanogui/glutil.h src/glutil.cpp
   include/nanogui/common.h src/common.cpp
   include/nanogui/widget.h src/widget.cpp

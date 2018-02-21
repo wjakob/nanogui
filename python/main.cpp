@@ -4,7 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "python.h"
-#include <nanogui_resources.h>
+#include <nanogui/resources.h>
 
 #if defined(__APPLE__) || defined(__linux__)
 #  include <coro.h>
