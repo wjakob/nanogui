@@ -21,7 +21,10 @@ CheckBox::CheckBox(Widget *parent, const std::string &caption,
     : FontWidget(parent, font, false), mCaption(caption), mPushed(false),
       mChecked(false), mCallback(callback) {
 
-    mIconExtraScale = 1.2f;// widget override
+    if (mTheme)
+        mIconExtraScale = mTheme->mCheckBoxIconExtraScale;
+    else
+        mIconExtraScale = Theme::defaultCheckBoxIconExtraScale();
 }
 
 bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
@@ -85,7 +88,7 @@ void CheckBox::draw(NVGcontext *ctx) {
         nvgFillColor(ctx, mEnabled ? mTheme->mIconColor
                                    : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-        nvgText(ctx, mPos.x() + mSize.y() * 0.5f + 1,
+        nvgText(ctx, mPos.x() + mSize.y() * 0.5f + 0.5f * icon_scale(),
                 mPos.y() + mSize.y() * 0.5f, utf8(mTheme->mCheckBoxIcon).data(),
                 nullptr);
     }

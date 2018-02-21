@@ -230,6 +230,19 @@ public:
 
     /// Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).
     int mCheckBoxIcon;
+    /**
+     * For the default theme, ``1.2f`` is used in conjunction with ``ENTYPO_ICON_CHECK``.
+     * If overriding, \ref mCheckBoxIcon, make sure \ref mCheckboxIconExtraScale is set
+     * appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultCheckBoxIconExtraScale() { return 1.2f; }
+    /// Extra scaling needed for \ref mCheckBoxIcon (default: \ref defaultCheckBoxIconExtraScale).
+    float mCheckBoxIconExtraScale;
     /// Icon to use for informational MessageDialog widgets (default: ``ENTYPO_ICON_INFO_WITH_CIRCLE``).
     int mMessageInformationIcon;
     /// Icon to use for interrogative MessageDialog widgets (default: ``ENTYPO_ICON_HELP_WITH_CIRCLE``).
@@ -244,6 +257,27 @@ public:
     int mPopupChevronRightIcon;
     /// Icon to use for PopupButton widgets opening to the left (default: ``ENTYPO_ICON_CHEVRON_LEFT``).
     int mPopupChevronLeftIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{LEFT,RIGHT}``.
+     * If overriding, \ref mPopupChevronRight and \ref mPopupChevronLeft, make sure
+     * \ref mPopupIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for left and
+     *    right).  This means that you need to choose an icon pair for left / right
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultPopupIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mPopupChevronRightIcon and \ref mPopupChevronIconLeft (default: \ref defaultPopupIconExtraScale).
+    float mPopupIconExtraScale;
     /// Icon to indicate hidden tabs to the left on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_LEFT``).
     int mTabHeaderLeftIcon;
     /// Icon to indicate hidden tabs to the right on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``).
@@ -252,6 +286,27 @@ public:
     int mTextBoxUpIcon;
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{UP,DOWN}``.
+     * If overriding, \ref mTextBoxUpIcon and \ref mTextBoxDownIcon, make sure
+     * \ref mTextBoxIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for up and
+     *    down).  This means that you need to choose an icon pair for up / down
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultTextBoxIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mTextBoxUpIcon and \ref mTextBoxDownIcon (default: \ref defaultTextBoxIconExtraScale).
+    float mTextBoxIconExtraScale;
 
 protected:
     /// Default destructor does nothing; allows for inheritance.

@@ -68,6 +68,7 @@ Theme::Theme(NVGcontext *ctx) {
     mWindowPopupTransparent           = Color(50, 0);
 
     mCheckBoxIcon                     = ENTYPO_ICON_CHECK;
+    mCheckBoxIconExtraScale           = defaultCheckBoxIconExtraScale();
     mMessageInformationIcon           = ENTYPO_ICON_INFO_WITH_CIRCLE;
     mMessageQuestionIcon              = ENTYPO_ICON_HELP_WITH_CIRCLE;
     mMessageWarningIcon               = ENTYPO_ICON_WARNING;
@@ -75,10 +76,12 @@ Theme::Theme(NVGcontext *ctx) {
     mMessagePrimaryButtonIcon         = ENTYPO_ICON_CHECK;
     mPopupChevronRightIcon            = ENTYPO_ICON_CHEVRON_RIGHT;
     mPopupChevronLeftIcon             = ENTYPO_ICON_CHEVRON_LEFT;
+    mPopupIconExtraScale              = defaultPopupIconExtraScale();
     mTabHeaderLeftIcon                = ENTYPO_ICON_ARROW_BOLD_LEFT;
     mTabHeaderRightIcon               = ENTYPO_ICON_ARROW_BOLD_RIGHT;
     mTextBoxUpIcon                    = ENTYPO_ICON_CHEVRON_UP;
     mTextBoxDownIcon                  = ENTYPO_ICON_CHEVRON_DOWN;
+    mTextBoxIconExtraScale            = defaultTextBoxIconExtraScale();
 
     mFontNormal     = createFontMem(ctx, "sans", "Roboto-Regular.ttf");
     mFontBold       = createFontMem(ctx, "sans-bold", "Roboto-Bold.ttf");

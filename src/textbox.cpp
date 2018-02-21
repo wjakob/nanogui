@@ -44,8 +44,14 @@ TextBox::TextBox(Widget *parent, const std::string &value, const std::string &fo
       mMouseDownModifier(0),
       mTextOffset(0),
       mLastClick(0) {
-    if (mTheme) mFontSize = mTheme->mTextBoxFontSize;
-    mIconExtraScale = 0.8f;// widget override
+
+    if (mTheme) {
+        mFontSize = mTheme->mTextBoxFontSize;
+        mIconExtraScale = mTheme->mTextBoxIconExtraScale;
+    }
+    else {
+        mIconExtraScale = Theme::defaultTextBoxIconExtraScale();
+    }
 }
 
 void TextBox::setEditable(bool editable) {
