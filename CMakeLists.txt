@@ -247,6 +247,102 @@ endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
+# Parent projects set this to include additional *icon* fonts.  The expectation
+# is that this list is populated with the TTF font, and the associated header
+# file defining the available constants (and python bindings if applicable) are
+# in the *SAME* directory.  The naming must be exact:
+#
+#     /some/path/iconfont.ttf           <- list(APPEND NANOGUI_EXTRA_ICON_RESOURCES /some/path/iconfont.ttf)
+#     /some/path/iconfont.h             <- defines all icon codes (needed for C++ side)
+#     /some/path/constants_iconfont.cpp <- defines the python bindings (if NANOGUI_BUILD_PYTHON is ON)
+#
+# The iconfont.ttf will be embedded like all other fonts, the iconfont.h will
+# *automatically* be included (and installed, if applicable) with the main
+# NanoGUI code-base.  With /some/path/iconfont.ttf, the suffix is removed and
+# the file iconfont.h is searched for in the same directory.  If building Python,
+# the file constants_iconfont.cpp will be searched for, and parsed to make sure
+# that it has a signature exactly matching: void register_iconfont(py::module &m).
+# If all checks are successful, then the icon font will be included with
+# NANOGUI_EXTRA_RESOURCES, the header file will be copied to
+# ${CMAKE_CURRENT_BINARY_DIR}/nanogui (which is included with NANOGUI_EXTRA_INCS),
+# and if python is being built, the configurations for python/main.cpp.in will
+# be coordinated to bind the font for python.
+if (NANOGUI_EXTRA_ICON_RESOURCES)
+  foreach(icon_font ${NANOGUI_EXTRA_ICON_RESOURCES})
+    # Make sure the font is a true type font
+    get_filename_component(icon_font_ext "${icon_font}" EXT)
+    if (NOT "${icon_font_ext}" STREQUAL ".ttf")
+      message(FATAL_ERROR "[${icon_font}] does not end with '.ttf'.  Please read documentation on NANOGUI_EXTRA_ICON_RESOURCES.")
+    endif()
+
+    # Generate path to /some/path/iconfont.h and copy / install
+    get_filename_component(icon_font_dir  "${icon_font}" DIRECTORY)
+    get_filename_component(icon_font_base "${icon_font}" NAME_WE)
+    set(icon_font_h "${icon_font_dir}/${icon_font_base}.h")
+    if (NOT EXISTS "${icon_font_h}")
+      message(FATAL_ERROR "The file [${icon_font_h}] was not found, it must be in the same directory as [${icon_font}].")
+    endif()
+    # During processing of NANOGUI_EXTRA_RESOURCES and the bin2c generation
+    # below, "${CMAKE_CURRENT_BINARY_DIR}" will be added to NANOGUI_EXTRA_INCS
+    # allowing for #include <nanogui/iconfont.h>.  This file will also be
+    # installed accordingly.
+    file(
+      COPY "${icon_font_h}"
+      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/nanogui"
+    )
+    if (NANOGUI_INSTALL)
+      install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/nanogui/${icon_font_h}"
+        DESTINATION include/nanogui
+      )
+    endif()
+
+    # Make sure constants_iconfont.cpp exists and at least has the right
+    # registration method.
+    if (NANOGUI_BUILD_PYTHON)
+      set(icon_font_pybind "${icon_font_dir}/constants_${icon_font_base}.cpp")
+      if (NOT EXISTS "${icon_font_pybind}")
+        message(FATAL_ERROR "An extra icon font [${icon_font}] was specified, but the python bindings file [${icon_font_pybind}] was not found.")
+      endif()
+
+      # Make sure void register_constants_${icon_font} method exists
+      set(icon_font_binding_regex "void register_constants_${icon_font_base}\\(py::module &m\\) {")
+      file(STRINGS "${icon_font_pybind}" icon_font_binding_found REGEX "${icon_font_binding_regex}")
+      if (NOT icon_font_binding_found)
+        message(FATAL_ERROR "Python font binding found, regex searched for: ${icon_font_binding_regex}")
+      endif()
+
+      # Copy the generated file so that #include "python.h" works
+      file(
+        COPY "${icon_font_pybind}"
+        DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/python"
+      )
+      # Add this additional source file to be compiled into the python bindings
+      list(
+        APPEND LIBNANOGUI_PYTHON_EXTRA_SOURCE
+        "${CMAKE_CURRENT_SOURCE_DIR}/python/constants_${icon_font_base}.cpp"
+      )
+
+      # Create the configuration variables for python/main.cpp, which amount to
+      # declaring an extern void register_constants_fontname(py::module &m) at
+      # the top, and then later calling that method.
+      set(
+        NANOGUI_EXTRA_ICON_REGISTRY_DEFINITIONS
+        "${NANOGUI_EXTRA_ICON_REGISTRY_DEFINITIONS}\nextern void register_constants_${icon_font_base}(py::module &m);"
+      )
+      set(
+        NANOGUI_EXTRA_ICON_REGISTRY_INVOCATIONS
+        "${NANOGUI_EXTRA_ICON_REGISTRY_INVOCATIONS}\n    register_constants_${icon_font_base}(m);"
+      )
+    endif()
+
+    # If everything was successful up to this point, then the preliminary
+    # requirements for embedding an additional icon font have been met.
+    # Appending to NANOGUI_EXTRA_RESOURCES will enable bin2c below to finalize
+    # the inclusion of this font in NanoGUI.
+    list(APPEND NANOGUI_EXTRA_RESOURCES "${icon_font}")
+  endforeach()
+endif()
 
 # Run simple cmake converter to put font files into the data segment
 
@@ -255,15 +351,22 @@ file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
 
 # Parent projects can set this list to include additional fonts
 if (NANOGUI_EXTRA_RESOURCES)
+  foreach(font ${NANOGUI_EXTRA_RESOURCES})
+    get_filename_component(font_ext "${font}" EXT)
+    if (NOT "${font_ext}" STREQUAL ".ttf")
+      message(FATAL_ERROR "NanoGUI can only embed true type fonts, but the extension for [${font_ext}] was not '.ttf'!")
+    endif()
+  endforeach()
   # Add the fonts specified by the parent project to the list of fonts to embed
   list(APPEND resources ${NANOGUI_EXTRA_RESOURCES})
-  # Allow parent projects to #include <nanogui_resources.h>
+  # Allow parent projects to #include <nanogui/resources.h> without needing to
+  # know where it was generated to.
   list(APPEND NANOGUI_EXTRA_INCS ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # Concatenate resource files into a comma separated string
-string (REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
-string (REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
+string(REGEX REPLACE "([^\\]|^);" "\\1," resources_string "${resources}")
+string(REGEX REPLACE "[\\](.)" "\\1" resources_string "${resources_string}")
 
 # Create command line for running bin2c cmake script
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nanogui")
@@ -280,6 +383,13 @@ add_custom_command(
   DEPENDS ${resources}
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
+
+if (NANOGUI_INSTALL)
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/nanogui/resources.h"
+    DESTINATION include/nanogui
+  )
+endif()
 
 # Needed to generated files
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -443,6 +553,14 @@ if (NANOGUI_BUILD_PYTHON)
   set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
+
+  # Configuration allows the addition of extra icon fonts to be included.
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/python/main.cpp.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/python/main.cpp"
+    @ONLY
+  )
+
   add_library(nanogui-python-obj OBJECT
     python/main.cpp
     python/constants_glfw.cpp
