@@ -49,6 +49,12 @@
     } \
     void draw(NVGcontext *ctx) { \
         PYBIND11_OVERLOAD(void, Parent, draw, ctx); \
+    } \
+    void addChild(int index, Widget *widget) { \
+        PYBIND11_OVERLOAD(void, Parent, addChild, index, widget); \
+    } \
+    void setTheme(Theme *theme) { \
+        PYBIND11_OVERLOAD(void, Parent, setTheme, theme); \
     }
 
 /// Provides a ``PYBIND11_OVERLOAD`` for any relevant Layout items that need to be bound.
