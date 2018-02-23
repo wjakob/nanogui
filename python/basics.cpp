@@ -40,10 +40,11 @@ void register_basics(py::module &m) {
     py::class_<MessageDialog, Window, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", D(MessageDialog));
     mdlg
         .def(py::init<Widget *, MessageDialog::Type, const std::string&,
-                      const std::string&, const std::string&, const std::string&, bool>(),
+                      const std::string&, const std::string&, const std::string&, bool, Theme *>(),
             py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
             py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
             py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false,
+            py::arg("theme") = nullptr,
             D(MessageDialog, MessageDialog))
         .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
