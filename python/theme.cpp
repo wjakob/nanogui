@@ -9,6 +9,9 @@ public:
     std::string defaultBoldFont() const {
         PYBIND11_OVERLOAD(std::string, Theme, defaultBoldFont);
     }
+    std::string defaultIconFont() const {
+        PYBIND11_OVERLOAD(std::string, Theme, defaultIconFont);
+    }
 };
 
 void register_theme(py::module &m) {
@@ -21,6 +24,7 @@ void register_theme(py::module &m) {
         .def("defaultTextBoxIconExtraScale", &Theme::defaultTextBoxIconExtraScale, D(Theme, defaultTextBoxIconExtraScale))
         .def("defaultFont", &Theme::defaultFont, D(Theme, defaultFont))
         .def("defaultBoldFont", &Theme::defaultBoldFont, D(Theme, defaultBoldFont))
+        .def("defaultIconFont", &Theme::defaultIconFont, D(Theme, defaultIconFont))
         .def_readwrite("mIconScale", &Theme::mIconScale, D(Theme, mIconScale))
         .def_readwrite("mStandardFontSize", &Theme::mStandardFontSize, D(Theme, mStandardFontSize))
         .def_readwrite("mButtonFontSize", &Theme::mButtonFontSize, D(Theme, mButtonFontSize))

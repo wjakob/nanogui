@@ -156,7 +156,7 @@ void TextBox::draw(NVGcontext* ctx) {
     if (mSpinnable && !focused()) {
         spinArrowsWidth = 14.f;
 
-        nvgFontFace(ctx, "icons");
+        nvgFontFace(ctx, mIconFont.c_str());
         nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
 
         bool spinning = mMouseDownPos.x() != -1;

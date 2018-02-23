@@ -84,7 +84,7 @@ void CheckBox::draw(NVGcontext *ctx) {
 
     if (mChecked) {
         nvgFontSize(ctx, mSize.y() * icon_scale());
-        nvgFontFace(ctx, "icons");
+        nvgFontFace(ctx, mIconFont.c_str());
         nvgFillColor(ctx, mEnabled ? mTheme->mIconColor
                                    : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);

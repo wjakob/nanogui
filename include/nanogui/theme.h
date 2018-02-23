@@ -57,6 +57,10 @@ public:
      * \ref nanogui::Button).
      */
     virtual std::string defaultBoldFont() const { return Theme::globalDefaultBoldFont(); }
+    /// Similar to \ref globalDefaultFont, only for icon fonts.
+    static std::string globalDefaultIconFont() { return "icons"; }
+    /// The default icon font, override if embedding additional icon fonts.
+    virtual std::string defaultIconFont() const { return Theme::globalDefaultIconFont(); }
     /// The standard font face: ``"sans"`` from ``resources/Roboto-Regular.ttf``.
     int mFontNormal;
     /// The standard bold font face: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``.

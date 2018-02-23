@@ -79,7 +79,9 @@ void register_widget(py::module &m) {
              D(Widget, keyboardCharacterEvent))
         .def("preferredSize", &Widget::preferredSize, D(Widget, preferredSize))
         .def("performLayout", &Widget::performLayout, D(Widget, performLayout))
-        .def("draw", &Widget::draw, D(Widget, draw));
+        .def("draw", &Widget::draw, D(Widget, draw))
+        .def("setIconExtraScale", &Widget::setIconExtraScale, D(Widget, setIconExtraScale))
+        .def("setIconFont", &Widget::setIconFont, D(Widget, setIconFont));
 
     py::class_<FontWidget, Widget, ref<FontWidget>, PyFontWidget>(m, "FontWidget", D(FontWidget))
         .def(py::init<Widget *, const std::string &, bool>(),

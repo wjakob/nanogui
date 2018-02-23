@@ -24,7 +24,8 @@ Widget::Widget(Widget *parent)
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
       mFocused(false), mMouseFocus(false), mTooltip(""),
-      mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
+      mIconExtraScale(1.0f), mIconFont(Theme::globalDefaultIconFont()),
+      mCursor(Cursor::Arrow) {
     if (parent)
         parent->addChild(this);
 }
@@ -40,6 +41,7 @@ void Widget::setTheme(Theme *theme) {
     if (mTheme.get() == theme)
         return;
     mTheme = theme;
+    mIconFont = theme->defaultIconFont();
     for (auto child : mChildren)
         child->setTheme(theme);
 }

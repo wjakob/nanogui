@@ -198,6 +198,18 @@ public:
      */
     void setIconExtraScale(float scale) { mIconExtraScale = scale; }
 
+    /**
+     * \brief The icon font being used by this widget.
+     *
+     * Will be ``"icons"`` (Entypo+), unless user has embedded additional icon
+     * fonts **and** created a custom Theme class to override
+     * \ref Theme::defaultIconFont
+     */
+    const std::string &iconFont() const { return mIconFont; }
+
+    /// Sets the icon font for this Widget (assumes this font is valid / already loaded).
+    void setIconFont(const std::string &iconFont) { mIconFont = iconFont; }
+
     /// Return a pointer to the cursor of the widget
     Cursor cursor() const { return mCursor; }
     /// Set the cursor of the widget
@@ -326,6 +338,9 @@ protected:
      * \endrst
      */
     float mIconExtraScale;
+
+    /// The icon font being used (typically: ``"icons"`` for Entypo+).
+    std::string mIconFont;
     Cursor mCursor;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
