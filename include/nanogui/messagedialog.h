@@ -33,7 +33,8 @@ public:
     MessageDialog(Widget *parent, Type type, const std::string &title = "Untitled",
                   const std::string &message = "Message",
                   const std::string &buttonText = "OK",
-                  const std::string &altButtonText = "Cancel", bool altButton = false);
+                  const std::string &altButtonText = "Cancel", bool altButton = false,
+                  Theme *theme = nullptr);
 
     Label *messageLabel() { return mMessageLabel; }
     const Label *messageLabel() const { return mMessageLabel; }

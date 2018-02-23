@@ -19,7 +19,10 @@ NAMESPACE_BEGIN(nanogui)
 MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title,
               const std::string &message,
               const std::string &buttonText,
-              const std::string &altButtonText, bool altButton) : Window(parent, title) {
+              const std::string &altButtonText, bool altButton,
+              Theme *theme) : Window(parent, title) {
+    if (theme)
+        setTheme(theme);
     setLayout(new BoxLayout(Orientation::Vertical,
                             Alignment::Middle, 10, 10));
     setModal(true);
@@ -33,7 +36,7 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
         case Type::Question: icon = mTheme->mMessageQuestionIcon; break;
         case Type::Warning: icon = mTheme->mMessageWarningIcon; break;
     }
-    Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), "icons");
+    Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), mIconFont.c_str());
     iconLabel->setFontSize(50);
     mMessageLabel = new Label(panel1, message);
     mMessageLabel->setFixedWidth(200);
