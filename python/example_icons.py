@@ -16,8 +16,14 @@
 import gc
 
 import nanogui
-from nanogui import Screen, Window, Widget, GridLayout, VScrollPanel, Button
+from nanogui import Screen, Window, Widget, GridLayout, VScrollPanel, Button, TextBox, BoxLayout, Orientation
 from nanogui import entypo
+
+# Return false essentially makes it not possible to actually edit this text
+# box, but keeping it editable=true allows selection for copy-paste.  If the
+# text box is not editable, then the user cannot highlight it.
+def textbox_callback(val):
+    return False
 
 if __name__ == "__main__":
     nanogui.init()
@@ -28,7 +34,7 @@ if __name__ == "__main__":
 
     # create a fixed size screen with one window
     screen = Screen((width, height), "NanoGUI Icons", False)
-    window = Window(screen, "All Icons")
+    window = Window(screen, "")
     window.setPosition((0, 0))
     window.setFixedSize((width, height))
 
@@ -46,9 +52,16 @@ if __name__ == "__main__":
     # of the icons -- see cpp example for alternative...
     for key in entypo.__dict__.keys():
         if key.startswith("ICON_"):
-            b = Button(wrapper, "entypo.{0}".format(key), entypo.__dict__[key], "mono-bold")
-            b.setIconPosition(Button.IconPosition.Left)
-            b.setFixedWidth(half_width)
+            wrapper_icon = Widget(wrapper)
+            wrapper_icon.setLayout(BoxLayout(Orientation.Horizontal))
+            b = Button(wrapper_icon, "", entypo.__dict__[key])
+            b.setFixedWidth(40)
+            text = TextBox(wrapper_icon, "entypo.{0}".format(key))
+            text.setDefaultValue("entypo.{0}".format(key))
+            text.setEditable(True) # allow copy-paste
+            text.setCallback(textbox_callback) # disable changes
+            text.setFont("mono-bold")
+            text.setFixedWidth(half_width - 40)
 
     screen.performLayout()
     screen.drawAll()
