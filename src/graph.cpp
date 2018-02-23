@@ -16,8 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Graph::Graph(Widget *parent, const std::string &caption)
-    : Widget(parent), mCaption(caption) {
+Graph::Graph(Widget *parent, const std::string &caption, const std::string &font)
+    : FontWidget(parent, font, false), mCaption(caption) {
     mBackgroundColor = Color(20, 128);
     mForegroundColor = Color(255, 192, 0, 128);
     mTextColor = Color(240, 192);
@@ -53,7 +53,7 @@ void Graph::draw(NVGcontext *ctx) {
     nvgFillColor(ctx, mForegroundColor);
     nvgFill(ctx);
 
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, mFont.c_str());
 
     if (!mCaption.empty()) {
         nvgFontSize(ctx, 14.0f);
@@ -83,7 +83,7 @@ void Graph::draw(NVGcontext *ctx) {
 }
 
 void Graph::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("caption", mCaption);
     s.set("header", mHeader);
     s.set("footer", mFooter);
@@ -94,7 +94,7 @@ void Graph::save(Serializer &s) const {
 }
 
 bool Graph::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
     if (!s.get("header", mHeader)) return false;
     if (!s.get("footer", mFooter)) return false;

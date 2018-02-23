@@ -23,8 +23,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-TextBox::TextBox(Widget *parent,const std::string &value)
-    : Widget(parent),
+TextBox::TextBox(Widget *parent, const std::string &value, const std::string &font)
+    : FontWidget(parent, font, false),
       mEditable(false),
       mSpinnable(false),
       mCommitted(true),
@@ -44,8 +44,14 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDownModifier(0),
       mTextOffset(0),
       mLastClick(0) {
-    if (mTheme) mFontSize = mTheme->mTextBoxFontSize;
-    mIconExtraScale = 0.8f;// widget override
+
+    if (mTheme) {
+        mFontSize = mTheme->mTextBoxFontSize;
+        mIconExtraScale = mTheme->mTextBoxIconExtraScale;
+    }
+    else {
+        mIconExtraScale = Theme::defaultTextBoxIconExtraScale();
+    }
 }
 
 void TextBox::setEditable(bool editable) {
@@ -54,7 +60,7 @@ void TextBox::setEditable(bool editable) {
 }
 
 void TextBox::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
+    FontWidget::setTheme(theme);
     if (mTheme)
         mFontSize = mTheme->mTextBoxFontSize;
 }
@@ -114,7 +120,7 @@ void TextBox::draw(NVGcontext* ctx) {
     nvgStroke(ctx);
 
     nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, mFont.c_str());
     Vector2i drawPos(mPos.x(), mPos.y() + mSize.y() * 0.5f + 1);
 
     float xSpacing = mSize.y() * 0.3f;
@@ -150,7 +156,7 @@ void TextBox::draw(NVGcontext* ctx) {
     if (mSpinnable && !focused()) {
         spinArrowsWidth = 14.f;
 
-        nvgFontFace(ctx, "icons");
+        nvgFontFace(ctx, mIconFont.c_str());
         nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
 
         bool spinning = mMouseDownPos.x() != -1;
@@ -176,7 +182,7 @@ void TextBox::draw(NVGcontext* ctx) {
         }
 
         nvgFontSize(ctx, fontSize());
-        nvgFontFace(ctx, "sans");
+        nvgFontFace(ctx, mFont.c_str());
     }
 
     switch (mAlignment) {
@@ -632,7 +638,7 @@ TextBox::SpinArea TextBox::spinArea(const Vector2i & pos) {
 }
 
 void TextBox::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("editable", mEditable);
     s.set("spinnable", mSpinnable);
     s.set("committed", mCommitted);
@@ -649,7 +655,7 @@ void TextBox::save(Serializer &s) const {
 }
 
 bool TextBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("editable", mEditable)) return false;
     if (!s.get("spinnable", mSpinnable)) return false;
     if (!s.get("committed", mCommitted)) return false;

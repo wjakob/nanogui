@@ -147,7 +147,7 @@ void TabHeader::TabButton::drawInactiveBorderAt(NVGcontext *ctx, const Vector2i 
 
 
 TabHeader::TabHeader(Widget* parent, const std::string& font)
-    : Widget(parent), mFont(font) { }
+    : FontWidget(parent, font, true) { }
 
 void TabHeader::setActiveTab(int tabIndex) {
     assert(tabIndex < tabCount());
@@ -411,7 +411,7 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     float ih = fontSize;
     ih *= icon_scale();
     nvgFontSize(ctx, ih);
-    nvgFontFace(ctx, "icons");
+    nvgFontFace(ctx, mIconFont.c_str());
     NVGcolor arrowColor;
     if (active)
         arrowColor = mTheme->mTextColor;
@@ -433,7 +433,7 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     ih = fontSize;
     ih *= icon_scale();
     nvgFontSize(ctx, ih);
-    nvgFontFace(ctx, "icons");
+    nvgFontFace(ctx, mIconFont.c_str());
     float rightWidth = nvgTextBounds(ctx, 0, 0, iconRight.data(), nullptr, nullptr);
     if (active)
         arrowColor = mTheme->mTextColor;

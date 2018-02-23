@@ -18,8 +18,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+Window::Window(Widget *parent, const std::string &title, const std::string &font)
+    : FontWidget(parent, font, true)
+    , mTitle(title)
+    , mButtonPanel(nullptr)
+    , mModal(false)
+    , mDrag(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -29,7 +33,7 @@ Vector2i Window::preferredSize(NVGcontext *ctx) const {
         mButtonPanel->setVisible(true);
 
     nvgFontSize(ctx, 18.0f);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFace(ctx, mFont.c_str());
     float bounds[4];
     nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
 
@@ -54,7 +58,9 @@ void Window::performLayout(NVGcontext *ctx) {
         Widget::performLayout(ctx);
         for (auto w : mButtonPanel->children()) {
             w->setFixedSize(Vector2i(22, 22));
-            w->setFontSize(15);
+            auto *fw = dynamic_cast<FontWidget *>(w);
+            if (fw)
+                fw->setFontSize(15);
         }
         mButtonPanel->setVisible(true);
         mButtonPanel->setSize(Vector2i(width(), 22));
@@ -122,7 +128,7 @@ void Window::draw(NVGcontext *ctx) {
         nvgStroke(ctx);
 
         nvgFontSize(ctx, 18.0f);
-        nvgFontFace(ctx, "sans-bold");
+        nvgFontFace(ctx, mFont.c_str());
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 
         nvgFontBlur(ctx, 2);
@@ -186,14 +192,16 @@ void Window::refreshRelativePlacement() {
 }
 
 void Window::save(Serializer &s) const {
-    Widget::save(s);
+    FontWidget::save(s);
     s.set("title", mTitle);
+    s.set("font", mFont);
     s.set("modal", mModal);
 }
 
 bool Window::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
+    if (!FontWidget::load(s)) return false;
     if (!s.get("title", mTitle)) return false;
+    if (!s.get("font", mFont)) return false;
     if (!s.get("modal", mModal)) return false;
     mDrag = false;
     return true;

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 #include <nanogui/glutil.h>
 #include <functional>
 
@@ -25,7 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Widget used to display images.
  */
-class NANOGUI_EXPORT ImageView : public Widget {
+class NANOGUI_EXPORT ImageView : public FontWidget {
 public:
     ImageView(Widget* parent, GLuint imageID);
     ~ImageView();
@@ -167,6 +167,7 @@ private:
     // Image pixel data display members.
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

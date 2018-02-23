@@ -334,6 +334,8 @@ any updates while mActive is ``True``.)doc";
 
 static const char *__doc_nanogui_Arcball_state_2 = R"doc(``const`` version of Arcball::state.)doc";
 
+static const char *__doc_nanogui_Arcball_state_2 = R"doc()doc";
+
 static const char *__doc_nanogui_BoxLayout =
 R"doc(Simple horizontal/vertical box layout
 
@@ -397,7 +399,10 @@ Parameter ``caption``:
     The name of the button (default ``"Untitled"``).
 
 Parameter ``icon``:
-    The icon to display with this Button. See nanogui::Button::mIcon.)doc";
+    The icon to display with this Button. See nanogui::Button::mIcon.
+
+Parameter ``font``:
+    The font to use for this Button (default: ``"sans-bold"``).)doc";
 
 static const char *__doc_nanogui_Button_Flags = R"doc(Flags to specify the button behavior (can be combined with binary OR))doc";
 
@@ -435,6 +440,8 @@ static const char *__doc_nanogui_Button_flags =
 R"doc(The current flags of this Button (see nanogui::Button::Flags for
 options).)doc";
 
+static const char *__doc_nanogui_Button_font = R"doc(Get the currently active font.)doc";
+
 static const char *__doc_nanogui_Button_icon = R"doc(Returns the icon of this Button. See nanogui::Button::mIcon.)doc";
 
 static const char *__doc_nanogui_Button_iconPosition = R"doc(The position of the icon for this Button.)doc";
@@ -454,6 +461,8 @@ static const char *__doc_nanogui_Button_mChangeCallback = R"doc(The callback iss
 static const char *__doc_nanogui_Button_mFlags =
 R"doc(The current flags of this button (see nanogui::Button::Flags for
 options).)doc";
+
+static const char *__doc_nanogui_Button_mFont = R"doc(The font of this Button (default value is ``"sans-bold"``).)doc";
 
 static const char *__doc_nanogui_Button_mIcon =
 R"doc(The icon of this Button (``0`` means no icon).
@@ -521,6 +530,10 @@ static const char *__doc_nanogui_Button_setFlags =
 R"doc(Sets the flags of this Button (see nanogui::Button::Flags for
 options).)doc";
 
+static const char *__doc_nanogui_Button_setFont =
+R"doc(Set the currently active font (2 are available by default: 'sans' and
+'sans-bold').)doc";
+
 static const char *__doc_nanogui_Button_setIcon = R"doc(Sets the icon of this Button. See nanogui::Button::mIcon.)doc";
 
 static const char *__doc_nanogui_Button_setIconPosition = R"doc(Sets the position of the icon for this Button.)doc";
@@ -553,7 +566,10 @@ Parameter ``callback``:
     If provided, the callback to execute when the CheckBox is checked
     or unchecked. Default parameter function does nothing. See
     nanogui::CheckBox::mPushed for the difference between "pushed" and
-    "checked".)doc";
+    "checked".
+
+Parameter ``font``:
+    The font to use for this CheckBox (default: ``"sans"``).)doc";
 
 static const char *__doc_nanogui_CheckBox_callback = R"doc(Returns the current callback of this CheckBox.)doc";
 
@@ -563,6 +579,8 @@ static const char *__doc_nanogui_CheckBox_checked = R"doc(Whether or not this Ch
 
 static const char *__doc_nanogui_CheckBox_draw = R"doc(Draws this CheckBox.)doc";
 
+static const char *__doc_nanogui_CheckBox_font = R"doc(Get the currently active font.)doc";
+
 static const char *__doc_nanogui_CheckBox_load = R"doc(Loads the state of the specified Serializer to this CheckBox.)doc";
 
 static const char *__doc_nanogui_CheckBox_mCallback = R"doc(The function to execute when nanogui::CheckBox::mChecked is changed.)doc";
@@ -570,6 +588,8 @@ static const char *__doc_nanogui_CheckBox_mCallback = R"doc(The function to exec
 static const char *__doc_nanogui_CheckBox_mCaption = R"doc(The caption text of this CheckBox.)doc";
 
 static const char *__doc_nanogui_CheckBox_mChecked = R"doc(Whether or not this CheckBox is currently checked or unchecked.)doc";
+
+static const char *__doc_nanogui_CheckBox_mFont = R"doc(The font of this CheckBox (default value is ``"sans"``).)doc";
 
 static const char *__doc_nanogui_CheckBox_mPushed =
 R"doc(Internal tracking variable to distinguish between mouse click and
@@ -636,6 +656,10 @@ unchecked.)doc";
 static const char *__doc_nanogui_CheckBox_setCaption = R"doc(Sets the caption of this CheckBox.)doc";
 
 static const char *__doc_nanogui_CheckBox_setChecked = R"doc(Sets whether or not this CheckBox is currently checked.)doc";
+
+static const char *__doc_nanogui_CheckBox_setFont =
+R"doc(Set the currently active font (2 are available by default: 'sans' and
+'sans-bold').)doc";
 
 static const char *__doc_nanogui_CheckBox_setPushed =
 R"doc(Sets whether or not this CheckBox is currently pushed. See
@@ -1645,6 +1669,8 @@ static const char *__doc_nanogui_Graph_caption = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_draw = R"doc()doc";
 
+static const char *__doc_nanogui_Graph_font = R"doc(Get the currently active font)doc";
+
 static const char *__doc_nanogui_Graph_footer = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_foregroundColor = R"doc()doc";
@@ -1656,6 +1682,8 @@ static const char *__doc_nanogui_Graph_load = R"doc()doc";
 static const char *__doc_nanogui_Graph_mBackgroundColor = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_mCaption = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_mFont = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_mFooter = R"doc()doc";
 
@@ -1698,6 +1726,10 @@ static const char *__doc_nanogui_Graph_save = R"doc()doc";
 static const char *__doc_nanogui_Graph_setBackgroundColor = R"doc()doc";
 
 static const char *__doc_nanogui_Graph_setCaption = R"doc()doc";
+
+static const char *__doc_nanogui_Graph_setFont =
+R"doc(Set the currently active font (2 are available by default: 'sans' and
+'sans-bold'))doc";
 
 static const char *__doc_nanogui_Graph_setFooter = R"doc()doc";
 
@@ -1975,6 +2007,8 @@ static const char *__doc_nanogui_ImageView_fixedOffset = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_fixedScale = R"doc()doc";
 
+static const char *__doc_nanogui_ImageView_font = R"doc(Get the currently active font)doc";
+
 static const char *__doc_nanogui_ImageView_fontScaleFactor = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_gridThreshold = R"doc()doc";
@@ -2000,6 +2034,8 @@ static const char *__doc_nanogui_ImageView_keyboardEvent = R"doc()doc";
 static const char *__doc_nanogui_ImageView_mFixedOffset = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_mFixedScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_mFont = R"doc(The font face to use when drawing text.)doc";
 
 static const char *__doc_nanogui_ImageView_mFontScaleFactor = R"doc()doc";
 
@@ -2080,6 +2116,10 @@ static const char *__doc_nanogui_ImageView_scrollEvent = R"doc()doc";
 static const char *__doc_nanogui_ImageView_setFixedOffset = R"doc()doc";
 
 static const char *__doc_nanogui_ImageView_setFixedScale = R"doc()doc";
+
+static const char *__doc_nanogui_ImageView_setFont =
+R"doc(Set the currently active font (2 are available by default: 'sans' and
+'sans-bold'))doc";
 
 static const char *__doc_nanogui_ImageView_setFontScaleFactor = R"doc()doc";
 
@@ -2658,6 +2698,8 @@ static const char *__doc_nanogui_Screen_mResizeCallback = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mShutdownGLFWOnDestruct = R"doc()doc";
 
+static const char *__doc_nanogui_Screen_mTooltipFont = R"doc(The font to draw child widget's tool tips with (default: ``"sans"``).)doc";
+
 static const char *__doc_nanogui_Screen_mouseButtonCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_mousePos = R"doc(Return the last observed mouse position value)doc";
@@ -2714,9 +2756,15 @@ static const char *__doc_nanogui_Screen_setShutdownGLFWOnDestruct = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_setSize = R"doc(Set window size)doc";
 
+static const char *__doc_nanogui_Screen_setTooltipFont =
+R"doc(Set the font to be used to draw tool tips for child widgets (2 are
+available by default: 'sans' and 'sans-bold'))doc";
+
 static const char *__doc_nanogui_Screen_setVisible = R"doc(Set the top-level window visibility (no effect on full-screen windows))doc";
 
 static const char *__doc_nanogui_Screen_shutdownGLFWOnDestruct = R"doc()doc";
+
+static const char *__doc_nanogui_Screen_tooltipFont = R"doc(Get the font name being used to draw tool tips for child widgets)doc";
 
 static const char *__doc_nanogui_Screen_updateFocus = R"doc()doc";
 
@@ -3155,6 +3203,8 @@ static const char *__doc_nanogui_TextBox_editable = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_focusEvent = R"doc()doc";
 
+static const char *__doc_nanogui_TextBox_font = R"doc()doc";
+
 static const char *__doc_nanogui_TextBox_format = R"doc(Return the underlying regular expression specifying valid formats)doc";
 
 static const char *__doc_nanogui_TextBox_keyboardCharacterEvent = R"doc()doc";
@@ -3174,6 +3224,8 @@ static const char *__doc_nanogui_TextBox_mCursorPos = R"doc()doc";
 static const char *__doc_nanogui_TextBox_mDefaultValue = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mEditable = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_mFont = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_mFormat = R"doc()doc";
 
@@ -3256,6 +3308,8 @@ changed.)doc";
 static const char *__doc_nanogui_TextBox_setDefaultValue = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_setEditable = R"doc()doc";
+
+static const char *__doc_nanogui_TextBox_setFont = R"doc()doc";
 
 static const char *__doc_nanogui_TextBox_setFormat = R"doc(Specify a regular expression specifying valid formats)doc";
 
@@ -3909,11 +3963,15 @@ static const char *__doc_nanogui_Window_dispose = R"doc(Dispose the window)doc";
 
 static const char *__doc_nanogui_Window_draw = R"doc(Draw the window)doc";
 
+static const char *__doc_nanogui_Window_font = R"doc(Get the font used to draw the title.)doc";
+
 static const char *__doc_nanogui_Window_load = R"doc()doc";
 
 static const char *__doc_nanogui_Window_mButtonPanel = R"doc()doc";
 
 static const char *__doc_nanogui_Window_mDrag = R"doc()doc";
+
+static const char *__doc_nanogui_Window_mFont = R"doc()doc";
 
 static const char *__doc_nanogui_Window_mModal = R"doc()doc";
 
@@ -3966,6 +4024,10 @@ static const char *__doc_nanogui_Window_save = R"doc()doc";
 static const char *__doc_nanogui_Window_scrollEvent =
 R"doc(Accept scroll events and propagate them to the widget under the mouse
 cursor)doc";
+
+static const char *__doc_nanogui_Window_setFont =
+R"doc(Set the font used to draw the title (2 are available by default:
+'sans' and 'sans-bold').)doc";
 
 static const char *__doc_nanogui_Window_setModal = R"doc(Set whether or not this is a modal dialog)doc";
 

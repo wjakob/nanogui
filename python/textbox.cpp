@@ -10,10 +10,10 @@ DECLARE_WIDGET(DoubleBox);
 DECLARE_WIDGET(Int64Box);
 
 void register_textbox(py::module &m) {
-    py::class_<TextBox, Widget, ref<TextBox>, PyTextBox> tbox(m, "TextBox", D(TextBox));
+    py::class_<TextBox, FontWidget, ref<TextBox>, PyTextBox> tbox(m, "TextBox", D(TextBox));
     tbox
-        .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
-            py::arg("value") = std::string("Untitled"), D(TextBox, TextBox))
+        .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
+            py::arg("value") = std::string("Untitled"), py::arg("font") = std::string(""), D(TextBox, TextBox))
         .def("editable", &TextBox::editable, D(TextBox, editable))
         .def("setEditable", &TextBox::setEditable, D(TextBox, setEditable))
         .def("spinnable", &TextBox::spinnable, D(TextBox, spinnable))

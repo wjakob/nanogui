@@ -4,7 +4,14 @@ ext/pybind11*.a
 *.cmake
 .DS_Store
 ext_build
-nanogui_resources.*
+# resources.h and resources.cpp are generated with bin2c
+resources.*
+# ignore generated python/main.cpp
+python/main.cpp
+# ignore addtional icon font bindings
+python/constants_*
+!python/constants_entypo.cpp
+!python/constants_glfw.cpp
 build
 CMakeCache.txt
 CMakeFiles
@@ -15,6 +22,7 @@ rules.ninja
 Makefile
 bin2c
 example[1-9]
+example_icons
 icons
 *~
 nanogui*.so

@@ -5,7 +5,7 @@
 
 /* Developer note: need to make a change to this file?
  * Please raise an Issue on GitHub describing what needs to change.  This file
- * was generated, so the scripts that generated it needs to update as well.
+ * was generated, so the scripts that generated it need to update as well.
  */
 
 void register_constants_entypo(py::module &m) {

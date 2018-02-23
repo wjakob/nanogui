@@ -23,8 +23,9 @@ Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
-      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
-      mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
+      mFocused(false), mMouseFocus(false), mTooltip(""),
+      mIconExtraScale(1.0f), mIconFont(Theme::globalDefaultIconFont()),
+      mCursor(Cursor::Arrow) {
     if (parent)
         parent->addChild(this);
 }
@@ -40,12 +41,9 @@ void Widget::setTheme(Theme *theme) {
     if (mTheme.get() == theme)
         return;
     mTheme = theme;
+    mIconFont = theme->defaultIconFont();
     for (auto child : mChildren)
         child->setTheme(theme);
-}
-
-int Widget::fontSize() const {
-    return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
@@ -235,7 +233,6 @@ void Widget::save(Serializer &s) const {
     s.set("enabled", mEnabled);
     s.set("focused", mFocused);
     s.set("tooltip", mTooltip);
-    s.set("fontSize", mFontSize);
     s.set("cursor", (int) mCursor);
 }
 
@@ -247,7 +244,6 @@ bool Widget::load(Serializer &s) {
     if (!s.get("enabled", mEnabled)) return false;
     if (!s.get("focused", mFocused)) return false;
     if (!s.get("tooltip", mTooltip)) return false;
-    if (!s.get("fontSize", mFontSize)) return false;
     if (!s.get("cursor", mCursor)) return false;
     return true;
 }

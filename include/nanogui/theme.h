@@ -31,11 +31,45 @@ public:
     Theme(NVGcontext *ctx);
 
     /* Fonts */
-    /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
+    /**
+     * The ``"sans"`` font.  Some widgets allow for a user-specified font face
+     * (e.g., \ref nanogui::Label).  The default action is to use
+     * \ref Theme::defaultFont to set this, however in the event that a
+     * ``nanogui::Theme`` class is not available, this method is called instead.
+     * A ``nanogui::Theme`` class will not be available when no parent is
+     * specified.  For example,
+     * ``new nanogui::Label(nullptr, "Some Text")``.  Doing this is not
+     * explicitly forbidden, but is generally discouraged unless you really know
+     * what you are doing.
+     */
+    static std::string globalDefaultFont() { return "sans"; }
+    /// Similar to \ref globalDefaultFont, only ``"sans-bold"`` is used.
+    static std::string globalDefaultBoldFont() { return "sans-bold"; }
+    /**
+     * The ``"sans"`` font.  Override in sub-classes to use a different
+     * font-face for widgets that use normal fonts by default (e.g.,
+     * \ref nanogui::Label).
+     */
+    virtual std::string defaultFont() const { return Theme::globalDefaultFont(); }
+    /**
+     * The ``"sans-bold"`` font.  Override in sub-classes to use a different
+     * font-face for widgets that use bold fonts by default (e.g.,
+     * \ref nanogui::Button).
+     */
+    virtual std::string defaultBoldFont() const { return Theme::globalDefaultBoldFont(); }
+    /// Similar to \ref globalDefaultFont, only for icon fonts.
+    static std::string globalDefaultIconFont() { return "icons"; }
+    /// The default icon font, override if embedding additional icon fonts.
+    virtual std::string defaultIconFont() const { return Theme::globalDefaultIconFont(); }
+    /// The standard font face: ``"sans"`` from ``resources/Roboto-Regular.ttf``.
     int mFontNormal;
-    /// The bold font face (default: ``"sans-bold"`` from ``resources/roboto_regular.ttf``).
+    /// The standard bold font face: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``.
     int mFontBold;
-    /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
+    /// The standard monospace font face: ``"mono"`` from ``resources/RobotoMono-Regular.ttf``.
+    int mFontMonoNormal;
+    /// The standard bold monospace font face: ``"mono-bold"`` from ``resources/RobotoMono-Bold.ttf``.
+    int mFontMonoBold;
+    /// The icon font face: ``"icons"`` from ``resources/entypo.ttf``.
     int mFontIcons;
     /**
      * The amount of scaling that is applied to each icon to fit the size of
@@ -200,6 +234,19 @@ public:
 
     /// Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).
     int mCheckBoxIcon;
+    /**
+     * For the default theme, ``1.2f`` is used in conjunction with ``ENTYPO_ICON_CHECK``.
+     * If overriding, \ref mCheckBoxIcon, make sure \ref mCheckboxIconExtraScale is set
+     * appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultCheckBoxIconExtraScale() { return 1.2f; }
+    /// Extra scaling needed for \ref mCheckBoxIcon (default: \ref defaultCheckBoxIconExtraScale).
+    float mCheckBoxIconExtraScale;
     /// Icon to use for informational MessageDialog widgets (default: ``ENTYPO_ICON_INFO_WITH_CIRCLE``).
     int mMessageInformationIcon;
     /// Icon to use for interrogative MessageDialog widgets (default: ``ENTYPO_ICON_HELP_WITH_CIRCLE``).
@@ -214,6 +261,27 @@ public:
     int mPopupChevronRightIcon;
     /// Icon to use for PopupButton widgets opening to the left (default: ``ENTYPO_ICON_CHEVRON_LEFT``).
     int mPopupChevronLeftIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{LEFT,RIGHT}``.
+     * If overriding, \ref mPopupChevronRight and \ref mPopupChevronLeft, make sure
+     * \ref mPopupIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for left and
+     *    right).  This means that you need to choose an icon pair for left / right
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultPopupIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mPopupChevronRightIcon and \ref mPopupChevronIconLeft (default: \ref defaultPopupIconExtraScale).
+    float mPopupIconExtraScale;
     /// Icon to indicate hidden tabs to the left on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_LEFT``).
     int mTabHeaderLeftIcon;
     /// Icon to indicate hidden tabs to the right on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``).
@@ -222,6 +290,27 @@ public:
     int mTextBoxUpIcon;
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{UP,DOWN}``.
+     * If overriding, \ref mTextBoxUpIcon and \ref mTextBoxDownIcon, make sure
+     * \ref mTextBoxIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for up and
+     *    down).  This means that you need to choose an icon pair for up / down
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultTextBoxIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mTextBoxUpIcon and \ref mTextBoxDownIcon (default: \ref defaultTextBoxIconExtraScale).
+    float mTextBoxIconExtraScale;
 
 protected:
     /// Default destructor does nothing; allows for inheritance.

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/fontwidget.h>
 
 NAMESPACE_BEGIN(nanogui)
 /**
@@ -22,7 +22,7 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief [Normal/Toggle/Radio/Popup] Button widget.
  */
-class NANOGUI_EXPORT Button : public Widget {
+class NANOGUI_EXPORT Button : public FontWidget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flags {
@@ -51,8 +51,11 @@ public:
      *
      * \param icon
      *     The icon to display with this Button.  See \ref nanogui::Button::mIcon.
+     *
+     * \param font
+     *     The font to use for this Button (default: ``"sans-bold"``).
      */
-    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0, const std::string &font = "");
 
     /// Returns the caption of this Button.
     const std::string &caption() const { return mCaption; }
