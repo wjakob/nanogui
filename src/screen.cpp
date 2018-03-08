@@ -47,7 +47,23 @@ static bool gladInitialized = false;
 static float get_pixel_ratio(GLFWwindow *window) {
 #if defined(_WIN32)
     HWND hWnd = glfwGetWin32Window(window);
-    HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+    HMONITOR monitor = nullptr;
+    #if defined(MONITOR_DEFAULTTONEAREST)
+    monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+    #else
+    static HMONITOR (WINAPI *MonitorFromWindow_)(HWND, DWORD) = nullptr;
+    static bool MonitorFromWindow_tried = false;
+    if (!MonitorFromWindow_tried) {
+        auto user32 = LoadLibrary(TEXT("user32"));
+        if (user32) {
+            MonitorFromWindow_ = (decltype(MonitorFromWindow_)) GetProcAddress(user32, "MonitorFromWindow");
+        }
+        MonitorFromWindow_tried = true;
+    }
+    if (MonitorFromWindow_) {
+        monitor = MonitorFromWindow_(hWnd, 2);
+    }
+    #endif  // defined(MONITOR_DEFAULTTONEAREST)
     /* The following function only exists on Windows 8.1+, but we don't want to make that a dependency */
     static HRESULT (WINAPI *GetDpiForMonitor_)(HMONITOR, UINT, UINT*, UINT*) = nullptr;
     static bool GetDpiForMonitor_tried = false;
@@ -59,7 +75,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
         GetDpiForMonitor_tried = true;
     }
 
-    if (GetDpiForMonitor_) {
+    if (GetDpiForMonitor_ && monitor) {
         uint32_t dpiX, dpiY;
         if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
             return dpiX / 96.0;

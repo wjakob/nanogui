@@ -10,6 +10,11 @@
 */
 
 #include <nanogui/glutil.h>
+#if defined(WIN32)
+#if !defined(__clang__)
+#include <malloc.h>
+#endif  // !defined(__clang__)
+#endif  // defined(WIN32)
 #include <iostream>
 #include <fstream>
 #include <Eigen/Geometry>
