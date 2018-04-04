@@ -31,6 +31,10 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonI
     mIconExtraScale = 0.8f;// widget override
 }
 
+PopupButton::~PopupButton() {
+    mPopup->setVisible(false);
+}
+
 Vector2i PopupButton::preferredSize(NVGcontext *ctx) const {
     return Button::preferredSize(ctx) + Vector2i(15, 0);
 }
