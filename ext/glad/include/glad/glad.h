@@ -27,7 +27,7 @@
 
 #if !defined(APIENTRY)
 #  if defined(_WIN32)
-#    define APIENTRY _stdcall
+#    define APIENTRY __stdcall
 #  else
 #    define APIENTRY
 #  endif
