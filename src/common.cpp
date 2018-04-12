@@ -215,12 +215,12 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
     }
 
 #if defined(_WIN32)
-    OPENFILENAME ofn;
-    ZeroMemory(&ofn, sizeof(OPENFILENAME));
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    char tmp[FILE_DIALOG_MAX_BUFFER];
+    OPENFILENAMEW ofn;
+    ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
+    ofn.lStructSize = sizeof(OPENFILENAMEW);
+    wchar_t tmp[FILE_DIALOG_MAX_BUFFER];
     ofn.lpstrFile = tmp;
-    ZeroMemory(tmp, FILE_DIALOG_MAX_BUFFER);
+    ZeroMemory(tmp, sizeof(tmp));
     ofn.nMaxFile = FILE_DIALOG_MAX_BUFFER;
     ofn.nFilterIndex = 1;
 
@@ -255,25 +255,38 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
         filter.push_back('\0');
     }
     filter.push_back('\0');
-    ofn.lpstrFilter = filter.data();
+
+    int size = MultiByteToWideChar(CP_UTF8, 0, &filter[0], (int)filter.size(), NULL, 0);
+    std::wstring wfilter(size, 0);
+    MultiByteToWideChar(CP_UTF8, 0, &filter[0], (int)filter.size(), &wfilter[0], size);
+
+    ofn.lpstrFilter = wfilter.data();
 
     if (save) {
         ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
-        if (GetSaveFileNameA(&ofn) == FALSE)
+        if (GetSaveFileNameW(&ofn) == FALSE)
             return {};
     } else {
         ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         if (multiple)
             ofn.Flags |= OFN_ALLOWMULTISELECT;
-        if (GetOpenFileNameA(&ofn) == FALSE)
+        if (GetOpenFileNameW(&ofn) == FALSE)
             return {};
     }
 
     size_t i = 0;
     std::vector<std::string> result;
     while (tmp[i] != '\0') {
-        result.emplace_back(&tmp[i]);
-        i += result.back().size() + 1;
+        std::string filename;
+        int tmpSize = (int)wcslen(&tmp[i]);
+        if (tmpSize > 0) {
+            int filenameSize = WideCharToMultiByte(CP_UTF8, 0, &tmp[i], tmpSize, NULL, 0, NULL, NULL);
+            filename.resize(filenameSize, 0);
+            WideCharToMultiByte(CP_UTF8, 0, &tmp[i], tmpSize, &filename[0], filenameSize, NULL, NULL);
+        }
+
+        result.emplace_back(filename);
+        i += tmpSize + 1;
     }
 
     if (result.size() > 1) {
