@@ -152,14 +152,18 @@ void Widget::addChild(Widget * widget) {
 }
 
 void Widget::removeChild(const Widget *widget) {
-    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
-    widget->decRef();
+    if (widget) {
+        // ensure focus path does not retain removed widget
+        if (widget->focused())
+            this->requestFocus();
+        mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
+        widget->decRef();
+    }
 }
 
 void Widget::removeChild(int index) {
-    Widget *widget = mChildren[index];
-    mChildren.erase(mChildren.begin() + index);
-    widget->decRef();
+    if (index >= 0 && static_cast<size_t>(index) < mChildren.size())
+        removeChild(mChildren[index]);
 }
 
 int Widget::childIndex(Widget *widget) const {
