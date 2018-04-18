@@ -139,7 +139,13 @@ public:
     /// Convenience function which appends a widget at the end
     void addChild(Widget *widget);
 
-    /// Remove a child widget by index
+    /**
+     * \brief Remove a child widget by index.
+     *
+     * \param index
+     *     The index into ``mChildren`` to remove.  If ``index < 0`` or
+     *     ``index >= mChildren.size()``, no will be action performed.
+     */
     void removeChild(int index);
 
     /// Remove a child widget by value
