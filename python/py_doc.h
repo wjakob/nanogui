@@ -2598,7 +2598,7 @@ static const char *__doc_nanogui_Screen_charCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_cursorPosCallbackEvent = R"doc()doc";
 
-static const char *__doc_nanogui_Screen_disposeWindow = R"doc()doc";
+static const char *__doc_nanogui_Screen_disposeWidget = R"doc(Remove Screen's references to a widget and its children)doc";
 
 static const char *__doc_nanogui_Screen_drawAll = R"doc(Draw the Screen contents)doc";
 
