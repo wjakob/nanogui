@@ -152,13 +152,23 @@ void Widget::addChild(Widget * widget) {
 }
 
 void Widget::removeChild(const Widget *widget) {
-    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
-    widget->decRef();
+    removeChildHelper(std::find(mChildren.begin(), mChildren.end(), widget));
 }
 
 void Widget::removeChild(int index) {
-    Widget *widget = mChildren[index];
-    mChildren.erase(mChildren.begin() + index);
+    assert(index >= 0);
+    assert(index < childCount());
+    removeChildHelper(mChildren.begin() + index);
+}
+
+void Widget::removeChildHelper(const std::vector<Widget *>::iterator& child_it) {
+    if (child_it == mChildren.end())
+        return;
+    Widget *widget = *child_it;
+
+    screen()->disposeWidget(widget);
+    mChildren.erase(child_it);
+
     widget->decRef();
 }
 

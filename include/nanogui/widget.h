@@ -274,6 +274,13 @@ protected:
      */
     inline float icon_scale() const { return mTheme->mIconScale * mIconExtraScale; }
 
+private:
+    /**
+     * Convenience function to share logic between both signatures of
+     * ``removeChild``.
+     */
+    void removeChildHelper(const std::vector<Widget *>::iterator& child_it);
+
 protected:
     Widget *mParent;
     ref<Theme> mTheme;
