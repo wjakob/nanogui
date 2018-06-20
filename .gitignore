@@ -4,7 +4,8 @@ ext/pybind11*.a
 *.cmake
 .DS_Store
 ext_build
-nanogui_resources.*
+# ignore all generated resources
+**/generated_resources/**
 build
 CMakeCache.txt
 CMakeFiles
@@ -15,6 +16,7 @@ rules.ninja
 Makefile
 bin2c
 example[1-9]
+example_icons
 icons
 *~
 nanogui*.so

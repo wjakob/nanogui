@@ -97,7 +97,8 @@ PRINT_LIST = [
     CursorKind.CONVERSION_FUNCTION,
     CursorKind.CXX_METHOD,
     CursorKind.CONSTRUCTOR,
-    CursorKind.FIELD_DECL
+    CursorKind.FIELD_DECL,
+    CursorKind.VAR_DECL
 ]
 
 CPP_OPERATORS = {

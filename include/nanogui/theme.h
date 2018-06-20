@@ -31,11 +31,94 @@ public:
     Theme(NVGcontext *ctx);
 
     /* Fonts */
-    /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
+    /**
+     * \struct GlobalDefaultFonts theme.h nanogui/theme.h
+     *
+     * \brief The font face string identifiers that are always loaded / available
+     *        for every Widget.
+     *
+     * In the (rare) event that a Widget does not have a Theme instance (this only
+     * happens when a Widget is constructed without a parent), these values are also
+     * used in the Widget font getter methods.
+     *
+     * The five available class-level string constants are ``Normal``, ``Bold``,
+     * ``Mono``, ``MonoBold``, and ``Icons``.
+     *
+     * \sa The *implementation* of \ref nanogui::Widget::font.
+     */
+    struct NANOGUI_EXPORT GlobalDefaultFonts {
+        /// This class shall not be instantiated.
+        GlobalDefaultFonts() = delete;
+        /// This class shall not be copied.
+        GlobalDefaultFonts(const GlobalDefaultFonts &other) = delete;
+        /// This class shall not be moved.
+        GlobalDefaultFonts(const GlobalDefaultFonts &&other) = delete;
+
+        /// The ``"sans"`` font face: see \ref nanogui::Theme::mDefaultFont.
+        static constexpr auto Normal   = "sans";
+        /// The ``"sans-bold"`` font face: see \ref nanogui::Theme::mDefaultBoldFont.
+        static constexpr auto Bold     = "sans-bold";
+        /// The ``"mono"`` font face: see \ref nanogui::Theme::mDefaultMonoFont.
+        static constexpr auto Mono     = "mono";
+        /// The ``"mono-bold"`` font face: see \ref nanogui::Theme::mDefaultMonoBoldFont.
+        static constexpr auto MonoBold = "mono-bold";
+        /// The ``"icons"`` font face: see \ref nanogui::Theme::mDefaultIconFont.
+        static constexpr auto Icons    = "icons";
+    };
+
+    /// The default font face: ``"sans"`` from ``resources/Roboti-Regular.ttf``.
+    std::string mDefaultFont;
+    /// The default bold font face: ``"sans-bold"`` from ``resources/Roboto-Bold.ttf``.
+    std::string mDefaultBoldFont;
+    /**
+     * \brief The default monospace font: ``"mono"`` from ``resources/RobotoMono-Regular.ttf``.
+     *
+     * Not used directly in NanoGUI, but loaded and available for all applications.
+     */
+    std::string mDefaultMonoFont;
+    /**
+     * \brief The default monospace bold font: ``"mono-bold"`` from ``resources/RobotoMono-Bold.ttf``.
+     *
+     * Not used directly in NanoGUI, but loaded and available for all applications.
+     */
+    std::string mDefaultMonoBoldFont;
+    /// The default icon font face: ``"icons"`` from ``resources/entypo.ttf``.
+    std::string mDefaultIconFont;
+
+    /**
+     * \brief The font memory identifier loaded for \ref mDefaultFont.
+     *
+     * Most applications should not have a need to use this variable.  Its value should
+     * **never** be reassigned.
+     */
     int mFontNormal;
-    /// The bold font face (default: ``"sans-bold"`` from ``resources/roboto_regular.ttf``).
+    /**
+     * \brief The font memory identifier loaded for \ref mDefaultBoldFont.
+     *
+     * Most applications should not have a need to use this variable.  Its value should
+     * **never** be reassigned.
+     */
     int mFontBold;
-    /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
+    /**
+     * \brief The font memory identifier loaded for \ref mDefaultMonoFont.
+     *
+     * Most applications should not have a need to use this variable.  Its value should
+     * **never** be reassigned.
+     */
+    int mFontMonoNormal;
+    /**
+     * \brief The font memory identifier loaded for \ref mDefaultMonoBoldFont.
+     *
+     * Most applications should not have a need to use this variable.  Its value should
+     * **never** be reassigned.
+     */
+    int mFontMonoBold;
+    /**
+     * \brief The font memory identifier loaded for \ref mDefaultIconFont.
+     *
+     * Most applications should not have a need to use this variable.  Its value should
+     * **never** be reassigned.
+     */
     int mFontIcons;
     /**
      * The amount of scaling that is applied to each icon to fit the size of
@@ -46,11 +129,13 @@ public:
 
     /* Spacing-related parameters */
     /// The font size for all widgets other than buttons and textboxes (default: `` 16``).
-    int mStandardFontSize;
+    float mStandardFontSize;
     /// The font size for buttons (default: ``20``).
-    int mButtonFontSize;
+    float mButtonFontSize;
     /// The font size for text boxes (default: ``20``).
-    int mTextBoxFontSize;
+    float mTextBoxFontSize;
+    /// The font size for Window captions (default: ``18``).
+    float mWindowFontSize;
     /// Rounding radius for Window widget corners (default: ``2``).
     int mWindowCornerRadius;
     /// Default size of Window widget titles (default: ``30``).
@@ -150,6 +235,44 @@ public:
      */
     Color mButtonGradientBotPushed;
 
+    /**
+     * \brief The maximum value for tooltip background opacity. Default: ``0.8f``.
+     *
+     * Lower values result in more transparent tooltips, higher values result in less
+     * transparent tooltips.  This represents an OpenGL ``alpha`` value, meaning
+     * ``1.0f`` (or higher) will result in no transparency.
+     *
+     * \rst
+     * In the implementation of :func:`Screen::drawWidgets <nanogui::Screen::drawWidgets>`,
+     * this variable is used as
+     *
+     * .. code-block:: cpp
+     *
+     *    float opacity = std::min(
+     *        widget->theme()->mTooltipOpacity, 2.0f * (static_cast<float>(elapsed) - 0.5f)
+     *    );
+     *    nvgGlobalAlpha(mNVGContext, opacity);
+     *
+     * These mechanics allow for the tooltip to fade-in.  ``elapsed`` contains the
+     * amount of time the mouse has been hovering over the Widget whose tooltip is being
+     * displayed.  After subtraction and scaling, when the mouse hover begins the
+     * calculation will result in smaller values (e.g., starting around ``0.05f``).
+     * After enough time, ``mTooltipOpacity`` will always be the smaller value, making
+     * ``mTooltipOpacity`` the *maximum* alpha channel value for the tooltip.
+     * \endrst
+     */
+    float mTooltipOpacity;
+    /**
+     * The background color to use for drawing \ref nanogui::Widget::mTooltip
+     * (default: intensity=``0``, alpha=``255``; see \ref nanogui::Color::Color(int,int)).
+     */
+    Color mTooltipBackgroundColor;
+    /**
+     * The text color to use for drawing \ref nanogui::Widget::mTooltip
+     * (default: intensity=``255``, alpha=``255``; see \ref nanogui::Color::Color(int,int)).
+     */
+    Color mTooltipTextColor;
+
     /* Window colors */
     /**
      * The fill color for a Window that is not in focus
@@ -200,6 +323,19 @@ public:
 
     /// Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).
     int mCheckBoxIcon;
+    /**
+     * For the default theme, ``1.2f`` is used in conjunction with ``ENTYPO_ICON_CHECK``.
+     * If overriding, \ref mCheckBoxIcon, make sure \ref mCheckBoxIconExtraScale is set
+     * appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultCheckBoxIconExtraScale() { return 1.2f; }
+    /// Extra scaling needed for \ref mCheckBoxIcon (default: \ref defaultCheckBoxIconExtraScale).
+    float mCheckBoxIconExtraScale;
     /// Icon to use for informational MessageDialog widgets (default: ``ENTYPO_ICON_INFO_WITH_CIRCLE``).
     int mMessageInformationIcon;
     /// Icon to use for interrogative MessageDialog widgets (default: ``ENTYPO_ICON_HELP_WITH_CIRCLE``).
@@ -214,6 +350,27 @@ public:
     int mPopupChevronRightIcon;
     /// Icon to use for PopupButton widgets opening to the left (default: ``ENTYPO_ICON_CHEVRON_LEFT``).
     int mPopupChevronLeftIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{LEFT,RIGHT}``.
+     * If overriding, \ref mPopupChevronRightIcon and \ref mPopupChevronLeftIcon, make sure
+     * \ref mPopupIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for left and
+     *    right).  This means that you need to choose an icon pair for left / right
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultPopupIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mPopupChevronRightIcon and \ref mPopupChevronLeftIcon (default: \ref defaultPopupIconExtraScale).
+    float mPopupIconExtraScale;
     /// Icon to indicate hidden tabs to the left on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_LEFT``).
     int mTabHeaderLeftIcon;
     /// Icon to indicate hidden tabs to the right on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``).
@@ -222,6 +379,27 @@ public:
     int mTextBoxUpIcon;
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
+    /**
+     * For the default theme, ``0.8f`` is used in conjunction with ``ENTYPO_ICON_CHEVRON_{UP,DOWN}``.
+     * If overriding, \ref mTextBoxUpIcon and \ref mTextBoxDownIcon, make sure
+     * \ref mTextBoxIconExtraScale is set appropriately for the new icon choice.
+     *
+     * This method exists for the rare occurence that a Theme instance is not available
+     * upon construction.
+     *
+     * \rst
+     * .. note::
+     *
+     *    Observe that there is only one scale variable (instead of one for up and
+     *    down).  This means that you need to choose an icon pair for up / down
+     *    that are the same original size.
+     * \endrst
+     *
+     * \sa Widget::mIconExtraScale
+     */
+    static float defaultTextBoxIconExtraScale() { return 0.8f; }
+    /// Extra scaling needed for \ref mTextBoxUpIcon and \ref mTextBoxDownIcon (default: \ref defaultTextBoxIconExtraScale).
+    float mTextBoxIconExtraScale;
 
 protected:
     /// Default destructor does nothing; allows for inheritance.
