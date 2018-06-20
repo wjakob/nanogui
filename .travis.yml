@@ -5,6 +5,7 @@ matrix:
   include:
     - os: linux
       compiler: gcc-4.8
+      env: GENERATOR='Unix Makefiles'
       addons:
         apt:
           sources:
@@ -26,14 +27,67 @@ matrix:
             - cmake
       script:
         - cmake --version
-        - cmake -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8
+        - cmake -G "$GENERATOR" -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8
+        - make -j 2
+    - os: linux
+      compiler: clang
+      env: GENERATOR=Ninja
+      addons:
+        apt:
+          sources:
+            - deadsnakes
+            - kubuntu-backports
+          packages:
+            - python3.5
+            - python3.5-dev
+            - python3.5-venv
+            - libglu1-mesa-dev
+            - libxxf86vm-dev
+            - libxrandr-dev
+            - libxinerama-dev
+            - libxcursor-dev
+            - libxi-dev
+            - libx11-dev
+            - cmake
+      before_install:
+        # NOTE: by requesting compiler: clang, this is installed by default.
+        #       Travis CI does not correctly setup CC / CXX, as well as G++
+        #       headers will get used.  These paths may become stale in the
+        #       future, in which case this must be updated.
+        - export CXX="/usr/local/clang-5.0.0/bin/clang++"
+        - export CC="/usr/local/clang-5.0.0/bin/clang"
+        - export CPATH="/usr/local/clang-5.0.0/include/c++/v1"
+        - export LD_LIBRARY_PATH="/usr/local/clang-5.0.0/lib"
+      install:
+        # ninja-build in Ubuntu sources is too old, download latest
+        - mkdir bin/
+        - curl -L https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip -o bin/ninja-linux.zip
+        - unzip bin/ninja-linux.zip -d bin/
+        - export PATH="$PWD/bin:$PATH"
+      script:
+        - cmake --version
+        - ninja --version
+        - cmake -G "$GENERATOR" -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so
+        - ninja -j 2
+    - os: osx
+      compiler: clang
+      env: GENERATOR='Unix Makefiles'
+      script:
+        - cmake --version
+        - cmake -G "$GENERATOR" -DNANOGUI_PYTHON_VERSION=2.7
         - make -j 2
     - os: osx
       compiler: clang
+      env: GENERATOR=Ninja
+      before_install:
+        # See: https://docs.travis-ci.com/user/reference/osx/#A-note-on-upgrading-packages
+        - brew outdated cmake || brew upgrade cmake
+        - brew install ninja
       script:
         - cmake --version
-        - cmake -DNANOGUI_PYTHON_VERSION=2.7
-        - make -j 2
+        - ninja --version
+        - cmake -G "$GENERATOR" -DNANOGUI_PYTHON_VERSION=2.7
+        - ninja -j 2
     - os: linux
       language: docs
       env: STYLE
