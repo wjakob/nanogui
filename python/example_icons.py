@@ -11,13 +11,46 @@
 
 # Developer note: need to make a change to this file?
 # Please raise an Issue on GitHub describing what needs to change.  This file
-# was generated, so the scripts that generated it needs to update as well.
+# was generated, so the scripts that generated it need to update as well.
 
 import gc
 
 import nanogui
 from nanogui import Screen, Window, Widget, GridLayout, VScrollPanel, Button
 from nanogui import entypo
+
+class EscapeScreen(nanogui.Screen):
+    def __init__(self, size, title, resizable):
+        super(EscapeScreen, self).__init__(size, title, resizable)
+
+    # allow <ESCAPE> to exit
+    def keyboardEvent(self, key, scancode, action, modifiers):
+        if key == nanogui.glfw.KEY_ESCAPE and modifiers == 0:
+            self.setVisible(False)
+            return True
+
+        return super(EscapeScreen, self).keyboardEvent(key, scancode, action, modifiers)
+
+
+class IconBox(nanogui.Widget):
+    def __init__(self, parent, name, icon, width):
+        super(IconBox, self).__init__(parent)
+
+        self.setLayout(nanogui.BoxLayout(nanogui.Orientation.Horizontal))
+
+        b = nanogui.Button(self, "", icon)
+        b.setFixedWidth(40)
+
+        text = nanogui.TextBox(self, name)
+        text.setDefaultValue(name)
+        text.setEditable(True)
+        # Return false essentially makes it not possible to actually edit this text
+        # box, but keeping it editable=true allows selection for copy-paste.  If the
+        # text box is not editable, then the user cannot highlight it.
+        text.setCallback(lambda x: False)
+        text.setFont("mono-bold")
+        text.setFixedWidth(width - 40)
+
 
 if __name__ == "__main__":
     nanogui.init()
@@ -27,8 +60,8 @@ if __name__ == "__main__":
     height     = 800
 
     # create a fixed size screen with one window
-    screen = Screen((width, height), "NanoGUI Icons", False)
-    window = Window(screen, "All Icons")
+    screen = EscapeScreen((width, height), "NanoGUI Icons", False)
+    window = Window(screen, "")
     window.setPosition((0, 0))
     window.setFixedSize((width, height))
 
@@ -46,9 +79,7 @@ if __name__ == "__main__":
     # of the icons -- see cpp example for alternative...
     for key in entypo.__dict__.keys():
         if key.startswith("ICON_"):
-            b = Button(wrapper, "entypo.{0}".format(key), entypo.__dict__[key])
-            b.setIconPosition(Button.IconPosition.Left)
-            b.setFixedWidth(half_width)
+            IconBox(wrapper, key, entypo.__dict__[key], half_width)
 
     screen.performLayout()
     screen.drawAll()
