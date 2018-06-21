@@ -45,9 +45,16 @@ void register_basics(py::module &m) {
             py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
             py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false,
             D(MessageDialog, MessageDialog))
+        .def("iconLabel", (Label * (MessageDialog::*)()) &MessageDialog::iconLabel, D(MessageDialog, iconLabel))
+        .def("setIcon", &MessageDialog::setIcon, D(MessageDialog, setIcon))
         .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
+        .def("primaryButton", (Button * (MessageDialog::*)()) &MessageDialog::primaryButton, D(MessageDialog, primaryButton))
+        .def("setPrimaryIcon", &MessageDialog::setPrimaryIcon, D(MessageDialog, setPrimaryIcon))
+        .def("alternateButton", (Button * (MessageDialog::*)()) &MessageDialog::alternateButton, D(MessageDialog, alternateButton))
+        .def("setAlternateIcon", &MessageDialog::setAlternateIcon, D(MessageDialog, setAlternateIcon))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
-        .def("setCallback", &MessageDialog::setCallback, D(MessageDialog, setCallback));
+        .def("setCallback", &MessageDialog::setCallback, D(MessageDialog, setCallback))
+        .def("setTheme", &MessageDialog::setTheme, D(MessageDialog, setTheme));
 
     py::enum_<MessageDialog::Type>(mdlg, "Type", D(MessageDialog, Type))
         .value("Information", MessageDialog::Type::Information)

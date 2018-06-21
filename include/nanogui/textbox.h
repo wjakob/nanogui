@@ -27,9 +27,12 @@ NAMESPACE_BEGIN(nanogui)
  * \brief Fancy text box with builtin regular expression-based validation.
  *
  * \remark
- *     This class overrides \ref nanogui::Widget::mIconExtraScale to be ``0.8f``,
- *     which affects all subclasses of this Widget.  Subclasses must explicitly
- *     set a different value if needed (e.g., in their constructor).
+ *     This class overrides \ref Widget::mIconExtraScale to what is specified by
+ *     \ref Theme::mTextBoxIconExtraScale, which affects all subclasses of this
+ *     Widget.  Subclasses must explicitly set a different value if needed
+ *     (e.g., in their constructor).  Note that \ref setTheme also overwrites
+ *     this value to that specified by the new Theme, so subclasses must also
+ *     account for this if setting to a non-theme value.
  */
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
@@ -86,9 +89,6 @@ public:
     /// Specify a placeholder text to be displayed while the text box is empty.
     void setPlaceholder(const std::string &placeholder) { mPlaceholder = placeholder; }
 
-    /// Set the \ref Theme used to draw this widget
-    virtual void setTheme(Theme *theme) override;
-
     /// The callback to execute when the value of this TextBox has changed.
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
 
@@ -104,6 +104,8 @@ public:
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     virtual void draw(NVGcontext* ctx) override;
+    /// Ensures that \ref Widget::mIconExtraScale is updated.
+    virtual void setTheme(Theme *theme) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 protected:

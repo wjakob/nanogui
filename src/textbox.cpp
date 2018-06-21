@@ -44,16 +44,16 @@ TextBox::TextBox(Widget *parent, const std::string &value, const std::string &fo
       mMouseDownModifier(0),
       mTextOffset(0),
       mLastClick(0) {
-    mIconExtraScale = 0.8f;// widget override
+
+    if (mTheme)
+        mIconExtraScale = mTheme->mTextBoxIconExtraScale;
+    else
+        mIconExtraScale = Theme::defaultTextBoxIconExtraScale();
 }
 
 void TextBox::setEditable(bool editable) {
     mEditable = editable;
     setCursor(editable ? Cursor::IBeam : Cursor::Arrow);
-}
-
-void TextBox::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
 }
 
 Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
@@ -277,6 +277,12 @@ void TextBox::draw(NVGcontext* ctx) {
         }
     }
     nvgRestore(ctx);
+}
+
+void TextBox::setTheme(Theme *theme) {
+    Widget::setTheme(theme);
+    if (mTheme)
+        mIconExtraScale = mTheme->mTextBoxIconExtraScale;
 }
 
 bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,

@@ -50,6 +50,12 @@
     void draw(NVGcontext *ctx) override { \
         PYBIND11_OVERLOAD(void, Parent, draw, ctx); \
     } \
+    void addChild(int index, Widget *widget) override { \
+        PYBIND11_OVERLOAD(void, Parent, addChild, index, widget); \
+    } \
+    void setTheme(Theme *theme) override { \
+        PYBIND11_OVERLOAD(void, Parent, setTheme, theme); \
+    } \
     std::string defaultFont() const override { \
         PYBIND11_OVERLOAD(std::string, Parent, defaultFont, ); \
     } \

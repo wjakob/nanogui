@@ -24,9 +24,12 @@ NAMESPACE_BEGIN(nanogui)
  * \brief Two-state check box widget.
  *
  * \remark
- *     This class overrides \ref nanogui::Widget::mIconExtraScale to be ``1.2f``,
- *     which affects all subclasses of this Widget.  Subclasses must explicitly
- *     set a different value if needed (e.g., in their constructor).
+ *     This class overrides \ref Widget::mIconExtraScale to what is specified by
+ *     \ref Theme::mCheckBoxIconExtraScale, which affects all subclasses of this
+ *     Widget.  Subclasses must explicitly set a different value if needed
+ *     (e.g., in their constructor).  Note that \ref setTheme also overwrites
+ *     this value to that specified by the new Theme, so subclasses must also
+ *     account for this if setting to a non-theme value.
  */
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
@@ -102,6 +105,9 @@ public:
 
     /// Draws this CheckBox.
     virtual void draw(NVGcontext *ctx) override;
+
+    /// Ensures that \ref Widget::mIconExtraScale is updated.
+    virtual void setTheme(Theme *theme) override;
 
     /// Saves this CheckBox to the specified Serializer.
     virtual void save(Serializer &s) const override;

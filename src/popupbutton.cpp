@@ -29,7 +29,14 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption,
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
 
-    mIconExtraScale = 0.8f;// widget override
+    // override the default icon scaling
+    if (mTheme) {
+        mIconExtraScale = mTheme->mPopupIconExtraScale;
+        mPopup->setTheme(mTheme);
+    }
+    else {
+        mIconExtraScale = Theme::defaultPopupIconExtraScale();
+    }
 }
 
 PopupButton::~PopupButton() {
@@ -89,6 +96,13 @@ void PopupButton::setSide(Popup::Side side) {
              mChevronIcon == mTheme->mPopupChevronLeftIcon)
         setChevronIcon(mTheme->mPopupChevronRightIcon);
     mPopup->setSide(side);
+}
+
+void PopupButton::setTheme(Theme *theme) {
+    Button::setTheme(theme);
+    mPopup->setTheme(theme);
+    if (mTheme)
+        mIconExtraScale = mTheme->mPopupIconExtraScale;
 }
 
 void PopupButton::save(Serializer &s) const {

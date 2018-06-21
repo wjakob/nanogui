@@ -456,11 +456,13 @@ void Screen::drawWidgets() {
 
                 h = (bounds[2] - bounds[0]) / 2;
             }
-            nvgGlobalAlpha(mNVGContext,
-                           std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
+            float opacity = std::min(
+                widget->theme()->mTooltipOpacity, 2.0f * (static_cast<float>(elapsed) - 0.5f)
+            );
+            nvgGlobalAlpha(mNVGContext, opacity);
 
             nvgBeginPath(mNVGContext);
-            nvgFillColor(mNVGContext, Color(0, 255));
+            nvgFillColor(mNVGContext, widget->theme()->mTooltipBackgroundColor);
             nvgRoundedRect(mNVGContext, bounds[0] - 4 - h, bounds[1] - 4,
                            (int) (bounds[2] - bounds[0]) + 8,
                            (int) (bounds[3] - bounds[1]) + 8, 3);
@@ -471,7 +473,7 @@ void Screen::drawWidgets() {
             nvgLineTo(mNVGContext, px - 7, bounds[1] + 1);
             nvgFill(mNVGContext);
 
-            nvgFillColor(mNVGContext, Color(255, 255));
+            nvgFillColor(mNVGContext, widget->theme()->mTooltipTextColor);
             nvgFontBlur(mNVGContext, 0.0f);
             nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
                        widget->tooltip().c_str(), nullptr);

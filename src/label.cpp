@@ -17,7 +17,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
-    : Widget(parent, font), mCaption(caption) {
+    : Widget(parent, font), mCaption(caption), mColorExplicit(false) {
 
     if (mTheme)
         mColor = mTheme->mTextColor;
@@ -29,7 +29,7 @@ Label::Label(Widget *parent, const std::string &caption, const std::string &font
 void Label::setTheme(Theme *theme) {
     Widget::setTheme(theme);
 
-    if (mTheme)
+    if (!mColorExplicit && mTheme)
         mColor = mTheme->mTextColor;
 }
 
@@ -58,7 +58,10 @@ void Label::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
     nvgFontFace(ctx, font().c_str());
     nvgFontSize(ctx, fontSize(mTheme->mStandardFontSize));
-    nvgFillColor(ctx, mColor);
+    if (mColorExplicit)
+        nvgFillColor(ctx, mColor);
+    else
+        nvgFillColor(ctx, mTheme->mTextColor);
     if (mFixedSize.x() > 0) {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
         nvgTextBox(ctx, mPos.x(), mPos.y(), mFixedSize.x(), mCaption.c_str(), nullptr);
@@ -72,12 +75,14 @@ void Label::save(Serializer &s) const {
     Widget::save(s);
     s.set("caption", mCaption);
     s.set("color", mColor);
+    s.set("colorExplicit", mColorExplicit);
 }
 
 bool Label::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
     if (!s.get("color", mColor)) return false;
+    if (!s.get("colorExplicit", mColorExplicit)) return false;
     return true;
 }
 
