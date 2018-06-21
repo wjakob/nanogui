@@ -27,6 +27,9 @@ ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(paren
     mCallback = [](const Color &) {};
     mFinalCallback = [](const Color &) {};
 
+    // the color of the chevron icon and button text
+    mTextColor = color.contrastingColor();
+
     // set the color wheel to the specified color
     mColorWheel = new ColorWheel(popup, color);
 
@@ -94,6 +97,8 @@ void ColorPicker::setColor(const Color& color) {
 
         mResetButton->setBackgroundColor(color);
         mResetButton->setTextColor(fg);
+
+        mTextColor = fg;
     }
 }
 
