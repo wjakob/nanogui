@@ -819,6 +819,10 @@ static const char *__doc_nanogui_ColorWheel_hue2rgb = R"doc()doc";
 
 static const char *__doc_nanogui_ColorWheel_load = R"doc(Sets the state of this ColorWheel using the specified Serializer.)doc";
 
+static const char *__doc_nanogui_ColorWheel_mAlpha =
+R"doc(Conversions between HSV and RGB have nothing to do with alpha, this is
+tracked separately.)doc";
+
 static const char *__doc_nanogui_ColorWheel_mBlack =
 R"doc(The implicit Saturation component of the HSV color model. See
 implementation nanogui::ColorWheel::color for its usage. Valid values
@@ -2795,6 +2799,10 @@ static const char *__doc_nanogui_Screen_dropCallbackEvent = R"doc()doc";
 
 static const char *__doc_nanogui_Screen_dropEvent = R"doc(Handle a file drop event)doc";
 
+static const char *__doc_nanogui_Screen_getClipboardString =
+R"doc(Returns the current clipboard string (convenience wrapper for
+``glfwGetClipboardString``).)doc";
+
 static const char *__doc_nanogui_Screen_glfwWindow = R"doc(Return a pointer to the underlying GLFW window data structure)doc";
 
 static const char *__doc_nanogui_Screen_initialize = R"doc(Initialize the Screen)doc";
@@ -2892,6 +2900,10 @@ static const char *__doc_nanogui_Screen_scrollCallbackEvent = R"doc()doc";
 static const char *__doc_nanogui_Screen_setBackground = R"doc(Set the screen's background color)doc";
 
 static const char *__doc_nanogui_Screen_setCaption = R"doc(Set the window title bar caption)doc";
+
+static const char *__doc_nanogui_Screen_setClipboardString =
+R"doc(Set the current clipboard string (convenience wrapper for
+``glfwSetClipboardString``).)doc";
 
 static const char *__doc_nanogui_Screen_setResizeCallback = R"doc()doc";
 

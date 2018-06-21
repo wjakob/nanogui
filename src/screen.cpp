@@ -119,7 +119,7 @@ static float get_pixel_ratio(GLFWwindow *window) {
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
-      mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+      mCaption(""), mShutdownGLFWOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
@@ -724,6 +724,14 @@ void Screen::moveWindowToFront(Window *window) {
             }
         }
     } while (changed);
+}
+
+void Screen::setClipboardString(const std::string &clip) const {
+    glfwSetClipboardString(mGLFWWindow, clip.c_str());
+}
+
+std::string Screen::getClipboardString() const {
+    return std::string(glfwGetClipboardString(mGLFWWindow));
 }
 
 NAMESPACE_END(nanogui)

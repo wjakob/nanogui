@@ -126,6 +126,8 @@ void register_widget(py::module &m) {
         .def("glfwWindow", &Screen::glfwWindow, D(Screen, glfwWindow),
                 py::return_value_policy::reference)
         .def("nvgContext", &Screen::nvgContext, D(Screen, nvgContext),
-                py::return_value_policy::reference);
+                py::return_value_policy::reference)
+        .def("setClipboardString", &Screen::setClipboardString, D(Screen, setClipboardString))
+        .def("getClipboardString", &Screen::getClipboardString, D(Screen, getClipboardString));
 }
 #endif

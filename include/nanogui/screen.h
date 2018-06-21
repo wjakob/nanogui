@@ -148,6 +148,10 @@ public:
         Widget::performLayout(mNVGContext);
     }
 
+    /// Set the current clipboard string (convenience wrapper for ``glfwSetClipboardString``).
+    void setClipboardString(const std::string &clip) const;
+    /// Returns the current clipboard string (convenience wrapper for ``glfwGetClipboardString``).
+    std::string getClipboardString() const;
 public:
     /********* API for applications which manage GLFW themselves *********/
 
