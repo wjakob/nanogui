@@ -101,6 +101,9 @@ protected:
      */
     float mBlack;
 
+    /// Conversions between HSV and RGB have nothing to do with alpha, this is tracked separately.
+    float mAlpha;
+
     /// The current region the mouse is interacting with.
     Region mDragRegion;
 

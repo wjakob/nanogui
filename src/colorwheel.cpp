@@ -256,17 +256,21 @@ Color ColorWheel::hue2rgb(float h) const {
         case 5: r = v, g = p, b = q; break;
     }
 
-    return { r, g, b, 1.f };
+    return { r, g, b, mAlpha };
 }
 
 Color ColorWheel::color() const {
     Color rgb    = hue2rgb(mHue);
     Color black  { 0.f, 0.f, 0.f, 1.f };
     Color white  { 1.f, 1.f, 1.f, 1.f };
-    return rgb * (1 - mWhite - mBlack) + black * mBlack + white * mWhite;
+    Color ret = rgb * (1 - mWhite - mBlack) + black * mBlack + white * mWhite;
+    ret.w() = mAlpha;
+    return ret;
 }
 
 void ColorWheel::setColor(const Color &rgb) {
+    mAlpha = rgb.w();
+
     float r = rgb[0], g = rgb[1], b = rgb[2];
 
     float max = std::max({ r, g, b });
@@ -309,6 +313,7 @@ void ColorWheel::save(Serializer &s) const {
     s.set("hue", mHue);
     s.set("white", mWhite);
     s.set("black", mBlack);
+    s.set("alpha", mAlpha);
 }
 
 bool ColorWheel::load(Serializer &s) {
@@ -316,6 +321,7 @@ bool ColorWheel::load(Serializer &s) {
     if (!s.get("hue", mHue)) return false;
     if (!s.get("white", mWhite)) return false;
     if (!s.get("black", mBlack)) return false;
+    if (!s.get("alpha", mAlpha)) return false;
     mDragRegion = Region::None;
     return true;
 }
