@@ -93,3 +93,23 @@ matrix:
       env: STYLE
       script:
       - resources/check-style.sh
+    - os: linux
+      env: DOCS
+      language: python
+      addons:
+        apt:
+          packages:
+            - doxygen
+      python: "3.6"
+      install:
+        - pip install -U pip
+        - pip install -r docs/requirements.txt
+      script:
+        - cd docs/
+        # Suppress Doxygen output on Travis (floods log buffer).
+        # The $COLON business is because we are in a YAML file :/
+        - export COLON="$(echo 'Ogo=' | base64 -d)"
+        - sed -i 's/exhale_args = {/exhale_args = {"exhaleSilentDoxygen"'"$COLON"' True,/g' conf.py
+        - doxygen --version
+        - make html
+        - make linkcheck

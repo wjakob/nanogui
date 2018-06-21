@@ -43,6 +43,66 @@ For Windows, the process is nearly the same:
    # Either open the .sln with Visual Studio, or run
    $ cmake --build . --config Release
 
+.. _compilation_configuring_a_git_submodule:
+
+Configuring a Git Submodule
+----------------------------------------------------------------------------------------
+
+This section outlines how to get a `git submodule <submodule>`_ setup if you do not know
+how.  Once you have a submodule setup, see the :ref:`compilation_default_configurations`
+section for information on building NanoGUI from a parent CMake project.
+
+.. code-block:: none
+
+   some_repo/
+       CMakeLists.txt  # <- The parent project build system.
+       ext/
+           nanogui/    # <- The nanogui git submodule.
+
+So assuming you are in the root directory ``some_repo``:
+
+.. code-block:: console
+
+   $ mkdir ext
+   $ cd ext
+   $ git submodule add https://github.com/wjakob/nanogui.git
+
+What this does is inform ``git`` that there is a sub-project that needs to be cloned as
+well, it will create a file ``.gitmodules`` representing this fact.  Since NanoGUI also
+has submodules, when we set this up **the first time**, these have **not** been cloned.
+
+.. code-block:: console
+
+   $ git submodule update --init --recursive
+
+Once you run that command, all of the submodules of NanoGUI will now be downloaded.  In
+the future, put instructions in your README informing users to clone your repository
+recursively:
+
+.. code-block:: console
+
+   $ git clone --recursive https://github.com/username/repository.git
+
+.. tip::
+
+   You can inform users that forgot the ``--recursive`` from your CMake build system
+   how to recover.  The ``ext/nanogui`` directory on a non-recursive clone will be an
+   empty directory.  So including something like the following should be sufficient to
+   inform your users how to recover:
+
+   .. code-block:: cmake
+
+      if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanogui/include")
+        message(FATAL_ERROR "The NanoGUI dependency is missing!  You probably did not "
+                            "clone the project with --recursive. It is possible to "
+                            "recover by calling\n    "
+                            "git submodule update --init --recursive")
+      endif()
+
+.. _submodule: https://git-scm.com/book/en/v2/Git-Tools-Submodules
+
+.. _compilation_default_configurations:
+
 Default Configurations
 ----------------------------------------------------------------------------------------
 
@@ -63,7 +123,8 @@ By default, NanoGUI will
 +---------------------------------+---------------------------+
 
 Users developing projects that reference NanoGUI as a ``git submodule`` (this
-is **strongly** encouraged) can set up the parent project's CMake configuration
+is **strongly** encouraged, see the :ref:`compilation_configuring_a_git_submodule`
+section) can set up the parent project's CMake configuration
 file as follows (this assumes that ``nanogui`` lives in the directory
 ``ext/nanogui`` relative to the parent project):
 
@@ -78,7 +139,7 @@ file as follows (this assumes that ``nanogui`` lives in the directory
     add_subdirectory(ext/nanogui)
 
     # For reliability of parallel build, make the NanoGUI targets dependencies
-    set_property(TARGET glfw glfw_objects nanogui PROPERTY FOLDER "dependencies")
+    set_property(TARGET glfw_objects nanogui PROPERTY FOLDER "dependencies")
 
 Required Variables Exposed
 ----------------------------------------------------------------------------------------
@@ -247,50 +308,114 @@ a starting point to being able to "share" NanoGUI as the vendor of ``glfw``.
 Including Custom Fonts
 ****************************************************************************************
 
-NanoGUI uses the Roboto_ font for text, and Entypo_ font for icons.  If you wish to add
-your own custom font, all you need is a True Type file (a ``.ttf`` extension).  NanoGUI
-will glob all fonts found in ``resources`` by expanding ``resources/*.ttf``.  So if you
-had the directory structure
+NanoGUI uses the Roboto_ font for text.  The font faces available are
+
+1. ``Roboto-Regular.ttf``: loaded as ``"sans"``.
+2. ``Roboto-Bold.ttf``: loaded as ``"sans-bold"``.
+3. ``RobotoMono-Regular.ttf``: loaded as ``"mono"``.
+4. ``RobotoMono-Bold.ttf``: loaded as ``"mono-bold"``.
+
+If you wish to add your own custom font, all you need is a True Type file (a ``.ttf``
+extension).  Suppose you had the following directory structure:
 
 .. code-block:: none
 
-   myproject/
-       CMakeLists.txt      <- where this code is
-       fonts/
-           superfont.ttf
+   myproj/
        ext/
-           nanogui/
-               resources/
+           nanogui/       <- The submodule.
+       CMakeLists.txt     <- Add to this file.
+       resources/
+           customfont.ttf <- The custom font to embed.
 
-You simply need to copy the ``superfont.ttf`` to NanoGUI's resources directory:
+Simply append the path to ``NANOGUI_EXTRA_RESOURCES`` **before** doing
+``add_subdirectory(ext/nanogui)``:
 
 .. code-block:: cmake
 
-   file(
-     COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts/superfont.ttf
-     DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/ext/nanogui/resources/superfont.ttf
-   )
+   list(APPEND NANOGUI_EXTRA_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/resources/customfont.ttf")
 
-When you build the code, there should be a file ``nanogui_resources.h`` generated.  If
-everything worked, your new font should have been included.
-
-.. note::
-
-   Since NanoGUI can support images as icons, you will want to make sure that the
-   *codepoint* for any *icon* fonts you create is greater than ``1024``.  See
-   :func:`nanogui::nvgIsImageIcon`.
+NanoGUI will automatically embed the ``customfont.ttf`` file, keeping in mind that
+``${CMAKE_CURRENT_SOURCE_DIR}`` is **required** to guarantee that CMake will expand
+the *correct* path to the font.
 
 .. tip::
 
-   Some widgets allow you to set fonts directly, but if you want to apply the font
-   globally, you should create a sub-class of :class:`nanogui::Theme` and explicitly
-   call :func:`nanogui::Widget::setTheme` for each widget you create.
+   See :ref:`nanogui_usage_customization_loading_custom_fonts` for more information on
+   how to load extra fonts.
 
 .. _Roboto: https://fonts.google.com/specimen/Roboto
 
-.. _Entypo: http://www.entypo.com
+.. _nanogui_including_custom_icon_fonts:
 
-.. _utf8: http://www.utf8-chartable.de/
+Including Custom Icon Fonts
+****************************************************************************************
+
+NanoGUI uses the Entypo_ font for icons, which is loaded as ``"icons"``.  If you want to
+be able to use an alternative icon font, the process is similar to loading custom fonts
+for text but with additional requirements.  Suppose you wanted to load a custom icon
+font called ``customicons.ttf``.  Then the following directory structure is assumed:
+
+.. code-block:: none
+
+   myproj/
+       ext/
+           nanogui/                      <- The submodule
+       CMakeLists.txt                    <- Add to this file.
+       resources/
+           customicons/
+               customicons.ttf           <- The custom icon font to embed.
+               customicons.h             <- The C++ header defining the constants.
+               constants_customicons.cpp <- The python bindings code.
+
+1. The naming must be **exact**: if the font was ``SomeFont.ttf``, then the nanogui
+   build system searches instead for ``SomeFont.h`` and ``constants_SomeFont.cpp``.
+2. These files must all be in **the same directory**.
+
+What the three files represent:
+
+- ``customicons.ttf``: the icon font that will be embedded.
+- ``customicons.h``: the C++ header file that enumerates the ``#define`` directives.
+  This file is what enables you to actually use the icons in code.
+- ``constants_customicons.cpp``: the python bindings for the font.  Note that this file
+  is only required if ``NANOGUI_BUILD_PYTHON`` is ``ON``.
+
+Simply specify the path to the custom icons font with ``NANOGUI_EXTRA_ICON_RESOURCES``:
+
+.. code-block:: cmake
+
+   list(
+     APPEND
+     NANOGUI_EXTRA_ICON_RESOURCES
+     "${CMAKE_CURRENT_SOURCE_DIR}/resources/customicons/customicons.ttf"
+   )
+
+Keep in mind that ``${CMAKE_CURRENT_SOURCE_DIR}`` is **required** to guarantee that
+CMake will expand the *correct* path to the icon font.
+
+.. note::
+
+   It is assumed that somewhere in your project **after**
+   ``add_subdirectory(ext/nanogui)`` you are also doing
+   ``include_directories(${NANOGUI_EXTRA_INCS})``.  In the example above, the file
+   ``customicons.h`` will automatically be copied to a location included in
+   ``NANOGUI_EXTRA_INCS`` such that in your own code, you write
+   ``#include <nanogui/customicons.h>`` noting the extra ``nanogui/``.  In other words,
+   this ``customicons.h`` becomes a part of the distribution (e.g., if you were to
+   install NanoGUI).  As such, you should **not** need to do something like
+   ``include_directories("${CMAKE_CURRENT_SOURCE_DIR}/resources/customicons")``.
+
+.. warning::
+
+   See the :ref:`nanogui_usage_customization_default_icon_fonts` section for
+   requirements on the numeric values in custom icon fonts.
+
+.. tip::
+
+   Have the ``.svg`` icons for a custom icon font?  Use the scripts available in the
+   `nanogui-custom-font-generator <https://github.com/svenevs/nanogui-custom-font-generator>`_
+   repository to generate the requisite three files.
+
+.. _Entypo: http://www.entypo.com
 
 .. _nanogui_compiling_the_docs:
 
@@ -299,16 +424,19 @@ Compiling the Documentation
 
 The documentation system relies on 'Doxygen', 'Sphinx', 'Breathe', and
 'Exhale'.  It uses the 'Read the Docs' theme for the layout of the generated
-html.  So you will need to first
+html.  Documenting C++ with Sphinx is evolving rapidly, as such we encourage you
+to build the documentation using `Virtualenv <https://virtualenv.pypa.io/en/stable/>`_.
+This way if the NanoGUI documentation needs different versions of something
+(e.g., Sphinx), you will not need to change your system installation.
 
 1. Install Doxygen for your operating system.  On Unix based systems, this
    should be available through your package manager (apt-get, brew, dnf, etc).
 
-2. Install Sphinx, Breathe, Exhale, and the theme:
+2. Install ``virtualenv``:
 
-   .. code-block:: py
+   .. code-block:: bash
 
-      pip3 install exhale sphinx_rtd_theme
+      $ pip3 install virtualenv
 
 Now that you have the relevant tools, you can build the documentation with
 
@@ -317,8 +445,21 @@ Now that you have the relevant tools, you can build the documentation with
    # Enter the documentation directory
    $ cd <path/to/nanogui>/docs
 
+   # Create the virtual environment.  Note that 'venv' is exactly
+   # the name excluded in `conf.py`, using a different name will
+   # result in *hundreds* of extra build warnings!
+   $ virtualenv venv
+
+   # Activate the virtual environment (Windows: python venv/bin/activate_this.py)
+   $ source venv/bin/activate
+
+   # Install the documentation requirements for NanoGUI
+   (venv) $ pip install -r requirements.txt
+
    # Build the documentation
-   $ make html
+   (venv) $ make html
+
+   # When you are done, leave the virtual environment with `deactivate`
 
 The output will be generated in ``_build``, the root html document is located
 at ``_build/html/index.html``.

@@ -214,4 +214,9 @@ icons used on various widgets.  This work is licensed under a
 Commercial entities using NanoGUI should consult the proper legal counsel for
 how to best adhere to the attribution clause of the license.
 
+NanoGUI also uses four selected fonts from `Roboto <https://fonts.google.com/specimen/Roboto>`_
+in the ``resources/`` folder (``Roboto-Regular.ttf``, ``Roboto-Bold.ttf``,
+``RobotoMono-Regular.ttf``, and ``RobotoMono-Bold.ttf``).  These files are governed by
+a compatible `Apache v2 License <http://www.apache.org/licenses/LICENSE-2.0>`_.
+
 .. end_license

@@ -85,4 +85,20 @@ Example Repository
 
 Darren Mothersele has put together a compact and informative example repository that
 demonstrates how easy it is to include NanoGUI into your project.  You download / browse
-the source on `GitHub <https://github.com/darrenmothersele/nanogui-test.git>`_.
+the source on `GitHub <https://github.com/darrenmothersele/nanogui-test>`_.
+
+.. _nanogui_example_customization:
+
+Example Customization
+----------------------------------------------------------------------------------------
+
+.. tip::
+
+   Refer to the :ref:`nanogui_usage_customization` section first, which explains the
+   details related to changing theme colors and loading custom fonts.
+
+The `nanogui-customization-demo <https://github.com/svenevs/nanogui-customization-demo>`_
+repository contains complete examples of customizing various aspects of both the default
+colors and icons.  It also contains a helper python application for changing the theme
+colors, with the ability to export the custom theme class definition for both C++ and
+Python.

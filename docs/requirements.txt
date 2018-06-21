@@ -1,1 +1,5 @@
+# Breathe is broken with Sphinx v1.7+ at this time
+# See: https://github.com/michaeljones/breathe/issues/371
+sphinx==1.6.7
+sphinx_rtd_theme
 exhale

@@ -29,6 +29,7 @@ libnanogui.dylib
 docs/_build
 docs/doxyoutput
 docs/api
+docs/venv
 
 # entypo update generation
 # this is it's own repo: https://github.com/svenevs/nanogui-entypo
