@@ -17,9 +17,9 @@
 NAMESPACE_BEGIN(nanogui)
 
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
-                   const std::function<void(bool) > &callback)
-    : Widget(parent), mCaption(caption), mPushed(false), mChecked(false),
-      mCallback(callback) {
+                   const std::function<void(bool) > &callback, const std::string &font)
+    : Widget(parent, font), mCaption(caption), mPushed(false),
+      mChecked(false), mCallback(callback) {
 
     mIconExtraScale = 1.2f;// widget override
 }
@@ -49,23 +49,26 @@ bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
 Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
     if (mFixedSize != Vector2i::Zero())
         return mFixedSize;
-    nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+
+    float fontSize = Widget::fontSize(mTheme->mStandardFontSize);
+    nvgFontSize(ctx, fontSize);
+    nvgFontFace(ctx, font().c_str());
     return Vector2i(
         nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) +
-            1.8f * fontSize(),
-        fontSize() * 1.3f);
+            1.8f * fontSize,
+        fontSize * 1.3f);
 }
 
 void CheckBox::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
-    nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    float fontSize = Widget::fontSize(mTheme->mStandardFontSize);
+    nvgFontSize(ctx, fontSize);
+    nvgFontFace(ctx, font().c_str());
     nvgFillColor(ctx,
                  mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgText(ctx, mPos.x() + 1.6f * fontSize(), mPos.y() + mSize.y() * 0.5f,
+    nvgText(ctx, mPos.x() + 1.6f * fontSize, mPos.y() + mSize.y() * 0.5f,
             mCaption.c_str(), nullptr);
 
     NVGpaint bg = nvgBoxGradient(ctx, mPos.x() + 1.5f, mPos.y() + 1.5f,
@@ -81,7 +84,7 @@ void CheckBox::draw(NVGcontext *ctx) {
 
     if (mChecked) {
         nvgFontSize(ctx, mSize.y() * icon_scale());
-        nvgFontFace(ctx, "icons");
+        nvgFontFace(ctx, iconFont().c_str());
         nvgFillColor(ctx, mEnabled ? mTheme->mIconColor
                                    : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);

@@ -44,9 +44,14 @@ public:
      *     unchecked.  Default parameter function does nothing.  See
      *     \ref nanogui::CheckBox::mPushed for the difference between "pushed"
      *     and "checked".
+     *
+     * \param font
+     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     which will typically be ``"sans"``).
      */
     CheckBox(Widget *parent, const std::string &caption = "Untitled",
-             const std::function<void(bool)> &callback = std::function<void(bool)>());
+             const std::function<void(bool)> &callback = std::function<void(bool)>(),
+             const std::string &font = "");
 
     /// The caption of this CheckBox.
     const std::string &caption() const { return mCaption; }

@@ -23,12 +23,29 @@ NAMESPACE_BEGIN(nanogui)
  */
 class ToolButton : public Button {
 public:
-    ToolButton(Widget *parent, int icon,
-           const std::string &caption = "")
-        : Button(parent, caption, icon) {
+    /**
+     * \brief Creates a ToolButton attached to the specified parent.
+     *
+     * \param parent
+     *     The \ref nanogui::Widget this ToolButton will be attached to.
+     *
+     * \param icon
+     *     The icon to use for this ToolButton.  See \ref nanogui::Button::mIcon.
+     *
+     * \param caption
+     *     The name of the button (default ``""``).
+     *
+     * \param font
+     *     The font face to use (default ``""`` implies
+     *     \ref Theme::defaultBoldFont, which will typically be ``"sans-bold"``).
+     */
+    ToolButton(Widget *parent, int icon, const std::string &caption = "",
+               const std::string &font = "")
+        : Button(parent, caption, icon, font) {
         setFlags(Flags::RadioButton | Flags::ToggleButton);
         setFixedSize(Vector2i(25, 25));
     }
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

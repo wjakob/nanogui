@@ -23,7 +23,28 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Graph : public Widget {
 public:
-    Graph(Widget *parent, const std::string &caption = "Untitled");
+    /**
+     * \brief Creates a new Graph with the specified parent.
+     *
+     * \rst
+     * .. tip::
+     *
+     *    See :ref:`nanogui_example_1` for how to set the values of the graph
+     *    using the :func:`Graph::values` or :func:`Graph::setValues` methods.
+     *
+     * \endrst
+     *
+     * \param parent
+     *     The parent of this Graph.
+     *
+     * \param caption
+     *     The caption to use for this Graph (default: ``Untitled``).
+     *
+     * \param font
+     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     which will typically be ``"sans"``).
+     */
+    Graph(Widget *parent, const std::string &caption = "Untitled", const std::string &font = "");
 
     const std::string &caption() const { return mCaption; }
     void setCaption(const std::string &caption) { mCaption = caption; }

@@ -417,7 +417,7 @@ void ImageView::drawPixelInfo(NVGcontext* ctx, float stride) const {
     nvgBeginPath(ctx);
     nvgFontSize(ctx, fontSize);
     nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, font().c_str());
     while (topLeft.y() != bottomRight.y()) {
         while (topLeft.x() != bottomRight.x()) {
             writePixelInfo(ctx, currentCellPosition, topLeft, stride, fontSize);

@@ -28,8 +28,9 @@ void register_misc(py::module &m) {
         .def("setFinalCallback", &ColorPicker::setFinalCallback, D(ColorPicker, setFinalCallback));
 
     py::class_<Graph, Widget, ref<Graph>, PyGraph>(m, "Graph", D(Graph))
-        .def(py::init<Widget *, const std::string &>(), py::arg("parent"),
-             py::arg("caption") = std::string("Untitled"), D(Graph, Graph))
+        .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
+             py::arg("caption") = std::string("Untitled"), py::arg("font") = std::string(""),
+             D(Graph, Graph))
         .def("caption", &Graph::caption, D(Graph, caption))
         .def("setCaption", &Graph::setCaption, D(Graph, setCaption))
         .def("header", &Graph::header, D(Graph, header))

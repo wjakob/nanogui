@@ -31,8 +31,23 @@ enum class Cursor;// do not put a docstring, this is already documented
  */
 class NANOGUI_EXPORT Widget : public Object {
 public:
-    /// Construct a new widget with the given parent widget
-    Widget(Widget *parent);
+    /**
+     * \brief Constructs a Widget.
+     *
+     * \param parent
+     *     The parent of this Widget.
+     *
+     * \param font
+     *     \rst
+     *     The font face to start with.  When anything other than the empty
+     *     string, this implies that a user has explicitly requested a specific
+     *     font face.  For example, ``new Label(parent, "text", "sans-bold")``.
+     *     That is, sub-classes that draw text should always provide an explicit
+     *     ``font`` parameter in their constructor, with a default value of
+     *     ``""``.  See :ref:`nanogui_usage_how_fonts_are_used`.
+     *     \endrst
+     */
+    Widget(Widget *parent, const std::string &font = "");
 
     /// Return the parent widget
     Widget *parent() { return mParent; }
@@ -183,27 +198,69 @@ public:
     /// Request the focus to be moved to this widget
     void requestFocus();
 
-    const std::string &tooltip() const { return mTooltip; }
-    void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
-
-    /// Return current font size. If not set the default of the current theme will be returned
-    int fontSize() const;
-    /// Set the font size of this widget
-    void setFontSize(int fontSize) { mFontSize = fontSize; }
+    /**
+     * \brief Convenience method to get a valid font size.
+     *
+     * If \ref mFontSize is greater than ``0`` (e.g., \ref setFontSize has been
+     * called), then \ref mFontSize will be returned.  Otherwise,
+     * ``defaultFontSize`` is returned.
+     *
+     * \param defaultFontSize
+     *     The default value to return when \ref mFontSize is not set.  For
+     *     example, the \ref Label class uses
+     *     ``fontSize(mTheme->mStandardFontSize)`` whereas \ref Button will use
+     *     ``fontSize(mTheme->mButtonFontSize)``.
+     *
+     * \throws std::runtime_error
+     *     When ``defaultFontSize < 1.0f``.
+     */
+    float fontSize(const float &defaultFontSize) const;
+    /**
+     * \brief Set the font size of this widget.  Set to ``-1`` to revert to
+     *        a derived class default (e.g. \ref Theme::mStandardFontSize for
+     *        \ref Label).
+     *
+     * \throws std::runtime_error
+     *     When ``size >= 0 && size < 1.0f``.
+     */
+    void setFontSize(float size);
     /// Return whether the font size is explicitly specified for this widget
-    bool hasFontSize() const { return mFontSize > 0; }
+    bool hasFontSize() const { return mFontSize > 0.0f; }
+
+    /// The current font being used for this Widget (if text is being drawn).
+    std::string font() const;
+    /// Sets the font to be used for this Widget (if text is being drawn).
+    void setFont(const std::string &font) { mFont = font; }
+    /// Called by \ref Widget::font when \ref mFont is the empty string.
+    virtual std::string defaultFont() const;
+
+    /// The tooltip for this Widget (displays on mouse hover).
+    const std::string &tooltip() const { return mTooltip; }
+    /// Sets the tooltip for this Widget (displays on mouse hover).
+    void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
+    /// Get the font name being used to draw \ref mTooltip
+    std::string tooltipFont() const;
+    /// Set the font to be used to draw \ref mTooltip.
+    void setTooltipFont(const std::string &font) { mTooltipFont = font; }
+    /// Called by \ref Widget::tooltipFont when \ref mTooltipFont is the empty string.
+    virtual std::string defaultTooltipFont() const;
 
     /**
      * The amount of extra scaling applied to *icon* fonts.
      * See \ref nanogui::Widget::mIconExtraScale.
      */
     float iconExtraScale() const { return mIconExtraScale; }
-
     /**
      * Sets the amount of extra scaling applied to *icon* fonts.
      * See \ref nanogui::Widget::mIconExtraScale.
      */
     void setIconExtraScale(float scale) { mIconExtraScale = scale; }
+    /// Get the font name being used to draw icons for this widget.
+    std::string iconFont() const;
+    /// Sets the icon font for this Widget (assumes this font is valid / already loaded).
+    void setIconFont(const std::string &iconFont) { mIconFont = iconFont; }
+    /// Called by \ref Widget::iconFont when \ref mIconFont is the empty string.
+    virtual std::string defaultIconFont() const;
 
     /// Return a pointer to the cursor of the widget
     Cursor cursor() const { return mCursor; }
@@ -296,8 +353,9 @@ protected:
      */
     bool mEnabled;
     bool mFocused, mMouseFocus;
+
+    /// The tooltip to draw for this widget (on mouse hover).  Empty string means no tooltip.
     std::string mTooltip;
-    int mFontSize;
 
     /**
      * \brief The amount of extra icon scaling used in addition the the theme's
@@ -334,7 +392,60 @@ protected:
      * \endrst
      */
     float mIconExtraScale;
+
     Cursor mCursor;
+
+private:
+    /* Font related utilities.  To use in derived classes, call the getter.
+     * E.g. for `mFont`, call `font()` and `mTooltipFont` call `tooltipFont()`.
+     * To set it, call the setter.  E.g. set `mFont` with `setFont` and
+     * `mTooltipFont` with `setTooltipFont`.
+     */
+
+    /**
+     * Used to set the font size of a widget explicitly.  The initial value is
+     * ``-1``, and a negative number indicates that the theme's font size should
+     * be used instead.  Specifically, \ref fontSize will return
+     * \ref Theme::mStandardFontSize when ``mFontSize < 0``.
+     */
+    float mFontSize;
+
+    /**
+     * \brief The explicitly specified font face to use for drawing generic text.
+     *
+     * \rst
+     * The value of this variable is typically the empty string (``""``),
+     * indicating that no font has been explicitly specified by a user.  In this
+     * event, either the class or theme will define the font face.  See
+     * :ref:`nanogui_usage_how_fonts_are_used`.
+     * \endrst
+     */
+    std::string mFont;
+
+    /**
+     * \brief The explicitly specified font face for drawing \ref mTooltip with.
+     *
+     * \rst
+     * The value of this variable is typically the empty string (``""``),
+     * indicating that no font has been explicitly specified by a user.  In this
+     * event, either the class or theme will define the font face.  See
+     * :ref:`nanogui_usage_how_fonts_are_used`.
+     * \endrst
+     */
+    std::string mTooltipFont;
+
+    /**
+     * \brief The explicitly specified font face for drawing icon text.
+     *
+     * \rst
+     * The value of this variable is typically the empty string (``""``),
+     * indicating that no font has been explicitly specified by a user.  In this
+     * event, either the class or theme will define the font face.  See
+     * :ref:`nanogui_usage_how_fonts_are_used`.
+     * \endrst
+     */
+    std::string mIconFont;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

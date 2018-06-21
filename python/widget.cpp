@@ -8,7 +8,8 @@ DECLARE_WIDGET(Window);
 
 void register_widget(py::module &m) {
     py::class_<Widget, ref<Widget>, PyWidget>(m, "Widget", D(Widget))
-        .def(py::init<Widget *>(), D(Widget, Widget))
+        .def(py::init<Widget *, const std::string &>(),
+             py::arg("parent"), py::arg("font") = std::string(""), D(Widget, Widget))
         .def("parent", (Widget *(Widget::*)(void)) &Widget::parent, D(Widget, parent))
         .def("setParent", &Widget::setParent, D(Widget, setParent))
         .def("layout", (Layout *(Widget::*)(void)) &Widget::layout, D(Widget, layout))
@@ -55,11 +56,19 @@ void register_widget(py::module &m) {
         .def("focused", &Widget::focused, D(Widget, focused))
         .def("setFocused", &Widget::setFocused, D(Widget, setFocused))
         .def("requestFocus", &Widget::requestFocus, D(Widget, requestFocus))
-        .def("tooltip", &Widget::tooltip, D(Widget, tooltip))
-        .def("setTooltip", &Widget::setTooltip, D(Widget, setTooltip))
         .def("fontSize", &Widget::fontSize, D(Widget, fontSize))
         .def("setFontSize", &Widget::setFontSize, D(Widget, setFontSize))
         .def("hasFontSize", &Widget::hasFontSize, D(Widget, hasFontSize))
+        .def("font", &Widget::font, D(Widget, font))
+        .def("setFont", &Widget::setFont, D(Widget, setFont))
+        .def("tooltip", &Widget::tooltip, D(Widget, tooltip))
+        .def("setTooltip", &Widget::setTooltip, D(Widget, setTooltip))
+        .def("tooltipFont", &Widget::tooltipFont, D(Widget, tooltipFont))
+        .def("setTooltipFont", &Widget::setTooltipFont, D(Widget, setTooltipFont))
+        .def("iconExtraScale", &Widget::iconExtraScale, D(Widget, iconExtraScale))
+        .def("setIconExtraScale", &Widget::setIconExtraScale, D(Widget, setIconExtraScale))
+        .def("iconFont", &Widget::iconFont, D(Widget, iconFont))
+        .def("setIconFont", &Widget::setIconFont, D(Widget, setIconFont))
         .def("cursor", &Widget::cursor, D(Widget, cursor))
         .def("setCursor", &Widget::setCursor, D(Widget, setCursor))
         .def("findWidget", &Widget::findWidget, D(Widget, findWidget))
@@ -84,8 +93,8 @@ void register_widget(py::module &m) {
         .def("draw", &Widget::draw, D(Widget, draw));
 
     py::class_<Window, Widget, ref<Window>, PyWindow>(m, "Window", D(Window))
-        .def(py::init<Widget *, const std::string>(), py::arg("parent"),
-             py::arg("title") = std::string("Untitled"), D(Window, Window))
+        .def(py::init<Widget *, const std::string &, const std::string &>(), py::arg("parent"),
+             py::arg("title") = std::string("Untitled"), py::arg("font") = std::string(""), D(Window, Window))
         .def("title", &Window::title, D(Window, title))
         .def("setTitle", &Window::setTitle, D(Window, setTitle))
         .def("modal", &Window::modal, D(Window, modal))

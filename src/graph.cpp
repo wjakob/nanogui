@@ -16,8 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Graph::Graph(Widget *parent, const std::string &caption)
-    : Widget(parent), mCaption(caption) {
+Graph::Graph(Widget *parent, const std::string &caption, const std::string &font)
+    : Widget(parent, font), mCaption(caption) {
     mBackgroundColor = Color(20, 128);
     mForegroundColor = Color(255, 192, 0, 128);
     mTextColor = Color(240, 192);
@@ -53,7 +53,7 @@ void Graph::draw(NVGcontext *ctx) {
     nvgFillColor(ctx, mForegroundColor);
     nvgFill(ctx);
 
-    nvgFontFace(ctx, "sans");
+    nvgFontFace(ctx, font().c_str());
 
     if (!mCaption.empty()) {
         nvgFontSize(ctx, 14.0f);

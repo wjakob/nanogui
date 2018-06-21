@@ -19,12 +19,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Widget::Widget(Widget *parent)
+Widget::Widget(Widget *parent, const std::string &font)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
-      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
-      mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
+      mFocused(false), mMouseFocus(false), mTooltip(""),
+      mIconExtraScale(1.0f), mCursor(Cursor::Arrow),
+      mFontSize(-1.0f), mFont(font), mTooltipFont(""), mIconFont("") {
+
     if (parent)
         parent->addChild(this);
 }
@@ -44,8 +46,16 @@ void Widget::setTheme(Theme *theme) {
         child->setTheme(theme);
 }
 
-int Widget::fontSize() const {
-    return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
+float Widget::fontSize(const float &defaultFontSize) const {
+    if (defaultFontSize < 1.0f)
+        throw std::runtime_error("Widget::fontSize: parameter must be greater than or equal to 1.0f.");
+    return mFontSize < 0 ? defaultFontSize : mFontSize;
+}
+
+void Widget::setFontSize(float size) {
+    if (size >= 0.0f && size < 1.0f)
+        throw std::runtime_error("Widget::setFontSize: parameter must be greater than 1.0f or less than 0.0f.");
+    mFontSize = size;
 }
 
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
@@ -227,6 +237,49 @@ void Widget::draw(NVGcontext *ctx) {
     nvgRestore(ctx);
 }
 
+// font related getters
+std::string Widget::font() const {
+    if (!mFont.empty())
+        return mFont;
+    return defaultFont();
+}
+
+std::string Widget::defaultFont() const {
+    // let the theme decide the default font
+    if (mTheme)
+        return mTheme->mDefaultFont;
+    // rare: orphan widget with no parents (and thus no theme)
+    return Theme::GlobalDefaultFonts::Normal;
+}
+
+std::string Widget::tooltipFont() const {
+    if (!mTooltipFont.empty())
+        return mTooltipFont;
+    return defaultTooltipFont();
+}
+
+std::string Widget::defaultTooltipFont() const {
+    // use the theme's normal font default
+    if (mTheme)
+        return mTheme->mDefaultFont;
+    // rare: orphan widget with no parents (and thus no theme)
+    return Theme::GlobalDefaultFonts::Normal;
+}
+
+std::string Widget::iconFont() const {
+    if (!mIconFont.empty())
+        return mIconFont;
+    return defaultIconFont();
+}
+
+std::string Widget::defaultIconFont() const {
+    // let the theme decide the icon font
+    if (mTheme)
+        return mTheme->mDefaultIconFont;
+    // rare: orphan widget with no parents (and thus no theme)
+    return Theme::GlobalDefaultFonts::Icons;
+}
+
 void Widget::save(Serializer &s) const {
     s.set("position", mPos);
     s.set("size", mSize);
@@ -235,8 +288,11 @@ void Widget::save(Serializer &s) const {
     s.set("enabled", mEnabled);
     s.set("focused", mFocused);
     s.set("tooltip", mTooltip);
-    s.set("fontSize", mFontSize);
     s.set("cursor", (int) mCursor);
+    s.set("fontSize", mFontSize);
+    s.set("font", mFont);
+    s.set("tooltipFont", mTooltipFont);
+    s.set("iconFont", mIconFont);
 }
 
 bool Widget::load(Serializer &s) {
@@ -247,8 +303,11 @@ bool Widget::load(Serializer &s) {
     if (!s.get("enabled", mEnabled)) return false;
     if (!s.get("focused", mFocused)) return false;
     if (!s.get("tooltip", mTooltip)) return false;
-    if (!s.get("fontSize", mFontSize)) return false;
     if (!s.get("cursor", mCursor)) return false;
+    if (!s.get("fontSize", mFontSize)) return false;
+    if (!s.get("font", mFont)) return false;
+    if (!s.get("tooltipFont", mTooltipFont)) return false;
+    if (!s.get("iconFont", mIconFont)) return false;
     return true;
 }
 

@@ -23,8 +23,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-TextBox::TextBox(Widget *parent,const std::string &value)
-    : Widget(parent),
+TextBox::TextBox(Widget *parent, const std::string &value, const std::string &font)
+    : Widget(parent, font),
       mEditable(false),
       mSpinnable(false),
       mCommitted(true),
@@ -44,7 +44,6 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDownModifier(0),
       mTextOffset(0),
       mLastClick(0) {
-    if (mTheme) mFontSize = mTheme->mTextBoxFontSize;
     mIconExtraScale = 0.8f;// widget override
 }
 
@@ -55,12 +54,10 @@ void TextBox::setEditable(bool editable) {
 
 void TextBox::setTheme(Theme *theme) {
     Widget::setTheme(theme);
-    if (mTheme)
-        mFontSize = mTheme->mTextBoxFontSize;
 }
 
 Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
-    Vector2i size(0, fontSize() * 1.4f);
+    Vector2i size(0, fontSize(mTheme->mTextBoxFontSize) * 1.4f);
 
     float uw = 0;
     if (mUnitsImage > 0) {
@@ -113,8 +110,8 @@ void TextBox::draw(NVGcontext* ctx) {
     nvgStrokeColor(ctx, Color(0, 48));
     nvgStroke(ctx);
 
-    nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontSize(ctx, fontSize(mTheme->mTextBoxFontSize));
+    nvgFontFace(ctx, font().c_str());
     Vector2i drawPos(mPos.x(), mPos.y() + mSize.y() * 0.5f + 1);
 
     float xSpacing = mSize.y() * 0.3f;
@@ -150,8 +147,8 @@ void TextBox::draw(NVGcontext* ctx) {
     if (mSpinnable && !focused()) {
         spinArrowsWidth = 14.f;
 
-        nvgFontFace(ctx, "icons");
-        nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
+        nvgFontFace(ctx, iconFont().c_str());
+        nvgFontSize(ctx, fontSize(mTheme->mButtonFontSize) * icon_scale());
 
         bool spinning = mMouseDownPos.x() != -1;
 
@@ -175,8 +172,8 @@ void TextBox::draw(NVGcontext* ctx) {
             nvgText(ctx, iconPos.x(), iconPos.y(), icon.data(), nullptr);
         }
 
-        nvgFontSize(ctx, fontSize());
-        nvgFontFace(ctx, "sans");
+        nvgFontSize(ctx, fontSize(mTheme->mTextBoxFontSize));
+        nvgFontFace(ctx, font().c_str());
     }
 
     switch (mAlignment) {
@@ -194,7 +191,7 @@ void TextBox::draw(NVGcontext* ctx) {
             break;
     }
 
-    nvgFontSize(ctx, fontSize());
+    nvgFontSize(ctx, fontSize(mTheme->mTextBoxFontSize));
     nvgFillColor(ctx, mEnabled && (!mCommitted || !mValue.empty()) ?
         mTheme->mTextColor :
         mTheme->mDisabledTextColor);

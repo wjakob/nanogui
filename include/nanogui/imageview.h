@@ -167,6 +167,7 @@ private:
     // Image pixel data display members.
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

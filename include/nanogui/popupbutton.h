@@ -30,8 +30,24 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT PopupButton : public Button {
 public:
+    /**
+     * \brief Creates a PopupButton attached to the specified parent.
+     *
+     * \param parent
+     *     The \ref nanogui::Widget this PopupButton will be attached to.
+     *
+     * \param caption
+     *     The name of the button (default ``"Untitled"``).
+     *
+     * \param buttonIcon
+     *     The icon to display with this Button.  See \ref nanogui::Button::mIcon.
+     *
+     * \param font
+     *     The font face to use (default ``""`` implies
+     *     \ref Theme::defaultBoldFont, which will typically be ``"sans-bold"``).
+     */
     PopupButton(Widget *parent, const std::string &caption = "Untitled",
-                int buttonIcon = 0);
+                int buttonIcon = 0, const std::string &font = "");
     virtual ~PopupButton();
 
     void setChevronIcon(int icon) { mChevronIcon = icon; }

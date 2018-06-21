@@ -16,23 +16,29 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Button::Button(Widget *parent, const std::string &caption, int icon)
-    : Widget(parent), mCaption(caption), mIcon(icon),
+Button::Button(Widget *parent, const std::string &caption, int icon, const std::string &font)
+    : Widget(parent, font), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
       mFlags(NormalButton), mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0)) { }
 
+std::string Button::defaultFont() const {
+    if (mTheme)
+        return mTheme->mDefaultBoldFont;
+    return Theme::GlobalDefaultFonts::Bold;
+}
+
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
-    int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
+    float fontSize = Widget::fontSize(mTheme->mButtonFontSize);
     nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFace(ctx, font().c_str());
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
     float iw = 0.0f, ih = fontSize;
 
     if (mIcon) {
         if (nvgIsFontIcon(mIcon)) {
             ih *= icon_scale();
-            nvgFontFace(ctx, "icons");
+            nvgFontFace(ctx, iconFont().c_str());
             nvgFontSize(ctx, ih);
             iw = nvgTextBounds(ctx, 0, 0, utf8(mIcon).data(), nullptr, nullptr)
                 + mSize.y() * 0.15f;
@@ -152,9 +158,9 @@ void Button::draw(NVGcontext *ctx) {
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgStroke(ctx);
 
-    int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
+    float fontSize = Widget::fontSize(mTheme->mButtonFontSize);
     nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFace(ctx, font().c_str());
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
 
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
@@ -171,7 +177,7 @@ void Button::draw(NVGcontext *ctx) {
         if (nvgIsFontIcon(mIcon)) {
             ih *= icon_scale();
             nvgFontSize(ctx, ih);
-            nvgFontFace(ctx, "icons");
+            nvgFontFace(ctx, iconFont().c_str());
             iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
         } else {
             int w, h;
@@ -210,7 +216,7 @@ void Button::draw(NVGcontext *ctx) {
     }
 
     nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFace(ctx, font().c_str());
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     nvgFillColor(ctx, mTheme->mTextColorShadow);
     nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);

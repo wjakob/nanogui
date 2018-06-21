@@ -6,20 +6,17 @@ DECLARE_WIDGET(Label);
 DECLARE_WIDGET(Popup);
 DECLARE_WIDGET(MessageDialog);
 DECLARE_WIDGET(VScrollPanel);
-DECLARE_WIDGET(ComboBox);
 DECLARE_WIDGET(ProgressBar);
 DECLARE_WIDGET(Slider);
 
 void register_basics(py::module &m) {
     py::class_<Label, Widget, ref<Label>, PyLabel>(m, "Label", D(Label))
         .def(py::init<Widget *, const std::string &, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
+             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string(""),
              py::arg("fontSize") = -1,
              D(Label, Label))
         .def("caption", &Label::caption, D(Label, caption))
         .def("setCaption", &Label::setCaption, D(Label, setCaption))
-        .def("font", &Label::font, D(Label, font))
-        .def("setFont", &Label::setFont, D(Label, setFont))
         .def("color", &Label::color, D(Label, color))
         .def("setColor", &Label::setColor, D(Label, setColor));
 
@@ -61,23 +58,6 @@ void register_basics(py::module &m) {
         .def(py::init<Widget *>(), py::arg("parent"), D(VScrollPanel, VScrollPanel))
         .def("scroll", &VScrollPanel::scroll, D(VScrollPanel, scroll))
         .def("setScroll", &VScrollPanel::setScroll, D(VScrollPanel, setScroll));
-
-    py::class_<ComboBox, Widget, ref<ComboBox>, PyComboBox>(m, "ComboBox", D(ComboBox))
-        .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))
-        .def(py::init<Widget *, const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items")/*, D(ComboBox, ComboBox, 2)*/)
-        .def(py::init<Widget *, const std::vector<std::string> &,
-                      const std::vector<std::string> &>(),
-             py::arg("parent"), py::arg("items"), py::arg("itemsShort")/* ,D(ComboBox, ComboBox, 3)*/)
-        .def("callback", &ComboBox::callback, D(ComboBox, callback))
-        .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
-        .def("selectedIndex", &ComboBox::selectedIndex, D(ComboBox, selectedIndex))
-        .def("setSelectedIndex", &ComboBox::setSelectedIndex, D(ComboBox, setSelectedIndex))
-        .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))
-        .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&,
-                          const std::vector<std::string>&)) &ComboBox::setItems/*, D(ComboBox, setItems, 2)*/)
-        .def("items", &ComboBox::items, D(ComboBox, items))
-        .def("itemsShort", &ComboBox::itemsShort, D(ComboBox, itemsShort));
 
     py::class_<ProgressBar, Widget, ref<ProgressBar>, PyProgressBar>(m, "ProgressBar", D(ProgressBar))
         .def(py::init<Widget *>(), py::arg("parent"), D(ProgressBar, ProgressBar))

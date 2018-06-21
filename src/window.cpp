@@ -18,8 +18,18 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+Window::Window(Widget *parent, const std::string &title, const std::string &font)
+    : Widget(parent, font)
+    , mTitle(title)
+    , mButtonPanel(nullptr)
+    , mModal(false)
+    , mDrag(false) { }
+
+std::string Window::defaultFont() const {
+    if (mTheme)
+        return mTheme->mDefaultBoldFont;
+    return Theme::GlobalDefaultFonts::Bold;
+}
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
@@ -28,8 +38,8 @@ Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
         mButtonPanel->setVisible(true);
 
-    nvgFontSize(ctx, 18.0f);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontSize(ctx, fontSize(mTheme->mWindowFontSize));
+    nvgFontFace(ctx, font().c_str());
     float bounds[4];
     nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
 
@@ -121,8 +131,8 @@ void Window::draw(NVGcontext *ctx) {
         nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
         nvgStroke(ctx);
 
-        nvgFontSize(ctx, 18.0f);
-        nvgFontFace(ctx, "sans-bold");
+        nvgFontSize(ctx, fontSize(mTheme->mWindowFontSize));
+        nvgFontFace(ctx, font().c_str());
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 
         nvgFontBlur(ctx, 2);

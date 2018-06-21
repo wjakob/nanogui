@@ -21,23 +21,42 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Text label widget.
  *
- * The font and color can be customized. When \ref Widget::setFixedWidth()
- * is used, the text is wrapped when it surpasses the specified width.
+ * The font and color can be customized.
+ *
+ * \rst
+ * .. tip::
+ *
+ *    When :func:`Widget::setFixedWidth <nanogui::Widget::setFixedWidth>` is
+ *    used, the text is wrapped when it surpasses the specified width.
+ *
+ * \endrst
  */
 class NANOGUI_EXPORT Label : public Widget {
 public:
+    /**
+     * \brief Creates a Label with the specified parent.
+     *
+     * \param parent
+     *     The parent of this Label.
+     *
+     * \param caption
+     *     The text this Label will draw.
+     *
+     * \param font
+     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     which will typically be ``"sans"``).
+     *
+     * \param fontSize
+     *     The font size to use, ``-1`` indicates the default font size
+     *     specified by \ref Theme::mStandardFontSize will be used.
+     */
     Label(Widget *parent, const std::string &caption,
-          const std::string &font = "sans", int fontSize = -1);
+          const std::string &font = "", int fontSize = -1);
 
     /// Get the label's text caption
     const std::string &caption() const { return mCaption; }
     /// Set the label's text caption
     void setCaption(const std::string &caption) { mCaption = caption; }
-
-    /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold')
-    void setFont(const std::string &font) { mFont = font; }
-    /// Get the currently active font
-    const std::string &font() const { return mFont; }
 
     /// Get the label color
     Color color() const { return mColor; }
@@ -55,10 +74,11 @@ public:
 
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+
 protected:
     std::string mCaption;
-    std::string mFont;
     Color mColor;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

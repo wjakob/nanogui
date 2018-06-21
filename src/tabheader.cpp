@@ -147,7 +147,13 @@ void TabHeader::TabButton::drawInactiveBorderAt(NVGcontext *ctx, const Vector2i 
 
 
 TabHeader::TabHeader(Widget* parent, const std::string& font)
-    : Widget(parent), mFont(font) { }
+    : Widget(parent, font) { }
+
+std::string TabHeader::defaultFont() const {
+    if (mTheme)
+        return mTheme->mDefaultBoldFont;
+    return Theme::GlobalDefaultFonts::Bold;
+}
 
 void TabHeader::setActiveTab(int tabIndex) {
     assert(tabIndex < tabCount());
@@ -301,8 +307,8 @@ void TabHeader::performLayout(NVGcontext* ctx) {
 
 Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
     // Set up the nvg context for measuring the text inside the tab buttons.
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
+    nvgFontFace(ctx, font().c_str());
+    nvgFontSize(ctx, fontSize(mTheme->mStandardFontSize));
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
     Vector2i size = Vector2i(2*theme()->mTabControlWidth, 0);
     for (auto& tab : mTabButtons) {
@@ -357,8 +363,8 @@ void TabHeader::draw(NVGcontext* ctx) {
         drawControls(ctx);
 
     // Set up common text drawing settings.
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
+    nvgFontFace(ctx, font().c_str());
+    nvgFontSize(ctx, fontSize(mTheme->mStandardFontSize));
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
 
     auto current = visibleBegin();
@@ -407,11 +413,11 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     // Draw the arrow.
     nvgBeginPath(ctx);
     auto iconLeft = utf8(mTheme->mTabHeaderLeftIcon);
-    int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
+    const float fontSize = Widget::fontSize(mTheme->mButtonFontSize);
     float ih = fontSize;
     ih *= icon_scale();
     nvgFontSize(ctx, ih);
-    nvgFontFace(ctx, "icons");
+    nvgFontFace(ctx, iconFont().c_str());
     NVGcolor arrowColor;
     if (active)
         arrowColor = mTheme->mTextColor;
@@ -429,11 +435,10 @@ void TabHeader::drawControls(NVGcontext* ctx) {
     // Draw the arrow.
     nvgBeginPath(ctx);
     auto iconRight = utf8(mTheme->mTabHeaderRightIcon);
-    fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     ih = fontSize;
     ih *= icon_scale();
     nvgFontSize(ctx, ih);
-    nvgFontFace(ctx, "icons");
+    nvgFontFace(ctx, iconFont().c_str());
     float rightWidth = nvgTextBounds(ctx, 0, 0, iconRight.data(), nullptr, nullptr);
     if (active)
         arrowColor = mTheme->mTextColor;

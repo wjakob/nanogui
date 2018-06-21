@@ -16,8 +16,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
-    : Button(parent, caption, buttonIcon) {
+PopupButton::PopupButton(Widget *parent, const std::string &caption,
+                         int buttonIcon, const std::string &font)
+    : Button(parent, caption, buttonIcon, font) {
 
     mChevronIcon = mTheme->mPopupChevronRightIcon;
 
@@ -51,8 +52,8 @@ void PopupButton::draw(NVGcontext* ctx) {
         NVGcolor textColor =
             mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
 
-        nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
-        nvgFontFace(ctx, "icons");
+        nvgFontSize(ctx, fontSize(mTheme->mButtonFontSize) * icon_scale());
+        nvgFontFace(ctx, iconFont().c_str());
         nvgFillColor(ctx, mEnabled ? textColor : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 

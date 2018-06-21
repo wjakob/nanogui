@@ -17,27 +17,29 @@
 NAMESPACE_BEGIN(nanogui)
 
 Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
-    : Widget(parent), mCaption(caption), mFont(font) {
-    if (mTheme) {
-        mFontSize = mTheme->mStandardFontSize;
+    : Widget(parent, font), mCaption(caption) {
+
+    if (mTheme)
         mColor = mTheme->mTextColor;
-    }
-    if (fontSize >= 0) mFontSize = fontSize;
+
+    if (fontSize >= 0)
+        setFontSize(fontSize);
 }
 
 void Label::setTheme(Theme *theme) {
     Widget::setTheme(theme);
-    if (mTheme) {
-        mFontSize = mTheme->mStandardFontSize;
+
+    if (mTheme)
         mColor = mTheme->mTextColor;
-    }
 }
 
 Vector2i Label::preferredSize(NVGcontext *ctx) const {
     if (mCaption == "")
         return Vector2i::Zero();
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
+
+    float fontSize = Widget::fontSize(mTheme->mStandardFontSize);
+    nvgFontFace(ctx, font().c_str());
+    nvgFontSize(ctx, fontSize);
     if (mFixedSize.x() > 0) {
         float bounds[4];
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
@@ -47,15 +49,15 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         return Vector2i(
             nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 2,
-            fontSize()
+            fontSize
         );
     }
 }
 
 void Label::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
+    nvgFontFace(ctx, font().c_str());
+    nvgFontSize(ctx, fontSize(mTheme->mStandardFontSize));
     nvgFillColor(ctx, mColor);
     if (mFixedSize.x() > 0) {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
@@ -69,14 +71,12 @@ void Label::draw(NVGcontext *ctx) {
 void Label::save(Serializer &s) const {
     Widget::save(s);
     s.set("caption", mCaption);
-    s.set("font", mFont);
     s.set("color", mColor);
 }
 
 bool Label::load(Serializer &s) {
     if (!Widget::load(s)) return false;
     if (!s.get("caption", mCaption)) return false;
-    if (!s.get("font", mFont)) return false;
     if (!s.get("color", mColor)) return false;
     return true;
 }
