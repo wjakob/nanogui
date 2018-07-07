@@ -191,11 +191,25 @@ string, which is not a valid font face).
 Font Sizes
 ****************************************************************************************
 
-Where font sizes are concerned, it depends on the widget.  Often times
-:member:`Theme::mStandardFontSize <nanogui::Theme::mStandardFontSize>` will be used, but
-there is also the corresponding
-:func:`Widget::setFontSize <nanogui::Widget::setFontSize>` function to set it explicitly
-for a specific widget.
+Where font sizes are concerned, a similar form of hierarchical calculation will take
+place by using the :func:`Widget::fontSize <nanogui::Widget::fontSize>` method.  This
+function requires a single floating point default font size to fall back on when the
+widget has not had :member:`Widget::mFontSize <nanogui::Widget::mFontSize>` set
+(via :func:`Widget::setFontSize <nanogui::Widget::setFontSize>`).  For example:
+
+.. code-block:: cpp
+
+   // from src/label.cpp
+   float fontSize = Widget::fontSize(mTheme->mStandardFontSize);
+   // from src/button.cpp
+   float fontSize = Widget::fontSize(mTheme->mButtonFontSize);
+
+The currently available fall-back values are:
+
+- :member:`Theme::mStandardFontSize <nanogui::Theme::mStandardFontSize>`
+- :member:`Theme::mButtonFontSize <nanogui::Theme::mButtonFontSize>`
+- :member:`Theme::mTextBoxFontSize <nanogui::Theme::mTextBoxFontSize>`
+- :member:`Theme::mWindowFontSize <nanogui::Theme::mWindowFontSize>`
 
 .. _nanogui_usage_how_icons_are_used:
 
