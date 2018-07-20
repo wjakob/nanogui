@@ -49,7 +49,7 @@ public:
      *     and "checked".
      *
      * \param font
-     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     The font face to use (default ``""`` implies \ref Theme::mDefaultFont,
      *     which will typically be ``"sans"``).
      */
     CheckBox(Widget *parent, const std::string &caption = "Untitled",

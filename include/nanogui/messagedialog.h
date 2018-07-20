@@ -74,7 +74,7 @@ public:
     /**
      * Convenience method for setting \ref mIconLabel.  Must be a valid icon for
      * the font used in \ref mIconLabel.  The default font face is ``"icons"``,
-     * specified by \ref Theme::defaultIconFont.
+     * specified by \ref Theme::mDefaultIconFont.
      *
      * \rst
      * The available icons for NanoGUI's default icon font can be found in

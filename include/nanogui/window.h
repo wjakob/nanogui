@@ -35,7 +35,7 @@ public:
      *
      * \param font
      *     The font face to use (default ``""`` implies
-     *     \ref Theme::defaultBoldFont, which will typically be ``"sans-bold"``).
+     *     \ref Theme::mDefaultBoldFont, which will typically be ``"sans-bold"``).
      */
     Window(Widget *parent, const std::string &title = "Untitled", const std::string &font = "");
 

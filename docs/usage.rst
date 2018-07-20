@@ -240,6 +240,17 @@ function you will likely want to use:
    // Returns handle to the image.
    extern NVG_EXPORT int nvgCreateImage(NVGcontext* ctx, const char* filename, int imageFlags);
 
+   // NOTE: imageFlags should be set by using the bit-masking enum values specified
+   //       by NVGimageFlags also defined in nanovg.h.  At the the time of writing this
+   //       document, it is defined as:
+   enum NVGimageFlags {
+       NVG_IMAGE_GENERATE_MIPMAPS = 1<<0,// Generate mipmaps during creation of the image.
+       NVG_IMAGE_REPEATX          = 1<<1,// Repeat image in X direction.
+       NVG_IMAGE_REPEATY          = 1<<2,// Repeat image in Y direction.
+       NVG_IMAGE_FLIPY            = 1<<3,// Flips (inverses) image in Y direction when rendered.
+       NVG_IMAGE_PREMULTIPLIED    = 1<<4,// Image data has premultiplied alpha.
+   };
+
 You can obtain the ``NVGcontext *`` specific to your instance of
 :class:`Screen <nanogui::Screen>` via either
 :func:`Screen::nvgContext <nanogui::Screen::nvgContext>` or
@@ -260,8 +271,9 @@ Font Icons
 The default icon font ``"icons"`` (see :ref:`file_nanogui_entypo.h`) defines numerous
 icons available for you to use.  If you are embedding custom icon fonts (see
 :ref:`nanogui_usage_customization_default_icon_fonts`) but are **not** setting this to
-be the default icon font (via overriding
-:func:`Theme::defaultIconFont <nanogui::Theme::defaultIconFont>`), make sure you call
+be the default icon font (via changing
+:member:`Theme::mDefaultIconFont <nanogui::Theme::mDefaultIconFont>`), make sure you
+call
 :func:`Widget::setIconFont <nanogui::Widget::setIconFont>`.  Otherwise, the default
 ``"icons"`` font will be used, either producing a non-existent or undesired icon to
 display.

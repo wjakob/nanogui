@@ -43,7 +43,7 @@ public:
      *     The text this Label will draw.
      *
      * \param font
-     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     The font face to use (default ``""`` implies \ref Theme::mDefaultFont,
      *     which will typically be ``"sans"``).
      *
      * \param fontSize

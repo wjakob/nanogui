@@ -53,7 +53,7 @@ public:
      *     The contents of this TextBox.
      *
      * \param font
-     *     The font face to use (default ``""`` implies \ref Theme::defaultFont,
+     *     The font face to use (default ``""`` implies \ref Theme::mDefaultFont,
      *     which will typically be ``"sans"``).
      */
     TextBox(Widget *parent, const std::string &value = "Untitled", const std::string &font = "");

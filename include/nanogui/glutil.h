@@ -828,7 +828,7 @@ extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
 /**
  * \brief Unprojects the vector ``win`` out of the specified viewport.
  *
- * The reverse transformation of \ref project --- use the same matrices and
+ * The reverse transformation of \ref project() --- use the same matrices and
  * viewport dimensions to easily transition between the two spaces.
  *
  * \param win
