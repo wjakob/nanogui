@@ -33,6 +33,7 @@ int ImagePanel::indexForPosition(const Vector2i &p) const {
     float iconRegion = mThumbSize / (float)(mThumbSize + mSpacing);
     bool overImage = pp.x() - std::floor(pp.x()) < iconRegion &&
                     pp.y() - std::floor(pp.y()) < iconRegion;
+    overImage &= pp.x() >= 0 && pp.y() >= 0;
     Vector2i gridPos = pp.cast<int>(), grid = gridSize();
     overImage &= ((gridPos.array() >= 0).all() &&
                  (gridPos.array() < grid.array()).all());
