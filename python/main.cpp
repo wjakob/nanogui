@@ -111,8 +111,8 @@ static void sigint_handler(int sig) {
 }
 #endif
 
-PYBIND11_PLUGIN(nanogui) {
-    py::module m("nanogui", "NanoGUI plugin");
+PYBIND11_MODULE(nanogui, m) {
+    m.attr("__doc__") = "NanoGUI plugin";
 
     py::class_<MainloopHandle>(m, "MainloopHandle")
         .def("join", &MainloopHandle::join);
@@ -120,7 +120,7 @@ PYBIND11_PLUGIN(nanogui) {
     m.def("init", &nanogui::init, D(init));
     m.def("shutdown", &nanogui::shutdown, D(shutdown));
     m.def("mainloop", [](int refresh, py::object detach) -> MainloopHandle* {
-        if (detach != py::none()) {
+        if (!detach.is(py::none())) {
             if (handle)
                 throw std::runtime_error("Main loop is already running!");
 
@@ -248,8 +248,6 @@ PYBIND11_PLUGIN(nanogui) {
     register_misc(m);
     register_glutil(m);
     register_nanovg(m);
-
-    return m.ptr();
 }
 
 #endif
