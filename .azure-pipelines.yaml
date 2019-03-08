@@ -1,0 +1,20 @@
+# Only trigger builds for master.
+trigger:
+  branches:
+    include:
+      - master
+
+# Trigger pull request builds against master.
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - master
+
+# Build specification
+jobs:
+  - job: VS2017
+    pool:
+      vmImage: vs2017-win2016
+    steps:
+      - script: cmake -G
