@@ -142,12 +142,14 @@ std::array<char, 8> utf8(int c) {
     else if (c < 0x4000000) n = 5;
     else if (c <= 0x7fffffff) n = 6;
     seq[n] = '\0';
+    // NOTE: this switch is designed to fall through.  More information:
+    // https://developers.redhat.com/blog/2017/03/10/wimplicit-fallthrough-in-gcc-7/
     switch (n) {
-        case 6: seq[5] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x4000000;
-        case 5: seq[4] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x200000;
-        case 4: seq[3] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x10000;
-        case 3: seq[2] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x800;
-        case 2: seq[1] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0xc0;
+        case 6: seq[5] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x4000000;// Falls through.
+        case 5: seq[4] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x200000; // Falls through.
+        case 4: seq[3] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x10000;  // Falls through.
+        case 3: seq[2] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x800;    // Falls through.
+        case 2: seq[1] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0xc0;     // Falls through.
         case 1: seq[0] = c;
     }
     return seq;
