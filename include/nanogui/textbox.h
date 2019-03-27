@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include <nanogui/compat.h>
 #include <nanogui/widget.h>
+#include <cstdio>
 #include <sstream>
 
 NAMESPACE_BEGIN(nanogui)
@@ -280,7 +280,7 @@ public:
     void setValue(Scalar value) {
         Scalar clampedValue = std::min(std::max(value, mMinValue),mMaxValue);
         char buffer[50];
-        NANOGUI_SNPRINTF(buffer, 50, mNumberFormat.c_str(), clampedValue);
+        std::snprintf(buffer, 50, mNumberFormat.c_str(), clampedValue);
         TextBox::setValue(buffer);
     }
 
