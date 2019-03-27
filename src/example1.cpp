@@ -259,11 +259,9 @@ public:
         mCurrentImage = 0;
         // Change the active textures.
         imgPanel->setCallback([this, imageView](int i) {
-            if (i < mImagesData.size()) {
-                imageView->bindImage(mImagesData[i].first.texture());
-                mCurrentImage = i;
-                cout << "Selected item " << i << '\n';
-            }
+            imageView->bindImage(mImagesData[i].first.texture());
+            mCurrentImage = i;
+            cout << "Selected item " << i << '\n';
         });
         imageView->setGridThreshold(20);
         imageView->setPixelInfoThreshold(20);
