@@ -152,8 +152,9 @@ class TestApp(Screen):
         imgView = ImageView(img_window, icons[0][0])
 
         def cb(i):
-            print("Selected item %i" % i)
-            imgView.bindImage(icons[i][0])
+            if i < len(icons):
+                print("Selected item %i" % i)
+                imgView.bindImage(icons[i][0])
         imgPanel.setCallback(cb)
 
         imgView.setGridThreshold(3)
