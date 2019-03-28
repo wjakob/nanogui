@@ -37,7 +37,7 @@ extensions = [
 ]
 
 # Setup the `breathe` extension
-breathe_projects = { "NanoGUI": "./doxyoutput/xml" }
+breathe_projects = { "NanoGUI": "./_doxygen/xml" }
 breathe_default_project = "NanoGUI"
 
 # Setup the `exhale` extension
@@ -125,7 +125,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NanoGUI'
-copyright = u'2017, Wenzel Jakob'
+copyright = u'2019, Wenzel Jakob'
 author = u'Wenzel Jakob'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -152,7 +152,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '_doxygen']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -170,7 +170,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
