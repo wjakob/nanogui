@@ -125,7 +125,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NanoGUI'
-copyright = u'2017, Wenzel Jakob'
+copyright = u'2019, Wenzel Jakob'
 author = u'Wenzel Jakob'
 
 # The version info for the project you're documenting, acts as replacement for
