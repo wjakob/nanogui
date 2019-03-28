@@ -179,11 +179,13 @@ Styling the Code
 Since we are using both Doxygen and Sphinx, we have access to a wealth of interesting
 documentation styling.
 
-:From Doxygen:
+**From Doxygen**
+
     You can use things like ``\throws``, ``\remark``, and even ``\ref`` to generate html
     links to other items.
 
-:From Sphinx:
+**From Sphinx**
+
     On the Sphinx side, you now have access to full reStructuredText syntax.  This
     includes:
 
@@ -226,121 +228,3 @@ documentation styling.
 
        For code listings, **always** begin an ``\rst`` section and use ``.. code-block``
        as shown above.
-
-TODO
-----------------------------------------------------------------------------------------
-
-Documentation Completion
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Already familiar with NanoGUI or a subset of its classes?  The documentation for the
-following files is incomplete, waiting for your PR.  Document a whole class, or even
-just a method of a given class.
-
-If you make progress on / complete an item with your PR, please update / remove it from
-the table on this page (``docs/contributing.rst``).
-
-.. note::
-   The NanoGUI documentation hosted online does not include ``private`` methods or
-   member variables at this time.  However, documentation for these is welcome!
-
-.. warning::
-   In some of these files, you will see preprocessor blocks like
-
-   .. code-block:: cpp
-
-      #ifndef DOXYGEN_SHOULD_SKIP_THIS
-      ... code that the breaks the documentation ...
-      #endif // DOXYGEN_SHOULD_SKIP_THIS
-
-   Please take care not to remove these!
-
-+-----------------+------------------------------------------------------------+
-| Filename        | Action Item                                                |
-+=================+============================================================+
-| button.h        | - Most member methods.                                     |
-|                 | - All member variables.                                    |
-+-----------------+------------------------------------------------------------+
-| checkbox.h      | - All member methods and variables.                        |
-+-----------------+------------------------------------------------------------+
-| colorpicker.h   | - Constructor and callback.                                |
-|                 | - All member variables.                                    |
-+-----------------+------------------------------------------------------------+
-| colorwheel.h    | - Most methods and member variables.                       |
-+-----------------+------------------------------------------------------------+
-| combobox.h      | - Most member methods and variables.                       |
-+-----------------+------------------------------------------------------------+
-| formhelper.h    | - More detailed documentation explaining parameters        |
-|                 |   for ``FormHelper`` methods.                              |
-|                 | - Most member variables.                                   |
-+-----------------+------------------------------------------------------------+
-| graph.h         | - All member methods and variables.                        |
-+-----------------+------------------------------------------------------------+
-| imagepanel.h    | - All member methods and variables.                        |
-+-----------------+------------------------------------------------------------+
-| imageview.h     | - Most member methods.                                     |
-+-----------------+------------------------------------------------------------+
-| label.h         | - Some member methods and variables.                       |
-+-----------------+------------------------------------------------------------+
-| layout.h        | - Nearly everything.                                       |
-+-----------------+------------------------------------------------------------+
-| popup.h         | - Some member methods and variables.                       |
-|                 | - Explicit parameter documentation would be very useful.   |
-+-----------------+------------------------------------------------------------+
-| popupbutton.h   | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| progressbar.h   | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| screen.h        | - Documentation for the manual GLFW API.                   |
-|                 | - All member variables.                                    |
-+-----------------+------------------------------------------------------------+
-| slider.h        | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| stackedwidget.h | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| tabheader.h     | - Some member methods.                                     |
-|                 | - Some reformatting of existing documentation to           |
-|                 |   use ``\param`` or ``\return`` etc.                       |
-+-----------------+------------------------------------------------------------+
-| tabwidget.h     | - Some member methods.                                     |
-|                 | - Some reformatting of existing documentation to           |
-|                 |   use ``\param`` or ``\return`` etc.                       |
-+-----------------+------------------------------------------------------------+
-| textbox.h       | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| theme.h         | - Explicit documentation for what these all represent.     |
-+-----------------+------------------------------------------------------------+
-| toolbutton.h    | - Documentation of the constructor explaining the range of |
-|                 |   values that can be used for ``icon``.  Or at least where |
-|                 |   to look for that?                                        |
-+-----------------+------------------------------------------------------------+
-| vscrollpanel.h  | - Almost everything.                                       |
-+-----------------+------------------------------------------------------------+
-| widget.h        | - Member variables.                                        |
-+-----------------+------------------------------------------------------------+
-| window.h        | - Some member methods.                                     |
-|                 | - All member variables.                                    |
-+-----------------+------------------------------------------------------------+
-
-
-Advanced Contribution Opportunity
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Currently, all partial and full template specializations are skipped.  Specifically,
-nearly everything in ``include/nanogui/serializer/*``.  According to the
-`Breathe documentation <https://breathe.readthedocs.io/en/latest/doxygen.html#template>`_
-this should be possible.  The likely cause of this issue is that the version of Breathe
-packaged for use with ``pip`` is not up to date.  Your task would be to find a way
-to use ``docs/requirements.txt`` to install the **current source** from the master
-branch of Breathe instead of using PyPi.
-
-You can test locally by making sure you do not have Breathe installed with ``pip``, and
-compiling it yourself (make sure you add it to your ``PATH`` so you can use it in
-Python).
-
-Then try moving the ``#ifndef DOXYGEN_SHOULD_SKIP_THIS`` to expose a single template
-specialization in a file of your choice, and try and get the documentation to build.
-If you succeed with this, the next step will be to find a way to get Read the Docs to
-build the current source of Breathe rather than using PyPi.
-
-In theory, all of these are possible.
