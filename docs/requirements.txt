@@ -1,1 +1,4 @@
+# Breathe and Sphinx 2.x are incompatible at this time
+Sphinx==1.8.5
 exhale
+sphinx_rtd_theme
