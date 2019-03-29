@@ -308,7 +308,7 @@ html.  So you will need to first
 
    .. code-block:: py
 
-      pip3 install exhale sphinx_rtd_theme
+      pip3 install -r <path/to/nanogui>/docs/requirements.txt
 
 Now that you have the relevant tools, you can build the documentation with
 
