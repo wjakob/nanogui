@@ -698,9 +698,6 @@ void Screen::disposeWidget(Widget *widget) {
         mDragWidget = nullptr;
         mDragActive = false;
     }
-
-    for (auto child : widget->children())
-        disposeWidget(child);
 }
 
 void Screen::centerWindow(Window *window) {

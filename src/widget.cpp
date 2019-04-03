@@ -30,6 +30,11 @@ Widget::Widget(Widget *parent)
 }
 
 Widget::~Widget() {
+    try {
+        screen()->disposeWidget(this);
+    }
+    catch (const std::runtime_error&) {}
+
     for (auto child : mChildren) {
         if (child)
             child->decRef();
@@ -152,23 +157,13 @@ void Widget::addChild(Widget * widget) {
 }
 
 void Widget::removeChild(const Widget *widget) {
-    removeChildHelper(std::find(mChildren.begin(), mChildren.end(), widget));
+    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
+    widget->decRef();
 }
 
 void Widget::removeChild(int index) {
-    assert(index >= 0);
-    assert(index < childCount());
-    removeChildHelper(mChildren.begin() + index);
-}
-
-void Widget::removeChildHelper(const std::vector<Widget *>::iterator& child_it) {
-    if (child_it == mChildren.end())
-        return;
-    Widget *widget = *child_it;
-
-    screen()->disposeWidget(widget);
-    mChildren.erase(child_it);
-
+    Widget *widget = mChildren[index];
+    mChildren.erase(mChildren.begin() + index);
     widget->decRef();
 }
 
