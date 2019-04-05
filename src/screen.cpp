@@ -654,7 +654,7 @@ bool Screen::resizeCallbackEvent(int, int) {
     size = (size.cast<float>() / mPixelRatio).cast<int>();
 #endif
 
-    if (mFBSize == Vector2i(0, 0) || size == Vector2i(0, 0))
+    if (fbSize == Vector2i(0, 0) || size == Vector2i(0, 0))
         return false;
 
     mFBSize = fbSize; mSize = size;
