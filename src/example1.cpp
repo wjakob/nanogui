@@ -18,6 +18,7 @@
 #include <nanogui/layout.h>
 #include <nanogui/label.h>
 #include <nanogui/checkbox.h>
+#include <nanogui/dial.h>
 #include <nanogui/button.h>
 #include <nanogui/toolbutton.h>
 #include <nanogui/popupbutton.h>
@@ -330,6 +331,30 @@ public:
         });
         slider->setFinalCallback([&](float value) {
             cout << "Final slider value: " << (int) (value * 100) << endl;
+        });
+        textBox->setFixedSize(Vector2i(60,25));
+        textBox->setFontSize(20);
+        textBox->setAlignment(TextBox::Alignment::Right);
+
+        new Label(window, "Dial and text box", "sans-bold");
+
+        panel = new Widget(window);
+        panel->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 20));
+
+        Dial *dial = new Dial(panel);
+        dial->setValue(0.25f);
+        dial->setFixedWidth(80);
+
+        textBox = new TextBox(panel);
+        textBox->setFixedSize(Vector2i(60, 25));
+        textBox->setValue("50");
+        textBox->setUnits("%");
+        dial->setCallback([textBox](float value) {
+            textBox->setValue(std::to_string((int) (value * 100)));
+        });
+        dial->setFinalCallback([&](float value) {
+            cout << "Final dial value: " << (int) (value * 100) << endl;
         });
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
