@@ -9,6 +9,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <math.h>
+
 #include <nanogui/dial.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
@@ -48,8 +50,7 @@ bool Dial::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int 
     if (!mEnabled)
         return false;
 
-    if (down)
-    {
+    if (down) {
         float posX =  p.x() - 0.5f*mSize.x();
         float posY = -p.y() + 0.5f*mSize.y();
         float value = 0.5f + 0.5f*atan2f(posX, posY)/M_PI;
