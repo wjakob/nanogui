@@ -18,6 +18,7 @@
 #include <nanogui/layout.h>
 #include <nanogui/label.h>
 #include <nanogui/checkbox.h>
+#include <nanogui/dial.h>
 #include <nanogui/button.h>
 #include <nanogui/toolbutton.h>
 #include <nanogui/popupbutton.h>
@@ -35,6 +36,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 // Includes for the GLTexture class.
@@ -329,6 +331,33 @@ public:
         });
         slider->setFinalCallback([&](float value) {
             cout << "Final slider value: " << (int) (value * 100) << endl;
+        });
+        textBox->setFixedSize(Vector2i(60,25));
+        textBox->setFontSize(20);
+        textBox->setAlignment(TextBox::Alignment::Right);
+
+        new Label(window, "Dial and text box", "sans-bold");
+
+        panel = new Widget(window);
+        panel->setLayout(new BoxLayout(Orientation::Horizontal,
+                                       Alignment::Middle, 0, 20));
+
+        Dial *dial = new Dial(panel);
+        dial->setValue(0.01f);
+        dial->setFixedWidth(80);
+
+        textBox = new TextBox(panel);
+        textBox->setFixedSize(Vector2i(60, 25));
+        textBox->setValue("0.01");
+        dial->setCallback([textBox](float value) {
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            std::ostringstream sval;
+            sval.precision(2); sval << std::fixed << value;
+            textBox->setValue(sval.str());
+        });
+        dial->setFinalCallback([&](float value) {
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            cout << "Final dial value: " << value << endl;
         });
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
