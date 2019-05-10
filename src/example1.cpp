@@ -50,7 +50,8 @@
 #  pragma warning(disable: 4457 4456 4005 4312)
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
+// implementation is done in ext/nanovg/src/nanovg.c
 #include <stb_image.h>
 
 #if defined(_WIN32)
