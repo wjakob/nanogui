@@ -330,6 +330,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/combobox.h src/combobox.cpp
   include/nanogui/progressbar.h src/progressbar.cpp
   include/nanogui/slider.h src/slider.cpp
+  include/nanogui/dial.h src/dial.cpp
   include/nanogui/messagedialog.h src/messagedialog.cpp
   include/nanogui/textbox.h src/textbox.cpp
   include/nanogui/imagepanel.h src/imagepanel.cpp
