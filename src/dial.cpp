@@ -9,8 +9,6 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#include <math.h>
-
 #include <nanogui/dial.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
@@ -53,7 +51,7 @@ bool Dial::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int 
     if (down) {
         float posX =  p.x() - 0.5f*mSize.x();
         float posY = -p.y() + 0.5f*mSize.y();
-        float value = 0.5f + 0.5f*atan2f(posX, posY)/M_PI;
+        float value = 0.5f + 0.5f*atan2f(posX, posY)/NVG_PI;
         value = -0.1f + 1.2f*value;
 
         value = value * (mRange.second - mRange.first) + mRange.first;
@@ -99,7 +97,7 @@ void Dial::draw(NVGcontext* ctx) {
 
     Vector2f notchPos(0.0f, 0.8f*(kr - 1.5f*kshadow));
     float value = (mValue - mRange.first)/(mRange.second - mRange.first);
-    float theta = 2.0f*M_PI*(0.1f + 0.8f*value);
+    float theta = 2.0f*NVG_PI*(0.1f + 0.8f*value);
     Rotation2Df t(theta);
     notchPos = t*notchPos;
     notchPos += dialPos;
