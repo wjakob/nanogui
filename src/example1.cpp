@@ -18,6 +18,7 @@
 #include <nanogui/layout.h>
 #include <nanogui/label.h>
 #include <nanogui/checkbox.h>
+#include <nanogui/dial.h>
 #include <nanogui/button.h>
 #include <nanogui/toolbutton.h>
 #include <nanogui/popupbutton.h>
@@ -37,6 +38,7 @@
 #include <nanogui/switchbox.h>
 #include <nanogui/dropdownbox.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 // Includes for the GLTexture class.
@@ -346,6 +348,36 @@ public:
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
         textBox->setAlignment(TextBox::Alignment::Right);
+
+        {
+          new Label(window, "Dial and text box", "sans-bold");
+
+          panel = new Widget(window);
+          panel->setLayout(new BoxLayout(Orientation::Horizontal,
+            Alignment::Middle, 0, 20));
+
+          Dial *dial = new Dial(panel);
+          dial->setValue(0.01f);
+          dial->setFixedWidth(80);
+
+          auto dialTextBox = new TextBox(panel);
+          dialTextBox->setFixedSize(Vector2i(60, 25));
+          dialTextBox->setValue("0.01");
+          dial->setCallback([dialTextBox](float value) {
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            std::ostringstream sval;
+            sval.precision(2); sval << std::fixed << value;
+            dialTextBox->setValue(sval.str());
+          });
+          dial->setFinalCallback([&, d = dial](float value) {
+            d->setHighlightedRange(std::pair<float, float>(0.0f, value));
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            cout << "Final dial value: " << value << endl;
+          });
+          dialTextBox->setFixedSize(Vector2i(60, 25));
+          dialTextBox->setFontSize(20);
+          dialTextBox->setAlignment(TextBox::Alignment::Right);
+        }
 
         window = new Window(this, "Misc. widgets");
         window->setPosition(Vector2i(425,15));
