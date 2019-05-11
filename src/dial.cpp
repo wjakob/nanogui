@@ -32,16 +32,15 @@ bool Dial::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
     if (!mEnabled)
         return false;
 
-    const float kr = (int) (mSize.y() * 0.4f), kshadow = 3;
-    const float startX = kr + kshadow + mPos.x() - 1;
-    const float widthX = kr + kshadow;
+    float posX =  p.x() - 0.5f*mSize.x();
+    float posY = -p.y() + 0.5f*mSize.y();
+    float value = 0.5f + 0.5f*atan2f(posX, posY)/NVG_PI;
+    value = -0.1f + 1.2f*value;
 
-    float value = (p.x() - startX) / widthX;
     value = value * (mRange.second - mRange.first) + mRange.first;
     mValue = std::min(std::max(value, mRange.first), mRange.second);
     if (mCallback)
         mCallback(mValue);
-    return true;
 }
 
 bool Dial::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int /* modifiers */) {
@@ -58,9 +57,10 @@ bool Dial::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int 
         mValue = std::min(std::max(value, mRange.first), mRange.second);
         if (mCallback)
             mCallback(mValue);
-        if (mFinalCallback && !down)
-            mFinalCallback(mValue);
+    } else if (mFinalCallback) {
+        mFinalCallback(mValue);
     }
+
     return true;
 }
 
