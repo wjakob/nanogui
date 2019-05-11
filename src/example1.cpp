@@ -36,6 +36,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 // Includes for the GLTexture class.
@@ -342,18 +343,21 @@ public:
                                        Alignment::Middle, 0, 20));
 
         Dial *dial = new Dial(panel);
-        dial->setValue(0.25f);
+        dial->setValue(0.01f);
         dial->setFixedWidth(80);
 
         textBox = new TextBox(panel);
         textBox->setFixedSize(Vector2i(60, 25));
-        textBox->setValue("50");
-        textBox->setUnits("%");
+        textBox->setValue("0.01");
         dial->setCallback([textBox](float value) {
-            textBox->setValue(std::to_string((int) (value * 100)));
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            std::ostringstream sval;
+            sval.precision(2); sval << std::fixed << value;
+            textBox->setValue(sval.str());
         });
         dial->setFinalCallback([&](float value) {
-            cout << "Final dial value: " << (int) (value * 100) << endl;
+            value = 0.01f + 99.99f*powf(value, 5.0f);
+            cout << "Final dial value: " << value << endl;
         });
         textBox->setFixedSize(Vector2i(60,25));
         textBox->setFontSize(20);
