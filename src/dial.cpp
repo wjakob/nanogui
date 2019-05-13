@@ -50,12 +50,11 @@ bool Dial::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int 
         return false;
 
     if (down) {
-        float posX =  p.x() - 0.5f*mSize.x();
-        float posY = -p.y() + 0.5f*mSize.y();
+        Vector2f pos = (p - mPos - mSize/2).cast<float>();
         float kr = 0.5f * (mSize.y() * 0.4f);
 
-        if (posX*posX + posY*posY >= kr*kr) {
-            float value = 0.5f + 0.5f*atan2f(posX, posY)/NVG_PI;
+        if (pos.squaredNorm() >= kr*kr) {
+            float value = 0.5f + 0.5f*atan2f(pos.x(), -pos.y())/NVG_PI;
             value = -0.1f + 1.2f*value;
 
             value = value * (mRange.second - mRange.first) + mRange.first;
