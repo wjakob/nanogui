@@ -27,7 +27,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
-    ImageView(Widget* parent, GLuint imageID);
+    ImageView(Widget* parent, GLuint imageID, bool borders = true);
     ~ImageView();
 
     void bindImage(GLuint imageId);
@@ -150,6 +150,9 @@ private:
     GLShader mShader;
     GLuint mImageID;
     Vector2i mImageSize;
+
+    // Border parameters
+    bool mDrawBorders;
 
     // Image display parameters.
     float mScale;
