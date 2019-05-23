@@ -119,6 +119,16 @@ void register_nanovg(py::module &m) {
         .def("SkewY", &nvgSkewY, "angle"_a)
         .def("Scale", &nvgScale, "x"_a, "y"_a)
         .def("CreateImage", &nvgCreateImage, "filename"_a, "imageFlags"_a)
+        .def("CreateImage",
+             [](NVGcontext *ctx, const py::array_t<uint8_t>& image, int flags){
+                  if(image.ndim() != 3 || image.shape(2) != 4)
+                    throw std::invalid_argument("Unsupported image type, expected RGBA data.");
+                  return nvgCreateImageRGBA(ctx,
+                                            static_cast<int>(image.shape(1)),
+                                            static_cast<int>(image.shape(0)),
+                                            flags,
+                                            image.data());
+             }, "image"_a, "imageFlags"_a)
         .def("DeleteImage", &nvgDeleteImage, "image"_a)
         .def("LinearGradient", &nvgLinearGradient, "sx"_a, "sy"_a, "ex"_a,
              "ey"_a, "icol"_a, "ocol"_a)
