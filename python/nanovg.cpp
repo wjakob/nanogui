@@ -120,7 +120,8 @@ void register_nanovg(py::module &m) {
         .def("Scale", &nvgScale, "x"_a, "y"_a)
         .def("CreateImage", &nvgCreateImage, "filename"_a, "imageFlags"_a)
         .def("CreateImage",
-             [](NVGcontext *ctx, const py::array_t<uint8_t>& image, int flags){
+             [](NVGcontext *ctx, const py::array_t<uint8_t,py::array::c_style |
+                                                   py::array::forcecast>& image, int flags){
                   if(image.ndim() != 3 || image.shape(2) != 4)
                     throw std::invalid_argument("Unsupported image type, expected RGBA data.");
                   return nvgCreateImageRGBA(ctx,
