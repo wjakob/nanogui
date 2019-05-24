@@ -53,7 +53,7 @@ NAMESPACE_END(detail)
  * ``nanogui/serializer/opengl.h``, and ``nanogui/serializer/sparse.h`` must
  * be included to serialize the respective data types.
  */
-class Serializer {
+class NANOGUI_EXPORT Serializer {
 protected:
 // this friendship breaks the documentation
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
