@@ -13,6 +13,7 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <nanogui/layout.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -23,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Slider : public Widget {
 public:
-    Slider(Widget *parent);
+    Slider(Widget *parent, Orientation orientation = Orientation::Horizontal);
 
     float value() const { return mValue; }
     void setValue(float value) { mValue = value; }
@@ -52,6 +53,7 @@ public:
 
 protected:
     float mValue;
+    Orientation mOrientation;
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
     std::pair<float, float> mRange;
