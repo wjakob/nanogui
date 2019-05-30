@@ -77,7 +77,7 @@ void PopupButton::performLayout(NVGcontext *ctx) {
     if (mPopup->side() == Popup::Right)
         mPopup->setAnchorPos(Vector2i(parentWindow->width() + 15, posY));
     else
-        mPopup->setAnchorPos(Vector2i(0 - 15, posY));
+        mPopup->setAnchorPos(Vector2i(0 - 15 - mPopup->size()[0], posY));
 }
 
 void PopupButton::setSide(Popup::Side side) {
