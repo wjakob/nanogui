@@ -31,7 +31,7 @@ void Popup::performLayout(NVGcontext *ctx) {
         mChildren[0]->performLayout(ctx);
     }
     if (mSide == Side::Left)
-        mAnchorPos[0] -= size()[0];
+        mAnchorPos[0] = -15 - size()[0];
 }
 
 void Popup::refreshRelativePlacement() {
