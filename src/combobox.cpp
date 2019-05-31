@@ -9,6 +9,7 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <nanogui/screen.h>
 #include <nanogui/combobox.h>
 #include <nanogui/layout.h>
 #include <nanogui/serializer/core.h>
@@ -63,6 +64,9 @@ void ComboBox::setItems(const std::vector<std::string> &items, const std::vector
         index++;
     }
     setSelectedIndex(mSelectedIndex);
+
+    assert(screen());
+    screen()->performLayout();
 }
 
 bool ComboBox::scrollEvent(const Vector2i &p, const Vector2f &rel) {
