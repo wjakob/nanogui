@@ -50,9 +50,6 @@
 #  pragma warning(disable: 4457 4456 4005 4312)
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #if defined(_WIN32)
 #  pragma warning(pop)
 #endif
