@@ -325,6 +325,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/window.h src/window.cpp
   include/nanogui/popup.h src/popup.cpp
   include/nanogui/checkbox.h src/checkbox.cpp
+  include/nanogui/switchbox.h src/switchbox.cpp
   include/nanogui/button.h src/button.cpp
   include/nanogui/popupbutton.h src/popupbutton.cpp
   include/nanogui/combobox.h src/combobox.cpp

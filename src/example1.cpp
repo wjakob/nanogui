@@ -34,6 +34,7 @@
 #include <nanogui/colorpicker.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
+#include <nanogui/switchbox.h>
 #include <iostream>
 #include <string>
 
@@ -202,6 +203,14 @@ public:
         Popup *popupLeft = popupBtn->popup();
         popupLeft->setLayout(new GroupLayout());
         new CheckBox(popupLeft, "Another check box");
+
+        new Label(window, "A switch boxes", "sans-bold");
+        Widget *swbx = new Widget(window);
+        swbx->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 2));
+
+        auto* swbh = new SwitchBox(swbx, SwitchBox::Alignment::Horizontal, "");
+        swbh->setFixedSize(Vector2i(80, 30));
+        new SwitchBox(swbx, SwitchBox::Alignment::Vertical, "");
 
         window = new Window(this, "Basic widgets");
         window->setPosition(Vector2i(200, 15));
