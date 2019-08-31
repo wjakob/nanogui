@@ -35,6 +35,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/switchbox.h>
+#include <nanogui/dropdownbox.h>
 #include <iostream>
 #include <string>
 
@@ -308,7 +309,8 @@ public:
         });
 
         new Label(window, "Combo box", "sans-bold");
-        new ComboBox(window, { "Combo box item 1", "Combo box item 2", "Combo box item 3"});
+        new DropdownBox(window, { "Dropdown item 1", "Dropdown item 2", "Dropdown item 3"});
+        new ComboBox(window, { "Combo box item 1", "Combo box item 2", "Combo box item 3" });
         new Label(window, "Check box", "sans-bold");
         CheckBox *cb = new CheckBox(window, "Flag 1",
             [](bool state) { cout << "Check box 1 state: " << state << endl; }
