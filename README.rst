@@ -39,6 +39,17 @@ Example screenshot
    :alt: Screenshot of Example 1.
    :align: center
 
+Extensions
+----------------------------------------------------------------------------------------
+SwitchBox
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/switchbox.jpg
+
+DropdownBox
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/dropdownbox.gif
+
+
 Description
 ----------------------------------------------------------------------------------------
 
