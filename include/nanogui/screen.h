@@ -141,6 +141,8 @@ public:
     void setShutdownGLFWOnDestruct(bool v) { mShutdownGLFWOnDestruct = v; }
     bool shutdownGLFWOnDestruct() { return mShutdownGLFWOnDestruct; }
 
+    void addChild(int index, Widget * widget) override;
+
     using Widget::performLayout;
 
     /// Compute the layout of all widgets

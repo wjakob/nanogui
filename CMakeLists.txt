@@ -346,6 +346,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/tabwidget.h src/tabwidget.cpp
   include/nanogui/contextmenu.h src/contextmenu.cpp
   include/nanogui/glcanvas.h src/glcanvas.cpp
+  include/nanogui/editworkspace.h src/editworkspace.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
