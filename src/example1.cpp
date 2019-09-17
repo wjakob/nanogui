@@ -32,6 +32,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/colorpicker.h>
+#include <nanogui/scrollbar.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <iostream>
@@ -148,6 +149,17 @@ public:
         Window *window = new Window(this, "Button demo");
         window->setPosition(Vector2i(15, 15));
         window->setLayout(new GroupLayout());
+
+        Window *swindow = new Window(this, "Scrollbar demo");
+        swindow->setPosition(Vector2i(300, 300));
+        
+        swindow->setLayout(new GroupLayout(0, 0, 0, 0));
+        Widget* sww = new Widget(swindow);
+        sww->setSize(Vector2i(100, 200));
+
+        new ScrollBar(sww, ScrollBar::Alignment::HorizontalBottom);
+        new ScrollBar(sww, ScrollBar::Alignment::VerticalLeft);
+        new ScrollBar(sww, ScrollBar::Alignment::VerticalRight);
 
         /* No need to store a pointer, the data structure will be automatically
            freed when the parent window is deleted */
