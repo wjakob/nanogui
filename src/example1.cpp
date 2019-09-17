@@ -38,6 +38,7 @@
 #include <nanogui/switchbox.h>
 #include <nanogui/dropdownbox.h>
 #include <nanogui/editworkspace.h>
+#include <nanogui/scrollbar.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -159,11 +160,18 @@ public:
         eb->setCallback([] { cout << "pushed!" << endl; });
         eb->setTooltip("short tooltip");
 
-
         auto* ew = new Window(editor, "Editor window");
         ew->setSize(100, 200);
         ew->setPosition(0, 50);
 
+        auto* ww = new Widget(this);
+        ww->setSize(224, 768);
+        ww->setPosition(0, 0);
+        
+        new ScrollBar(ww, ScrollBar::Alignment::VerticalLeft);
+        new ScrollBar(ww, ScrollBar::Alignment::VerticalRight);
+        new ScrollBar(ww, ScrollBar::Alignment::HorizontalBottom);
+        
         performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now
