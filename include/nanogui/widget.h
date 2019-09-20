@@ -57,9 +57,19 @@ public:
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
+    const int right() const { return mPos.x() + mSize.x(); }
+    const int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
     void setPosition(const Vector2i &pos) { mPos = pos; }
     void setPosition(int x, int y) { mPos = Vector2i(x, y); }
+
+    void setGeometry(const Vector4i &vec) {
+      setPosition(vec.x(), vec.y());
+      setSize(vec.z() - vec.x(), vec.w() - vec.y());
+    }
+
+    bool sendChildToBack(Widget* child);
+    bool sendToBack();
 
     /// Return the absolute position on screen
     Vector2i absolutePosition() const {
@@ -91,7 +101,7 @@ public:
     const Vector2i &size() const { return mSize; }
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
-    void setSize(int w, int h) { mSize = Vector2i(w, h); }
+    inline void setSize(int w, int h) { mSize = Vector2i(w, h); }
 
     /// Return the width of the widget
     int width() const { return mSize.x(); }

@@ -195,6 +195,32 @@ bool Widget::bringToFront()
   return false;
 }
 
+bool Widget::sendChildToBack(Widget* child)
+{
+  auto it = mChildren.begin();
+  if (child == (*it))	// already there
+    return true;
+  for (; it != mChildren.end(); ++it)
+  {
+    if (child == (*it))
+    {
+      mChildren.erase(it);
+      mChildren.insert(mChildren.begin(), child);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool Widget::sendToBack()
+{
+  if (parent())
+    return parent()->sendChildToBack(this);
+
+  return false;
+}
+
 bool Widget::bringChildToFront(Widget* element)
 {
   auto it = mChildren.begin();

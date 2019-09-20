@@ -476,6 +476,7 @@ extern NANOGUI_EXPORT std::string
 file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
             bool save);
 
+bool isPointInsideRect(const Vector2i& p, const Vector4i& r);
 /**
  * \brief Open a native file open dialog, which allows multiple selection.
  *

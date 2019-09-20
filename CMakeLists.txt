@@ -348,6 +348,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/glcanvas.h src/glcanvas.cpp
   include/nanogui/editworkspace.h src/editworkspace.cpp
   include/nanogui/scrollbar.h src/scrollbar.cpp
+  include/nanogui/table.h src/table.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h

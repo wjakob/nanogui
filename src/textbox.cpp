@@ -456,6 +456,11 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
             } else if (key == GLFW_KEY_ENTER) {
                 if (!mCommitted)
                     focusEvent(false);
+                if (mComitCallback)
+                {
+                  mComitCallback(this);
+                  return true;
+                }
             } else if (key == GLFW_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
                 mCursorPos = (int) mValueTemp.length();
                 mSelectionPos = 0;
