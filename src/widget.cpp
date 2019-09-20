@@ -139,13 +139,104 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
+Widget* Widget::findWidget(std::function<bool(Widget*)> cond, bool inchildren)
+{
+  if (cond(this))
+    return this;
+
+  if (inchildren)
+  {
+    for (auto* child : mChildren)
+    {
+      Widget* w = child->findWidget(cond, inchildren);
+      if (w)
+        return w;
+    }
+  }
+
+  return nullptr;
+}
+
+Widget* Widget::findWidget(const std::string& id, bool inchildren)
+{
+  return findWidget([id](Widget* w) -> bool { return w->id() == id; }, inchildren);
+}
+
+Widget *Widget::findWidgetGlobal(const std::string& id)
+{
+  return screen()->findWidget(id, true);
+}
+
+Widget *Widget::findWidgetGlobal(std::function<bool(Widget*)> cond)
+{
+  return screen()->findWidget(cond);
+}
+
 void Widget::addChild(int index, Widget * widget) {
     assert(index <= childCount());
+    Widget* prevparent = widget->parent();
+
     mChildren.insert(mChildren.begin() + index, widget);
     widget->incRef();
     widget->setParent(this);
     widget->setTheme(mTheme);
+
+    if (prevparent && prevparent != this)
+      prevparent->removeChild(widget);
 }
+
+std::string Widget::wtypename() const { return "widget"; }
+
+bool Widget::bringToFront()
+{
+  if (parent())
+    return parent()->bringChildToFront(this);
+
+  return false;
+}
+
+bool Widget::sendChildToBack(Widget* child)
+{
+  auto it = mChildren.begin();
+  if (child == (*it))	// already there
+    return true;
+  for (; it != mChildren.end(); ++it)
+  {
+    if (child == (*it))
+    {
+      mChildren.erase(it);
+      mChildren.insert(mChildren.begin(), child);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool Widget::sendToBack()
+{
+  if (parent())
+    return parent()->sendChildToBack(this);
+
+  return false;
+}
+
+bool Widget::bringChildToFront(Widget* element)
+{
+  auto it = mChildren.begin();
+  for (; it != mChildren.end(); ++it)
+  {
+    if (element == (*it))
+    {
+      mChildren.erase(it);
+      mChildren.push_back(element);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 
 void Widget::addChild(Widget * widget) {
     addChild(childCount(), widget);
@@ -154,6 +245,12 @@ void Widget::addChild(Widget * widget) {
 void Widget::removeChild(const Widget *widget) {
     mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
     widget->decRef();
+}
+
+void Widget::remove()
+{
+  if (parent())
+    parent()->removeChild(this);
 }
 
 void Widget::removeChild(int index) {

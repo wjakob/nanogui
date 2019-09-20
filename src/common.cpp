@@ -29,6 +29,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
+{
+  return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
+}
+
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
 #if defined(__APPLE__)
