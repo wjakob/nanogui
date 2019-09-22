@@ -5,6 +5,7 @@
 #include <nanogui/serializer/json.h>
 #include <nanogui/label.h>
 #include <nanogui/checkbox.h>
+#include <nanogui/colorpicker.h>
 #include <nanogui/textbox.h>
 #include <nanogui/layout.h>
 #include <nanogui/screen.h>
@@ -13,15 +14,16 @@
 NAMESPACE_BEGIN(nanogui)
 
 PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id ) 
-  :  Widget(parent)
+  :  Window(parent, "Properties")
 {
   setId(id);
   setSize(parent->size());
-  _nameColumnWidthPerc = 0.5f;
-  _valueColumnWidthPerc = 0.5f;
+  _nameColumnWidthPerc = 0.48f;
+  _valueColumnWidthPerc = 0.48f;
 	// create attributes
 
   _propholder = new VScrollPanel(this);
+  _propholder->setPosition(0, mTheme->mWindowHeaderHeight);
 }
 
 PropertiesEditor::~PropertiesEditor()
@@ -46,7 +48,7 @@ void PropertiesEditor::addChild(int index, Widget *widget)
 
 void PropertiesEditor::draw(NVGcontext* ctx)
 {
-  Widget::draw(ctx);
+  Window::draw(ctx);
 }
 
 void PropertiesEditor::parse(Widget* w)
@@ -79,49 +81,58 @@ void PropertiesEditor::parse(Widget* w)
       std::cout << capvalue << std::endl;
 
       int wname = width() * _nameColumnWidthPerc;
-      int wvalue = width() * _valueColumnWidthPerc;
+      int ww = width() * _valueColumnWidthPerc;
+      int hh = 20;
       wcaption->setWidth(wname);
-      wcaption->setFixedWidth(wvalue);
+      wcaption->setFixedWidth(ww);
       if (typevalue == "position")
       {
         auto e = grid->add<IntBox<int>>(jval.get_int("x"), 
             [&](int v) { jval.set_int("x", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
         grid->add<Label>("");
         e = grid->add<IntBox<int>>(jval.get_int("y"), 
             [&](int v) { jval.set_int("y", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
       }
       else if (typevalue == "size")
       {
         auto e = grid->add<IntBox<int>>(jval.get_int("w"), 
             [&](int v) { jval.set_int("w", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
         grid->add<Label>("");
         e = grid->add<IntBox<int>>(jval.get_int("h"), 
             [&](int v) { jval.set_int("h", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
       }
       else if (typevalue == "boolean")
       {
         auto ch = grid->add<CheckBox>("", [&](bool v) { jval.set_bool("value", v); updateAttribs(); });
-        ch->setWidth(wvalue); ch->setFixedWidth(wvalue); ch->setChecked(jval.get_bool("value"));
+        ch->setSize(ww, hh); ch->setFixedSize({ ww, hh }); ch->setChecked(jval.get_bool("value"));
       }
       else if (typevalue == "integer")
       {
         auto e = grid->add<IntBox<int>>(jval.get_int("value"), [&](int v) { jval.set_int("value", v); updateAttribs(); });
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
       }
       else if (typevalue == "string")
       {
         auto e = grid->add<TextBox>(jval.get_str("value"), 
                                     [&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; },
                                     [&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
-        e->setEditable(true); e->setWidth(wvalue); e->setFixedWidth(wvalue);
+        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
+      }
+      else if (typevalue == "color")
+      {
+        auto cp = grid->add<ColorPicker>(Color(jval.get_int("color")));
+        cp->setFixedSize({ww, hh});
+        cp->setSide(Popup::Side::Left);
+        cp->setFinalCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
+        cp->setCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
       }
     }
 

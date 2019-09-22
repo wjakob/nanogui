@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/window.h>
 #include <vector>
 
 NAMESPACE_BEGIN(nanogui)
@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(nanogui)
 class VScrollPanel;
 namespace Json { class value; }
 
-class NANOGUI_EXPORT PropertiesEditor : public Widget
+class NANOGUI_EXPORT PropertiesEditor : public Window
 {
 public:
   PropertiesEditor(Widget* parent, const std::string& id="");
