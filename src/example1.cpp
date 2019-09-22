@@ -33,11 +33,13 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/colorpicker.h>
+#include <nanogui/table.h>
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/switchbox.h>
 #include <nanogui/dropdownbox.h>
 #include <nanogui/editworkspace.h>
+#include <nanogui/editproperties.h>
 #include <nanogui/scrollbar.h>
 #include <iostream>
 #include <sstream>
@@ -153,8 +155,13 @@ public:
         using namespace nanogui;
 
         auto editor = new EditorWorkspace(this, "workspace");
-        editor->setSize(800, 768);
-        editor->setPosition(224, 0);
+        editor->setSize(width()/2, height());
+        editor->setPosition(width()/4, 0);
+
+        auto propeditor = new PropertiesEditor(this, "propeditor");
+        propeditor->setSize(width() / 4, height());
+        propeditor->setPosition(width() * 0.75, 0);
+        editor->setSelectedCallback([=](Widget* w) { propeditor->parse(w); });
 
         auto* eb = new Button(editor, "Editor button");
         eb->setCallback([] { cout << "pushed!" << endl; });
@@ -167,11 +174,7 @@ public:
         auto* ww = new Widget(this);
         ww->setSize(224, 768);
         ww->setPosition(0, 0);
-        
-        new ScrollBar(ww, ScrollBar::Alignment::VerticalLeft);
-        new ScrollBar(ww, ScrollBar::Alignment::VerticalRight);
-        new ScrollBar(ww, ScrollBar::Alignment::HorizontalBottom);
-        
+                
         performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now

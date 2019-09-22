@@ -16,7 +16,6 @@ NAMESPACE_BEGIN(nanogui)
 */
 
 class FactoryView;
-class PropertiesWindow;
 
 class NANOGUI_EXPORT EditorWorkspace : public Widget
 {
@@ -98,7 +97,6 @@ public:
 
     void addChild(int index, Widget * widget) override;
 
-    void setPropertyEditorWindow(PropertiesWindow* wnd);
     void setFactoryView( FactoryView* wnd );
 
     void quit() { _running = false; }
@@ -119,6 +117,8 @@ public:
     void update();
     void preview();
 
+    void setSelectedCallback(std::function<void(Widget*)> callback) { mWidgetSelectedCallback = callback; }
+
 //slots:
     void toggleOptionsVisible();
     void activateChangeParentMode();
@@ -129,8 +129,9 @@ public:
 private:
 	
     EditMode getModeFromPos(const Vector2i &p);
+
+    std::function<void(Widget*)> mWidgetSelectedCallback;
     
-    //void _createEditorWindow();
     //void _createEditorMenu();
     //void _createElementsWindow();
     void _drawSelectedElement(NVGcontext* ctx);
@@ -151,7 +152,6 @@ private:
     Widget* _elementUnderMouse = nullptr;
     Widget* _selectedElement = nullptr;
     Window* _previewWindow = nullptr;
-    PropertiesWindow* _editorWindow = nullptr;
     FactoryView* _factoryView = nullptr;
     Window* _optionsWindow;
     //ChangesManager* _changesManager;

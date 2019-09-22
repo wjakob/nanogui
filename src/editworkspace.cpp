@@ -25,11 +25,6 @@ EditorWorkspace::~EditorWorkspace()
 {
 }
 
-bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
-{
-  return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
-}
-
 Vector2i getUpperLeftCorner(const Vector4i& r)
 {
   return Vector2i(r.x(), r.y());
@@ -69,7 +64,7 @@ EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
     }
     catch( ... )
     {
-        _selectedElement = nullptr;
+        setSelectedElement(nullptr);
         return EditMode::Select;
     }
 }
@@ -113,21 +108,29 @@ void EditorWorkspace::setSelectedElement(Widget *sel)
 	if (isMyChildRecursive(focus))
 		focus = nullptr;
 
+  bool needUpdateSelectedElm = false;
 	if (_selectedElement != this)
 	{
 		if( _selectedElement != sel)// && _editorWindow )
 		{
 			//_editorWindow->setSelectedElement(sel);
 			_selectedElement = sel;
+      needUpdateSelectedElm = true;
 		}
 	}
-	else
-		_selectedElement = 0;
+  else
+  {
+    _selectedElement = nullptr;
+    needUpdateSelectedElm = true;
+  }
 
 	if (focus)
      focus->requestFocus();
 	else
      requestFocus();
+
+  if (mWidgetSelectedCallback && needUpdateSelectedElm)
+    mWidgetSelectedCallback(sel);
 }
 
 Widget* EditorWorkspace::getSelectedElement()
@@ -846,11 +849,6 @@ std::string EditorWorkspace::wtypename() const
 void EditorWorkspace::setFactoryView( FactoryView* wnd )
 {   
     _factoryView = wnd;
-}
-
-void EditorWorkspace::setPropertyEditorWindow(PropertiesWindow* wnd )
-{
-    _editorWindow = wnd;
 }
 
 void EditorWorkspace::reset()

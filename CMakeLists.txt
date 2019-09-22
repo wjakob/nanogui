@@ -347,16 +347,19 @@ add_library(nanogui-obj OBJECT
   include/nanogui/contextmenu.h src/contextmenu.cpp
   include/nanogui/glcanvas.h src/glcanvas.cpp
   include/nanogui/editworkspace.h src/editworkspace.cpp
+  include/nanogui/editproperties.h src/editproperties.cpp
+  include/nanogui/widgetsfactory.h src/widgetsfactory.cpp
   include/nanogui/scrollbar.h src/scrollbar.cpp
+  include/nanogui/widgetsfactory.h src/widgetsfactory.cpp
   include/nanogui/table.h src/table.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
   include/nanogui/nanogui.h
-  include/nanogui/serializer/core.h
+  include/nanogui/serializer/core.h    src/serializer.cpp
   include/nanogui/serializer/opengl.h
   include/nanogui/serializer/sparse.h
-  src/serializer.cpp
+  include/nanogui/serializer/json.h
 )
 
 # XCode has a serious bug where the XCode project produces an invalid target

@@ -19,7 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 enum class Cursor;// do not put a docstring, this is already documented
-
+namespace Json { class value; }
 /**
  * \class Widget widget.h nanogui/widget.h
  *
@@ -313,9 +313,11 @@ public:
 
     /// Save the state of the widget into the given \ref Serializer instance
     virtual void save(Serializer &s) const;
+    virtual void save(Json::value &s) const;
 
     /// Restore the state of the widget from the given \ref Serializer instance
     virtual bool load(Serializer &s);
+    virtual bool load(Json::value &s);
 
     inline void setSubElement(bool v) { mSubElement = v; }
     inline bool isSubElement() const { return mSubElement; }

@@ -16,6 +16,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/screen.h>
 #include <nanogui/serializer/core.h>
+#include <nanogui/serializer/json.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -325,7 +326,7 @@ void Widget::draw(NVGcontext *ctx) {
 }
 
 void Widget::save(Serializer &s) const {
-    s.set("position", mPos);
+  s.set("position", mPos); //s.set("$position_type", std::string("vec2")); s.set("$position_name", std::string("Position"));
     s.set("size", mSize);
     s.set("fixedSize", mFixedSize);
     s.set("visible", mVisible);
@@ -335,6 +336,33 @@ void Widget::save(Serializer &s) const {
     s.set("fontSize", mFontSize);
     s.set("cursor", (int) mCursor);
 }
+
+void Widget::save(Json::value &save) const {
+  //s.["position"].get
+  Json::hobject p; p.$("x", mPos.x()).$("y", mPos.y()).$("type", "position").$("name", "Position");
+  Json::hobject s; s.$("w", mSize.x()).$("h", mPos.y()).$("type", "size").$("name", "Size");
+  Json::hobject fs; fs.$("w", mFixedSize.x()).$("h", mFixedSize.y()).$("type", "size").$("name", "Fixed size");
+  Json::hobject v; v.$("value", mVisible).$("type", "boolean").$("name", "Visible");
+  Json::hobject e; e.$("value", mEnabled).$("type", "boolean").$("name", "Enabled");
+  Json::hobject fc; fc.$("value", mFocused).$("type", "boolean").$("name", "Focused");
+  Json::hobject t; t.$("value", mTooltip).$("type", "string").$("name", "Tooltip");
+  Json::hobject fh; fh.$("value", mFontSize).$("type", "integer").$("name", "Font size");
+  Json::hobject cr; cr.$("value", (int)mCursor).$("type", "integer").$("name", "Cursor");
+
+  Json::hobject ret; ret.$("position", p.obj)
+                        .$("size", s.obj)
+                        .$("fixedSize", fs.obj)
+                        .$("visible", s.obj)
+                        .$("enabled", e.obj)
+                        .$("focused", fc.obj)
+                        .$("tooltip", t.obj)
+                        .$("fontSize", fh.obj)
+                        .$("cursor", cr.obj);
+
+  save = Json::value(ret.obj);
+}
+
+bool Widget::load(Json::value &s) { return true; }
 
 bool Widget::load(Serializer &s) {
     if (!s.get("position", mPos)) return false;

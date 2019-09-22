@@ -41,6 +41,14 @@ public:
     };
 
     TextBox(Widget *parent, const std::string &value = "Untitled");
+    TextBox(Widget* parent, const std::string &value,
+      const std::function<bool(const std::string& str)> &cb,
+      const std::function<void(Widget*)> &cmcb)
+      : TextBox(parent, value)
+    {
+      setCallback(cb);
+      setComitCallback(cmcb);
+    }
 
     bool editable() const { return mEditable; }
     void setEditable(bool editable);
@@ -157,6 +165,9 @@ public:
         setValue(value);
         setSpinnable(false);
     }
+
+    IntBox(Widget *parent, Scalar value, const std::function<void(Scalar)> &cb) 
+      : IntBox(parent, value){ setCallback(cb); }
 
     Scalar value() const {
         std::istringstream iss(TextBox::value());
