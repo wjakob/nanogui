@@ -509,11 +509,11 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     {
       Widget *sel = _selectedElement;
       // unselect
-      setSelectedElement(0);
+      setSelectedElement(nullptr);
 
       // move
       Vector2i p(0, 0);
-      if (sel->parent())
+      if (sel && sel->parent())
         p = sel->parent()->absolutePosition();
 
       // select

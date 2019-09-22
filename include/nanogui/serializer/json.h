@@ -174,6 +174,8 @@ public:
   void set_int(const std::string& key, int v);
   void set_str(const std::string& v);
   void set_str(const std::string& key, const std::string& v);
+  void set_bool(const std::string& key, bool v);
+  void set_bool(bool v);
 
   bool contains(const size_t idx) const;
   bool contains(const std::string& k) const;
@@ -399,6 +401,8 @@ inline void value::set_int(const std::string& key, int v) { get(key).set<int64_t
 inline void value::set_str(const std::string &v) { set<std::string>(v); }
 inline void value::set_str(const std::string& key, const std::string &v) { get(key).set<std::string>(v); }
 
+inline void value::set_bool(const std::string& key, bool v) { get(key).set<bool>(v); }
+inline void value::set_bool(bool v) { set<bool>(v); }
 
 inline const value &value::get(const std::string &key) const {
   static value s_null;

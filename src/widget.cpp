@@ -340,7 +340,7 @@ void Widget::save(Serializer &s) const {
 void Widget::save(Json::value &save) const {
   //s.["position"].get
   Json::hobject p; p.$("x", mPos.x()).$("y", mPos.y()).$("type", "position").$("name", "Position");
-  Json::hobject s; s.$("w", mSize.x()).$("h", mPos.y()).$("type", "size").$("name", "Size");
+  Json::hobject s; s.$("w", mSize.x()).$("h", (int)mSize.y()).$("type", "size").$("name", "Size");
   Json::hobject fs; fs.$("w", mFixedSize.x()).$("h", mFixedSize.y()).$("type", "size").$("name", "Fixed size");
   Json::hobject v; v.$("value", mVisible).$("type", "boolean").$("name", "Visible");
   Json::hobject e; e.$("value", mEnabled).$("type", "boolean").$("name", "Enabled");
@@ -352,7 +352,7 @@ void Widget::save(Json::value &save) const {
   Json::hobject ret; ret.$("position", p.obj)
                         .$("size", s.obj)
                         .$("fixedSize", fs.obj)
-                        .$("visible", s.obj)
+                        .$("visible", v.obj)
                         .$("enabled", e.obj)
                         .$("focused", fc.obj)
                         .$("tooltip", t.obj)
@@ -362,7 +362,18 @@ void Widget::save(Json::value &save) const {
   save = Json::value(ret.obj);
 }
 
-bool Widget::load(Json::value &s) { return true; }
+bool Widget::load(Json::value &save) { 
+  auto p = save.get("position"); mPos = { p.get_int("x"), p.get_int("y") };
+  auto s = save.get("size"); mSize = { s.get_int("w"), s.get_int("h") };
+  auto fs = save.get("fixedSize"); mFixedSize = { fs.get_int("w"), fs.get_int("h") };
+  auto v = save.get("visible"); mVisible = v.get_bool("value");
+  auto e = save.get("enabled"); mEnabled = e.get_bool("value");
+  auto fc = save.get("focused"); mFocused = fc.get_bool("value");
+  auto t = save.get("tooltip"); mTooltip = t.get_str("value");
+  auto fh = save.get("fontSize"); mFontSize = fh.get_int("value");
+  auto cr = save.get("cursor"); mCursor = (Cursor)cr.get_int("value");
+  return true; 
+}
 
 bool Widget::load(Serializer &s) {
     if (!s.get("position", mPos)) return false;

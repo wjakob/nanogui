@@ -495,6 +495,9 @@ bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
 
         mValidFormat = (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
 
+        if (mEditCallback)
+          mEditCallback(mValueTemp, mValidFormat);
+
         return true;
     }
 

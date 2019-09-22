@@ -19,18 +19,18 @@ public:
   //! Returns the type name of the gui element.
   std::string wtypename() const;
 
-  void refreshAttribs();
+  void updateAttribs();
 
   void parse(Widget* w);
+  void draw(NVGcontext* ctx) override;
 
 protected:
-	//void _resizeEvent();
-  void _clearAttributesList();
   Json::value* _data = nullptr;
   Widget* _parsedw = nullptr;
   VScrollPanel * _propholder;
 
   float _nameColumnWidthPerc, _valueColumnWidthPerc;
+  bool _propsUpdated = false;
 };
 
 NAMESPACE_END(nanogui)
