@@ -21,6 +21,11 @@ supports automatic layout generation, stateful C++11 lambdas callbacks, a variet
 useful widget types and Retina-capable rendering on Apple devices thanks to NanoVG_ by
 Mikko Mononen. Python bindings of all functionality are provided using pybind11_.
 
+*Note*: this repository is currently in maintenance-only mode. A new and
+significantly modernized/refactored version of NanoGUI with features such as
+Metal/GLES/WebAssembly support is available `here
+<https://github.com/mitsuba-renderer/nanogui>`_.
+
 .. _NanoVG: https://github.com/memononen/NanoVG
 .. _pybind11: https://github.com/wjakob/pybind11
 
