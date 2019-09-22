@@ -12,6 +12,7 @@
 #include <nanogui/button.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/serializer/json.h>
 #include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -227,6 +228,30 @@ void Button::save(Serializer &s) const {
     s.set("flags", mFlags);
     s.set("backgroundColor", mBackgroundColor);
     s.set("textColor", mTextColor);
+}
+
+void Button::save(Json::value &save) const {
+  Widget::save(save);
+  Json::object obj = save.get_obj();
+  obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
+  obj["icon"] = Json::hobject().$("value", mIcon).$("type", "integer").$("name", "Icon");
+  obj["iconPosition"] = Json::hobject().$("value", (int)mIconPosition).$("type", "integer").$("name", "Icon position");
+  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Icon");
+  obj["backgroundColor"] = Json::hobject().$("color", mBackgroundColor.toInt()).$("type", "color").$("name", "Background color");
+  obj["textColor"] = Json::hobject().$("color", mTextColor.toInt()).$("type", "color").$("name", "Text color");
+
+  save = Json::value(obj);
+}
+
+bool Button::load(Json::value &save) {
+  Widget::load(save);
+  auto c = save.get("caption"); mCaption = c.get_str("value");
+  auto i = save.get("icon"); mIcon = i.get_int("value");
+  auto ip = save.get("iconPosition"); mIconPosition = (IconPosition)ip.get_int("value");
+  auto ph = save.get("pushed"); mPushed = ph.get_bool("value");
+  auto bg = save.get("backgroundColor"); mBackgroundColor = Color(bg.get_int("color"));
+  auto tc = save.get("textColor"); mTextColor = Color(tc.get_int("color"));
+  return true;
 }
 
 bool Button::load(Serializer &s) {

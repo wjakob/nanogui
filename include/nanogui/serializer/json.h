@@ -221,6 +221,7 @@ struct hobject {
   hobject() {};
   template<typename... Args>
   hobject& $(const std::string& key, const Args&... args) { obj[key] = Json::value(args...); return *this; }
+  inline operator Json::value() const { return Json::value(obj); }
 };
 
 inline value::value(bool b) : type_(boolean_type), u_() { u_.boolean_ = b; }

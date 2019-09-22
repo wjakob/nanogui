@@ -24,6 +24,7 @@ else()
 endif()
 
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
+option(NANOGUI_BUILD_EDITOR  "Build NanoGUI editor application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
@@ -431,6 +432,13 @@ elseif(MSVC)
 endif()
 
 # Build example application if desired
+if(NANOGUI_BUILD_EDITOR)
+  add_executable(editor      src/editor.cpp)
+  target_link_libraries(editor      nanogui ${NANOGUI_EXTRA_LIBS})
+
+  file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example1      src/example1.cpp)
   add_executable(example2      src/example2.cpp)

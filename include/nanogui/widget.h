@@ -322,6 +322,8 @@ public:
     inline void setSubElement(bool v) { mSubElement = v; }
     inline bool isSubElement() const { return mSubElement; }
 
+    void setDebugDraw(bool en) { mDebugDraw = en; }
+
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();
@@ -353,6 +355,7 @@ protected:
     bool mVisible;
 
     bool mSubElement = false;
+    bool mDebugDraw = false;
 
     /**
      * Whether or not this Widget is currently enabled.  Various different kinds

@@ -36,14 +36,16 @@ void PropertiesEditor::updateAttribs()
   }
 }
 
+void PropertiesEditor::addChild(int index, Widget *widget)
+{
+  Widget::addChild(index, widget);
+
+  if (widget)
+    widget->setDebugDraw(true);
+}
+
 void PropertiesEditor::draw(NVGcontext* ctx)
 {
-  if (_propsUpdated)
-  {
-    _propsUpdated = false;
-    updateAttribs();
-  }
-
   Widget::draw(ctx);
 }
 

@@ -125,9 +125,11 @@ public:
 
     /// Saves the state of this Button provided the given Serializer.
     virtual void save(Serializer &s) const override;
+    void save(Json::value &s) const override;
 
     /// Sets the state of this Button provided the given Serializer.
     virtual bool load(Serializer &s) override;
+    bool load(Json::value &s) override;
 
 protected:
     /// The caption of this Button.

@@ -446,12 +446,19 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                     if (mCursorPos > 0) {
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
                         mCursorPos--;
+
+                        if (mEditCallback)
+                          mEditCallback(mValueTemp, true);
                     }
                 }
             } else if (key == GLFW_KEY_DELETE) {
                 if (!deleteSelection()) {
-                    if (mCursorPos < (int) mValueTemp.length())
-                        mValueTemp.erase(mValueTemp.begin() + mCursorPos);
+                  if (mCursorPos < (int)mValueTemp.length())
+                  {
+                    mValueTemp.erase(mValueTemp.begin() + mCursorPos);
+                    if (mEditCallback)
+                      mEditCallback(mValueTemp, true);
+                  }
                 }
             } else if (key == GLFW_KEY_ENTER) {
                 if (!mCommitted)
@@ -546,7 +553,11 @@ void TextBox::pasteFromClipboard() {
         return;
     const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
     if (cbstr)
-        mValueTemp.insert(mCursorPos, std::string(cbstr));
+    {
+      mValueTemp.insert(mCursorPos, std::string(cbstr));
+      if (mEditCallback)
+        mEditCallback(mValueTemp, true);
+    }
 }
 
 bool TextBox::deleteSelection() {
@@ -562,6 +573,9 @@ bool TextBox::deleteSelection() {
         else
             mValueTemp.erase(mValueTemp.begin() + begin,
                              mValueTemp.begin() + end);
+
+        if (mEditCallback)
+          mEditCallback(mValueTemp, true);
 
         mCursorPos = begin;
         mSelectionPos = -1;

@@ -302,6 +302,9 @@ public:
      */
     Color(float r, float g, float b, float a) : Color(Vector4f(r, g, b, a)) { }
 
+    Color(int rgba) 
+      : Color((rgba >> 24) & 0xff, (rgba >> 16) & 0xff, (rgba >> 8) & 0xff, rgba & 0xff) {}
+
     /**
      * Explicit constructor: creates the Color ``(r, g, b, a) / 255.0``.
      * Values are casted to floats before division.
@@ -356,6 +359,7 @@ public:
 
     /// Allows for conversion between this Color and NanoVG's representation.
     inline operator const NVGcolor &() const;
+    inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

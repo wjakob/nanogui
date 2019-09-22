@@ -338,28 +338,18 @@ void Widget::save(Serializer &s) const {
 }
 
 void Widget::save(Json::value &save) const {
-  //s.["position"].get
-  Json::hobject p; p.$("x", mPos.x()).$("y", mPos.y()).$("type", "position").$("name", "Position");
-  Json::hobject s; s.$("w", mSize.x()).$("h", (int)mSize.y()).$("type", "size").$("name", "Size");
-  Json::hobject fs; fs.$("w", mFixedSize.x()).$("h", mFixedSize.y()).$("type", "size").$("name", "Fixed size");
-  Json::hobject v; v.$("value", mVisible).$("type", "boolean").$("name", "Visible");
-  Json::hobject e; e.$("value", mEnabled).$("type", "boolean").$("name", "Enabled");
-  Json::hobject fc; fc.$("value", mFocused).$("type", "boolean").$("name", "Focused");
-  Json::hobject t; t.$("value", mTooltip).$("type", "string").$("name", "Tooltip");
-  Json::hobject fh; fh.$("value", mFontSize).$("type", "integer").$("name", "Font size");
-  Json::hobject cr; cr.$("value", (int)mCursor).$("type", "integer").$("name", "Cursor");
+  Json::object obj;
+  obj["position"] = Json::hobject().$("x", mPos.x()).$("y", mPos.y()).$("type", "position").$("name", "Position");
+  obj["size"] = Json::hobject().$("w", mSize.x()).$("h", (int)mSize.y()).$("type", "size").$("name", "Size");
+  obj["fixedSize"] = Json::hobject().$("w", mFixedSize.x()).$("h", mFixedSize.y()).$("type", "size").$("name", "Fixed size");
+  obj["visible"] = Json::hobject().$("value", mVisible).$("type", "boolean").$("name", "Visible");
+  obj["enabled"] = Json::hobject().$("value", mEnabled).$("type", "boolean").$("name", "Enabled");
+  obj["focused"] = Json::hobject().$("value", mFocused).$("type", "boolean").$("name", "Focused");
+  obj["tooltip"] = Json::hobject().$("value", mTooltip).$("type", "string").$("name", "Tooltip");
+  obj["fontSize"] = Json::hobject().$("value", mFontSize).$("type", "integer").$("name", "Font size");
+  obj["cursor"] = Json::hobject().$("value", (int)mCursor).$("type", "integer").$("name", "Cursor");
 
-  Json::hobject ret; ret.$("position", p.obj)
-                        .$("size", s.obj)
-                        .$("fixedSize", fs.obj)
-                        .$("visible", v.obj)
-                        .$("enabled", e.obj)
-                        .$("focused", fc.obj)
-                        .$("tooltip", t.obj)
-                        .$("fontSize", fh.obj)
-                        .$("cursor", cr.obj);
-
-  save = Json::value(ret.obj);
+  save = Json::value(obj);
 }
 
 bool Widget::load(Json::value &save) { 

@@ -24,13 +24,14 @@ public:
   void parse(Widget* w);
   void draw(NVGcontext* ctx) override;
 
+  void addChild(int index, Widget *widget) override;
+
 protected:
   Json::value* _data = nullptr;
   Widget* _parsedw = nullptr;
   VScrollPanel * _propholder;
 
   float _nameColumnWidthPerc, _valueColumnWidthPerc;
-  bool _propsUpdated = false;
 };
 
 NAMESPACE_END(nanogui)
