@@ -195,7 +195,7 @@ protected:
     int mMouseState, mModifiers;
     Vector2i mMousePos;
     bool mDragActive;
-    Widget *mDragWidget = nullptr;
+    ref<Widget> mDragWidget;
     double mLastInteraction;
     bool mProcessEvents;
     Color mBackground;
