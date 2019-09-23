@@ -35,8 +35,6 @@
 #  include <GLFW/glfw3native.h>
 #endif
 
-/* Allow enforcing the GL2 implementation of NanoVG */
-#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -46,6 +44,33 @@ std::map<GLFWwindow *, Screen *> __nanogui_screens;
 #if defined(NANOGUI_GLAD)
 static bool gladInitialized = false;
 #endif
+
+inline NVGcontext* nvgCreateContext(int flags) {
+#if defined(NANOVG_GL2_IMPLEMENTATION)
+  return nvgCreateGL2(flags);
+#elif defined(NANOVG_GL3_IMPLEMENTATION)
+  return nvgCreateGL3(flags);
+#elif defined(NANOVG_GLES2_IMPLEMENTATION)
+  return nvgCreateGLES2(flags);
+#elif defined(NANOVG_GLES3_IMPLEMENTATION)
+  return nvgCreateGLES3(flags);
+#else
+#error No NANOVG_GL*_IMPLEMENTATION macro defined
+#endif
+}
+inline void nvgDeleteContext(NVGcontext* ctx) {
+#if defined(NANOVG_GL2_IMPLEMENTATION)
+  nvgDeleteGL2(ctx);
+#elif defined(NANOVG_GL3_IMPLEMENTATION)
+  nvgDeleteGL3(ctx);
+#elif defined(NANOVG_GLES2_IMPLEMENTATION)
+  nvgDeleteGLES2(ctx);
+#elif defined(NANOVG_GLES3_IMPLEMENTATION)
+  nvgDeleteGLES3(ctx);
+#else
+#error No NANOVG_GL*_IMPLEMENTATION macro defined
+#endif
+}
 
 /* Calculate pixel ratio for hi-dpi devices. */
 static float get_pixel_ratio(GLFWwindow *window) {
@@ -122,9 +147,14 @@ static float get_pixel_ratio(GLFWwindow *window) {
 
 Screen::Screen()
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
+#if !defined(NANOGUI_CURSOR_DISABLED)
+      mCursor(Cursor::Arrow),
+#endif
+      mBackground(0.3f, 0.3f, 0.32f, 1.f),
       mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+#if !defined(NANOGUI_CURSOR_DISABLED)
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+#endif
 }
 
 Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
@@ -132,9 +162,14 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
-      mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
+#if !defined(NANOGUI_CURSOR_DISABLED)
+      mCursor(Cursor::Arrow),
+#endif
+      mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
       mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
+#if !defined(NANOGUI_CURSOR_DISABLED)
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
+#endif
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
        Default value is an OpenGL 3.3 core profile context. */
@@ -244,6 +279,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
+#if !defined(NANOVG_GL2_IMPLEMENTATION) && !defined(NANOVG_GLES2_IMPLEMENTATION)
     glfwSetDropCallback(mGLFWWindow,
         [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
@@ -255,6 +291,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
             s->dropCallbackEvent(count, filenames);
         }
     );
+#endif
 
     glfwSetScrollCallback(mGLFWWindow,
         [](GLFWwindow *w, double x, double y) {
@@ -339,7 +376,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     flags |= NVG_DEBUG;
 #endif
 
-    mNVGContext = nvgCreateGL3(flags);
+    mNVGContext = nvgCreateContext(flags);
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
 
@@ -352,8 +389,10 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mProcessEvents = true;
     __nanogui_screens[mGLFWWindow] = this;
 
+#if !defined(NANOGUI_CURSOR_DISABLED)
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
+#endif
 
     /// Fixes retina display-related font rendering issue (#185)
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
@@ -362,12 +401,14 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
 Screen::~Screen() {
     __nanogui_screens.erase(mGLFWWindow);
+#if !defined(NANOGUI_CURSOR_DISABLED)
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
             glfwDestroyCursor(mCursors[i]);
     }
+#endif
     if (mNVGContext)
-        nvgDeleteGL3(mNVGContext);
+        nvgDeleteContext(mNVGContext);
     if (mGLFWWindow && mShutdownGLFWOnDestruct)
         glfwDestroyWindow(mGLFWWindow);
 }
@@ -429,7 +470,9 @@ void Screen::drawWidgets() {
 #endif
 
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
+#if !defined(NANOVG_GL2_IMPLEMENTATION) && !defined(NANOVG_GLES2_IMPLEMENTATION)
     glBindSampler(0, 0);
+#endif
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
@@ -525,11 +568,13 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         p -= Vector2i(1, 2);
 
         if (!mDragActive) {
+#if !defined(NANOGUI_CURSOR_DISABLED)
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
                 glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
             }
+#endif
         } else {
             ret = mDragWidget->mouseDragEvent(
                 p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
@@ -573,10 +618,12 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
                 mMousePos - mDragWidget->parent()->absolutePosition(), button,
                 false, mModifiers);
 
+#if !defined(NANOGUI_CURSOR_DISABLED)
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
             glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
         }
+#endif
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
