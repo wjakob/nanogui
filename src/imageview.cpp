@@ -66,9 +66,10 @@ namespace {
 
 }
 
-ImageView::ImageView(Widget* parent, GLuint imageID)
-    : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
-    mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {
+ImageView::ImageView(Widget* parent, GLuint imageID, bool borders)
+    : Widget(parent), mImageID(imageID), mDrawBorders(borders), mScale(1.0f),
+    mOffset(Vector2f::Zero()), mFixedScale(false), mFixedOffset(false),
+    mPixelInfoCallback(nullptr) {
     updateImageParameters();
     mShader.init("ImageViewShader", defaultImageViewVertexShader,
                  defaultImageViewFragmentShader);
@@ -287,7 +288,8 @@ void ImageView::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
     nvgEndFrame(ctx); // Flush the NanoVG draw stack, not necessary to call nvgBeginFrame afterwards.
 
-    drawImageBorder(ctx);
+    if (mDrawBorders)
+        drawImageBorder(ctx);
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be
     // properly displayed inside the widget.
@@ -315,7 +317,8 @@ void ImageView::draw(NVGcontext* ctx) {
     if (helpersVisible())
         drawHelpers(ctx);
 
-    drawWidgetBorder(ctx);
+    if (mDrawBorders)
+        drawWidgetBorder(ctx);
 }
 
 void ImageView::updateImageParameters() {
