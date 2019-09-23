@@ -102,7 +102,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     NVGpaint paint = nvgBoxGradient(
         ctx, mPos.x() + mSize.x() - 12 + 1, mPos.y() + 4 + 1, 8,
-        mSize.y() - 8, 3, 4, Color(0, 32), Color(0, 92));
+        mSize.y() - 8, 3, 4, mTheme->mTrackGradientTop, mTheme->mTrackGradientBot);
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12, mPos.y() + 4, 8,
                    mSize.y() - 8, 3);
@@ -112,7 +112,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     paint = nvgBoxGradient(
         ctx, mPos.x() + mSize.x() - 12 - 1,
         mPos.y() + 4 + (mSize.y() - 8 - scrollh) * mScroll - 1, 8, scrollh,
-        3, 4, Color(220, 100), Color(128, 100));
+        3, 4, mTheme->mScrollerGradientTop, mTheme->mScrollerGradientBot);
 
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12 + 1,
