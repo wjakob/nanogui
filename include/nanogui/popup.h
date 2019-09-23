@@ -67,6 +67,7 @@ protected:
 protected:
     Window *mParentWindow;
     Vector2i mAnchorPos;
+    Vector2i pPos;
     int mAnchorHeight;
     Side mSide;
 public:
