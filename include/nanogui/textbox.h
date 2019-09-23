@@ -81,6 +81,7 @@ public:
 
     /// Sets the callback to execute when the value of this TextBox has changed.
     void setCallback(const std::function<bool(const std::string& str)> &callback) { mCallback = callback; }
+    void setComitCallback(const std::function<void(Widget*)> &callback) { mComitCallback = callback; }
 
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
     virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
@@ -121,6 +122,7 @@ protected:
     std::string mFormat;
     int mUnitsImage;
     std::function<bool(const std::string& str)> mCallback;
+    std::function<void(Widget*)> mComitCallback;
     bool mValidFormat;
     std::string mValueTemp;
     std::string mPlaceholder;

@@ -26,6 +26,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Label : public Widget {
 public:
+    enum TextAlign { alLeft=0, alCenter, alRight };
     Label(Widget *parent, const std::string &caption,
           const std::string &font = "sans", int fontSize = -1);
 
@@ -43,6 +44,7 @@ public:
     Color color() const { return mColor; }
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
+    void setTextAlign(TextAlign align) { mTextAlign = align; }
 
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme) override;
@@ -59,6 +61,7 @@ protected:
     std::string mCaption;
     std::string mFont;
     Color mColor;
+    TextAlign mTextAlign = alLeft;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

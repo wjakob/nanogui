@@ -57,13 +57,44 @@ public:
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
+    const int right() const { return mPos.x() + mSize.x(); }
+    const int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
     void setPosition(const Vector2i &pos) { mPos = pos; }
+    void setPosition(int x, int y) { mPos = Vector2i(x, y); }
+
+    void setGeometry(const Vector4i &vec) {
+      setPosition(vec.x(), vec.y());
+      setSize(vec.z() - vec.x(), vec.w() - vec.y());
+    }
+
+    bool sendChildToBack(Widget* child);
+    bool sendToBack();
 
     /// Return the absolute position on screen
     Vector2i absolutePosition() const {
         return mParent ?
             (parent()->absolutePosition() + mPos) : mPos;
+    }
+
+    Vector4i absoluteRect() const {
+      Vector2i ap = absolutePosition();
+      return Vector4i(ap.x(), ap.y(), ap.x() + width(), ap.y() + height());
+    }
+
+    Widget *findWidget(const std::string& id, bool inchildren = true);
+    Widget *findWidget(std::function<bool(Widget*)> cond, bool inchildren = true);
+
+    Widget *findWidgetGlobal(const std::string& id);
+    Widget *findWidgetGlobal(std::function<bool(Widget*)> cond);
+
+    virtual std::string wtypename() const;
+
+    template<typename RetClass>
+    RetClass *findWidgetGlobal(const std::string& id)
+    {
+      Widget* f = findWidgetGlobal(id);
+      return f ? f->cast<RetClass>() : nullptr;
     }
 
     /// Return the size of the widget
