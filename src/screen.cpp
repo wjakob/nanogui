@@ -400,6 +400,10 @@ void Screen::setSize(const Vector2i &size) {
 #endif
 }
 
+void Screen::setSizeLimits(const Vector2i& minsize, const Vector2i& maxsize) {
+  glfwSetWindowSizeLimits(mGLFWWindow, minsize[0], minsize[1], maxsize[0], maxsize[1]);
+}
+
 void Screen::drawAll() {
     glClearColor(mBackground[0], mBackground[1], mBackground[2], mBackground[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
