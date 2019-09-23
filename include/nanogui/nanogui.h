@@ -29,6 +29,7 @@
 #include <nanogui/messagedialog.h>
 #include <nanogui/textbox.h>
 #include <nanogui/slider.h>
+#include <nanogui/dial.h>
 #include <nanogui/imagepanel.h>
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
