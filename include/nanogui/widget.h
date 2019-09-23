@@ -161,7 +161,7 @@ public:
     }
 
     /// Walk up the hierarchy and return the parent window
-    Window *window();
+    Window *window() const;
 
     /// Walk up the hierarchy and return the parent screen
     Screen *screen();
