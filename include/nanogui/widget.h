@@ -82,6 +82,11 @@ public:
       return Vector4i(ap.x(), ap.y(), ap.x() + width(), ap.y() + height());
     }
 
+    Vector4i rect() const {
+      Vector2i p = position();
+      return Vector4i(p.x(), p.y(), p.x() + width(), p.y() + height());
+    }
+
     Widget *findWidget(const std::string& id, bool inchildren = true);
     Widget *findWidget(std::function<bool(Widget*)> cond, bool inchildren = true);
 

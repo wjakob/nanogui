@@ -30,31 +30,52 @@ Vector2i getUpperLeftCorner(const Vector4i& r)
   return Vector2i(r.x(), r.y());
 }
 
+Vector4i moveRect(const Vector4i& r, const Vector2i& p)
+{
+  return { r.x() + p.x(), r.y() + p.y(), r.z() + p.x(), r.w() + p.y() };
+}
+
+Vector2i getOffsetToChild(Widget* w, Widget* parent)
+{
+  if (!parent->isMyChildRecursive(w))
+    return Vector2i::Zero();
+
+  Vector2i ret = { 0,0 };
+  while (w->parent())
+  {
+    ret += w->parent()->position();
+    w = w->parent();
+    if (w == parent)
+      break;
+  }
+  
+  return ret;
+}
+
 EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
 {
     try
     {   
+      Vector2i offset = getOffsetToChild(_selectedElement, this);
 	    if (_selectedElement)
 	    {
-		    Vector4i	r = _selectedElement->absoluteRect();
-
-		    if( isPointInsideRect( p, TLRect) )
+		    if( isPointInsideRect( p, editArea.topleft) )
 			    return EditMode::ResizeTopLeft;
-		    else if( isPointInsideRect( p, TRRect) )
+		    else if( isPointInsideRect( p, editArea.topright) )
 			    return EditMode::ResizeTopRight;
-		    else if( isPointInsideRect( p, BLRect) )
+		    else if( isPointInsideRect( p, editArea.bottomleft) )
 			    return EditMode::ResizeBottomLeft;
-		    else if(isPointInsideRect( p, BRRect) )
+		    else if(isPointInsideRect( p, editArea.bottomright) )
 			    return EditMode::ResizeBottpmRight;
-		    else if( isPointInsideRect( p, TopRect) )
+		    else if( isPointInsideRect( p, editArea.top) )
 			    return EditMode::ResizeTop;
-		    else if( isPointInsideRect( p, BRect) )
+		    else if( isPointInsideRect( p, editArea.bottom) )
 			    return EditMode::ResizeBottom;
-		    else if( isPointInsideRect( p, LRect) )
+		    else if( isPointInsideRect( p, editArea.left) )
 			    return EditMode::ResizeLeft;
-		    else if( isPointInsideRect( p, RRect) )
+		    else if( isPointInsideRect( p, editArea.right) )
 			    return EditMode::ResizeRight;
-		    else if( getEditableElementFromPoint( _selectedElement, p ) == _selectedElement )
+		    else if( getEditableElementFromPoint( _selectedElement, p - offset) == _selectedElement )
 			    return EditMode::Move;
 		    else
 			    return EditMode::Select;
@@ -69,33 +90,27 @@ EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
     }
 }
 
-Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector2i &point, int index )
+Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector2i &point)
 {
-    Widget* target = 0;
+    Widget* target = nullptr;
 
-	// we have to search from back to front.
+	  // we have to search from back to front.
 
     auto rev_it = start->children().rbegin();
-	  int count=0;
 	  while(rev_it != start->children().rend())
 	  {
-		  target = getEditableElementFromPoint((*rev_it),point);
+		  target = getEditableElementFromPoint((*rev_it),point - start->position());
 		  if (target)
 		  {
 			  if (!target->isSubElement() && isMyChildRecursive(target) && target != this)
-			  {
-				  if (index == count)
-					  return target;
-				  else
-					  count++;
-			  }
+  			  return target;
 			  else
-				  target = 0;
+				  target = nullptr;
 		  }
       ++rev_it;
 	  }
 
-	  if (isPointInsideRect(point, start->absoluteRect()))
+	  if (isPointInsideRect(point, start->rect()))
 		  target = start;
 
 	  return target;
@@ -393,16 +408,18 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
   else if (_currentMode > EditMode::Move)
   {
     // get difference from start position
-    Vector2i p = pp;
+    Vector2i offset = getOffsetToChild(_selectedElement, this);
+    Vector2i p = pp + (absolutePosition() - offset);
 
     if (_useGrid)
     {
-      p -= getUpperLeftCorner(absoluteRect());
+      Vector2i ap = absolutePosition();
+      p -= ap;
 
       p.x() = (p.x() / _gridSize.x())*_gridSize.x();
       p.y() = (p.y() / _gridSize.y())*_gridSize.y();
 
-      p += getUpperLeftCorner(absoluteRect());
+      p += ap;
     }
 
     switch (_currentMode)
@@ -415,8 +432,7 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
     case EditMode::ResizeTopRight: _selectedArea.y() = p.y(); _selectedArea.z() = p.x(); break;
     case EditMode::ResizeBottomLeft: _selectedArea.x() = p.x(); _selectedArea.w() = p.y(); break;
     case EditMode::ResizeBottpmRight: _selectedArea.z() = p.x(); _selectedArea.w() = p.y(); break;
-    default:
-      break;
+    default: break;
     }
 
     if (_elementUnderMouse)
@@ -439,13 +455,16 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
 {
   if (button == GLFW_MOUSE_BUTTON_LEFT && down)
   {
+    if (_currentMode == EditMode::SelectNewParent)
+      return true;
+   
     Vector2i p = pp;
     Widget* newSelection = findWidget(p);
 
-    if (newSelection != this && !isMyChildRecursive(newSelection)) // redirect event
+    if (newSelection != this && isMyChildRecursive(newSelection) && _selectedElement != newSelection) // redirect event
     {
       newSelection->requestFocus();
-      _selectedElement = newSelection;
+      setSelectedElement(newSelection);
       return true;
     }
 
@@ -469,7 +488,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
         _elementUnderMouse = getEditableElementFromPoint(this, p);
 
         if (_elementUnderMouse == this)
-          _elementUnderMouse = 0;
+          _elementUnderMouse = nullptr;
 
         setSelectedElement(_elementUnderMouse);
       }
@@ -681,63 +700,65 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
     {
         // draw handles for moving
         EditMode m = _currentMode;
-        Vector4i r = _selectedArea;
+        Vector2i offset = getOffsetToChild(_selectedElement, this);
+        Vector4i r = moveRect(_selectedElement->rect(), offset);
         if (m < EditMode::Move)
-        {
             m = _mouseOverMode;
-            r = _selectedElement->absoluteRect();
-        }
 
         int dfHalf = 3;
         Vector2i c = getCenterRect(r);
 
-        TLRect =  Vector4i(r.x() - dfHalf, r.y() - dfHalf, r.x() + dfHalf, r.y() + dfHalf);
-        TRRect = Vector4i(r.z() - dfHalf, r.y() - dfHalf, r.z() + dfHalf, r.y() + dfHalf);
-        TopRect = Vector4i(c.x() - dfHalf, r.y() - dfHalf, c.x() + dfHalf, r.y() + dfHalf);
-        BLRect = Vector4i(r.x() - dfHalf, r.w() - dfHalf, r.x() + dfHalf, r.w() + dfHalf);
-        LRect = Vector4i(r.x() - dfHalf, c.y() - dfHalf, r.x() + dfHalf, c.y() + dfHalf);
-        RRect = Vector4i(r.z() - dfHalf, c.y() - dfHalf, r.z() + dfHalf, c.y() + dfHalf);
-        BRRect = Vector4i(r.z() - dfHalf, r.w() - dfHalf, r.z() + dfHalf, r.w() + dfHalf);
-        BRect = Vector4i(c.x() - dfHalf, r.w() - dfHalf, c.x() + dfHalf, r.w() + dfHalf);
+        editArea.topleft =  Vector4i(r.x() - dfHalf, r.y() - dfHalf, r.x() + dfHalf, r.y() + dfHalf);
+        editArea.topright = Vector4i(r.z() - dfHalf, r.y() - dfHalf, r.z() + dfHalf, r.y() + dfHalf);
+        editArea.top = Vector4i(c.x() - dfHalf, r.y() - dfHalf, c.x() + dfHalf, r.y() + dfHalf);
+        editArea.bottomleft = Vector4i(r.x() - dfHalf, r.w() - dfHalf, r.x() + dfHalf, r.w() + dfHalf);
+        editArea.left = Vector4i(r.x() - dfHalf, c.y() - dfHalf, r.x() + dfHalf, c.y() + dfHalf);
+        editArea.right = Vector4i(r.z() - dfHalf, c.y() - dfHalf, r.z() + dfHalf, c.y() + dfHalf);
+        editArea.bottomright = Vector4i(r.z() - dfHalf, r.w() - dfHalf, r.z() + dfHalf, r.w() + dfHalf);
+        editArea.bottom = Vector4i(c.x() - dfHalf, r.w() - dfHalf, c.x() + dfHalf, r.w() + dfHalf);
 
         // top left
         Color bg(180,0, 0, 255);
         Color select(180, 255, 0, 255);
+        if (_currentMode == EditMode::Move)
+          bg = select = Color(64, 64);
+
         bool mySide = (m == EditMode::ResizeTop || m == EditMode::ResizeLeft || m == EditMode::ResizeTopLeft);
-        _drawResizePoint(ctx, mySide ? select : bg, TLRect );
+        _drawResizePoint(ctx, mySide ? select : bg, editArea.topleft );
 
         mySide = (m == EditMode::ResizeTop || m == EditMode::ResizeRight || m == EditMode::ResizeTopRight);
-        _drawResizePoint(ctx, mySide ? select : bg, TRRect);
+        _drawResizePoint(ctx, mySide ? select : bg, editArea.topright );
 
         mySide = (m == EditMode::ResizeTop);
-        _drawResizePoint( ctx, mySide ? select : bg, TopRect);
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.top);
 
         mySide = (m == EditMode::ResizeLeft || m == EditMode::ResizeBottomLeft || m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, BLRect);
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottomleft);
 
         mySide = (m == EditMode::ResizeLeft);
-        _drawResizePoint( ctx, mySide ? select : bg, LRect);
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.left);
 
         mySide = (m == EditMode::ResizeRight);
-        _drawResizePoint( ctx, mySide ? select : bg, RRect);
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.right);
 
         mySide = (m ==  EditMode::ResizeRight || m == EditMode::ResizeBottpmRight || m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, BRRect );
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottomright);
 
         mySide = (m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, BRect);
+        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottom);
     }
 }
 
 void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
 {
+  Vector2i offset = getOffsetToChild(_selectedElement, this);
   if (_elementUnderMouse &&
       _elementUnderMouse != _selectedElement &&
       _elementUnderMouse != parent() )
   {
-    Vector4i r = _elementUnderMouse->absoluteRect();
     Color color(100,0,0,255);
-    _drawWidthRectangle( ctx, color, 2, r );
+    Vector2i umoffset = getOffsetToChild(_elementUnderMouse, this);
+    _drawWidthRectangle(ctx, color, 2, moveRect(_elementUnderMouse->rect(), umoffset));
   }
 
   if (_selectedElement)
@@ -745,23 +766,23 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
     if (_currentMode == EditMode::Select)
     {
       Color color(100, 0, 0, 255);
-      _drawWidthRectangle(ctx, color, 2, _selectedElement->absoluteRect());
+      _drawWidthRectangle(ctx, color, 2, moveRect(_selectedElement->rect(), offset));
     }
     else if (_currentMode == EditMode::SelectNewParent)
     {
       float value = std::fmod((float)glfwGetTime(), 1.0f);
-      Vector4i tr = _selectedElement->absoluteRect();
+      Vector4i r = moveRect(_selectedElement->rect(), offset);
       Color color(0, 0, 255, value > 0.5 ? 32 : 64);
       nvgBeginPath(ctx);
       nvgFillColor(ctx, color);
-      nvgRect(ctx, tr.x(), tr.y(), tr.z() - tr.x(), tr.w() - tr.y());
+      nvgRect(ctx, r.x(), r.y(), r.z() - r.x(), r.w() - r.y());
       nvgFill(ctx);
     }
   }
 
   if (_currentMode >= EditMode::Move)
   {
-    const Vector4i& tr = _selectedArea;
+    Vector4i tr = moveRect(_selectedElement->rect(), offset);;
     Color color(255,0,0,64);
     nvgBeginPath(ctx);
     nvgFillColor(ctx, color);

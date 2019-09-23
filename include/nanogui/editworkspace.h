@@ -74,7 +74,7 @@ public:
     bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
 
 	  //! returns the first editable element under the mouse
-    virtual Widget* getEditableElementFromPoint(Widget *start, const Vector2i &point, int index=0 );
+    virtual Widget* getEditableElementFromPoint(Widget *start, const Vector2i &point);
 
 	  //! selecting elements
     virtual void setSelectedElement(Widget *sel);
@@ -156,14 +156,16 @@ private:
     Window* _optionsWindow;
     //ChangesManager* _changesManager;
 
-	  Vector4i TLRect;
-	  Vector4i TRRect;
-	  Vector4i TopRect;
-    Vector4i BLRect;
-    Vector4i LRect;
-    Vector4i RRect;
-    Vector4i BRRect;
-    Vector4i BRect;
+    struct {     
+      Vector4i topleft;
+      Vector4i topright;
+      Vector4i top;
+      Vector4i bottomleft;
+      Vector4i left;
+      Vector4i right;
+      Vector4i bottomright;
+      Vector4i bottom;
+    } editArea;
 };
 
 NAMESPACE_END(nanogui)
