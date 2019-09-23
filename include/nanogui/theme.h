@@ -150,6 +150,12 @@ public:
      */
     Color mButtonGradientBotPushed;
 
+    /* VScrollPanel colors */
+    Color mScrollerGradientTop;
+    Color mScrollerGradientBot;
+    Color mTrackGradientTop;
+    Color mTrackGradientBot;
+
     /* Window colors */
     /**
      * The fill color for a Window that is not in focus
