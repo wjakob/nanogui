@@ -317,23 +317,34 @@ public:
         panel->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 20));
 
-        Slider *slider = new Slider(panel);
-        slider->setValue(0.5f);
-        slider->setFixedWidth(80);
+        VerticalSlider *vslider = new VerticalSlider(panel);
+        vslider->setValue(0.5f);
+        vslider->setFixedHeight(50);
 
         TextBox *textBox = new TextBox(panel);
         textBox->setFixedSize(Vector2i(60, 25));
         textBox->setValue("50");
         textBox->setUnits("%");
+
+        vslider->setCallback([textBox](float value) {
+            textBox->setValue(std::to_string((int) (value * 100)));
+        });
+        vslider->setFinalCallback([&](float value) {
+            cout << "Final slider value: " << (int) (value * 100) << endl;
+        });
+        textBox->setFixedSize(Vector2i(60,25));
+        textBox->setFontSize(20);
+        textBox->setAlignment(TextBox::Alignment::Right);
+
+        Slider *slider = new Slider(window);
+        slider->setValue(0.5f);
+        slider->setFixedWidth(120);
         slider->setCallback([textBox](float value) {
             textBox->setValue(std::to_string((int) (value * 100)));
         });
         slider->setFinalCallback([&](float value) {
             cout << "Final slider value: " << (int) (value * 100) << endl;
         });
-        textBox->setFixedSize(Vector2i(60,25));
-        textBox->setFontSize(20);
-        textBox->setAlignment(TextBox::Alignment::Right);
 
         window = new Window(this, "Misc. widgets");
         window->setPosition(Vector2i(425,15));

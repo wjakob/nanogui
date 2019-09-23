@@ -61,4 +61,15 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+class NANOGUI_EXPORT VerticalSlider : public Slider {
+public:
+   VerticalSlider(Widget *parent) : Slider(parent) {}
+
+   virtual Vector2i preferredSize(NVGcontext *) const override;
+    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    virtual void draw(NVGcontext* ctx) override;
+};
+
+
 NAMESPACE_END(nanogui)
