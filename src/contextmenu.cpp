@@ -67,6 +67,7 @@ void ContextMenu::addItem(const std::string& name, const std::function<void()>& 
     auto lbl = new Label(mItemContainer, name);
     mLabels[name] = lbl;
     lbl->setFontSize(fontSize());
+    lbl->setMinSize(mMinSize);
     lbl->setHeight(lbl->fontSize() * 2);
     mItemLayout->appendRow(0);
     mItemLayout->setAnchor(lbl, AdvancedGridLayout::Anchor{1,mItemLayout->rowCount() - 1, 1, 1});
@@ -233,6 +234,7 @@ void ContextMenu::activateSubmenu(const std::string &name) {
         deactivateSubmenu();
     }
     mActiveSubmenu = mSubmenus[name];
+    mActiveSubmenu->bringToFront();
     mActiveSubmenu->activate(submenuPosition(name));
 }
 

@@ -72,7 +72,7 @@ public:
      * context menu is disposable, it will be removed from its parent and
      * destroyed.
      */
-    void deactivate();
+    virtual void deactivate();
 
     /**
      * \brief Add an item to the menu. The callback is called when the item is clicked.
@@ -80,7 +80,7 @@ public:
      * \param cb Callback to be executed when the item is clicked.
      * \param icon Optional icon to display to the left of the label.
      */
-    void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
+    virtual void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
 
     /**
      * Add a submenu to the menu.
@@ -89,7 +89,7 @@ public:
      * \returns nullptr if a submenu or item already exists under the given name.
      * \param icon Optional icon to display to the left of the label.
      */
-    ContextMenu* addSubMenu(const std::string& name, int icon = 0);
+    virtual ContextMenu* addSubMenu(const std::string& name, int icon = 0);
 
     Vector2i preferredSize(NVGcontext* ctx) const override;
     bool mouseEnterEvent(const Vector2i& p, bool enter) override;
@@ -97,6 +97,11 @@ public:
     bool mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) override;
     void draw(NVGcontext* ctx) override;
     bool focusEvent(bool focused) override;
+
+    void setRoot(ContextMenu* root) { mRootMenu = root; }
+
+    /// Calculate a submenus position.
+    virtual Vector2i submenuPosition(const std::string& name) const;
 
 protected:
     /**
@@ -112,19 +117,15 @@ protected:
      */
     bool isRowSelected_(const std::string& name, const Vector2i& p) const;
 
-private:
     /// Activate a submenu.
     void activateSubmenu(const std::string& name);
     /// Deactivate the currently active submenu if there is one.
     void deactivateSubmenu();
     /// Remove the context menu and all submenus from their parent widget.
     void dispose();
-    /// Calculate a submenus position.
-    Vector2i submenuPosition(const std::string& name) const;
-
-private:
+    
     Widget *mItemContainer;
-    AdvancedGridLayout *mItemLayout;
+    AdvancedGridLayout *mItemLayout = nullptr;
     std::unordered_map<std::string, std::function<void()>> mItems;
     std::unordered_map<std::string, ContextMenu*> mSubmenus;
     std::unordered_map<std::string, Label*> mLabels;
