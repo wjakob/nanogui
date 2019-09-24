@@ -49,6 +49,12 @@ int Widget::fontSize() const {
     return (mFontSize < 0 && mTheme) ? mTheme->mStandardFontSize : mFontSize;
 }
 
+Vector2i Widget::preferredSize()
+{
+  Screen* scr = screen();
+  return scr ? preferredSize(scr->nvgContext()) : Vector2i::Zero();
+}
+
 Vector2i Widget::preferredSize(NVGcontext *ctx) const {
     if (mLayout)
         return mLayout->preferredSize(ctx, this);

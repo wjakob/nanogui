@@ -89,7 +89,7 @@ public:
     {
       setPosition(r.x(), r.y());
       setSize(r.z() - r.x(), r.w() - r.y());
-      setTextAlign(TextAlign::alCenter);
+      setTextHAlign(TextHAlign::hCenter);
     }
 
     Table::ColumnOrder orderingMode;

@@ -41,6 +41,7 @@
 #include <nanogui/editworkspace.h>
 #include <nanogui/editproperties.h>
 #include <nanogui/scrollbar.h>
+#include <nanogui/windowmenu.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -151,16 +152,66 @@ private:
 
 class ExampleApplication : public nanogui::Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "NanoGUI Test") {
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1280, 800), "NanoGUI Test") {
         using namespace nanogui;
 
-        auto editor = new EditorWorkspace(this, "workspace");
-        editor->setSize(width()/2, height());
-        editor->setPosition(width()/4, 0);
+        auto mmenu = new WindowMenu(this);
+        auto filesm = mmenu->addSubMenu("File");
+        filesm->addItem("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
+        filesm->addItem("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); });
+        filesm->addItem("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
 
-        auto propeditor = new PropertiesEditor(this, "propeditor");
-        propeditor->setSize(width() / 4, height());
-        propeditor->setPosition(width() * 0.75, 0);
+        auto editsm = mmenu->addSubMenu("Edit");
+        editsm->addItem("Undo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        editsm->addItem("Redo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Redo", "New Clicked!"); });
+        editsm->addItem("Cut", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Cut", "New Clicked!"); });
+        editsm->addItem("Copy", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Copy", "New Clicked!"); });
+        editsm->addItem("Paste", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Paste", "New Clicked!"); });
+        editsm->addItem("Delete", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Delete", "New Clicked!"); });
+
+        auto viewsm = mmenu->addSubMenu("View");
+        viewsm->addItem("Code", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Widgets", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Output", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Toolbox", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Notifications", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Full screen", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        viewsm->addItem("Option", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+
+        auto buildsm = mmenu->addSubMenu("Build");
+        buildsm->addItem("Build solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+
+        auto samplesm = mmenu->addSubMenu("Samples");
+        samplesm->addItem("Sample 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        samplesm->addItem("Sample 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        samplesm->addItem("Sample 3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        samplesm->addItem("Sample 4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+
+        auto wsm = mmenu->addSubMenu("Widgets");
+        wsm->addItem("w1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        wsm->addItem("w2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        wsm->addItem("w3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        wsm->addItem("w4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+
+        auto hsm = mmenu->addSubMenu("Help");
+        hsm->addItem("View help", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        hsm->addItem("Send feedback", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+
+
+
+
+        auto area = new Widget(this);
+        area->setPosition(0, mmenu->preferredSize(nvgContext()).y());
+        area->setSize(width(), height() - area->position().y());
+
+        auto editor = new EditorWorkspace(area, "workspace");
+        editor->setSize(area->width()/2, area->height());
+        editor->setPosition(area->width()/4, 0);
+
+        auto propeditor = new PropertiesEditor(area, "propeditor");
+        propeditor->setSize(area->width() / 4, area->height());
+        propeditor->setPosition(area->width() * 0.75, 0);
         editor->setSelectedCallback([=](Widget* w) { propeditor->parse(w); });
 
         auto* eb = new Button(editor, "Editor button");
@@ -171,7 +222,7 @@ public:
         ew->setSize(100, 200);
         ew->setPosition(0, 50);
 
-        auto* ww = new Widget(this);
+        auto* ww = new Widget(area);
         ww->setSize(224, 768);
         ww->setPosition(0, 0);
 
