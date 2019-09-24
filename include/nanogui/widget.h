@@ -129,6 +129,9 @@ public:
      */
     void setFixedSize(const Vector2i &fixedSize) { mFixedSize = fixedSize; }
 
+    void setMinSize(const Vector2i &minSize) { mMinSize = minSize; }
+    void setMinWidth(int ww) { mMinSize.x() = ww; }
+
     /// Return the fixed size (see \ref setFixedSize())
     const Vector2i &fixedSize() const { return mFixedSize; }
 
@@ -309,6 +312,7 @@ public:
 
     /// Compute the preferred size of the widget
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    Vector2i preferredSize();
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);
@@ -350,7 +354,7 @@ protected:
     ref<Theme> mTheme;
     ref<Layout> mLayout;
     std::string mId;
-    Vector2i mPos, mSize, mFixedSize;
+    Vector2i mPos, mSize, mFixedSize, mMinSize;;
     std::vector<Widget *> mChildren;
 
     /**

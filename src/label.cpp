@@ -43,17 +43,19 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
   }
   nvgFontFace(ctx, mFont.c_str());
   nvgFontSize(ctx, fontSize());
-  if (mFixedSize.x() > 0) {
+  if (mFixedSize.x() > 0 || mFixedSize.y() > 0) {
       float bounds[4];
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-      nvgTextBoxBounds(ctx, mPos.x(), mPos.y(), mFixedSize.x(), mCaption.c_str(), nullptr, bounds);
-      return Vector2i(mFixedSize.x(), bounds[3] - bounds[1]);
+      nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, bounds);
+      const_cast<Label*>(this)->mTextRealSize = Vector2i(bounds[2] - bounds[0], bounds[3] - bounds[1] );
+      return Vector2i(mFixedSize.x() > 0 ? mFixedSize.x() : mTextRealSize.x(),
+                      mFixedSize.y() > 0 ? mFixedSize.y() : mTextRealSize.y());
   } else {
-      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-      return Vector2i(
-          nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 2,
-          fontSize()
-      );
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+      int tw = nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 2;
+      int th = fontSize();
+      const_cast<Label*>(this)->mTextRealSize = Vector2i(tw, th);
+      return Vector2i( std::max(mMinSize.x(), tw), std::max(mMinSize.y(),th) );
   }
 }
 
@@ -62,13 +64,28 @@ void Label::draw(NVGcontext *ctx) {
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
     nvgFillColor(ctx, mColor);
-    if (mFixedSize.x() > 0) {
-        nvgTextAlign(ctx, (1<<mTextAlign) | NVG_ALIGN_TOP);
-        nvgTextBox(ctx, mPos.x(), mPos.y(), mFixedSize.x(), mCaption.c_str(), nullptr);
-    } else {
-        nvgTextAlign(ctx, (1<<mTextAlign) | NVG_ALIGN_MIDDLE);
-        nvgText(ctx, mPos.x(), mPos.y() + mSize.y() * 0.5f, mCaption.c_str(), nullptr);
+
+    int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
+    int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
+
+    int xpos = 0, ypos = 0;
+    switch (mTextHAlign)
+    {
+    case TextHAlign::hCenter: xpos = (mSize.x() - mTextRealSize.x()) / 2; break;
+    case TextHAlign::hRight: xpos = (mSize.x() - mTextRealSize.x()); break;
     }
+
+    switch (mTextVAlign)
+    {
+    case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
+    case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+    }
+
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    if (mFixedSize.x() > 0 || mFixedSize.y() > 0) 
+      nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
+    else 
+      nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
 }
 
 void Label::save(Serializer &s) const {
