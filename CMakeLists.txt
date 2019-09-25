@@ -352,6 +352,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/widgetsfactory.h src/widgetsfactory.cpp
   include/nanogui/scrollbar.h src/scrollbar.cpp
   include/nanogui/widgetsfactory.h src/widgetsfactory.cpp
+  include/nanogui/foldout.h src/foldout.cpp
   include/nanogui/windowmenu.h src/windowmenu.cpp
   include/nanogui/table.h src/table.cpp
   include/nanogui/formhelper.h

@@ -936,7 +936,7 @@ void EditorWorkspace::update()
       //  _changesManager->Update();
 }
 
-void EditorWorkspace::removeChild( Widget* child )
+void EditorWorkspace::removeChild(const Widget* child )
 {
     setSelectedElement( nullptr );
     _elementUnderMouse = nullptr;

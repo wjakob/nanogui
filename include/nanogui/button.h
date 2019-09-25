@@ -15,6 +15,7 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <bitset>
 
 NAMESPACE_BEGIN(nanogui)
 /**
@@ -26,10 +27,10 @@ class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flags {
-        NormalButton = (1 << 0), ///< A normal Button.
-        RadioButton  = (1 << 1), ///< A radio Button.
-        ToggleButton = (1 << 2), ///< A toggle Button.
-        PopupButton  = (1 << 3)  ///< A popup Button.
+        NormalButton = 0, ///< A normal Button.
+        RadioButton  = 1, ///< A radio Button.
+        ToggleButton = 2, ///< A toggle Button.
+        PopupButton  = 3  ///< A popup Button.
     };
 
     /// The available icon positions.
@@ -79,10 +80,13 @@ public:
     void setIcon(int icon) { mIcon = icon; }
 
     /// The current flags of this Button (see \ref nanogui::Button::Flags for options).
-    int flags() const { return mFlags; }
+    bool haveFlag(int flag) const { return mFlags.test(flag); }
 
     /// Sets the flags of this Button (see \ref nanogui::Button::Flags for options).
-    void setFlags(int buttonFlags) { mFlags = buttonFlags; }
+    void setFlags(int buttonFlags) { mFlags.reset(); mFlags != buttonFlags; }
+
+    void setToggleButton(bool en) { if (en) mFlags.set(Button::ToggleButton);
+                                    else mFlags.reset(Button::ToggleButton); }
 
     /// The position of the icon for this Button.
     IconPosition iconPosition() const { return mIconPosition; }
@@ -155,7 +159,7 @@ protected:
     bool mPushed;
 
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
-    int mFlags;
+    std::bitset<8> mFlags;
 
     /// The background color of this Button.
     Color mBackgroundColor;

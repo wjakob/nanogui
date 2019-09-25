@@ -62,7 +62,7 @@ public:
 
   	//virtual void setMenuCommandIDStart(s32 id);
 
-    void removeChild( Widget* child);
+    void removeChild(const Widget* child) override;
 
 	  //! grid drawing...
     virtual void setGridSize(const Vector2i& gridSize);

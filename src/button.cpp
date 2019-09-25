@@ -20,8 +20,11 @@ NAMESPACE_BEGIN(nanogui)
 Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
-      mFlags(NormalButton), mBackgroundColor(Color(0, 0)),
-      mTextColor(Color(0, 0)) { }
+      mBackgroundColor(Color(0, 0)),
+      mTextColor(Color(0, 0)) 
+{
+  mFlags.set(NormalButton);
+}
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
@@ -56,11 +59,11 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
         bool pushedBackup = mPushed;
         if (down) {
-            if (mFlags & RadioButton) {
+            if (haveFlag(RadioButton)) {
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
                         Button *b = dynamic_cast<Button *>(widget);
-                        if (b != this && b && (b->flags() & RadioButton) && b->mPushed) {
+                        if (b != this && b && (b->haveFlag(RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
                                 b->mChangeCallback(false);
@@ -68,7 +71,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                     }
                 } else {
                     for (auto b : mButtonGroup) {
-                        if (b != this && (b->flags() & RadioButton) && b->mPushed) {
+                        if (b != this && (b->haveFlag(RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
                                 b->mChangeCallback(false);
@@ -76,24 +79,24 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                     }
                 }
             }
-            if (mFlags & PopupButton) {
+            if (haveFlag(PopupButton)) {
                 for (auto widget : parent()->children()) {
                     Button *b = dynamic_cast<Button *>(widget);
-                    if (b != this && b && (b->flags() & PopupButton) && b->mPushed) {
+                    if (b != this && b && (b->haveFlag(PopupButton)) && b->mPushed) {
                         b->mPushed = false;
                         if (b->mChangeCallback)
                             b->mChangeCallback(false);
                     }
                 }
             }
-            if (mFlags & ToggleButton)
+            if (haveFlag(ToggleButton))
                 mPushed = !mPushed;
             else
                 mPushed = true;
         } else if (mPushed) {
             if (contains(p) && mCallback)
                 mCallback();
-            if (mFlags & NormalButton)
+            if (haveFlag(NormalButton))
                 mPushed = false;
         }
         if (pushedBackup != mPushed && mChangeCallback)
@@ -225,7 +228,7 @@ void Button::save(Serializer &s) const {
     s.set("icon", mIcon);
     s.set("iconPosition", (int) mIconPosition);
     s.set("pushed", mPushed);
-    s.set("flags", mFlags);
+    s.set("flags", mFlags.to_ullong());
     s.set("backgroundColor", mBackgroundColor);
     s.set("textColor", mTextColor);
 }
@@ -260,7 +263,8 @@ bool Button::load(Serializer &s) {
     if (!s.get("icon", mIcon)) return false;
     if (!s.get("iconPosition", mIconPosition)) return false;
     if (!s.get("pushed", mPushed)) return false;
-    if (!s.get("flags", mFlags)) return false;
+    int fl;  if (!s.get("flags", fl)) return false;
+    mFlags.reset(); mFlags |= fl;
     if (!s.get("backgroundColor", mBackgroundColor)) return false;
     if (!s.get("textColor", mTextColor)) return false;
     return true;

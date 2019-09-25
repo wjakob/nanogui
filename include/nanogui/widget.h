@@ -185,10 +185,10 @@ public:
     void remove();
 
     /// Remove a child widget by index
-    void removeChild(int index);
+    virtual void removeChild(int index);
 
     /// Remove a child widget by value
-    void removeChild(const Widget *widget);
+    virtual void removeChild(const Widget *widget);
 
     /// Retrieves the child at the specific position
     const Widget* childAt(int index) const { return mChildren[index]; }

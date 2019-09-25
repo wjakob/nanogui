@@ -40,6 +40,7 @@
 #include <nanogui/dropdownbox.h>
 #include <nanogui/editworkspace.h>
 #include <nanogui/editproperties.h>
+#include <nanogui/foldout.h>
 #include <nanogui/scrollbar.h>
 #include <nanogui/windowmenu.h>
 #include <iostream>
@@ -198,12 +199,15 @@ public:
         hsm->addItem("View help", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
         hsm->addItem("Send feedback", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-
-
-
         auto area = new Widget(this);
         area->setPosition(0, mmenu->preferredSize(nvgContext()).y());
         area->setSize(width(), height() - area->position().y());
+
+        auto fo = new Foldout(area, Vector4i(0, 0, width()/4, area->height()), "foldout_ed");
+        fo->addPage("page1",  "Page1", new Widget(this));
+        fo->addPage("page2", "Page2", new Widget(this));
+        fo->addPage("page3", "Page3", new Widget(this));
+        fo->addPage("page4", "Page4", new Widget(this));
 
         auto editor = new EditorWorkspace(area, "workspace");
         editor->setSize(area->width()/2, area->height());
@@ -221,10 +225,6 @@ public:
         auto* ew = new Window(editor, "Editor window");
         ew->setSize(100, 200);
         ew->setPosition(0, 50);
-
-        auto* ww = new Widget(area);
-        ww->setSize(224, 768);
-        ww->setPosition(0, 0);
 
         performLayout();
         /* All NanoGUI widgets are initialized at this point. Now
