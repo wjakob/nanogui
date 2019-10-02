@@ -157,6 +157,9 @@ void Window::center() {
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
                             int button, int /* modifiers */) {
+  if (!mDraggable)
+    return false;
+
     if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
         mPos += rel;
         mPos = mPos.cwiseMax(Vector2i::Zero());

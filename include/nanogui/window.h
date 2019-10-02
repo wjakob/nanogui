@@ -36,6 +36,9 @@ public:
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
 
+    bool isDraggable() const { return mDraggable; }
+    void setDraggable(bool m) { mDraggable = m; }
+
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
 
@@ -67,6 +70,7 @@ protected:
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mDraggable = true;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

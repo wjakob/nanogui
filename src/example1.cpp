@@ -157,6 +157,7 @@ public:
         Window *window = new Window(this, "Button demo");
         window->setPosition(Vector2i(15, 15));
         window->setLayout(new GroupLayout());
+        window->setDraggable(false);
 
         /* No need to store a pointer, the data structure will be automatically
            freed when the parent window is deleted */
