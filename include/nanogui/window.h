@@ -36,8 +36,14 @@ public:
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
 
-    bool isDraggable() const { return mDraggable; }
-    void setDraggable(bool m) { mDraggable = m; }
+    bool isDraggable() const;
+    void setDraggable(Theme::WindowDraggable flag) { mDraggable = flag; }
+
+    bool mayCollapse() const;
+    void setMayCollapse(Theme::WindowCollapse c) { mMayCollapse = c; }
+
+    bool isCollapsed() const { return mCollapsed; }
+    void collapse();
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -70,7 +76,12 @@ protected:
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
-    bool mDraggable = true;
+    Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
+    Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;
+    bool mCollapsed = false;
+    float mCollapseIconScale = 1.5f;
+    Vector2f mCollapseIconPos;
+    Vector2f mCollapseIconSize;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

@@ -12,6 +12,7 @@
 #include <nanogui/window.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <nanogui/entypo.h>
 #include <nanogui/screen.h>
 #include <nanogui/layout.h>
 #include <nanogui/serializer/core.h>
@@ -46,6 +47,22 @@ Widget *Window::buttonPanel() {
     return mButtonPanel;
 }
 
+bool Window::isDraggable() const
+{
+  if (mDraggable == Theme::WindowDraggable::dgAuto)
+    return theme()->mWindowDraggable == Theme::WindowDraggable::dgDraggable;
+
+  return mDraggable == Theme::WindowDraggable::dgDraggable;
+}
+
+bool Window::mayCollapse() const
+{
+  if (mMayCollapse == Theme::WindowCollapse::clAuto)
+    return theme()->mWindowCollapse == Theme::WindowCollapse::clMayCollapse;
+
+  return mMayCollapse == Theme::WindowCollapse::clMayCollapse;
+}
+
 void Window::performLayout(NVGcontext *ctx) {
     if (!mButtonPanel) {
         Widget::performLayout(ctx);
@@ -68,30 +85,32 @@ void Window::draw(NVGcontext *ctx) {
     int hh = mTheme->mWindowHeaderHeight;
 
     /* Draw window */
+    int realH = isCollapsed() ? hh : mSize.y();
+
     nvgSave(ctx);
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr);
 
     nvgFillColor(ctx, mMouseFocus ? mTheme->mWindowFillFocused
                                   : mTheme->mWindowFillUnfocused);
     nvgFill(ctx);
 
-
     /* Draw a drop shadow */
     NVGpaint shadowPaint = nvgBoxGradient(
-        ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
+        ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
 
     nvgSave(ctx);
     nvgResetScissor(ctx);
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, realH +2*ds);
+    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);
     nvgFill(ctx);
     nvgRestore(ctx);
 
+    bool collapsable = mayCollapse(); 
     if (!mTitle.empty()) {
         /* Draw header */
         NVGpaint headerPaint = nvgLinearGradient(
@@ -137,8 +156,26 @@ void Window::draw(NVGcontext *ctx) {
                 mTitle.c_str(), nullptr);
     }
 
+    if (collapsable) {
+      auto icon = utf8(mCollapsed ? ENTYPO_ICON_CHEVRON_SMALL_RIGHT : ENTYPO_ICON_CHEVRON_SMALL_DOWN);
+
+      mCollapseIconSize.y() = fontSize();
+      mCollapseIconSize.y() *= mCollapseIconScale;
+      nvgFontSize(ctx, mCollapseIconSize.y());
+      nvgFontFace(ctx, "icons");
+      mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
+
+      nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
+                                 : mTheme->mWindowTitleUnfocused);
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+      mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + (hh - mCollapseIconSize.y())/2 );
+      nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+    }
+
     nvgRestore(ctx);
-    Widget::draw(ctx);
+
+    if (!isCollapsed())
+      Widget::draw(ctx);
 }
 
 void Window::dispose() {
@@ -157,7 +194,7 @@ void Window::center() {
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
                             int button, int /* modifiers */) {
-  if (!mDraggable)
+  if (!isDraggable())
     return false;
 
     if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
@@ -172,7 +209,16 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
         return true;
-    if (button == GLFW_MOUSE_BUTTON_1) {
+    if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
+      Vector2i clkPnt = p - mPos - Vector2i(5,5);
+      if (down && clkPnt.x() > 0 && clkPnt.x() < mCollapseIconSize.x()
+          && clkPnt.y() > 0 && clkPnt.y() < mCollapseIconSize.y())
+      {
+        mCollapsed = !mCollapsed;
+        return true;
+      }
+    }
+    if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         return true;
     }

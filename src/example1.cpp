@@ -151,42 +151,42 @@ private:
 
 class ExampleApplication : public nanogui::Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "NanoGUI Test") {
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1280, 800), "NanoGUI Test") {
         using namespace nanogui;
 
-        Window *window = new Window(this, "Button demo");
-        window->setPosition(Vector2i(15, 15));
-        window->setLayout(new GroupLayout());
-        window->setDraggable(false);
+        Window *w = new Window(this, "Button demo");
+        w->setPosition(Vector2i(15, 15));
+        w->setLayout(new GroupLayout());
+        w->setDraggable(Theme::WindowDraggable::dgFixed);
 
         /* No need to store a pointer, the data structure will be automatically
            freed when the parent window is deleted */
-        new Label(window, "Push buttons", "sans-bold");
+        new Label(w, "Push buttons", "sans-bold");
 
-        Button *b = new Button(window, "Plain button");
+        Button *b = new Button(w, "Plain button");
         b->setCallback([] { cout << "pushed!" << endl; });
         b->setTooltip("short tooltip");
 
         /* Alternative construction notation using variadic template */
-        b = window->add<Button>("Styled", ENTYPO_ICON_ROCKET);
+        b = w->add<Button>("Styled", ENTYPO_ICON_ROCKET);
         b->setBackgroundColor(Color(0, 0, 255, 25));
         b->setCallback([] { cout << "pushed!" << endl; });
         b->setTooltip("This button has a fairly long tooltip. It is so long, in "
                 "fact, that the shown text will span several lines.");
 
-        new Label(window, "Toggle buttons", "sans-bold");
-        b = new Button(window, "Toggle me");
+        new Label(w, "Toggle buttons", "sans-bold");
+        b = new Button(w, "Toggle me");
         b->setFlags(Button::ToggleButton);
         b->setChangeCallback([](bool state) { cout << "Toggle button state: " << state << endl; });
 
-        new Label(window, "Radio buttons", "sans-bold");
-        b = new Button(window, "Radio button 1");
+        new Label(w, "Radio buttons", "sans-bold");
+        b = new Button(w, "Radio button 1");
         b->setFlags(Button::RadioButton);
-        b = new Button(window, "Radio button 2");
+        b = new Button(w, "Radio button 2");
         b->setFlags(Button::RadioButton);
 
-        new Label(window, "A tool palette", "sans-bold");
-        Widget *tools = new Widget(window);
+        new Label(w, "A tool palette", "sans-bold");
+        Widget *tools = new Widget(w);
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 6));
 
@@ -195,8 +195,8 @@ public:
         b = new ToolButton(tools, ENTYPO_ICON_COMPASS);
         b = new ToolButton(tools, ENTYPO_ICON_INSTALL);
 
-        new Label(window, "Popup buttons", "sans-bold");
-        PopupButton *popupBtn = new PopupButton(window, "Popup", ENTYPO_ICON_EXPORT);
+        new Label(w, "Popup buttons", "sans-bold");
+        PopupButton *popupBtn = new PopupButton(w, "Popup", ENTYPO_ICON_EXPORT);
         Popup *popup = popupBtn->popup();
         popup->setLayout(new GroupLayout());
         new Label(popup, "Arbitrary widgets can be placed here");
@@ -213,20 +213,20 @@ public:
         popupLeft->setLayout(new GroupLayout());
         new CheckBox(popupLeft, "Another check box");
 
-        new Label(window, "A switch boxes", "sans-bold");
-        Widget *swbx = new Widget(window);
+        new Label(w, "A switch boxes", "sans-bold");
+        Widget *swbx = new Widget(w);
         swbx->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 2));
 
         auto* swbh = new SwitchBox(swbx, SwitchBox::Alignment::Horizontal, "");
         swbh->setFixedSize(Vector2i(80, 30));
         new SwitchBox(swbx, SwitchBox::Alignment::Vertical, "");
 
-        window = new Window(this, "Basic widgets");
-        window->setPosition(Vector2i(200, 15));
-        window->setLayout(new GroupLayout());
+        w = new Window(this, "Basic widgets");
+        w->setPosition(Vector2i(200, 15));
+        w->setLayout(new GroupLayout());
 
-        new Label(window, "Message dialog", "sans-bold");
-        tools = new Widget(window);
+        new Label(w, "Message dialog", "sans-bold");
+        tools = new Widget(w);
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 6));
         b = new Button(tools, "Info");
@@ -253,8 +253,8 @@ public:
             string resourcesFolderPath("./");
         #endif
 
-        new Label(window, "Image panel & scroll panel", "sans-bold");
-        PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
+        new Label(w, "Image panel & scroll panel", "sans-bold");
+        PopupButton *imagePanelBtn = new PopupButton(w, "Image Panel");
         imagePanelBtn->setIcon(ENTYPO_ICON_FOLDER);
         popup = imagePanelBtn->popup();
         VScrollPanel *vscroll = new VScrollPanel(popup);
@@ -301,8 +301,8 @@ public:
             return { stringData, textColor };
         });
 
-        new Label(window, "File dialog", "sans-bold");
-        tools = new Widget(window);
+        new Label(w, "File dialog", "sans-bold");
+        tools = new Widget(w);
         tools->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 6));
         b = new Button(tools, "Open");
@@ -316,23 +316,23 @@ public:
                     { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) << endl;
         });
 
-        new Label(window, "Combo box", "sans-bold");
-        new DropdownBox(window, { "Dropdown item 1", "Dropdown item 2", "Dropdown item 3"});
-        new ComboBox(window, { "Combo box item 1", "Combo box item 2", "Combo box item 3" });
-        new Label(window, "Check box", "sans-bold");
-        CheckBox *cb = new CheckBox(window, "Flag 1",
+        new Label(w, "Combo box", "sans-bold");
+        new DropdownBox(w, { "Dropdown item 1", "Dropdown item 2", "Dropdown item 3"});
+        new ComboBox(w, { "Combo box item 1", "Combo box item 2", "Combo box item 3" });
+        new Label(w, "Check box", "sans-bold");
+        CheckBox *cb = new CheckBox(w, "Flag 1",
             [](bool state) { cout << "Check box 1 state: " << state << endl; }
         );
         cb->setChecked(true);
-        cb = new CheckBox(window, "Flag 2",
+        cb = new CheckBox(w, "Flag 2",
             [](bool state) { cout << "Check box 2 state: " << state << endl; }
         );
-        new Label(window, "Progress bar", "sans-bold");
-        mProgress = new ProgressBar(window);
+        new Label(w, "Progress bar", "sans-bold");
+        mProgress = new ProgressBar(w);
 
-        new Label(window, "Slider and text box", "sans-bold");
+        new Label(w, "Slider and text box", "sans-bold");
 
-        Widget *panel = new Widget(window);
+        Widget *panel = new Widget(w);
         panel->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 20));
 
@@ -355,9 +355,9 @@ public:
         textBox->setAlignment(TextBox::Alignment::Right);
 
         {
-          new Label(window, "Dial and text box", "sans-bold");
+          new Label(w, "Dial and text box", "sans-bold");
 
-          panel = new Widget(window);
+          panel = new Widget(w);
           panel->setLayout(new BoxLayout(Orientation::Horizontal,
             Alignment::Middle, 0, 20));
 
@@ -384,11 +384,11 @@ public:
           dialTextBox->setAlignment(TextBox::Alignment::Right);
         }
 
-        window = new Window(this, "Misc. widgets");
-        window->setPosition(Vector2i(425,15));
-        window->setLayout(new GroupLayout());
+        w = new Window(this, "Misc. widgets");
+        w->setPosition(Vector2i(425,15));
+        w->setLayout(new GroupLayout());
 
-        TabWidget* tabWidget = window->add<TabWidget>();
+        TabWidget* tabWidget = w->add<TabWidget>();
 
         Widget* layer = tabWidget->createTab("Color Wheel");
         layer->setLayout(new GroupLayout());
@@ -446,7 +446,7 @@ public:
         tabWidget->setActiveTab(0);
 
         // A button to go back to the first tab and scroll the window.
-        panel = window->add<Widget>();
+        panel = w->add<Widget>();
         panel->add<Label>("Jump to tab: ");
         panel->setLayout(new BoxLayout(Orientation::Horizontal,
                                        Alignment::Middle, 0, 6));
@@ -465,19 +465,19 @@ public:
             }
         });
 
-        window = new Window(this, "Grid of small widgets");
-        window->setPosition(Vector2i(425, 300));
+        w = new Window(this, "Grid of small widgets");
+        w->setPosition(Vector2i(425, 300));
         GridLayout *layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
         layout->setColAlignment(
             { Alignment::Maximum, Alignment::Fill });
         layout->setSpacing(0, 10);
-        window->setLayout(layout);
+        w->setLayout(layout);
 
         /* FP widget */ {
-            new Label(window, "Floating point :", "sans-bold");
-            textBox = new TextBox(window);
+            new Label(w, "Floating point :", "sans-bold");
+            textBox = new TextBox(w);
             textBox->setEditable(true);
             textBox->setFixedSize(Vector2i(100, 20));
             textBox->setValue("50");
@@ -488,8 +488,8 @@ public:
         }
 
         /* Positive integer widget */ {
-            new Label(window, "Positive integer :", "sans-bold");
-            auto intBox = new IntBox<int>(window);
+            new Label(w, "Positive integer :", "sans-bold");
+            auto intBox = new IntBox<int>(w);
             intBox->setEditable(true);
             intBox->setFixedSize(Vector2i(100, 20));
             intBox->setValue(50);
@@ -503,21 +503,21 @@ public:
         }
 
         /* Checkbox widget */ {
-            new Label(window, "Checkbox :", "sans-bold");
+            new Label(w, "Checkbox :", "sans-bold");
 
-            cb = new CheckBox(window, "Check me");
+            cb = new CheckBox(w, "Check me");
             cb->setFontSize(16);
             cb->setChecked(true);
         }
 
-        new Label(window, "Combo box :", "sans-bold");
+        new Label(w, "Combo box :", "sans-bold");
         ComboBox *cobo =
-            new ComboBox(window, { "Item 1", "Item 2", "Item 3" });
+            new ComboBox(w, { "Item 1", "Item 2", "Item 3" });
         cobo->setFontSize(16);
         cobo->setFixedSize(Vector2i(100,20));
 
-        new Label(window, "Color picker :", "sans-bold");
-        auto cp = new ColorPicker(window, {255, 120, 0, 255});
+        new Label(w, "Color picker :", "sans-bold");
+        auto cp = new ColorPicker(w, {255, 120, 0, 255});
         cp->setFixedSize({100, 20});
         cp->setFinalCallback([](const Color &c) {
             std::cout << "ColorPicker Final Callback: ["
@@ -528,28 +528,28 @@ public:
         });
         // setup a fast callback for the color picker widget on a new window
         // for demonstrative purposes
-        window = new Window(this, "Color Picker Fast Callback");
+        w = new Window(this, "Color Picker Fast Callback");
         layout =
             new GridLayout(Orientation::Horizontal, 2,
                            Alignment::Middle, 15, 5);
         layout->setColAlignment(
             { Alignment::Maximum, Alignment::Fill });
         layout->setSpacing(0, 10);
-        window->setLayout(layout);
-        window->setPosition(Vector2i(425, 500));
-        new Label(window, "Combined: ");
-        b = new Button(window, "ColorWheel", ENTYPO_ICON_500PX);
-        new Label(window, "Red: ");
-        auto redIntBox = new IntBox<int>(window);
+        w->setLayout(layout);
+        w->setPosition(Vector2i(425, 500));
+        new Label(w, "Combined: ");
+        b = new Button(w, "ColorWheel", ENTYPO_ICON_500PX);
+        new Label(w, "Red: ");
+        auto redIntBox = new IntBox<int>(w);
         redIntBox->setEditable(false);
-        new Label(window, "Green: ");
-        auto greenIntBox = new IntBox<int>(window);
+        new Label(w, "Green: ");
+        auto greenIntBox = new IntBox<int>(w);
         greenIntBox->setEditable(false);
-        new Label(window, "Blue: ");
-        auto blueIntBox = new IntBox<int>(window);
+        new Label(w, "Blue: ");
+        auto blueIntBox = new IntBox<int>(w);
         blueIntBox->setEditable(false);
-        new Label(window, "Alpha: ");
-        auto alphaIntBox = new IntBox<int>(window);
+        new Label(w, "Alpha: ");
+        auto alphaIntBox = new IntBox<int>(w);
         cp->setCallback([b,redIntBox,blueIntBox,greenIntBox,alphaIntBox](const Color &c) {
             b->setBackgroundColor(c);
             b->setTextColor(c.contrastingColor());
@@ -563,6 +563,12 @@ public:
             alphaIntBox->setValue(alpha);
 
         });
+
+        //all widgets demo
+        {
+          //auto w = window("All widgets demo");
+
+        }
 
 
         performLayout();

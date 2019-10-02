@@ -28,6 +28,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Theme : public Object {
 public:
+    enum WindowDraggable { dgAuto = -1, dgFixed = 0, dgDraggable = 1 };
+    enum WindowCollapse { clAuto = -1, clNonCollapse=0, clMayCollapse = 1 };
+
     Theme(NVGcontext *ctx);
 
     /* Fonts */
@@ -37,6 +40,9 @@ public:
     int mFontBold;
     /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
     int mFontIcons;
+
+    WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
+    WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
     /**
      * The amount of scaling that is applied to each icon to fit the size of
      * NanoGUI widgets.  The default value is ``0.77f``, setting to e.g. higher

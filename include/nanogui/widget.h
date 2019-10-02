@@ -18,6 +18,20 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class Window;
+class Label;
+class ToolButton;
+class MessageDialog;
+class PopupButton;
+class Button;
+class ComboBox;
+class CheckBox;
+class VScrollPanel;
+class ProgressBar;
+class Slider;
+class ImagePanel;
+class TextBox;
+
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
 /**
@@ -332,6 +346,23 @@ public:
     inline bool isSubElement() const { return mSubElement; }
 
     void setDebugDraw(bool en) { mDebugDraw = en; }
+
+    template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
+
+    template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
+    template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
+    template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
+    template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }
+    template<typename... Args>ProgressBar& progressbar(const Args&... args) { return wdg<ProgressBar>(args...); }
+    template<typename... Args>ComboBox& combobox(const Args&... args) { return wdg<ComboBox>(args...); }
+    template<typename... Args>Button& button(const Args&... args) { return wdg<Button>(args...); }
+    template<typename... Args>Widget& widget(const Args&... args) { return wdg<Widget>(args...); }
+    template<typename... Args>CheckBox& checkbox(const Args&... args) { return wdg<CheckBox>(args...); }
+    template<typename... Args>MessageDialog& msgdialog(const Args&... args) { return wdg<MessageDialog>(args...); }
+    template<typename... Args>VScrollPanel& vscrollpanel(const Args&... args) { return wdg<VScrollPanel>(args...); }
+    template<typename... Args>ImagePanel& imgpanel(const Args&... args) { return wdg<ImagePanel>(args...); }
+    template<typename... Args>Slider& slider(const Args&... args) { return wdg<Slider>(args...); }
+    template<typename... Args>TextBox& textbox(const Args&... args) { return wdg<TextBox>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children

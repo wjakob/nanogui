@@ -18,6 +18,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class Window;
+
 /**
  * \class Screen screen.h nanogui/screen.h
  *
@@ -149,6 +151,8 @@ public:
     void performLayout() {
         Widget::performLayout(mNVGContext);
     }
+
+    template<typename... Args>Window& window(const Args&... args) { return wdg<Window>(args...); }
 
 public:
     /********* API for applications which manage GLFW themselves *********/
