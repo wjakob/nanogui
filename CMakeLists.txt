@@ -355,6 +355,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/foldout.h src/foldout.cpp
   include/nanogui/windowmenu.h src/windowmenu.cpp
   include/nanogui/table.h src/table.cpp
+  include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
