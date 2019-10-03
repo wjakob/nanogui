@@ -573,13 +573,14 @@ public:
     //all widgets demo
     {
       Window& dw = window("All widgets demo", Orientation::Horizontal);
-      dw.setPosition(750, 350);
+      dw.setPosition(725, 350);
       dw.setFixedSize({ 400, 400 });
       dw.submenu("File")
-        .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-        .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
-        .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
-
+          .item("(dummy item)", []() {})
+          .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+          .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
+          .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+      dw.submenu("File").item("(dummy item)").setEnabled(false);
     }
 
     fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));

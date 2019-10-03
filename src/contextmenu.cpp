@@ -21,6 +21,22 @@
 #include "nanogui/theme.h"
 
 NAMESPACE_BEGIN(nanogui)
+
+class NANOGUI_EXPORT ContextMenuDummy : public ContextMenu
+{
+public:
+  ContextMenuDummy() : ContextMenu(nullptr, "", false) {}
+};
+
+class NANOGUI_EXPORT ContextItemAsMenu : public ContextMenu
+{
+public:
+  Label* l = nullptr;
+  ContextItemAsMenu() : ContextMenu(nullptr, "", false) {}
+
+  void setEnabled(bool en) override { if(l) l->setEnabled(en); }
+};
+
 ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool disposable)
     : Widget(parent),
         mHighlightedItem(nullptr),
@@ -76,6 +92,27 @@ void ContextMenu::deactivate() {
     }
 }
 
+ContextMenu& ContextMenu::item(const std::string& name)
+{
+  auto menuit = mSubmenus.find(name);
+  if (menuit == mSubmenus.end())
+  {
+    auto lbit = mLabels.find(name);
+    if (lbit == mLabels.end())
+    {
+      static ContextMenuDummy dummy;
+      return dummy;
+    }
+
+    static ContextItemAsMenu labelAsMenu;
+    labelAsMenu.l = lbit->second;
+    return labelAsMenu;
+  }
+
+  return *mSubmenus[name];
+}
+
+
 ContextMenu& ContextMenu::item(const std::string& name, const std::function<void()>& cb, int icon)
 {
   auto it = mItems.find(name);
@@ -108,6 +145,11 @@ ContextMenu& ContextMenu::submenu(const std::string& name, int icon) { return *a
 ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     if (!mParent)
         return nullptr;
+
+    auto it = mSubmenus.find(name);
+    if (it != mSubmenus.end())
+      return it->second;
+
     mSubmenus[name] = new ContextMenu(mParent, name, false);
     mSubmenus[name]->mRootMenu = mRootMenu ? mRootMenu : this;
     auto lbl1 = new Label(mItemContainer, name);
@@ -221,7 +263,7 @@ void ContextMenu::draw(NVGcontext* ctx) {
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgStroke(ctx);
 
-    if (mHighlightedItem) {
+    if (mHighlightedItem && mHighlightedItem->enabled()) {
         nvgBeginPath(ctx);
         nvgRect(ctx, 1, mHighlightedItem->position().y() + 1, w - 2, mHighlightedItem->height() - 2);
         nvgFillColor(ctx, mHighlightColor);

@@ -113,6 +113,8 @@ public:
      * (default: intensity=``255``, alpha=``160``; see \ref nanogui::Color::Color(int,int)).
      */
     Color mTextColor;
+
+    Color mLabelTextDisabledColor;
     /**
      * The disable dtext color
      * (default: intensity=``255``, alpha=``80``; see \ref nanogui::Color::Color(int,int)).

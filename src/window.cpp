@@ -32,13 +32,16 @@ Window::Window(Widget *parent, const std::string &title, Orientation orientation
 ContextMenu& Window::submenu(const std::string& caption, const std::string& id)
 {
   auto menus = findAll<ContextMenu>();
-  auto menu = std::find_if(menus.begin(), menus.end(), [=](ContextMenu* m) { return (m->id() == id) || (m->caption() == caption); });
+  auto menu = std::find_if(menus.begin(), menus.end(), [=](ContextMenu* m) { return (!id.empty() && m->id() == id) || (!caption.empty() && m->caption() == caption); });
 
   auto wmenus = findAll<WindowMenu>();
   WindowMenu* wmenu = wmenus.empty() ? nullptr : wmenus.front();
 
   if (wmenu == nullptr)
+  {
     wmenu = &wdg<WindowMenu>();
+    wmenu->activate({ 0, 0 });
+  }
 
   ContextMenu* smenu = nullptr;
   if (menu == menus.end())

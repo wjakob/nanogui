@@ -256,7 +256,7 @@ public:
     /// Return whether or not this widget is currently enabled
     bool enabled() const { return mEnabled; }
     /// Set whether or not this widget is currently enabled
-    void setEnabled(bool enabled) { mEnabled = enabled; }
+    virtual void setEnabled(bool enabled) { mEnabled = enabled; }
 
     /// Return whether or not this widget is currently focused
     bool focused() const { return mFocused; }

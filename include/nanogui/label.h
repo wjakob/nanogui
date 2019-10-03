@@ -28,6 +28,7 @@ class NANOGUI_EXPORT Label : public Widget {
 public:
     enum TextHAlign { hLeft=0, hCenter, hRight };
     enum TextVAlign { vTop=3, vMiddle, vBottom };
+    enum TextState { tEnabled=0, tDisabled };
     Label(Widget *parent, const std::string &caption,
           const std::string &font = "sans", int fontSize = -1);
 
@@ -45,6 +46,8 @@ public:
     Color color() const { return mColor; }
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
+    void setDisabledColor(const Color& color) { mDisabledColor = color; }
+
     void setTextHAlign(TextHAlign align) { mTextHAlign = align; }
     void setTextVAlign(TextVAlign align) { mTextVAlign = align; }
 
@@ -66,7 +69,7 @@ public:
 protected:
     std::string mCaption;
     std::string mFont;
-    Color mColor;
+    Color mColor, mDisabledColor;
     TextHAlign mTextHAlign = hLeft;
     TextVAlign mTextVAlign = vMiddle;
     Vector2i mTextRealSize;

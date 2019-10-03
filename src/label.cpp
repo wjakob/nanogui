@@ -20,7 +20,6 @@ Label::Label(Widget *parent, const std::string &caption, const std::string &font
     : Widget(parent), mCaption(caption), mFont(font) {
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
-        mColor = mTheme->mTextColor;
     }
     if (fontSize >= 0) mFontSize = fontSize;
 }
@@ -29,7 +28,6 @@ void Label::setTheme(Theme *theme) {
     Widget::setTheme(theme);
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
-        mColor = mTheme->mTextColor;
     }
 }
 
@@ -63,7 +61,11 @@ void Label::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
-    nvgFillColor(ctx, mColor);
+    Color color;
+    if (enabled()) color = (mColor.w() > 0) ? mColor : mTheme->mTextColor;
+    else color = (mDisabledColor.w() > 0) ? mDisabledColor : mTheme->mLabelTextDisabledColor;
+    
+    nvgFillColor(ctx, color);
 
     int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
     int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));

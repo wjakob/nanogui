@@ -46,8 +46,6 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ContextMenu : public Widget {
 public:
-  using ItemConfig = std::pair<std::string, std::function<void()>>;
-  using SubItemsConfig = std::vector<ItemConfig>;
     /**
      * \brief Construct a new ContextMenu.
      * \param parent Parent widget.
@@ -84,6 +82,7 @@ public:
      */
     virtual void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
     virtual ContextMenu& item(const std::string& name, const std::function<void()>& cb, int icon = 0);
+    virtual ContextMenu& item(const std::string& name);
 
     /**
      * Add a submenu to the menu.

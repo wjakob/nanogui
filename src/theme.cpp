@@ -43,6 +43,7 @@ Theme::Theme(NVGcontext *ctx) {
     mBorderLight                      = Color(92, 255);
     mBorderMedium                     = Color(35, 255);
     mTextColor                        = Color(255, 160);
+    mLabelTextDisabledColor           = Color(29, 160);
     mDisabledTextColor                = Color(255, 80);
     mTextColorShadow                  = Color(0, 160);
     mIconColor                        = mTextColor;
