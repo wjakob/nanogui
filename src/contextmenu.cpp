@@ -103,6 +103,8 @@ void ContextMenu::addItem(const std::string& name, const std::function<void()>& 
     }
 }
 
+ContextMenu& ContextMenu::submenu(const std::string& name, int icon) { return *addSubMenu(name, icon); }
+
 ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     if (!mParent)
         return nullptr;

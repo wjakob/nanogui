@@ -93,6 +93,7 @@ public:
      * \param icon Optional icon to display to the left of the label.
      */
     virtual ContextMenu* addSubMenu(const std::string& name, int icon = 0);
+    virtual ContextMenu& submenu(const std::string& name, int icon = 0);
 
     Vector2i preferredSize(NVGcontext* ctx) const override;
     bool mouseEnterEvent(const Vector2i& p, bool enter) override;

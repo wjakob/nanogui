@@ -156,52 +156,52 @@ public:
     ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1280, 800), "NanoGUI Test") {
         using namespace nanogui;
 
-        auto mmenu = new WindowMenu(this);
-        mmenu->activate({ 0, 0 });
-        auto filesm = mmenu->addSubMenu("File");
-        filesm->addItem("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
-        filesm->addItem("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); });
-        filesm->addItem("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+        auto& mmenu = wdg<WindowMenu>();
+        mmenu.activate({ 0, 0 });
+        mmenu.submenu("File")
+                .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
+                .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
 
-        auto editsm = mmenu->addSubMenu("Edit");
-        editsm->addItem("Undo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        editsm->addItem("Redo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Redo", "New Clicked!"); });
-        editsm->addItem("Cut", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Cut", "New Clicked!"); });
-        editsm->addItem("Copy", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Copy", "New Clicked!"); });
-        editsm->addItem("Paste", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Paste", "New Clicked!"); });
-        editsm->addItem("Delete", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Delete", "New Clicked!"); });
+        mmenu.submenu("Edit")
+                .item("Undo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Redo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Redo", "New Clicked!"); })
+                .item("Cut", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Cut", "New Clicked!"); })
+                .item("Copy", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Copy", "New Clicked!"); })
+                .item("Paste", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Paste", "New Clicked!"); })
+                .item("Delete", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Delete", "New Clicked!"); });
 
-        auto viewsm = mmenu->addSubMenu("View");
-        viewsm->addItem("Code", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Widgets", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Output", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Toolbox", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Notifications", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Full screen", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        viewsm->addItem("Option", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        mmenu.submenu("View")
+                .item("Code", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Widgets", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Output", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Toolbox", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Notifications", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Full screen", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Option", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto buildsm = mmenu->addSubMenu("Build");
-        buildsm->addItem("Build solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        mmenu.submenu("Build")
+                .item("Build solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto samplesm = mmenu->addSubMenu("Samples");
-        samplesm->addItem("Sample 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        samplesm->addItem("Sample 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        samplesm->addItem("Sample 3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        samplesm->addItem("Sample 4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        mmenu.submenu("Samples")
+                .item("Sample 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Sample 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Sample 3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Sample 4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto wsm = mmenu->addSubMenu("Widgets");
-        wsm->addItem("w1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        wsm->addItem("w2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        wsm->addItem("w3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        wsm->addItem("w4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        mmenu.submenu("Widgets")
+                .item("w1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("w2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("w3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("w4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto hsm = mmenu->addSubMenu("Help");
-        hsm->addItem("View help", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
-        hsm->addItem("Send feedback", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        mmenu.submenu("Help")
+                .item("View help", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+                .item("Send feedback", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
         auto area = new Widget(this);
-        area->setPosition(0, mmenu->preferredSize(nvgContext()).y());
+        area->setPosition(0, mmenu.preferredSize(nvgContext()).y());
         area->setSize(width(), height() - area->position().y());
 
         auto fo = new Foldout(area, Vector4i(0, 0, width()/4, area->height()), "foldout_ed");
