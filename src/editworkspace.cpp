@@ -632,18 +632,27 @@ void EditorWorkspace::draw(NVGcontext* ctx)
 		// draw the grid
 		int cy = _gridSize.x();
     nvgBeginPath(ctx);
-    nvgStrokeColor(ctx, nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
 
+    int row = 0;
 		while (cy < height())
 		{
+      row++;
+      nvgStrokeColor(ctx, (row % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80) 
+                                         : nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+
       nvgMoveTo(ctx, mPos.x(), mPos.y() + cy);
       nvgLineTo(ctx, mPos.x() + width(), mPos.y() + cy);
       cy += _gridSize.y();
 		}
 
     int cx = _gridSize.x();
+    int col = 0;
     while (cx < width())
     {
+      col++;
+      nvgStrokeColor(ctx, (col % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80)
+                                         : nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+
       nvgMoveTo(ctx, mPos.x() + cx, mPos.y());
       nvgLineTo(ctx, mPos.x() + cx, mPos.y() + height());
       cx += _gridSize.x();

@@ -16,10 +16,12 @@
 #include <nanogui/serializer/core.h>
 #include <nanogui/entypo.h>
 #include "nanogui/label.h"
+#include "nanogui/screen.h"
+#include "nanogui/window.h"
 #include "nanogui/theme.h"
 
 NAMESPACE_BEGIN(nanogui)
-ContextMenu::ContextMenu(Widget *parent, bool disposable)
+ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool disposable)
     : Widget(parent),
         mHighlightedItem(nullptr),
         mActiveSubmenu(nullptr),
@@ -28,7 +30,9 @@ ContextMenu::ContextMenu(Widget *parent, bool disposable)
         mActivated(false),
         mBackgroundColor(0.3f, 1.0f),
         mMarginColor(0.28f, 1.0f),
-        mHighlightColor(0.15f, 1.0f) {
+        mHighlightColor(0.15f, 1.0f),
+        mCaption(caption)
+{
     mItemContainer = new Widget(this);
     mItemContainer->setPosition({0,0});
     mItemLayout = new AdvancedGridLayout({10,0,0}, {}, 2);
@@ -37,11 +41,20 @@ ContextMenu::ContextMenu(Widget *parent, bool disposable)
     setVisible(false);
 }
 
+void ContextMenu::requestPerformLayout()
+{
+  auto wnd = window();
+  if (wnd)
+    wnd->performLayout(screen()->nvgContext());
+}
+
 void ContextMenu::activate(const Vector2i& pos) {
-    setPosition(pos);
     if (!mActivated) {
         mActivated = true;
+        bringToFront();
         setVisible(true);
+        requestPerformLayout();
+
         if (mRootMenu) {
             mRootMenu->requestFocus();
         }
@@ -49,6 +62,7 @@ void ContextMenu::activate(const Vector2i& pos) {
             requestFocus();
         }
     }
+    setPosition(pos);
 }
 
 void ContextMenu::deactivate() {
@@ -60,6 +74,17 @@ void ContextMenu::deactivate() {
             dispose();
         }
     }
+}
+
+ContextMenu& ContextMenu::item(const std::string& name, const std::function<void()>& cb, int icon)
+{
+  auto it = mItems.find(name);
+  if (it == mItems.end())
+    addItem(name, cb, icon);
+  else
+    mItems[name] = cb;
+
+  return *this;
 }
 
 void ContextMenu::addItem(const std::string& name, const std::function<void()>& value, int icon) {
@@ -81,7 +106,7 @@ void ContextMenu::addItem(const std::string& name, const std::function<void()>& 
 ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     if (!mParent)
         return nullptr;
-    mSubmenus[name] = new ContextMenu(mParent, false);
+    mSubmenus[name] = new ContextMenu(mParent, name, false);
     mSubmenus[name]->mRootMenu = mRootMenu ? mRootMenu : this;
     auto lbl1 = new Label(mItemContainer, name);
     auto lbl2 = new Label(mItemContainer, utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data(), "icons");
@@ -234,7 +259,6 @@ void ContextMenu::activateSubmenu(const std::string &name) {
         deactivateSubmenu();
     }
     mActiveSubmenu = mSubmenus[name];
-    mActiveSubmenu->bringToFront();
     mActiveSubmenu->activate(submenuPosition(name));
 }
 

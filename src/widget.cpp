@@ -273,31 +273,8 @@ int Widget::childIndex(Widget *widget) const {
     return (int) (it - mChildren.begin());
 }
 
-Window *Widget::window() {
-    Widget *widget = this;
-    while (true) {
-        if (!widget)
-            throw std::runtime_error(
-                "Widget:internal error (could not find parent window)");
-        Window *window = dynamic_cast<Window *>(widget);
-        if (window)
-            return window;
-        widget = widget->parent();
-    }
-}
-
-Screen *Widget::screen() {
-    Widget *widget = this;
-    while (true) {
-        if (!widget)
-            throw std::runtime_error(
-                "Widget:internal error (could not find parent screen)");
-        Screen *screen = dynamic_cast<Screen *>(widget);
-        if (screen)
-            return screen;
-        widget = widget->parent();
-    }
-}
+Window *Widget::window() { return findParent<Window>(); }
+Screen *Widget::screen() { return findParent<Screen>(); }
 
 void Widget::requestFocus() {
     Widget *widget = this;

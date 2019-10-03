@@ -14,6 +14,7 @@
 #include <nanogui/opengl.h>
 #include <nanogui/entypo.h>
 #include <nanogui/screen.h>
+#include <nanogui/windowmenu.h>
 #include <nanogui/layout.h>
 #include <nanogui/serializer/core.h>
 
@@ -21,6 +22,36 @@ NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+
+Window::Window(Widget *parent, const std::string &title, Orientation orientation)
+  : Window(parent, title)
+{
+  setLayout(new BoxLayout(orientation));
+}
+
+ContextMenu& Window::submenu(const std::string& caption, const std::string& id)
+{
+  auto menus = findAll<ContextMenu>();
+  auto menu = std::find_if(menus.begin(), menus.end(), [=](ContextMenu* m) { return (m->id() == id) || (m->caption() == caption); });
+
+  auto wmenus = findAll<WindowMenu>();
+  WindowMenu* wmenu = wmenus.empty() ? nullptr : wmenus.front();
+
+  if (wmenu == nullptr)
+    wmenu = &wdg<WindowMenu>();
+
+  ContextMenu* smenu = nullptr;
+  if (menu == menus.end())
+  {
+    smenu = wmenu->addSubMenu(caption);
+    if (!id.empty())
+      smenu->setId(id);
+  }
+  else
+    smenu = *menu;
+
+  return *smenu;
+}
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)

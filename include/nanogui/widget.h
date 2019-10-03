@@ -75,7 +75,7 @@ public:
     const int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
     void setPosition(const Vector2i &pos) { mPos = pos; }
-    void setPosition(int x, int y) { mPos = Vector2i(x, y); }
+    void setPosition(int x, int y) { setPosition(Vector2i(x, y)); }
 
     void setGeometry(const Vector4i &vec) {
       setPosition(vec.x(), vec.y());
@@ -116,11 +116,24 @@ public:
       return f ? f->cast<RetClass>() : nullptr;
     }
 
+    template<typename WidgetClass>
+    std::vector<WidgetClass*> findAll() const
+    {
+      std::vector<WidgetClass*> ret;
+      for (auto& w : mChildren)
+      {
+        if (auto cw = w->cast<WidgetClass>())
+          ret.push_back(cw);
+      }
+
+      return ret;
+    }
+
     /// Return the size of the widget
     const Vector2i &size() const { return mSize; }
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
-    inline void setSize(int w, int h) { mSize = Vector2i(w, h); }
+    void setSize(int w, int h) { setSize(Vector2i( w, h )); }
 
     /// Return the width of the widget
     int width() const { return mSize.x(); }
@@ -219,10 +232,20 @@ public:
         return new WidgetClass(this, args...);
     }
 
-    /// Walk up the hierarchy and return the parent window
-    Window *window();
+    template<typename WidgetClass>
+    WidgetClass *findParent() {
+      Widget *widget = this;
+      while (widget) {
+        WidgetClass *parentw = dynamic_cast<WidgetClass*>(widget);
+        if (parentw)
+          return parentw;
+        widget = widget->parent();
+      }
+      return nullptr;
+    }
+    
 
-    /// Walk up the hierarchy and return the parent screen
+    Window *window();
     Screen *screen();
 
     /// Associate this widget with an ID value (optional)
@@ -349,6 +372,8 @@ public:
 
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
 
+    template<typename WidgetClass, typename... Args>
+    WidgetClass& wdg(const Args&... args) { WidgetClass* widget = new WidgetClass(this, args...); return *widget; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }

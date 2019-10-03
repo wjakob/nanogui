@@ -54,15 +54,18 @@ public:
 
     void addItem(const std::string& name, const std::function<void()>& value, int icon) override;
     ContextMenu* addSubMenu(const std::string& name, int icon = 0) override;
+    void performLayout(NVGcontext *ctx) override;
     bool mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int button, int modifiers) override;
-    bool _isLabelSelected(const std::string& name, const Vector2i& p) const;
 
     Vector2i submenuPosition(const std::string &name) const override;
+    void requestPerformLayout() override;
     void deactivate() override; 
 private:
-  int mItemMargin = 2;
-  int mItemSpacing = 10;
-  BoxLayout *mItemHLayout = nullptr;
+    bool _isLabelSelected(const std::string& name, const Vector2i& p) const;
+
+    int mItemMargin = 2;
+    int mItemSpacing = 10;
+    BoxLayout *mItemHLayout = nullptr;
 };
 
 NAMESPACE_END(nanogui)

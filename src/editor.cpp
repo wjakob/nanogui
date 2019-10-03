@@ -157,6 +157,7 @@ public:
         using namespace nanogui;
 
         auto mmenu = new WindowMenu(this);
+        mmenu->activate({ 0, 0 });
         auto filesm = mmenu->addSubMenu("File");
         filesm->addItem("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
         filesm->addItem("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); });
@@ -317,7 +318,7 @@ public:
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
         if(down && button==GLFW_MOUSE_BUTTON_RIGHT && findWidget(p)==this) {
-            auto menu = new nanogui::ContextMenu(this, true);
+            auto menu = new nanogui::ContextMenu(this, "", true);
             menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
 
             auto submenu = menu->addSubMenu("Submenu");

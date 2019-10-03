@@ -13,8 +13,11 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <nanogui/layout.h>
 
 NAMESPACE_BEGIN(nanogui)
+
+class ContextMenu;
 
 /**
  * \class Window window.h nanogui/window.h
@@ -25,6 +28,7 @@ class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
     Window(Widget *parent, const std::string &title = "Untitled");
+    Window(Widget *parent, const std::string &title, Orientation orientation);
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
@@ -68,6 +72,9 @@ public:
     virtual void performLayout(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+
+    ContextMenu& submenu(const std::string& caption, const std::string& id = "");
+
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();

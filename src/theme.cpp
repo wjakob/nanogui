@@ -35,6 +35,7 @@ Theme::Theme(NVGcontext *ctx) {
     mTabControlWidth                  = 20;
     mTabButtonHorizontalPadding       = 10;
     mTabButtonVerticalPadding         = 2;
+    mWindowMenuHeaderOffset           = -3;
 
     mDropShadow                       = Color(0, 128);
     mTransparent                      = Color(0, 0);

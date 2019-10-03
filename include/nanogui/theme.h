@@ -80,6 +80,8 @@ public:
     /// The amount of vertical padding for a TabHeader widget (default: ``2``).
     int mTabButtonVerticalPadding;
 
+    int mWindowMenuHeaderOffset;
+
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets

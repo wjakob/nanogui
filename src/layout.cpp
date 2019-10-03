@@ -115,11 +115,17 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
                 targetSize[axis2] = fs[axis2] ? fs[axis2] : (containerSize[axis2] - mMargin * 2);
                 break;
         }
+     
+        if (!w->isSubElement())
+        {
+          w->setPosition(pos);
+          w->setSize(targetSize);
+        }
 
-        w->setPosition(pos);
-        w->setSize(targetSize);
         w->performLayout(ctx);
-        position += targetSize[axis1];
+
+        if (!w->isSubElement())
+          position += targetSize[axis1];
     }
 }
 

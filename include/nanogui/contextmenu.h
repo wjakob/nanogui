@@ -46,13 +46,15 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ContextMenu : public Widget {
 public:
+  using ItemConfig = std::pair<std::string, std::function<void()>>;
+  using SubItemsConfig = std::vector<ItemConfig>;
     /**
      * \brief Construct a new ContextMenu.
      * \param parent Parent widget.
      * \param disposable When true, the context menu and all submenus will be
      *                   destroyed upon deactivation.
      */
-    ContextMenu(Widget* parent, bool disposable);
+    ContextMenu(Widget* parent, const std::string& caption, bool disposable);
 
     /**
      * \brief Activate the context menu at the given position.
@@ -81,6 +83,7 @@ public:
      * \param icon Optional icon to display to the left of the label.
      */
     virtual void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
+    virtual ContextMenu& item(const std::string& name, const std::function<void()>& cb, int icon = 0);
 
     /**
      * Add a submenu to the menu.
@@ -97,8 +100,10 @@ public:
     bool mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) override;
     void draw(NVGcontext* ctx) override;
     bool focusEvent(bool focused) override;
+    const std::string& caption() const { return mCaption; }
 
     void setRoot(ContextMenu* root) { mRootMenu = root; }
+    virtual void requestPerformLayout();
 
     /// Calculate a submenus position.
     virtual Vector2i submenuPosition(const std::string& name) const;
@@ -135,6 +140,7 @@ protected:
     bool mDisposable;
     bool mActivated;
     bool mUpdateLayout;
+    std::string mCaption;
 
     Color mBackgroundColor, mMarginColor, mHighlightColor;
 };

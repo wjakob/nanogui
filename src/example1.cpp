@@ -566,7 +566,13 @@ public:
 
         //all widgets demo
         {
-          //auto w = window("All widgets demo");
+          Window& dw = window("All widgets demo", Orientation::Horizontal);
+          dw.setPosition(750, 350);
+          dw.setFixedSize({ 400, 400 });
+          dw.submenu("File")
+                .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
+                .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
 
         }
 
@@ -662,7 +668,7 @@ public:
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
         if(down && button==GLFW_MOUSE_BUTTON_RIGHT && findWidget(p)==this) {
-            auto menu = new nanogui::ContextMenu(this, true);
+            auto menu = new nanogui::ContextMenu(this, "", true);
             menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
 
             auto submenu = menu->addSubMenu("Submenu");

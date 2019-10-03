@@ -22,19 +22,36 @@
 NAMESPACE_BEGIN(nanogui)
 
 WindowMenu::WindowMenu(Widget *parent)
-    : ContextMenu(parent, false)
+    : ContextMenu(parent, "", false)
 {
-  activate({ 0, 0 });
-  mItemMargin = 2;
+  mItemMargin = 2; 
+  setSubElement(true);
   mItemHLayout = new BoxLayout(Orientation::Horizontal);
   mItemContainer->setLayout(mItemHLayout);
 }
+
+void WindowMenu::requestPerformLayout() {}
 
 Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const {
   float bounds[4];
   nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
   nvgTextBounds(ctx, 0, 0, "A", nullptr, bounds);
   return Vector2i( parent()->width(), bounds[3] - bounds[1] + mItemMargin * 2);
+}
+
+void WindowMenu::performLayout(NVGcontext* ctx)
+{
+  Vector2i ps = preferredSize(ctx), fs = fixedSize();
+  Vector2i targetSize(
+    fs[0] ? fs[0] : ps[0],
+    fs[1] ? fs[1] : ps[1]
+  );
+  setSize(targetSize);
+  auto myParentWindow = parent()->cast<Window>();
+  if (myParentWindow)
+    setPosition(0, mTheme->mWindowHeaderHeight + mTheme->mWindowMenuHeaderOffset);
+
+  ContextMenu::performLayout(ctx);
 }
 
 void WindowMenu::addItem(const std::string& name, const std::function<void()>& value, int icon) 
@@ -55,6 +72,8 @@ void WindowMenu::addItem(const std::string& name, const std::function<void()>& v
     auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
     iconLbl->setFontSize(fontSize() + 2);
   }
+
+  performLayout(screen()->nvgContext());
 }
 
 ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon) 
@@ -64,7 +83,7 @@ ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
 
   int prefh = preferredSize(screen()->nvgContext()).y();
 
-  mSubmenus[name] = new ContextMenu(mParent, false);
+  mSubmenus[name] = new ContextMenu(mParent, name, false);
   mSubmenus[name]->setRoot(mRootMenu ? mRootMenu : this);
   auto lbl = new Label(mItemContainer, name);
   mLabels[name] = lbl;
@@ -127,7 +146,7 @@ bool WindowMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int bu
 void WindowMenu::draw(NVGcontext* ctx) 
 {
   nvgSave(ctx);
-  nvgTranslate(ctx, 0, 0);
+  nvgTranslate(ctx, mPos.x(), mPos.y());
 
   int ww = width();
   int hh = height();
