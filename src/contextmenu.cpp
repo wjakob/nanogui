@@ -48,21 +48,36 @@ public:
 void ContextMenuLabel::draw(NVGcontext* ctx)
 {
   Label::draw(ctx);
-  nvgFontFace(ctx, mFont.c_str());
-  nvgFontSize(ctx, fontSize());
-  nvgFillColor(ctx, mTheme->mContextMenuShortcutTextColor);
 
-  int xpos = (mSize.x() - mTheme->mContextMenuShortcutOffset);
-  int ypos = 0;
-
-  switch (mTextVAlign)
+  if (!mShortcut.empty())
   {
-  case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
-  case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+    nvgFontFace(ctx, mFont.c_str());
+    nvgFontSize(ctx, fontSize());
+    nvgFillColor(ctx, mTheme->mContextMenuShortcutTextColor);
+
+    int xpos = (mSize.x() - mTheme->mContextMenuShortcutOffset);
+    int ypos = 0;
+
+    switch (mTextVAlign)
+    {
+    case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
+    case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+    }
+
+
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mShortcut.c_str(), nullptr);
   }
 
-  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-  nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mShortcut.c_str(), nullptr);
+  if (mChecked) {
+    nvgFontSize(ctx, mSize.y() * icon_scale());
+    nvgFontFace(ctx, "icons");
+    nvgFillColor(ctx, mEnabled ? mTheme->mIconColor : mTheme->mDisabledTextColor);
+    nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+    nvgText(ctx, mPos.x() + mSize.x() - (mSize.y() * 0.5f + 1),
+                 mPos.y() + mSize.y() * 0.5f, utf8(mTheme->mCheckBoxIcon).data(),
+                 nullptr);
+  }
 }
 
 Vector2i ContextMenuLabel::preferredSize(NVGcontext* ctx) const
@@ -153,7 +168,6 @@ ContextMenu& ContextMenu::item(const std::string& name)
   return *mSubmenus[name];
 }
 
-
 ContextMenu& ContextMenu::item(const std::string& name, const std::function<void()>& cb, int icon)
 {
   auto it = mItems.find(name);
@@ -161,6 +175,24 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::function<void
     addItem(name, cb, icon);
   else
     mItems[name] = cb;
+
+  return *this;
+}
+
+ContextMenu& ContextMenu::item(const std::string& name, const std::function<void(bool)>& cb, int icon)
+{
+  auto it = mChItems.find(name);
+  if (it == mChItems.end())
+  {
+    addItem(name, nullptr, icon);
+    if (cb != nullptr)
+    {
+      mChItems[name] = cb;
+      mLabels[name]->setCheckable(true);
+    }
+  }
+  else
+    mChItems[name] = cb;
 
   return *this;
 }
@@ -177,10 +209,12 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::string& short
 }
 
 void ContextMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
-{
-  mItems[name] = value;
+{  
   auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
   mLabels[name] = &lbl;
+  if (value != nullptr)
+    mItems[name] = value;
+
   lbl.setFontSize(fontSize());
   lbl.setShortcut(shortcut);
   lbl.setHeight(lbl.fontSize() * 2);
@@ -283,12 +317,24 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
         ref<ContextMenu> buoy(this);
         for (const auto& w : mLabels) {
             if (isRowSelected_(w.first, mousePos) && !isSubMenu_(w.first)) {
-                std::function<void()> cb = mItems[w.first];
+                std::function<void()> callback;
+                if (mLabels[w.first]->checkable())
+                  callback = [lbCallback = mChItems[w.first], checked = mLabels[w.first]->checked()]() { 
+                    if (lbCallback) lbCallback(!checked);
+                  };
+                else 
+                  callback = mItems[w.first];
+                
                 if (mRootMenu)
                     mRootMenu->deactivate();
                 else
                     deactivate();
-                if (cb) cb();
+
+                if (callback)
+                {
+                  callback();
+                  mLabels[w.first]->toggle();
+                }
                 return true;
             }
         }

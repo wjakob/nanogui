@@ -26,9 +26,16 @@ public:
   void setShortcut(const std::string& text) { mShortcut = text; }
 
   Vector2i preferredSize(NVGcontext* ctx) const override;
-
+  void setChecked(bool c) { mChecked = c; }
+  void setCheckable(bool c) { mCheckable = c; }
+  bool checked() const { return mChecked; }
+  bool checkable() const { return mCheckable; }
+  bool toggle() { if (mCheckable) mChecked = !mChecked; return mChecked; }
+  
 private:
   std::string mShortcut;
+  bool mChecked = false;
+  bool mCheckable = false;
 };
 
 /**
@@ -97,6 +104,7 @@ public:
     void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
     virtual void addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::function<void()>& cb, int icon = 0);
+    virtual ContextMenu& item(const std::string& name, const std::function<void(bool)>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name);
 
@@ -151,6 +159,7 @@ protected:
     Widget *mItemContainer;
     AdvancedGridLayout *mItemLayout = nullptr;
     std::unordered_map<std::string, std::function<void()>> mItems;
+    std::unordered_map<std::string, std::function<void(bool)>> mChItems;
     std::unordered_map<std::string, ContextMenu*> mSubmenus;
     std::unordered_map<std::string, ContextMenuLabel*> mLabels;
     Label *mHighlightedItem;

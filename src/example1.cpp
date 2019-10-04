@@ -41,6 +41,7 @@
 #include <nanogui/editworkspace.h>
 #include <nanogui/editproperties.h>
 #include <nanogui/scrollbar.h>
+#include <nanogui/windowmenu.h>
 #include <nanogui/perfchart.h>
 #include <iostream>
 #include <sstream>
@@ -583,8 +584,9 @@ public:
       dw.submenu("File").item("(dummy item)").setEnabled(false);
       dw.submenu("File").item("Save").setShortcut("Ctrl+S");
 
-      dw.submenu("File1");
-      dw.submenu("File2");
+      dw.submenu("Examples")
+          .item("Global menu", [this](bool v) { showMainMenu(v); } );
+      dw.submenu("Help");
     }
 
     fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));
@@ -641,6 +643,35 @@ public:
 
     ~ExampleApplication() {
         mShader.free();
+    }
+
+    void showMainMenu(bool show)
+    {
+      using namespace nanogui;
+
+      auto menus = findAll<WindowMenu>();
+
+      if (menus.empty())
+      {
+        auto& mmenu = wdg<WindowMenu>();
+        mmenu.activate({ 0, 0 });
+        mmenu.submenu("File")
+                .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
+                .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+        mmenu.submenu("Edit")
+                .item("Undo", "Ctrl+Z", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Redo", "Ctrl+Y", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Cut", "Ctrl+X", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Copy", "Ctrl+C", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+                .item("Paste", "Ctrl+V", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
+
+        performLayout();
+      }
+      else
+      {
+        menus.front()->setVisible(show);
+      }
     }
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {

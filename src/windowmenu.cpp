@@ -103,10 +103,7 @@ ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
 }
 
 void WindowMenu::deactivate() {
-  if (mActivated) {
-    mActivated = false;
-    deactivateSubmenu();
-  }
+  deactivateSubmenu();
 }
 
 Vector2i WindowMenu::submenuPosition(const std::string &name) const {
