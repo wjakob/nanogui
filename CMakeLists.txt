@@ -24,6 +24,8 @@ else()
 endif()
 
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
+option(NANOGUI_GLFW_BACKEND  "Use GLFW backend?" ON)
+option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
 option(NANOGUI_BUILD_EDITOR  "Build NanoGUI editor application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
@@ -66,13 +68,17 @@ macro(CHECK_CXX_COMPILER_AND_LINKER_FLAGS _RESULT _CXX_FLAGS _LINKER_FLAGS)
 endmacro()
 
 # Compile GLFW
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-set(GLFW_USE_CHDIR OFF CACHE BOOL " " FORCE)
-set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
+if (NANOGUI_GLFW_BACKEND)
+  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+  set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
+  set(GLFW_USE_CHDIR OFF CACHE BOOL " " FORCE)
+  set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
+elseif (NANOGUI_DX11_BACKEND)
+
+endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # Quench annoying deprecation warnings when compiling GLFW on OSX
@@ -218,10 +224,11 @@ if (NANOGUI_USE_GLAD)
   list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include")
 endif()
 
-list(APPEND NANOGUI_EXTRA_INCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
-)
+list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src")
+
+if (NANOGUI_GLFW_BACKEND)
+  list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
+endif()
 
 if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
   set(NANOGUI_EIGEN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen")
@@ -238,27 +245,34 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "BSD")
 endif()
 
 # Required core libraries on various platforms
-if (WIN32)
-  list(APPEND NANOGUI_EXTRA_LIBS opengl32)
-elseif (APPLE)
-  find_library(cocoa_library Cocoa)
-  find_library(opengl_library OpenGL)
-  find_library(corevideo_library CoreVideo)
-  find_library(iokit_library IOKit)
-  list(APPEND NANOGUI_EXTRA_LIBS ${cocoa_library} ${opengl_library} ${corevideo_library} ${iokit_library})
-  list(APPEND LIBNANOGUI_EXTRA_SOURCE src/darwin.mm)
-elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
-  list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread )
-  if (NOT CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
-    list(APPEND NANOGUI_EXTRA_LIBS rt)
+if (NANOGUI_GLFW_BACKEND)
+  if (WIN32)
+    list(APPEND NANOGUI_EXTRA_LIBS opengl32)
+  elseif (APPLE)
+    find_library(cocoa_library Cocoa)
+    find_library(opengl_library OpenGL)
+    find_library(corevideo_library CoreVideo)
+    find_library(iokit_library IOKit)
+    list(APPEND NANOGUI_EXTRA_LIBS ${cocoa_library} ${opengl_library} ${corevideo_library} ${iokit_library})
+    list(APPEND LIBNANOGUI_EXTRA_SOURCE src/darwin.mm)
+  elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
+    list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread )
+    if (NOT CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+      list(APPEND NANOGUI_EXTRA_LIBS rt)
+    endif()
+    if(CMAKE_SYSTEM MATCHES "Linux")
+      list(APPEND NANOGUI_EXTRA_LIBS dl)
+    endif()
   endif()
-  if(CMAKE_SYSTEM MATCHES "Linux")
-    list(APPEND NANOGUI_EXTRA_LIBS dl)
-  endif()
+elseif (NANOGUI_DX11_BACKEND)
+
 endif()
 
-include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
+if (NANOGUI_GLFW_BACKEND)
+  include_directories(ext/glfw/include)
+endif()
 
 # Run simple cmake converter to put font files into the data segment
 
