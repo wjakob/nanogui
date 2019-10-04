@@ -31,11 +31,52 @@ public:
 class NANOGUI_EXPORT ContextItemAsMenu : public ContextMenu
 {
 public:
-  Label* l = nullptr;
+  ContextMenuLabel* l = nullptr;
   ContextItemAsMenu() : ContextMenu(nullptr, "", false) {}
 
   void setEnabled(bool en) override { if(l) l->setEnabled(en); }
+  void setShortcut(const std::string& text) override { if(l) l->setShortcut(text); }
 };
+
+class NANOGUI_EXPORT ContextMenuArea : public Widget
+{
+public:
+  ContextMenuArea(Widget* w) : Widget(w) {}
+  Vector2i minSize() const override { return parent()->minSize(); }
+};
+
+void ContextMenuLabel::draw(NVGcontext* ctx)
+{
+  Label::draw(ctx);
+  nvgFontFace(ctx, mFont.c_str());
+  nvgFontSize(ctx, fontSize());
+  nvgFillColor(ctx, mTheme->mContextMenuShortcutTextColor);
+
+  int xpos = (mSize.x() - mTheme->mContextMenuShortcutOffset);
+  int ypos = 0;
+
+  switch (mTextVAlign)
+  {
+  case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
+  case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+  }
+
+  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+  nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mShortcut.c_str(), nullptr);
+}
+
+Vector2i ContextMenuLabel::preferredSize(NVGcontext* ctx) const
+{
+  Vector2i pf = Label::preferredSize(ctx);
+  nvgFontFace(ctx, mFont.c_str());
+  nvgFontSize(ctx, fontSize());
+  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+  int tw = nvgTextBounds(ctx, 0, 0, mShortcut.empty() ? "Ctrl+A" : mShortcut.c_str(), nullptr, nullptr) + 2;
+  pf.x() += tw + 12;
+
+  return pf;
+}
+
 
 ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool disposable)
     : Widget(parent),
@@ -49,7 +90,7 @@ ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool dispos
         mHighlightColor(0.15f, 1.0f),
         mCaption(caption)
 {
-    mItemContainer = new Widget(this);
+    mItemContainer = &wdg<ContextMenuArea>();
     mItemContainer->setPosition({0,0});
     mItemLayout = new AdvancedGridLayout({10,0,0}, {}, 2);
     mItemLayout->setColStretch(0, 1.0f);
@@ -124,20 +165,36 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::function<void
   return *this;
 }
 
+ContextMenu& ContextMenu::item(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon)
+{
+  auto it = mLabels.find(name);
+  if (it == mLabels.end())
+    addItem(name, shortcut, cb, icon);
+  else
+    mLabels[name]->setShortcut(shortcut);
+
+  return *this;
+}
+
+void ContextMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
+{
+  mItems[name] = value;
+  auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
+  mLabels[name] = &lbl;
+  lbl.setFontSize(fontSize());
+  lbl.setShortcut(shortcut);
+  lbl.setHeight(lbl.fontSize() * 2);
+  mItemLayout->appendRow(0);
+  mItemLayout->setAnchor(&lbl, AdvancedGridLayout::Anchor{ 1,mItemLayout->rowCount() - 1, 1, 1 });
+  if (nvgIsFontIcon(icon)) {
+    auto& iconLbl = mItemContainer->wdg<Label>(utf8(icon).data(), "icons");
+    iconLbl.setFontSize(fontSize() + 2);
+    mItemLayout->setAnchor(&iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
+  }
+}
+
 void ContextMenu::addItem(const std::string& name, const std::function<void()>& value, int icon) {
-    mItems[name] = value;
-    auto lbl = new Label(mItemContainer, name);
-    mLabels[name] = lbl;
-    lbl->setFontSize(fontSize());
-    lbl->setMinSize(mMinSize);
-    lbl->setHeight(lbl->fontSize() * 2);
-    mItemLayout->appendRow(0);
-    mItemLayout->setAnchor(lbl, AdvancedGridLayout::Anchor{1,mItemLayout->rowCount() - 1, 1, 1});
-    if (nvgIsFontIcon(icon)) {
-        auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
-        iconLbl->setFontSize(fontSize()+2);
-        mItemLayout->setAnchor(iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
-    }
+  addItem(name, "", value, icon);
 }
 
 ContextMenu& ContextMenu::submenu(const std::string& name, int icon) { return *addSubMenu(name, icon); }
@@ -150,27 +207,37 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     if (it != mSubmenus.end())
       return it->second;
 
-    mSubmenus[name] = new ContextMenu(mParent, name, false);
-    mSubmenus[name]->mRootMenu = mRootMenu ? mRootMenu : this;
-    auto lbl1 = new Label(mItemContainer, name);
-    auto lbl2 = new Label(mItemContainer, utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data(), "icons");
-    mLabels[name] = lbl1;
-    lbl1->setFontSize(fontSize());
-    lbl1->setHeight(lbl1->fontSize() * 2);
-    lbl2->setFontSize(fontSize());
+    auto& submenu = parent()->wdg<ContextMenu>(name, false);
+    submenu.mRootMenu = mRootMenu ? mRootMenu : this;
+    auto& lbl1 = mItemContainer->wdg<ContextMenuLabel>(name);
+    auto& lbl2 = mItemContainer->wdg<Label>(utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data(), "icons");
+    
+    lbl1.setFontSize(fontSize());
+    lbl1.setHeight(lbl1.fontSize() * 2);
+    lbl2.setFontSize(fontSize());
     mItemLayout->appendRow(0);
-    mItemLayout->setAnchor(lbl1, AdvancedGridLayout::Anchor{1,mItemLayout->rowCount() - 1, 1, 1});
-    mItemLayout->setAnchor(lbl2, AdvancedGridLayout::Anchor{2,mItemLayout->rowCount() - 1, 1, 1});
+    mItemLayout->setAnchor(&lbl1, AdvancedGridLayout::Anchor{1,mItemLayout->rowCount() - 1, 1, 1});
+    mItemLayout->setAnchor(&lbl2, AdvancedGridLayout::Anchor{2,mItemLayout->rowCount() - 1, 1, 1});
     if (nvgIsFontIcon(icon)) {
-        auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
-        iconLbl->setFontSize(fontSize()+2);
-        mItemLayout->setAnchor(iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
+        auto& iconLbl = mItemContainer->wdg<Label>(utf8(icon).data(), "icons");
+        iconLbl.setFontSize(fontSize()+2);
+        mItemLayout->setAnchor(&iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
     }
-    return mSubmenus[name];
+
+    mLabels[name] = &lbl1;
+    mSubmenus[name] = &submenu;
+    return &submenu;
+}
+
+void ContextMenu::setShortcut(const std::string& text)
+{
+
 }
 
 Vector2i ContextMenu::preferredSize(NVGcontext* ctx) const {
-    return mItemContainer->position() + mItemContainer->preferredSize(ctx);
+  Vector2i pf = mItemContainer->preferredSize(ctx);
+  pf.x() = std::max({ minWidth(), pf.x(), mTheme->mContextMenuMinWidth});
+  return mItemContainer->position() + pf;
 }
 
 bool ContextMenu::mouseEnterEvent(const Vector2i& p, bool enter) {
@@ -281,6 +348,12 @@ bool ContextMenu::focusEvent(bool focused) {
         deactivate();
     }
     return true;
+}
+
+Vector2i ContextMenu::minSize() const { 
+  Vector2i ret = mMinSize;
+  ret.x() = std::max(mMinSize.x(), mTheme->mContextMenuMinWidth); 
+  return ret;
 }
 
 bool ContextMenu::isSubMenu_(const std::string& name) {

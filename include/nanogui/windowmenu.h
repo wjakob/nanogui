@@ -52,7 +52,7 @@ public:
     Vector2i preferredSize(NVGcontext* ctx) const override;
     void draw(NVGcontext* ctx) override;
 
-    void addItem(const std::string& name, const std::function<void()>& value, int icon) override;
+    void addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon) override;
     ContextMenu* addSubMenu(const std::string& name, int icon = 0) override;
     void performLayout(NVGcontext *ctx) override;
     bool mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int button, int modifiers) override;

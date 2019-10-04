@@ -159,6 +159,10 @@ public:
     void setMinSize(const Vector2i &minSize) { mMinSize = minSize; }
     void setMinWidth(int ww) { mMinSize.x() = ww; }
 
+    int minWidth() const { return minSize().x(); }
+    int minHeight() const { return minSize().y(); }
+    virtual Vector2i minSize() const { return mMinSize; }
+
     /// Return the fixed size (see \ref setFixedSize())
     const Vector2i &fixedSize() const { return mFixedSize; }
 

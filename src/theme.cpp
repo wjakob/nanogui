@@ -69,6 +69,10 @@ Theme::Theme(NVGcontext *ctx) {
     mWindowPopup                      = Color(50, 255);
     mWindowPopupTransparent           = Color(50, 0);
 
+    mContextMenuShortcutTextColor     = Color(180, 255);
+    mContextMenuShortcutOffset        = 40;
+    mContextMenuMinWidth              = 140;
+
     mCheckBoxIcon                     = ENTYPO_ICON_CHECK;
     mMessageInformationIcon           = ENTYPO_ICON_INFO_WITH_CIRCLE;
     mMessageQuestionIcon              = ENTYPO_ICON_HELP_WITH_CIRCLE;

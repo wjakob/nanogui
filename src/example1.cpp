@@ -577,10 +577,14 @@ public:
       dw.setFixedSize({ 400, 400 });
       dw.submenu("File")
           .item("(dummy item)", []() {})
-          .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-          .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
+          .item("New", "Ctrl+N", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+          .item("Very larget text", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
           .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
       dw.submenu("File").item("(dummy item)").setEnabled(false);
+      dw.submenu("File").item("Save").setShortcut("Ctrl+S");
+
+      dw.submenu("File1");
+      dw.submenu("File2");
     }
 
     fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));

@@ -82,6 +82,10 @@ public:
 
     int mWindowMenuHeaderOffset;
 
+    int mContextMenuShortcutOffset;
+    Color mContextMenuShortcutTextColor;
+    int mContextMenuMinWidth;
+
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets

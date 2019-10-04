@@ -59,7 +59,12 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
     if (mLayout)
         return mLayout->preferredSize(ctx, this);
     else
-        return mSize;
+    {
+      Vector2i ret = mSize;
+      if (minWidth() > ret.x()) ret.x() = minWidth();
+      if (minHeight() > ret.y()) ret.y() = minHeight();
+      return ret;
+    }
 }
 
 void Widget::performLayout(NVGcontext *ctx) {

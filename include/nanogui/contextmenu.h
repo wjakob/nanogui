@@ -12,10 +12,24 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/label.h>
 #include <unordered_map>
 
 NAMESPACE_BEGIN(nanogui)
+
+class NANOGUI_EXPORT ContextMenuLabel : public Label
+{
+public:
+  ContextMenuLabel(Widget* parent, const std::string& caption)
+    : Label(parent, caption) {}
+  void draw(NVGcontext* ctx) override;
+  void setShortcut(const std::string& text) { mShortcut = text; }
+
+  Vector2i preferredSize(NVGcontext* ctx) const override;
+
+private:
+  std::string mShortcut;
+};
 
 /**
  * \class ContextMenu contextmenu.h nanogui/contextmenu.h
@@ -80,8 +94,10 @@ public:
      * \param cb Callback to be executed when the item is clicked.
      * \param icon Optional icon to display to the left of the label.
      */
-    virtual void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
+    void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
+    virtual void addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::function<void()>& cb, int icon = 0);
+    virtual ContextMenu& item(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name);
 
     /**
@@ -94,6 +110,8 @@ public:
     virtual ContextMenu* addSubMenu(const std::string& name, int icon = 0);
     virtual ContextMenu& submenu(const std::string& name, int icon = 0);
 
+    virtual void setShortcut(const std::string& text);
+
     Vector2i preferredSize(NVGcontext* ctx) const override;
     bool mouseEnterEvent(const Vector2i& p, bool enter) override;
     bool mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int button, int modifiers) override;
@@ -104,6 +122,7 @@ public:
 
     void setRoot(ContextMenu* root) { mRootMenu = root; }
     virtual void requestPerformLayout();
+    Vector2i minSize() const override;
 
     /// Calculate a submenus position.
     virtual Vector2i submenuPosition(const std::string& name) const;
@@ -133,7 +152,7 @@ protected:
     AdvancedGridLayout *mItemLayout = nullptr;
     std::unordered_map<std::string, std::function<void()>> mItems;
     std::unordered_map<std::string, ContextMenu*> mSubmenus;
-    std::unordered_map<std::string, Label*> mLabels;
+    std::unordered_map<std::string, ContextMenuLabel*> mLabels;
     Label *mHighlightedItem;
     ContextMenu *mActiveSubmenu;
     ContextMenu *mRootMenu;

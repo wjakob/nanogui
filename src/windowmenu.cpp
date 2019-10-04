@@ -54,10 +54,10 @@ void WindowMenu::performLayout(NVGcontext* ctx)
   ContextMenu::performLayout(ctx);
 }
 
-void WindowMenu::addItem(const std::string& name, const std::function<void()>& value, int icon) 
+void WindowMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon) 
 {
   mItems[name] = value;
-  auto lbl = new Label(mItemContainer, name);
+  auto lbl = new ContextMenuLabel(mItemContainer, name);
   mLabels[name] = lbl;
   int prefh = preferredSize(screen()->nvgContext()).y();
 
@@ -85,7 +85,7 @@ ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
 
   mSubmenus[name] = new ContextMenu(mParent, name, false);
   mSubmenus[name]->setRoot(mRootMenu ? mRootMenu : this);
-  auto lbl = new Label(mItemContainer, name);
+  auto lbl = new ContextMenuLabel(mItemContainer, name);
   mLabels[name] = lbl;
   lbl->setFontSize(fontSize());
   int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, name.c_str(), nullptr, nullptr);
