@@ -47,6 +47,8 @@ class NANOGUI_EXPORT Widget : public Object {
 public:
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
+    Widget(Widget&) = delete;
+    Widget& operator =(Widget&) = delete;
 
     /// Return the parent widget
     Widget *parent() { return mParent; }

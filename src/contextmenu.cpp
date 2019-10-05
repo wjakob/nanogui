@@ -120,10 +120,29 @@ void ContextMenu::requestPerformLayout()
     wnd->performLayout(screen()->nvgContext());
 }
 
+void ContextMenu::_checkConditions()
+{
+  for (auto it = mLabels.begin(); it != mLabels.end(); ++it)
+  {
+    auto cit = mConditions.find(it->first);
+    if (cit != mConditions.end())
+    {
+      ContextMenuLabel* item = it->second;
+      bool enabled = item->enabled();
+      bool checked = item->checked();
+      cit->second(enabled, checked);
+      item->setEnabled(enabled);
+      if (item->checkable())
+        item->setChecked(checked);
+    }
+  }
+}
+
 void ContextMenu::activate(const Vector2i& pos) {
     if (!mActivated) {
         mActivated = true;
         bringToFront();
+        _checkConditions();
         setVisible(true);
         requestPerformLayout();
 
@@ -175,6 +194,15 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::function<void
     addItem(name, cb, icon);
   else
     mItems[name] = cb;
+
+  return *this;
+}
+
+ContextMenu& ContextMenu::item(const std::string& name, const std::function<void(bool)>& cb, const std::function<void(bool&, bool&)>& condition, int icon)
+{
+  item(name, cb, icon);
+  if (condition != nullptr)
+    mConditions[name] = condition;
 
   return *this;
 }
@@ -296,11 +324,11 @@ bool ContextMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int b
         // Deactivate old highlighted submenu, activate new submenu
         if (isRowSelected_(w.first, mousePos)) {
             // Deactivate current submenu unless we are still hovering it.
-            if (mActiveSubmenu && !(isSubMenu_(w.first) && mSubmenus[w.first] == mActiveSubmenu)) {
+            if (mActiveSubmenu && !(_isSubMenu(w.first) && mSubmenus[w.first] == mActiveSubmenu)) {
                 deactivateSubmenu();
             }
             // Activate the item we are hovering
-            if (isSubMenu_(w.first) && mSubmenus[w.first] != mActiveSubmenu) {
+            if (_isSubMenu(w.first) && mSubmenus[w.first] != mActiveSubmenu) {
                 activateSubmenu(w.first);
             }
             mHighlightedItem = mLabels[w.first];
@@ -316,7 +344,7 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
         // Preserve our existence in case the click destroys us.
         ref<ContextMenu> buoy(this);
         for (const auto& w : mLabels) {
-            if (isRowSelected_(w.first, mousePos) && !isSubMenu_(w.first)) {
+            if (isRowSelected_(w.first, mousePos) && !_isSubMenu(w.first)) {
                 std::function<void()> callback;
                 if (mLabels[w.first]->checkable())
                   callback = [lbCallback = mChItems[w.first], checked = mLabels[w.first]->checked()]() { 
@@ -402,7 +430,7 @@ Vector2i ContextMenu::minSize() const {
   return ret;
 }
 
-bool ContextMenu::isSubMenu_(const std::string& name) {
+bool ContextMenu::_isSubMenu(const std::string& name) {
     return mSubmenus.find(name) != mSubmenus.end();
 }
 

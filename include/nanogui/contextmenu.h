@@ -104,6 +104,7 @@ public:
     void addItem(const std::string& name, const std::function<void()>& cb, int icon=0);
     virtual void addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::function<void()>& cb, int icon = 0);
+    virtual ContextMenu& item(const std::string& name, const std::function<void(bool)>& cb, const std::function<void(bool&,bool&)>& condition, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::function<void(bool)>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name, const std::string& shortcut, const std::function<void()>& cb, int icon = 0);
     virtual ContextMenu& item(const std::string& name);
@@ -140,7 +141,8 @@ protected:
      * \brief Determine if an item opens a new context menu.
      * \param name Name of the item.
      */
-    bool isSubMenu_(const std::string& name);
+    bool _isSubMenu(const std::string& name);
+    void _checkConditions();
 
     /**
      * \brief Determine if a row contains the point `p`.
@@ -162,6 +164,7 @@ protected:
     std::unordered_map<std::string, std::function<void(bool)>> mChItems;
     std::unordered_map<std::string, ContextMenu*> mSubmenus;
     std::unordered_map<std::string, ContextMenuLabel*> mLabels;
+    std::unordered_map<std::string, std::function<void(bool&, bool&)>> mConditions;
     Label *mHighlightedItem;
     ContextMenu *mActiveSubmenu;
     ContextMenu *mRootMenu;

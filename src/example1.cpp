@@ -162,7 +162,7 @@ public:
     initGPUTimer(&gpuTimer);
 
     Window *w = new Window(this, "Button demo");
-    w->setPosition(Vector2i(15, 15));
+    w->setPosition(15, 15);
     w->setLayout(new GroupLayout());
     w->setDraggable(Theme::WindowDraggable::dgFixed);
 
@@ -585,7 +585,17 @@ public:
       dw.submenu("File").item("Save").setShortcut("Ctrl+S");
 
       dw.submenu("Examples")
-          .item("Global menu", [this](bool v) { showMainMenu(v); } );
+          .item("Global menu", [this](bool v) { toggleMainMenu(v); })
+          .item("Console",     [this](bool v) { toggleConsoleWnd(v); }, [this](bool &enabled, bool &checked) {
+                                                      enabled = true; 
+                                                      auto* w = findWidgetGlobal("console_wnd");
+                                                      checked = (w && w->visible());
+                                                  })
+          .item("Log", [this](bool v) { toggleLogWnd(v); }, [this](bool &enabled, bool &checked) {
+                                                    enabled = true; 
+                                                    auto* w = findWidgetGlobal("log_wnd");
+                                                    checked = (w && w->visible());
+                                                  });
       dw.submenu("Help");
     }
 
@@ -645,7 +655,48 @@ public:
         mShader.free();
     }
 
-    void showMainMenu(bool show)
+    void toggleConsoleWnd(bool show)
+    {
+      using namespace nanogui;
+
+      auto console = findWidgetGlobal("console_wnd");
+      if (!console)
+      {
+        auto& wnd = window("Example: Console");
+        wnd.setPosition(60, 60);
+        wnd.setLayout(new GroupLayout());
+        wnd.setSize(300, 300);
+        wnd.setFixedSize({ 300, 300 });
+        wnd.setId("console_wnd");
+        performLayout();
+      }
+      else
+      {
+        console->setVisible(show);
+      }
+    }
+
+    void toggleLogWnd(bool show)
+    {
+      using namespace nanogui;
+
+      auto logwnd = findWidgetGlobal("log_wnd");
+      if (!logwnd)
+      {
+        auto& wnd = window("Example: Log");
+        wnd.setPosition(120, 120);
+        wnd.setSize(400, 300);
+        wnd.setFixedSize({ 400, 300 });
+        wnd.setId("log_wnd");
+        performLayout();
+      }
+      else
+      {
+        logwnd->setVisible(show);
+      }
+    }
+
+    void toggleMainMenu(bool show)
     {
       using namespace nanogui;
 

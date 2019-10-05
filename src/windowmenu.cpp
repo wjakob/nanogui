@@ -125,11 +125,11 @@ bool WindowMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int bu
     // Deactivate old highlighted submenu, activate new submenu
     if (_isLabelSelected(w.first, mousePos)) {
       // Deactivate current submenu unless we are still hovering it.
-      if (mActiveSubmenu && !(isSubMenu_(w.first) && mSubmenus[w.first] == mActiveSubmenu)) {
+      if (mActiveSubmenu && !(_isSubMenu(w.first) && mSubmenus[w.first] == mActiveSubmenu)) {
         deactivateSubmenu();
       }
       // Activate the item we are hovering
-      if (isSubMenu_(w.first) && mSubmenus[w.first] != mActiveSubmenu) {
+      if (_isSubMenu(w.first) && mSubmenus[w.first] != mActiveSubmenu) {
         bringToFront();
         activateSubmenu(w.first);
       }
