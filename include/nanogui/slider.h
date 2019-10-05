@@ -34,6 +34,9 @@ public:
     std::pair<float, float> range() const { return mRange; }
     void setRange(std::pair<float, float> range) { mRange = range; }
 
+    void setValueColorVisible(bool v) { mShowValueWithColor = v; }
+    void setValueColor(const Color& c) { mValueColor = c; }
+
     std::pair<float, float> highlightedRange() const { return mHighlightedRange; }
     void setHighlightedRange(std::pair<float, float> highlightedRange) { mHighlightedRange = highlightedRange; }
 
@@ -57,6 +60,8 @@ protected:
     std::pair<float, float> mRange;
     std::pair<float, float> mHighlightedRange;
     Color mHighlightColor;
+    Color mValueColor;
+    bool mShowValueWithColor = true;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

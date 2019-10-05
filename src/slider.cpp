@@ -92,6 +92,15 @@ void Slider::draw(NVGcontext* ctx) {
         nvgFill(ctx);
     }
 
+    if (mShowValueWithColor)
+    {
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, startX, center.y() - kshadow + 1,
+                     widthX * mValue, kshadow * 2, 2);
+      nvgFillColor(ctx, mValueColor.w() > 0 ? mValueColor : mTheme->mSliderValueColor);
+      nvgFill(ctx);
+    }
+
     NVGpaint knobShadow =
         nvgRadialGradient(ctx, knobPos.x(), knobPos.y(), kr - kshadow,
                           kr + kshadow, Color(0, 64), mTheme->mTransparent);

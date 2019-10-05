@@ -86,6 +86,8 @@ public:
     Color mContextMenuShortcutTextColor;
     int mContextMenuMinWidth;
 
+    Color mSliderValueColor;
+
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets

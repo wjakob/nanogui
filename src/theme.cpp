@@ -69,6 +69,8 @@ Theme::Theme(NVGcontext *ctx) {
     mWindowPopup                      = Color(50, 255);
     mWindowPopupTransparent           = Color(50, 0);
 
+    mSliderValueColor                 = Color(0, 129, 255, 128);
+
     mContextMenuShortcutTextColor     = Color(180, 255);
     mContextMenuShortcutOffset        = 40;
     mContextMenuMinWidth              = 140;
