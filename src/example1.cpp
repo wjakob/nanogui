@@ -331,6 +331,9 @@ public:
       [](bool state) { cout << "Check box 1 state: " << state << endl; }
     );
     cb->setChecked(true);
+    cb->setUncheckedColor(Color(128, 0, 0, 255));
+    cb->setCheckedColor(Color(0, 128, 0, 255));
+    cb->setPushedColor(Color(128, 128, 0, 255));
     cb = new CheckBox(w, "Flag 2",
       [](bool state) { cout << "Check box 2 state: " << state << endl; }
     );

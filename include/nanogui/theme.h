@@ -88,6 +88,9 @@ public:
 
     Color mSliderValueColor;
 
+    Color mCheckboxUncheckedColor;
+    Color mCheckboxCheckedColor;
+    Color mCheckboxPushedColor;
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets

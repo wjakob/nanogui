@@ -69,6 +69,10 @@ Theme::Theme(NVGcontext *ctx) {
     mWindowPopup                      = Color(50, 255);
     mWindowPopupTransparent           = Color(50, 0);
 
+    mCheckboxUncheckedColor           = Color(0, 32);
+    mCheckboxCheckedColor             = Color(0, 32);
+    mCheckboxPushedColor              = Color(0, 100);
+
     mSliderValueColor                 = Color(0, 129, 255, 128);
 
     mContextMenuShortcutTextColor     = Color(180, 255);

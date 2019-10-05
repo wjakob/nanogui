@@ -71,14 +71,19 @@ void CheckBox::draw(NVGcontext *ctx) {
     nvgText(ctx, mPos.x() + 1.6f * fontSize(), mPos.y() + mSize.y() * 0.5f,
             mCaption.c_str(), nullptr);
 
+    const Color& pushedColor = mPushedColor.w() ? mPushedColor : mTheme->mCheckboxPushedColor;
+    const Color& bgColor = mChecked 
+                              ? (mCheckedColor.w() ? mCheckedColor : mTheme->mCheckboxCheckedColor)
+                              : (mUncheckedColor.w() ? mUncheckedColor : mTheme->mCheckboxUncheckedColor);
+
     NVGpaint bg = nvgBoxGradient(ctx, mPos.x() + 1.5f, mPos.y() + 1.5f,
                                  mSize.y() - 2.0f, mSize.y() - 2.0f, 3, 3,
-                                 mPushed ? Color(0, 100) : Color(0, 32),
+                                 mPushed ? pushedColor : bgColor,
                                  Color(0, 0, 0, 180));
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 1.0f, mPos.y() + 1.0f, mSize.y() - 2.0f,
-                   mSize.y() - 2.0f, 3);
+    nvgRoundedRect(ctx, mPos.x() + 1.0f, mPos.y() + 1.0f, 
+                        mSize.y() - 2.0f, mSize.y() - 2.0f, 3);
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 

@@ -66,6 +66,10 @@ public:
     /// Sets whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
     void setPushed(const bool &pushed) { mPushed = pushed; }
 
+    void setPushedColor(const Color& c) { mPushedColor = c; }
+    void setCheckedColor(const Color& c) { mCheckedColor = c; }
+    void setUncheckedColor(const Color& c) { mUncheckedColor = c; }
+
     /// Returns the current callback of this CheckBox.
     std::function<void(bool)> callback() const { return mCallback; }
 
@@ -117,6 +121,7 @@ protected:
 
     /// Whether or not this CheckBox is currently checked or unchecked.
     bool mChecked;
+    Color mPushedColor, mUncheckedColor, mCheckedColor;
 
     /// The function to execute when \ref nanogui::CheckBox::mChecked is changed.
     std::function<void(bool)> mCallback;
