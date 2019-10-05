@@ -220,13 +220,21 @@ public:
     popupLeft->setLayout(new GroupLayout());
     new CheckBox(popupLeft, "Another check box");
 
-    new Label(w, "A switch boxes", "sans-bold");
-    Widget *swbx = new Widget(w);
-    swbx->setLayout(new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 2));
+    w->wdg<Label>("A switch boxes", "sans-bold");
+    auto& switchboxArea = w->wdg<Widget>();
+    switchboxArea.setLayout(new GridLayout(Orientation::Horizontal, 2));
 
-    auto* swbh = new SwitchBox(swbx, SwitchBox::Alignment::Horizontal, "");
-    swbh->setFixedSize(Vector2i(80, 30));
-    new SwitchBox(swbx, SwitchBox::Alignment::Vertical, "");
+    auto& switchboxHorizontal = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
+    switchboxHorizontal.setFixedSize(Vector2i(80, 30));
+    switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
+
+    auto& switchboxVerticalColored = switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
+    switchboxVerticalColored.setFixedSize(Vector2i(28, 60));
+    switchboxVerticalColored.setBackgroundColor({ 0,0,129,255 });
+
+    auto& switchboxHorizontalColored = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
+    switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
+    switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
 
     w = new Window(this, "Basic widgets");
     w->setPosition(Vector2i(200, 15));

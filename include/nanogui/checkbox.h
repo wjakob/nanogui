@@ -70,6 +70,9 @@ public:
     void setCheckedColor(const Color& c) { mCheckedColor = c; }
     void setUncheckedColor(const Color& c) { mUncheckedColor = c; }
 
+    void setStateColor(const Color& checked, const Color& unchecked = {}, const Color& pushed = {})
+    { mPushedColor = pushed; mCheckedColor = checked; mUncheckedColor = unchecked; }
+
     /// Returns the current callback of this CheckBox.
     std::function<void(bool)> callback() const { return mCallback; }
 

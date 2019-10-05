@@ -91,6 +91,10 @@ public:
     Color mCheckboxUncheckedColor;
     Color mCheckboxCheckedColor;
     Color mCheckboxPushedColor;
+
+    Color mSwitchboxBackgroundColor;
+    Color mSwitchboxCheckedColor;
+    Color mSwitchboxUncheckedColor;
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets

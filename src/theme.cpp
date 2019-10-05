@@ -73,6 +73,10 @@ Theme::Theme(NVGcontext *ctx) {
     mCheckboxCheckedColor             = Color(0, 32);
     mCheckboxPushedColor              = Color(0, 100);
 
+    mSwitchboxBackgroundColor         = Color(0, 255);
+    mSwitchboxCheckedColor            = Color(0, 0);
+    mSwitchboxUncheckedColor          = Color(0, 0);
+
     mSliderValueColor                 = Color(0, 129, 255, 128);
 
     mContextMenuShortcutTextColor     = Color(180, 255);

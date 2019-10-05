@@ -86,20 +86,53 @@ void SwitchBox::draw(NVGcontext *ctx)
     knobPos = Vector2f(startX + kr, startY + path * (heightY - 2 * kr) + kr);
   }
 
-  NVGpaint bg = nvgBoxGradient(ctx, startX, startY, widthX, heightY, 3, 3,
-    Color(0, mEnabled ? 32 : 10),
-    Color(0, mEnabled ? 128 : 210));
+  {
+    Color bgTopColor, bgBtColor;
+    bgTopColor = bgBtColor = (mBackgroundColor.w() ? mBackgroundColor : mTheme->mSwitchboxBackgroundColor);
+    bgTopColor.w() *= (mEnabled ? 32 : 10)/255.f;
+    bgBtColor.w() *= (mEnabled ? 128 : 210)/255.f;
 
-  nvgBeginPath(ctx);
-  nvgRoundedRect(ctx, startX, startY, widthX, heightY, kr);
-  nvgFillPaint(ctx, bg);
+    NVGpaint bg = nvgBoxGradient(ctx, startX, startY, widthX, heightY, 3, 3, bgTopColor, bgBtColor);
+
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, startX, startY, widthX, heightY, kr);
+    nvgFillPaint(ctx, bg);
+    nvgFill(ctx);
+  }
+
+  const Color& unchColor = (mUncheckedColor.w() > 0 ? mUncheckedColor : mTheme->mSwitchboxUncheckedColor);
+  if (unchColor.w() > 0 && path < 1.f)
+  {
+    Color uchTopColor = unchColor, uchBtColor = unchColor;
+    uchTopColor.w() *= (mEnabled ? 32 : 10) / 255.f;
+    uchBtColor.w() *= (mEnabled ? 128 : 210) / 255.f;
+    NVGpaint bgx = nvgBoxGradient(ctx, startX + (widthX * path), startY, widthX * (1-path), heightY, 3, 3, uchTopColor, uchBtColor);
+
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, startX + (widthX * path), startY, widthX * (1-path), heightY, kr);
+    nvgFillPaint(ctx, bgx);
+    nvgFill(ctx);
+  }
+
+  const Color& chColor = (mCheckedColor.w() > 0 ? mCheckedColor : mTheme->mSwitchboxCheckedColor);
+  if (chColor.w() > 0 && path > 0.f)
+  {
+    Color chTopColor = chColor, chBtColor = chColor;
+    chTopColor.w() *= (mEnabled ? 32 : 10)/255.f;
+    chBtColor.w() *= (mEnabled ? 128 : 210)/255.f;
+    NVGpaint bga = nvgBoxGradient(ctx, startX, startY, widthX * path, heightY, 3, 3, chTopColor, chBtColor);
+
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, startX, startY, widthX * path, heightY, kr);
+    nvgFillPaint(ctx, bga);
+    nvgFill(ctx);
+  }
 
   nvgBeginPath(ctx);
   nvgStrokeWidth(ctx, 1.0f);
   nvgRoundedRect(ctx, startX + 0.5f, startY + 0.5f, widthX - 1, heightY - 1, kr);
   nvgStrokeColor(ctx, mTheme->mBorderLight);
   nvgStroke(ctx);
-  nvgFill(ctx);
 
   nvgBeginPath(ctx);
   nvgRoundedRect(ctx, startX + 0.5f, startY + 0.5f, widthX - 1, heightY - 2, kr);

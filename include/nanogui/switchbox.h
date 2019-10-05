@@ -59,10 +59,13 @@ public:
     virtual void draw(NVGcontext *ctx) override;
 
     virtual void setAlignment(Alignment align) { mAlign = align; }
+    void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
 
 protected:
     Alignment mAlign = Alignment::Horizontal;
     float path = 0.f;
+
+    Color mBackgroundColor;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

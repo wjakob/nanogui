@@ -31,6 +31,7 @@ class ProgressBar;
 class Slider;
 class ImagePanel;
 class TextBox;
+class SwitchBox;
 
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
@@ -394,6 +395,8 @@ public:
     template<typename... Args>ImagePanel& imgpanel(const Args&... args) { return wdg<ImagePanel>(args...); }
     template<typename... Args>Slider& slider(const Args&... args) { return wdg<Slider>(args...); }
     template<typename... Args>TextBox& textbox(const Args&... args) { return wdg<TextBox>(args...); }
+    template<typename... Args>SwitchBox& switchbox(const Args&... args) { return wdg<SwitchBox>(args...); }
+    
 
 protected:
     /// Free all resources used by the widget and any children
