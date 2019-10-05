@@ -35,6 +35,8 @@ public:
     virtual void performLayout(NVGcontext *ctx) override;
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
     virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseEnterEvent(const Vector2i &p, bool enter) override;
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     virtual void draw(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
@@ -43,6 +45,8 @@ protected:
     int mChildPreferredHeight;
     float mScroll;
     bool mUpdateLayout;
+    Vector2i mLastMousePos;
+    Color mSliderInactiveColor, mSliderActiveColor;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

@@ -77,6 +77,9 @@ Theme::Theme(NVGcontext *ctx) {
     mSwitchboxCheckedColor            = Color(0, 0);
     mSwitchboxUncheckedColor          = Color(0, 0);
 
+    mScrollBarActiveColor             = Color(220, 180);
+    mScrollBarInactiveColor           = Color(220, 100);
+
     mSliderValueColor                 = Color(0, 129, 255, 128);
 
     mContextMenuShortcutTextColor     = Color(180, 255);

@@ -42,6 +42,14 @@ void VScrollPanel::performLayout(NVGcontext *ctx) {
     child->performLayout(ctx);
 }
 
+bool VScrollPanel::mouseEnterEvent(const Vector2i &p, bool enter)
+{
+  if (!enter)
+    mLastMousePos = { -1, -1 };
+
+  return Widget::mouseEnterEvent(p, enter);
+}
+
 Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
     if (mChildren.empty())
         return Vector2i::Zero();
@@ -49,10 +57,11 @@ Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
 }
 
 bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
-                            int button, int modifiers) {
+                            int button, int modifiers) 
+{
+    mLastMousePos = p - mPos;
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
-        float scrollh = height() *
-            std::min(1.0f, height() / (float)mChildPreferredHeight);
+        float scrollh = height() * std::min(1.0f, height() / (float)mChildPreferredHeight);
 
         mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
                      mScroll + rel.y() / (float)(mSize.y() - 8 - scrollh)));
@@ -63,11 +72,16 @@ bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
     }
 }
 
+bool VScrollPanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
+{
+  mLastMousePos = p - mPos;
+  return Widget::mouseMotionEvent(p, rel, button, modifiers);
+}
+
 bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
         float scrollAmount = rel.y() * (mSize.y() / 20.0f);
-        float scrollh = height() *
-            std::min(1.0f, height() / (float)mChildPreferredHeight);
+        float scrollh = height() * std::min(1.0f, height() / (float)mChildPreferredHeight);
 
         mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
                 mScroll - scrollAmount / (float)(mSize.y() - 8 - scrollh)));
@@ -84,8 +98,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     Widget *child = mChildren[0];
     child->setPosition(Vector2i(0, -mScroll*(mChildPreferredHeight - mSize.y())));
     mChildPreferredHeight = child->preferredSize(ctx).y();
-    float scrollh = height() *
-        std::min(1.0f, height() / (float) mChildPreferredHeight);
+    float scrollh = height() * std::min(1.0f, height() / (float) mChildPreferredHeight);
 
     if (mUpdateLayout)
         child->performLayout(ctx);
@@ -109,15 +122,28 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 
-    paint = nvgBoxGradient(
-        ctx, mPos.x() + mSize.x() - 12 - 1,
-        mPos.y() + 4 + (mSize.y() - 8 - scrollh) * mScroll - 1, 8, scrollh,
-        3, 4, Color(220, 100), Color(128, 100));
+    Vector4i rectSlider(mPos.x() + mSize.x() - 12 + 1,   //x:x
+                        mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, //y:y
+                        8 - 2,   //z:width
+                        scrollh - 2); //w:height
+    bool isSliderSelected = (mLastMousePos.x() >= rectSlider.x() 
+                             && mLastMousePos.y() >= rectSlider.y()
+                             && mLastMousePos.x() < rectSlider.x() + rectSlider.z() 
+                             && mLastMousePos.y() < rectSlider.y() + rectSlider.w());
+    Color sliderColor = isSliderSelected 
+                              ? (mSliderActiveColor.w() > 0 ? mSliderActiveColor : mTheme->mScrollBarActiveColor)
+                              : (mSliderInactiveColor.w() > 0 ? mSliderInactiveColor : mTheme->mScrollBarInactiveColor);
+    Color sliderSupColor = sliderColor;
+    sliderSupColor /= 2;
+    sliderSupColor.w() = sliderColor.w();
+
+    paint = nvgBoxGradient( ctx, 
+                            mPos.x() + mSize.x() - 12 - 1, mPos.y() + 4 + (mSize.y() - 8 - scrollh) * mScroll - 1, 
+                            8, scrollh,
+                            3, 4, sliderColor, sliderSupColor);
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12 + 1,
-                   mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
-                   scrollh - 2, 2);
+    nvgRoundedRect(ctx, rectSlider.x(), rectSlider.y(), rectSlider.z(), rectSlider.w(), 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 }

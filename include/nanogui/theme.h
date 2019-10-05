@@ -95,6 +95,9 @@ public:
     Color mSwitchboxBackgroundColor;
     Color mSwitchboxCheckedColor;
     Color mSwitchboxUncheckedColor;
+
+    Color mScrollBarActiveColor;
+    Color mScrollBarInactiveColor;
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets
