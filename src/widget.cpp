@@ -13,7 +13,7 @@
 #include <nanogui/layout.h>
 #include <nanogui/theme.h>
 #include <nanogui/window.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/screen.h>
 #include <nanogui/serializer/core.h>
 #include <nanogui/serializer/json.h>
@@ -98,7 +98,7 @@ bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             child->mouseButtonEvent(p - mPos, button, down, modifiers))
             return true;
     }
-    if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused)
+    if ( isMouseButtonLeft(button) && down && !mFocused)
         requestFocus();
     return false;
 }

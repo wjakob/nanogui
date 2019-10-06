@@ -1,6 +1,5 @@
 
 #include <nanogui/editworkspace.h>
-#include <nanogui/opengl.h>
 #include <nanogui/messagedialog.h>
 #include <nanovg.h>
 #include <nanogui/screen.h>
@@ -255,11 +254,12 @@ void EditorWorkspace::bringElementToFront( Widget* elm )
 
 bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modifiers)
 {
-  if (action == GLFW_RELEASE) 
+  if (isKeyboardActionRelease(action)) 
   {
-    switch (key)
+    int keycode = key2fourcc(key);
+    switch (keycode)
     {
-    case GLFW_KEY_DELETE:
+    case FOURCCS("KDEL"):
       if (_selectedElement)
       {
         _selectedElement->remove();
@@ -272,8 +272,8 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case GLFW_KEY_X:
-      if (modifiers == SYSTEM_COMMAND_MOD && _selectedElement)
+    case FOURCCS("KEYX"):
+      if (isKeyboardModifierCtrl(modifiers) && _selectedElement)
       {
         // cut
         //copySelectedElementXML();
@@ -287,39 +287,39 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case GLFW_KEY_N:
-      if (modifiers == SYSTEM_COMMAND_MOD)
+    case FOURCCS("KEYN"):
+      if (isKeyboardModifierCtrl(modifiers))
         reset();
       break;
 
-    case GLFW_KEY_B:
-      if (modifiers == SYSTEM_COMMAND_MOD)
+    case FOURCCS("KEYB"):
+      if (isKeyboardModifierCtrl(modifiers))
         bringElementToFront(_selectedElement);
       break;
 
-    case GLFW_KEY_C:
+    case FOURCCS("KEYC"):
       // copy
-      if (modifiers == SYSTEM_COMMAND_MOD && _selectedElement)
+      if (isKeyboardModifierCtrl(modifiers) && _selectedElement)
       {
         //copySelectedElementJson();
       }
       break;
 
-    case GLFW_KEY_R:
-      if (modifiers == SYSTEM_COMMAND_MOD)
+    case FOURCCS("KEYR"):
+      if (isKeyboardModifierCtrl(modifiers))
       {
         preview();
       }
       break;
 
-    case GLFW_KEY_P:
-      if (modifiers == SYSTEM_COMMAND_MOD && _selectedElement)
+    case FOURCCS("KEYP"):
+      if (isKeyboardModifierCtrl(modifiers) && _selectedElement)
         setMode(EditMode::SelectNewParent);
       break;
 
-    case GLFW_KEY_V:
+    case FOURCCS("KEYV"):
       // paste
-      if (modifiers == SYSTEM_COMMAND_MOD)
+      if (isKeyboardModifierCtrl(modifiers))
       {
         //pasteJsonToSelectedElement();
 
@@ -328,8 +328,8 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case GLFW_KEY_Z:
-      if (modifiers & SYSTEM_COMMAND_MOD)
+    case FOURCCS("KEYZ"):
+      if (isKeyboardModifierCtrl(modifiers))
       {
         //if (modifiers & SYSTEM_COMMAND_SHIFT)
         //  _changesManager->redo();
@@ -453,7 +453,7 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
 
 bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down, int modifiers)
 {
-  if (button == GLFW_MOUSE_BUTTON_LEFT && down)
+  if (isMouseButtonLeft(button) && down)
   {
     if (_currentMode == EditMode::SelectNewParent)
       return true;
@@ -495,7 +495,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     }
     return true;
   }
-  else if (button == GLFW_MOUSE_BUTTON_RIGHT && down)
+  else if (isMouseButtonRight(button) && down)
   {
     if (_currentMode == EditMode::SelectNewParent || _currentMode >= EditMode::Move)
     {
@@ -504,7 +504,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     }
     return true;
   }
-  else if (button == GLFW_MOUSE_BUTTON_LEFT && !down)
+  else if (isMouseButtonLeft(button) && !down)
   {
     if (_currentMode == EditMode::SelectNewParent)
     {
@@ -779,7 +779,7 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
     }
     else if (_currentMode == EditMode::SelectNewParent)
     {
-      float value = std::fmod((float)glfwGetTime(), 1.0f);
+      float value = std::fmod((float)getTimeFromStart(), 1.0f);
       Vector4i r = moveRect(_selectedElement->rect(), offset);
       Color color(0, 0, 255, value > 0.5 ? 32 : 64);
       nvgBeginPath(ctx);

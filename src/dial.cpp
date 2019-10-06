@@ -11,7 +11,7 @@
 
 #include <nanogui/dial.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/serializer/core.h>
 #include <Eigen/Geometry>
 

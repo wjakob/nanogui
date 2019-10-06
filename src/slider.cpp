@@ -11,7 +11,7 @@
 
 #include <nanogui/slider.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)

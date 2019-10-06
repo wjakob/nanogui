@@ -11,7 +11,7 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/glutil.h>
 #include <nanogui/screen.h>
 #include <nanogui/window.h>

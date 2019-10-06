@@ -13,9 +13,9 @@
 
 #include <nanogui/screen.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
+#include <nanogui/opengl.h>
 #include <map>
 #include <iostream>
 
@@ -41,11 +41,16 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-std::map<GLFWwindow *, Screen *> __nanogui_screens;
-
 #if defined(NANOGUI_GLAD)
-static bool gladInitialized = false;
+bool gladInitialized = false;
 #endif
+
+std::map<GLFWwindow *, Screen *> __nanogui_screens;
+void appForEachScreen(std::function<void(Screen*)> f)
+{
+  for (auto kv : __nanogui_screens)
+    f(kv.second);
+}
 
 /* Calculate pixel ratio for hi-dpi devices. */
 static float get_pixel_ratio(GLFWwindow *window) {
@@ -121,9 +126,9 @@ static float get_pixel_ratio(GLFWwindow *window) {
 }
 
 Screen::Screen()
-    : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
+    : Widget(nullptr), mHwWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
-      mShutdownGLFWOnDestruct(false), mFullscreen(false) {
+      mShutdownOnDestruct(false), mFullscreen(false) {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
@@ -131,9 +136,10 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                bool fullscreen, int colorBits, int alphaBits, int depthBits,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
-    : Widget(nullptr), mGLFWWindow(nullptr), mNVGContext(nullptr),
+    : Widget(nullptr), mHwWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
-      mShutdownGLFWOnDestruct(false), mFullscreen(fullscreen) {
+      mShutdownOnDestruct(false), mFullscreen(fullscreen) 
+{
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 
     /* Request a forward compatible OpenGL glMajor.glMinor core profile context.
@@ -156,19 +162,19 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     if (fullscreen) {
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-        mGLFWWindow = glfwCreateWindow(mode->width, mode->height,
+        mHwWindow = glfwCreateWindow(mode->width, mode->height,
                                        caption.c_str(), monitor, nullptr);
     } else {
-        mGLFWWindow = glfwCreateWindow(size.x(), size.y(),
+        mHwWindow = glfwCreateWindow(size.x(), size.y(),
                                        caption.c_str(), nullptr, nullptr);
     }
 
-    if (!mGLFWWindow)
+    if (!mHwWindow)
         throw std::runtime_error("Could not create an OpenGL " +
                                  std::to_string(glMajor) + "." +
                                  std::to_string(glMinor) + " context!");
 
-    glfwMakeContextCurrent(mGLFWWindow);
+    glfwMakeContextCurrent((GLFWwindow*)mHwWindow);
 
 #if defined(NANOGUI_GLAD)
     if (!gladInitialized) {
@@ -179,12 +185,12 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     }
 #endif
 
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
+    glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &mFBSize[0], &mFBSize[1]);
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
     glClearColor(mBackground[0], mBackground[1], mBackground[2], mBackground[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glfwSwapInterval(0);
-    glfwSwapBuffers(mGLFWWindow);
+    glfwSwapBuffers((GLFWwindow*)mHwWindow);
 
 #if defined(__APPLE__)
     /* Poll for events once before starting a potentially
@@ -196,7 +202,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
 #endif
 
     /* Propagate GLFW events to the appropriate Screen instance */
-    glfwSetCursorPosCallback(mGLFWWindow,
+    glfwSetCursorPosCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, double x, double y) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -208,7 +214,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    glfwSetMouseButtonCallback(mGLFWWindow,
+    glfwSetMouseButtonCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, int button, int action, int modifiers) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -220,7 +226,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    glfwSetKeyCallback(mGLFWWindow,
+    glfwSetKeyCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, int key, int scancode, int action, int mods) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -232,7 +238,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    glfwSetCharCallback(mGLFWWindow,
+    glfwSetCharCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, unsigned int codepoint) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -244,7 +250,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    glfwSetDropCallback(mGLFWWindow,
+    glfwSetDropCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -256,7 +262,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    glfwSetScrollCallback(mGLFWWindow,
+    glfwSetScrollCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, double x, double y) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -272,7 +278,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
        size events and also catches things like dragging
        a window from a Retina-capable screen to a normal
        screen on Mac OS X */
-    glfwSetFramebufferSizeCallback(mGLFWWindow,
+    glfwSetFramebufferSizeCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, int width, int height) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -287,7 +293,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     );
 
     // notify when the screen has lost focus (e.g. application switch)
-    glfwSetWindowFocusCallback(mGLFWWindow,
+    glfwSetWindowFocusCallback((GLFWwindow*)mHwWindow,
         [](GLFWwindow *w, int focused) {
             auto it = __nanogui_screens.find(w);
             if (it == __nanogui_screens.end())
@@ -299,20 +305,20 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         }
     );
 
-    initialize(mGLFWWindow, true);
+    initialize((GLFWwindow*)mHwWindow, true);
 }
 
-void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
-    mGLFWWindow = window;
-    mShutdownGLFWOnDestruct = shutdownGLFWOnDestruct;
-    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
+void Screen::initialize(void *window, bool shutdownGLFWOnDestruct) {
+    mHwWindow = window;
+    mShutdownOnDestruct = shutdownGLFWOnDestruct;
+    glfwGetWindowSize((GLFWwindow*)mHwWindow, &mSize[0], &mSize[1]);
+    glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &mFBSize[0], &mFBSize[1]);
 
-    mPixelRatio = get_pixel_ratio(window);
+    mPixelRatio = get_pixel_ratio((GLFWwindow*)window);
 
 #if defined(_WIN32) || defined(__linux__)
     if (mPixelRatio != 1 && !mFullscreen)
-        glfwSetWindowSize(window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
+        glfwSetWindowSize((GLFWwindow*)window, mSize.x() * mPixelRatio, mSize.y() * mPixelRatio);
 #endif
 
 #if defined(NANOGUI_GLAD)
@@ -343,14 +349,14 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
 
-    mVisible = glfwGetWindowAttrib(window, GLFW_VISIBLE) != 0;
+    mVisible = glfwGetWindowAttrib((GLFWwindow*)window, GLFW_VISIBLE) != 0;
     setTheme(new Theme(mNVGContext));
     mMousePos = Vector2i::Zero();
     mMouseState = mModifiers = 0;
     mDragActive = false;
     mLastInteraction = glfwGetTime();
     mProcessEvents = true;
-    __nanogui_screens[mGLFWWindow] = this;
+    __nanogui_screens[(GLFWwindow*)mHwWindow] = this;
 
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
@@ -361,15 +367,15 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 }
 
 Screen::~Screen() {
-    __nanogui_screens.erase(mGLFWWindow);
+    __nanogui_screens.erase((GLFWwindow*)mHwWindow);
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
-            glfwDestroyCursor(mCursors[i]);
+            glfwDestroyCursor((GLFWcursor*)mCursors[i]);
     }
     if (mNVGContext)
         nvgDeleteGL3(mNVGContext);
-    if (mGLFWWindow && mShutdownGLFWOnDestruct)
-        glfwDestroyWindow(mGLFWWindow);
+    if (mHwWindow && mShutdownOnDestruct)
+        glfwDestroyWindow((GLFWwindow*)mHwWindow);
 }
 
 void Screen::setVisible(bool visible) {
@@ -377,15 +383,15 @@ void Screen::setVisible(bool visible) {
         mVisible = visible;
 
         if (visible)
-            glfwShowWindow(mGLFWWindow);
+            glfwShowWindow((GLFWwindow*)mHwWindow);
         else
-            glfwHideWindow(mGLFWWindow);
+            glfwHideWindow((GLFWwindow*)mHwWindow);
     }
 }
 
 void Screen::setCaption(const std::string &caption) {
     if (caption != mCaption) {
-        glfwSetWindowTitle(mGLFWWindow, caption.c_str());
+        glfwSetWindowTitle((GLFWwindow*)mHwWindow, caption.c_str());
         mCaption = caption;
     }
 }
@@ -394,9 +400,9 @@ void Screen::setSize(const Vector2i &size) {
     Widget::setSize(size);
 
 #if defined(_WIN32) || defined(__linux__)
-    glfwSetWindowSize(mGLFWWindow, size.x() * mPixelRatio, size.y() * mPixelRatio);
+    glfwSetWindowSize((GLFWwindow*)mHwWindow, size.x() * mPixelRatio, size.y() * mPixelRatio);
 #else
-    glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
+    glfwSetWindowSize((GLFWwindow*)mHwWindow, size.x(), size.y());
 #endif
 }
 
@@ -407,7 +413,7 @@ void Screen::drawAll() {
     drawContents();
     drawWidgets();
 
-    glfwSwapBuffers(mGLFWWindow);
+    glfwSwapBuffers((GLFWwindow*)mHwWindow);
 }
 
 void Screen::addChild(int index, Widget * widget)
@@ -415,14 +421,25 @@ void Screen::addChild(int index, Widget * widget)
   Widget::addChild(index, widget);
 }
 
+void Screen::setClipboardString(const std::string & text)
+{
+  glfwSetClipboardString((GLFWwindow*)mHwWindow, text.c_str());
+
+}
+
+std::string Screen::getClipboardString()
+{
+  return glfwGetClipboardString((GLFWwindow*)mHwWindow);
+}
+
 void Screen::drawWidgets() {
     if (!mVisible)
         return;
 
-    glfwMakeContextCurrent(mGLFWWindow);
+    glfwMakeContextCurrent((GLFWwindow*)mHwWindow);
 
-    glfwGetFramebufferSize(mGLFWWindow, &mFBSize[0], &mFBSize[1]);
-    glfwGetWindowSize(mGLFWWindow, &mSize[0], &mSize[1]);
+    glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &mFBSize[0], &mFBSize[1]);
+    glfwGetWindowSize((GLFWwindow*)mHwWindow, &mSize[0], &mSize[1]);
 
 #if defined(_WIN32) || defined(__linux__)
     mSize = (mSize.cast<float>() / mPixelRatio).cast<int>();
@@ -533,7 +550,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
-                glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
+                glfwSetCursor((GLFWwindow*)mHwWindow, (GLFWcursor*)mCursors[(int) mCursor]);
             }
         } else {
             ret = mDragWidget->mouseDragEvent(
@@ -580,7 +597,7 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
-            glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
+            glfwSetCursor((GLFWwindow*)mHwWindow, (GLFWcursor*)mCursors[(int) mCursor]);
         }
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
@@ -652,8 +669,8 @@ bool Screen::scrollCallbackEvent(double x, double y) {
 
 bool Screen::resizeCallbackEvent(int, int) {
     Vector2i fbSize, size;
-    glfwGetFramebufferSize(mGLFWWindow, &fbSize[0], &fbSize[1]);
-    glfwGetWindowSize(mGLFWWindow, &size[0], &size[1]);
+    glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &fbSize[0], &fbSize[1]);
+    glfwGetWindowSize((GLFWwindow*)mHwWindow, &size[0], &size[1]);
 
 #if defined(_WIN32) || defined(__linux__)
     size = (size.cast<float>() / mPixelRatio).cast<int>();

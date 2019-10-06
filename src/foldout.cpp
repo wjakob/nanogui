@@ -1,7 +1,7 @@
 #include <nanogui/foldout.h>
 #include <nanogui/button.h>
 #include <nanogui/scrollbar.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/screen.h>
 
 NAMESPACE_BEGIN(nanogui)

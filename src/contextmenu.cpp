@@ -11,7 +11,7 @@
 
 #include <nanogui/contextmenu.h>
 #include <nanogui/screen.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/layout.h>
 #include <nanogui/serializer/core.h>
 #include <nanogui/entypo.h>
@@ -340,7 +340,7 @@ bool ContextMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int b
 
 bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) {
     Vector2i mousePos = p - mPos;
-    if (button==GLFW_MOUSE_BUTTON_LEFT && !down) {
+    if (isMouseButtonLeft(button) && !down) {
         // Preserve our existence in case the click destroys us.
         ref<ContextMenu> buoy(this);
         for (const auto& w : mLabels) {

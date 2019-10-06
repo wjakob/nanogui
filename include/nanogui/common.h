@@ -481,6 +481,65 @@ file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
             bool save);
 
 bool isPointInsideRect(const Vector2i& p, const Vector4i& r);
+bool isMouseButtonLeft(int button);
+bool isMouseButtonLeftMod(int button);
+bool isMouseButtonRight(int button);
+
+#define FOURCC(a,b,c,d) ( (uint32_t) (((d)<<24) | ((c)<<16) | ((b)<<8) | (a)) )
+#define FOURCCS(s) ( (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0])) )
+uint32_t key2fourcc(int key);
+
+bool appPostEmptyEvent();
+void appForEachScreen(std::function<void(Screen*)> f);
+bool appIsShouldCloseScreen(Screen* screen);
+bool appWaitEvents();
+bool appPollEvents();
+float getTimeFromStart();
+
+bool isKeyboardActionRelease(int action);
+bool isKeyboardModifierCtrl(int modifier);
+bool isKeyboardModifierShift(int modifier);
+bool isKeyboardActionPress(int action);
+bool isKeyboardActionRepeat(int action);
+
+/// Allows for conversion between nanogui::Color and the NanoVG NVGcolor class.
+inline Color::operator const NVGcolor &() const {
+  return reinterpret_cast<const NVGcolor &>(*this->data());
+}
+
+/**
+* \brief Determine whether an icon ID is a texture loaded via ``nvgImageIcon``.
+*
+* \rst
+* The implementation defines all ``value < 1024`` as image icons, and
+* everything ``>= 1024`` as an Entypo icon (see :ref:`file_nanogui_entypo.h`).
+* The value ``1024`` exists to provide a generous buffer on how many images
+* may have been loaded by NanoVG.
+* \endrst
+*
+* \param value
+*     The integral value of the icon.
+*
+* \return
+*     Whether or not this is an image icon.
+*/
+inline bool nvgIsImageIcon(int value) { return value < 1024; }
+
+/**
+* \brief Determine whether an icon ID is a font-based icon (e.g. from ``entypo.ttf``).
+*
+* \rst
+* See :func:`nanogui::nvgIsImageIcon` for details.
+* \endrst
+*
+* \param value
+*     The integral value of the icon.
+*
+* \return
+*     Whether or not this is a font icon (from ``entypo.ttf``).
+*/
+inline bool nvgIsFontIcon(int value) { return value >= 1024; }
+
 /**
  * \brief Open a native file open dialog, which allows multiple selection.
  *

@@ -14,7 +14,7 @@
 #include <nanogui/windowmenu.h>
 #include <nanogui/label.h>
 #include <nanogui/entypo.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/layout.h>
 #include <nanogui/screen.h>
 #include <nanovg.h>

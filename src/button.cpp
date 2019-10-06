@@ -11,7 +11,8 @@
 
 #include <nanogui/button.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
+#include <nanogui/common.h>
 #include <nanogui/serializer/json.h>
 #include <nanogui/serializer/core.h>
 
@@ -56,7 +57,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
        button causes the parent window to be destructed */
     ref<Button> self = this;
 
-    if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
+    if (isMouseButtonLeft(button) && mEnabled) {
         bool pushedBackup = mPushed;
         if (down) {
             if (haveFlag(RadioButton)) {

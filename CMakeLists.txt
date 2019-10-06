@@ -228,6 +228,8 @@ list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src")
 
 if (NANOGUI_GLFW_BACKEND)
   list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
+elseif (NANOGUI_DX11_BACKEND)
+  add_definitions(-DNANOVG_D3D11)  
 endif()
 
 if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
@@ -265,7 +267,7 @@ if (NANOGUI_GLFW_BACKEND)
     endif()
   endif()
 elseif (NANOGUI_DX11_BACKEND)
-
+  list(APPEND NANOGUI_EXTRA_LIBS d3d11)
 endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
@@ -321,6 +323,19 @@ if (APPLE)
 endif()
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
+set(NANOGUI_BACKEND_SOURCES "")
+
+if (NANOGUI_GLFW_BACKEND)
+  list(APPEND NANOGUI_BACKEND_SOURCES  
+    include/nanogui/glcanvas.h src/glcanvas.cpp
+    include/nanogui/opengl.h
+    include/nanogui/serializer/opengl.h
+    src/common_glfw.cpp
+    src/screen_glfw.cpp
+  )
+elseif (NANOGUI_DX11_BACKEND)
+
+endif()
 
 # Compile main NanoGUI library
 add_library(nanogui-obj OBJECT
@@ -335,7 +350,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/widget.h src/widget.cpp
   include/nanogui/theme.h src/theme.cpp
   include/nanogui/layout.h src/layout.cpp
-  include/nanogui/screen.h src/screen.cpp
+  include/nanogui/screen.h 
   include/nanogui/label.h src/label.cpp
   include/nanogui/window.h src/window.cpp
   include/nanogui/popup.h src/popup.cpp
@@ -360,7 +375,6 @@ add_library(nanogui-obj OBJECT
   include/nanogui/tabheader.h src/tabheader.cpp
   include/nanogui/tabwidget.h src/tabwidget.cpp
   include/nanogui/contextmenu.h src/contextmenu.cpp
-  include/nanogui/glcanvas.h src/glcanvas.cpp
   include/nanogui/editworkspace.h src/editworkspace.cpp
   include/nanogui/editproperties.h src/editproperties.cpp
   include/nanogui/widgetsfactory.h src/widgetsfactory.cpp
@@ -372,12 +386,13 @@ add_library(nanogui-obj OBJECT
   include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
-  include/nanogui/opengl.h
   include/nanogui/nanogui.h
   include/nanogui/serializer/core.h    src/serializer.cpp
-  include/nanogui/serializer/opengl.h
+
   include/nanogui/serializer/sparse.h
   include/nanogui/serializer/json.h
+
+  ${NANOGUI_BACKEND_SOURCES}
 )
 
 # XCode has a serious bug where the XCode project produces an invalid target

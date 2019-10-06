@@ -11,7 +11,7 @@
 */
 
 #include <nanogui/imagepanel.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 
 NAMESPACE_BEGIN(nanogui)
 

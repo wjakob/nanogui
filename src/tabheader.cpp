@@ -13,7 +13,7 @@
 
 #include <nanogui/tabheader.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <numeric>
 
 NAMESPACE_BEGIN(nanogui)
@@ -319,7 +319,7 @@ Vector2i TabHeader::preferredSize(NVGcontext* ctx) const {
 
 bool TabHeader::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     Widget::mouseButtonEvent(p, button, down, modifiers);
-    if (button == GLFW_MOUSE_BUTTON_1 && down) {
+    if (isMouseButtonLeft(button) && down) {
         switch (locateClick(p)) {
         case ClickLocation::LeftControls:
             onArrowLeft();

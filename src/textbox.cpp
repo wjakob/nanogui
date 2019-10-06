@@ -15,7 +15,7 @@
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
 #include <nanogui/textbox.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/theme.h>
 #include <nanogui/serializer/core.h>
 #include <regex>
@@ -289,7 +289,7 @@ void TextBox::draw(NVGcontext* ctx) {
 bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                                int modifiers) {
 
-    if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused) {
+    if (isMouseButtonLeft(button) && down && !mFocused) {
         if (!mSpinnable || spinArea(p) == SpinArea::None) /* not on scrolling arrows */
             requestFocus();
     }
@@ -299,7 +299,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             mMouseDownPos = p;
             mMouseDownModifier = modifiers;
 
-            double time = glfwGetTime();
+            double time = getTimeFromStart();
             if (time - mLastClick < 0.25) {
                 /* Double-click: select all text */
                 mSelectionPos = 0;
@@ -318,7 +318,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                 mMouseDownPos = p;
                 mMouseDownModifier = modifiers;
 
-                double time = glfwGetTime();
+                double time = getTimeFromStart();
                 if (time - mLastClick < 0.25) {
                     /* Double-click: reset to default value */
                     mValue = mDefaultValue;
@@ -406,9 +406,9 @@ bool TextBox::focusEvent(bool focused) {
 
 bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
     if (mEditable && focused()) {
-        if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-            if (key == GLFW_KEY_LEFT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+        if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) {
+            if (key2fourcc(key) == FOURCCS("LEFT")) {
+                if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -417,8 +417,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos > 0)
                     mCursorPos--;
-            } else if (key == GLFW_KEY_RIGHT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key2fourcc(key) == FOURCCS("RGHT")) {
+                if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -427,8 +427,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos < (int) mValueTemp.length())
                     mCursorPos++;
-            } else if (key == GLFW_KEY_HOME) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key2fourcc(key) == FOURCCS("HOME")) {
+                if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -436,8 +436,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = 0;
-            } else if (key == GLFW_KEY_END) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key2fourcc(key) == FOURCCS("KEND")) {
+                if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -445,7 +445,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = (int) mValueTemp.size();
-            } else if (key == GLFW_KEY_BACKSPACE) {
+            } else if (key2fourcc(key) == FOURCCS("BACK")) {
                 if (!deleteSelection()) {
                     if (mCursorPos > 0) {
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
@@ -455,7 +455,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                           mEditCallback(mValueTemp, true);
                     }
                 }
-            } else if (key == GLFW_KEY_DELETE) {
+            } else if (key2fourcc(key) == FOURCCS("KDEL")) {
                 if (!deleteSelection()) {
                   if (mCursorPos < (int)mValueTemp.length())
                   {
@@ -464,7 +464,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                       mEditCallback(mValueTemp, true);
                   }
                 }
-            } else if (key == GLFW_KEY_ENTER) {
+            } else if (key2fourcc(key) == FOURCCS("ENTR")) {
                 if (!mCommitted)
                     focusEvent(false);
                 if (mComitCallback)
@@ -472,15 +472,15 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                   mComitCallback(this);
                   return true;
                 }
-            } else if (key == GLFW_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key2fourcc(key) == FOURCCS("KEYA") && isKeyboardModifierCtrl(modifiers)) {
                 mCursorPos = (int) mValueTemp.length();
                 mSelectionPos = 0;
-            } else if (key == GLFW_KEY_X && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key2fourcc(key) == FOURCCS("KEYX") && isKeyboardModifierCtrl(modifiers)) {
                 copySelection();
                 deleteSelection();
-            } else if (key == GLFW_KEY_C && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key2fourcc(key) == FOURCCS("KEYC") && isKeyboardModifierCtrl(modifiers)) {
                 copySelection();
-            } else if (key == GLFW_KEY_V && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key2fourcc(key) == FOURCCS("KEYV") && isKeyboardModifierCtrl(modifiers)) {
                 deleteSelection();
                 pasteFromClipboard();
             }
@@ -543,8 +543,7 @@ bool TextBox::copySelection() {
         if (begin > end)
             std::swap(begin, end);
 
-        glfwSetClipboardString(sc->glfwWindow(),
-                               mValueTemp.substr(begin, end).c_str());
+        sc->setClipboardString(mValueTemp.substr(begin, end));
         return true;
     }
 
@@ -555,10 +554,10 @@ void TextBox::pasteFromClipboard() {
     Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
     if (!sc)
         return;
-    const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
-    if (cbstr)
+    std::string cbstr = sc->getClipboardString();
+    if (!cbstr.empty())
     {
-      mValueTemp.insert(mCursorPos, std::string(cbstr));
+      mValueTemp.insert(mCursorPos, cbstr);
       if (mEditCallback)
         mEditCallback(mValueTemp, true);
     }
@@ -593,22 +592,19 @@ void TextBox::updateCursor(NVGcontext *, float lastx,
                            const NVGglyphPosition *glyphs, int size) {
     // handle mouse cursor events
     if (mMouseDownPos.x() != -1) {
-        if (mMouseDownModifier == GLFW_MOD_SHIFT) {
+        if (isKeyboardModifierShift(mMouseDownModifier)) {
             if (mSelectionPos == -1)
                 mSelectionPos = mCursorPos;
         } else
             mSelectionPos = -1;
 
-        mCursorPos =
-            position2CursorIndex(mMouseDownPos.x(), lastx, glyphs, size);
-
+        mCursorPos =  position2CursorIndex(mMouseDownPos.x(), lastx, glyphs, size);
         mMouseDownPos = Vector2i(-1, -1);
     } else if (mMouseDragPos.x() != -1) {
         if (mSelectionPos == -1)
             mSelectionPos = mCursorPos;
 
-        mCursorPos =
-            position2CursorIndex(mMouseDragPos.x(), lastx, glyphs, size);
+        mCursorPos = position2CursorIndex(mMouseDragPos.x(), lastx, glyphs, size);
     } else {
         // set cursor to last character
         if (mCursorPos == -2)

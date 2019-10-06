@@ -135,13 +135,13 @@ public:
     Vector2i mousePos() const { return mMousePos; }
 
     /// Return a pointer to the underlying GLFW window data structure
-    GLFWwindow *glfwWindow() { return mGLFWWindow; }
+    void *hwWindow() { return mHwWindow; }
 
     /// Return a pointer to the underlying nanoVG draw context
     NVGcontext *nvgContext() { return mNVGContext; }
 
-    void setShutdownGLFWOnDestruct(bool v) { mShutdownGLFWOnDestruct = v; }
-    bool shutdownGLFWOnDestruct() { return mShutdownGLFWOnDestruct; }
+    void setShutdownOnDestruct(bool v) { mShutdownOnDestruct = v; }
+    bool shutdownOnDestruct() { return mShutdownOnDestruct; }
 
     void addChild(int index, Widget * widget) override;
 
@@ -151,6 +151,9 @@ public:
     void performLayout() {
         Widget::performLayout(mNVGContext);
     }
+
+    void setClipboardString(const std::string& text);
+    std::string getClipboardString();
 
     template<typename... Args>Window& window(const Args&... args) { return wdg<Window>(args...); }
 
@@ -172,7 +175,7 @@ public:
     Screen();
 
     /// Initialize the \ref Screen
-    void initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct);
+    void initialize(void *window, bool shutdownOnDestruct);
 
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
@@ -191,9 +194,9 @@ public:
     void drawWidgets();
 
 protected:
-    GLFWwindow *mGLFWWindow;
+    void *mHwWindow;
     NVGcontext *mNVGContext;
-    GLFWcursor *mCursors[(int) Cursor::CursorCount];
+    void *mCursors[(int) Cursor::CursorCount];
     Cursor mCursor;
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;
@@ -206,7 +209,7 @@ protected:
     bool mProcessEvents;
     Color mBackground;
     std::string mCaption;
-    bool mShutdownGLFWOnDestruct;
+    bool mShutdownOnDestruct;
     bool mFullscreen;
     std::function<void(Vector2i)> mResizeCallback;
 public:

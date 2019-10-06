@@ -11,7 +11,7 @@
 
 #include <nanogui/dropdownbox.h>
 #include <nanogui/layout.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/serializer/core.h>
 #include <algorithm>
 #include <cassert>
@@ -363,7 +363,7 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
 
 bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
 {
-  if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
+  if (isMouseButtonLeft(button) && mEnabled) {
     if (!mItems.empty())
     {
       auto* item = dynamic_cast<DropdownListItem*>(mPopup->childAt(0));

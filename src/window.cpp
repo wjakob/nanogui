@@ -11,7 +11,7 @@
 
 #include <nanogui/window.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/entypo.h>
 #include <nanogui/screen.h>
 #include <nanogui/windowmenu.h>
@@ -227,11 +227,11 @@ void Window::center() {
 }
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
-                            int button, int /* modifiers */) {
+                            int buttons, int /* modifiers */) {
   if (!isDraggable())
     return false;
 
-    if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
+    if (mDrag && isMouseButtonLeftMod(buttons)) {
         mPos += rel;
         mPos = mPos.cwiseMax(Vector2i::Zero());
         mPos = mPos.cwiseMin(parent()->size() - mSize);
@@ -243,7 +243,7 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
         return true;
-    if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
+    if (isMouseButtonLeft(button) && mEnabled) {
       Vector2i clkPnt = p - mPos - Vector2i(5,5);
       if (down && clkPnt.x() > 0 && clkPnt.x() < mCollapseIconSize.x()
           && clkPnt.y() > 0 && clkPnt.y() < mCollapseIconSize.y())
@@ -252,7 +252,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
         return true;
       }
     }
-    if (button == GLFW_MOUSE_BUTTON_1 && mEnabled) {
+    if ( isMouseButtonLeft(button) && mEnabled) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         return true;
     }

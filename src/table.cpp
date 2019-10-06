@@ -12,7 +12,6 @@ BSD-style license that can be found in the LICENSE.txt file.
 #include <nanogui/table.h>
 #include <nanogui/textbox.h>
 #include <nanogui/label.h>
-#include <nanogui/opengl.h>
 #include <nanogui/scrollbar.h>
 #include <nanogui/screen.h>
 #include <nanovg.h>
@@ -575,7 +574,7 @@ bool Table::mouseButtonEvent(const Vector2i &pp, int button, bool down, int modi
 {
   if (enabled())
   {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && down)
+    if (isMouseButtonLeft(button) && down)
     {
       if (_dragColumnStart(pp.x(), pp.y()))
       {
@@ -590,7 +589,7 @@ bool Table::mouseButtonEvent(const Vector2i &pp, int button, bool down, int modi
       requestFocus();
       return true;
     }
-    else if (button == GLFW_MOUSE_BUTTON_LEFT && !down)
+    else if (isMouseButtonLeft(button) && !down)
     {
       _currentResizedColumn = -1;
       _selecting = false;
@@ -816,13 +815,13 @@ void Table::_selectNew( int xpos, int ypos, bool lmb, bool onlyHover)
                                         ? false 
                                         : true;
 
-		if( lmb && selectedAgain && ( glfwGetTime() - _cellLastTimeClick ) < 200 )
+		if( lmb && selectedAgain && ( getTimeFromStart() - _cellLastTimeClick ) < 200 )
 		{
       _finishEditCell();
       _startEditCell(_selectedColumn, _selectedRow);
 		}
 
-    _cellLastTimeClick = glfwGetTime();
+    _cellLastTimeClick = getTimeFromStart();
 	}
 }
 

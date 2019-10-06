@@ -12,7 +12,7 @@
 */
 
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/entypo.h>
 #include <nanogui_resources.h>
 

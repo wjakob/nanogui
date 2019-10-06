@@ -15,7 +15,7 @@
 #  include <windows.h>
 #endif
 
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <map>
 #include <thread>
 #include <chrono>
@@ -34,35 +34,9 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
   return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
 }
 
-extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
-
 #if defined(__APPLE__)
   extern void disable_saved_application_state_osx();
 #endif
-
-void init() {
-    #if !defined(_WIN32)
-        /* Avoid locale-related number parsing issues */
-        setlocale(LC_NUMERIC, "C");
-    #endif
-
-    #if defined(__APPLE__)
-        disable_saved_application_state_osx();
-    #endif
-
-    glfwSetErrorCallback(
-        [](int error, const char *descr) {
-            if (error == GLFW_NOT_INITIALIZED)
-                return; /* Ignore */
-            std::cerr << "GLFW error " << error << ": " << descr << std::endl;
-        }
-    );
-
-    if (!glfwInit())
-        throw std::runtime_error("Could not initialize GLFW!");
-
-    glfwSetTime(0);
-}
 
 static bool mainloop_active = false;
 
@@ -83,7 +57,7 @@ void mainloop(int refresh) {
                 std::chrono::milliseconds time(refresh);
                 while (mainloop_active) {
                     std::this_thread::sleep_for(time);
-                    glfwPostEmptyEvent();
+                    appPostEmptyEvent();
                 }
             }
         );
@@ -92,17 +66,16 @@ void mainloop(int refresh) {
     try {
         while (mainloop_active) {
             int numScreens = 0;
-            for (auto kv : __nanogui_screens) {
-                Screen *screen = kv.second;
+            appForEachScreen([&](Screen* screen) {
                 if (!screen->visible()) {
-                    continue;
-                } else if (glfwWindowShouldClose(screen->glfwWindow())) {
+                    return;
+                } else if (appIsShouldCloseScreen(screen)) {
                     screen->setVisible(false);
-                    continue;
+                    return;
                 }
                 screen->drawAll();
                 numScreens++;
-            }
+            });
 
             if (numScreens == 0) {
                 /* Give up if there was nothing to draw */
@@ -111,11 +84,11 @@ void mainloop(int refresh) {
             }
 
             /* Wait for mouse/keyboard or empty refresh events */
-            glfwWaitEvents();
+            appWaitEvents();
         }
 
         /* Process events once more */
-        glfwPollEvents();
+        appPollEvents();
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         leave();
@@ -131,10 +104,6 @@ void leave() {
 
 bool active() {
     return mainloop_active;
-}
-
-void shutdown() {
-    glfwTerminate();
 }
 
 std::array<char, 8> utf8(int c) {
