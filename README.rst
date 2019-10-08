@@ -6,12 +6,12 @@ NanoGUI
     :target: http://nanogui.readthedocs.org/en/latest/?badge=latest
     :alt: Docs
 
-.. |travis| image:: https://travis-ci.org/wjakob/nanogui.svg?branch=master
-   :target: https://travis-ci.org/wjakob/nanogui
+.. |travis| image:: https://travis-ci.org/daleank/nanogui.svg?branch=master
+   :target: https://travis-ci.org/dalerank/nanogui
    :alt: Travis Build Status
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/m8h3uyvdb4ej2i02/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/wjakob/nanogui/branch/master
+   :target: https://ci.appveyor.com/project/dalerank/nanogui/branch/master
    :alt: Appveyor Build Status
 
 .. begin_brief_description
@@ -35,15 +35,15 @@ Mikko Mononen. Python bindings of all functionality are provided using pybind11_
 Example screenshot
 ----------------------------------------------------------------------------------------
 
-.. image:: https://github.com/wjakob/nanogui/raw/master/resources/screenshot.png
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/screenshot.png
    :alt: Screenshot of Example 1.
    :align: center
 
 Extensions
 ----------------------------------------------------------------------------------------
-SwitchBox
+Editor
 
-.. image:: https://github.com/dalerank/nanogui/raw/master/resources/switchbox.jpg
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/editor.jpg
 
 DropdownBox
 
