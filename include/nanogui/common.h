@@ -357,6 +357,8 @@ public:
         return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
     }
 
+    Color mul_a(float mul) { Color ret = *this; ret.w() *= mul; return ret; }
+
     /// Allows for conversion between this Color and NanoVG's representation.
     inline operator const NVGcolor &() const;
     inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }

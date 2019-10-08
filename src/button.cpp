@@ -271,4 +271,117 @@ bool Button::load(Serializer &s) {
     return true;
 }
 
+void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y, float kw, float kh)
+{
+  nvgBezierTo(ctx, c1x * kw, c1y * kh, c2x * kw, c2y * kh, x * kw, y * kh);
+}
+
+LedButton::LedButton(Widget* parent, Mode mode, int w, int h) 
+  : Button(parent)
+{
+  setFixedSize({ w, h });
+  setMode(mode);
+}
+
+void LedButton::draw(NVGcontext* ctx)
+{
+  Color outBg1, outBg2, inBg1, inBg2, outFlow1, outFlow2, inFlow1, inFlow2;
+  Mode currentMode = circleCustom;
+
+  outBg1 = Color(0xad, 0xad, 0xad, 0xff); outBg2 = Color(0xf0, 0xf0, 0xf0, 0xff);
+  inBg1 = Color(0x82, 0x82, 0x82, 0xff);  inBg2 = Color(0x92, 0x92, 0x92, 0xff);
+  inFlow1 = Color(0xff, 0xff, 0xff, 0xff); inFlow2 = Color(0xff, 0xff, 0xff, 0xff);
+
+  switch (mMode)
+  {
+  case Mode::circleBlue:
+    outFlow1 = Color(0x00, 0x03, 0x9a, 0xff);  outFlow2 = Color(0xaf, 0xa5, 0xff, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleBlack:
+    outFlow1 = Color(0x0, 0x0, 0x0, 0xff);  outFlow2 = Color(0x8c, 0x8c, 0x8c, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleGreen:
+    outFlow1 = Color(0x0f, 0x69, 0x00, 0xff); outFlow2 = Color(0xa3, 0xff, 0x87, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleGray:
+    outFlow1 = Color(0x5a, 0x5a, 0x5a, 0xff); outFlow2 = Color(0xa9, 0xa9, 0xa9, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleOrange:
+    outFlow1 = Color(0xda, 0x46, 0x15, 0xff); outFlow2 = Color(0xff, 0xc0, 0x6d, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circlePurple:
+    outFlow1 = Color(0x87, 0x08, 0x83, 0xff); outFlow2 = Color(0xfe, 0x9a, 0xff, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleRed:
+    outFlow1 = Color(0xcf, 0x00, 0x00, 0xff); outFlow2 = Color(0xff, 0x8b, 0xa4, 0xff);
+    currentMode = circleCustom;
+    break;
+  case Mode::circleYellow:
+    outFlow1 = Color(0xd2, 0xcd, 0x00, 0xff); outFlow2 = Color(0xff, 0xfe, 0x8f, 0xff);
+    currentMode = circleCustom;
+    break;
+  }
+  nvgSave(ctx);
+
+  switch (currentMode)
+  {
+  case circleCustom:
+    float kw = 1. / 50. * width();
+    float kh = 1. / 50. * height();
+
+    nvgTranslate(ctx, mPos.x(), mPos.y());
+    nvgBeginPath(ctx);
+    auto bg1 = nvgLinearGradient(ctx, 23.4 * kw, 23.2 * kh, 42.4 * kw, 44.0 * kh, outBg1, outBg2);
+    nvgMoveTo(ctx, 50 * kw, 25 * kh);
+    nvgBezierTo(ctx, 50, 38, 38.8, 50, 25, 50, kw, kh);
+    nvgBezierTo(ctx, 11.2, 50, 0.0, 38.8, 0.0, 25, kw, kh);
+    nvgBezierTo(ctx, 0.0, 11.2, 11.2, 0.0, 25, 0.0, kw, kh);
+    nvgBezierTo(ctx, 38.8, 0.0, 50, 11.2, 50, 25, kw, kh);
+    nvgFillPaint(ctx, bg1);
+    nvgFill(ctx);
+
+    nvgBeginPath(ctx);
+    auto bg2 = nvgLinearGradient(ctx, 23.2 * kw, 23.2 * kh, 42.7 * kw, 43.7 * kh, inBg1, inBg2.mul_a(0.35));
+    nvgMoveTo(ctx, 45.2 * kw, 25.0 * kh);
+    nvgBezierTo(ctx, 45.2, 36.1, 36.1, 45.2, 25.0, 45.2, kw, kh);
+    nvgBezierTo(ctx, 13.9, 45.2, 4.8, 36.1, 4.8, 25.0, kw, kh);
+    nvgBezierTo(ctx, 4.8, 13.9, 13.9, 4.8, 25.0, 4.8, kw, kh);
+    nvgBezierTo(ctx, 36.1, 4.8, 45.2, 13.9, 45.2, 25.0, kw, kh);
+    nvgClosePath(ctx);
+    nvgFillPaint(ctx, bg2);
+    nvgFill(ctx);
+
+    nvgBeginPath(ctx);
+    auto bg3 = nvgLinearGradient(ctx, 23.2 * kw, 23.2 * kh, 42.7 * kw, 43.8 * kh, outFlow1.mul_a(196 / 255.), outFlow2);
+    nvgMoveTo(ctx, 43.1 * kw, 25.0 * kh);
+    nvgBezierTo(ctx, 43.1, 35.0, 35.0, 43.1, 25.0, 43.1, kw, kh);
+    nvgBezierTo(ctx, 15.0, 43.1, 6.9, 35.0, 7.0, 25., kw, kh);
+    nvgBezierTo(ctx, 7.0, 15., 15.0, 7.0, 25., 7.0, kw, kh);
+    nvgBezierTo(ctx, 35, 7, 43.1, 15.0, 43.1, 25, kw, kh);
+    nvgClosePath(ctx);
+    nvgFillPaint(ctx, bg3);
+    nvgFill(ctx);
+
+    nvgBeginPath(ctx);
+    auto bg4 = nvgLinearGradient(ctx, 23.4 * kw, 23.4 * kh, 44.0 * kw, 42.8 * kh, inFlow1.mul_a(0.4), inFlow2.mul_a(0.87));
+    nvgMoveTo(ctx, 39.4 * kw, 19.0 * kh);
+    nvgBezierTo(ctx, 39.4, 25.1, 33., 30.1, 25., 30.1, kw, kh);
+    nvgBezierTo(ctx, 17.0, 30.1, 10.6, 25.1, 10.6, 19., kw, kh);
+    nvgBezierTo(ctx, 10.6, 12.8, 17.0, 7.8, 25., 7.8, kw, kh);
+    nvgBezierTo(ctx, 33, 7.8, 39.4, 12.8, 39.4, 19., kw, kh);
+    nvgClosePath(ctx);
+    nvgFillPaint(ctx, bg4);
+    nvgFill(ctx);
+
+    nvgRestore(ctx);
+    break;
+  }
+}
+
 NAMESPACE_END(nanogui)

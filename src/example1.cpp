@@ -236,6 +236,18 @@ public:
     switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
     switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
 
+    w->wdg<Label>("A led buttons", "sans-bold");
+    auto& ledbuttonsArea = w->wdg<Widget>();
+    ledbuttonsArea.setLayout(new GridLayout(Orientation::Horizontal, 4));
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleBlack, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleBlue, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleGreen, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleGray, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleOrange, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleRed, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circleYellow, 30, 30);
+    ledbuttonsArea.wdg<LedButton>(LedButton::circlePurple, 30, 30);
+
     w = new Window(this, "Basic widgets");
     w->setPosition(Vector2i(200, 15));
     w->setLayout(new GroupLayout());
