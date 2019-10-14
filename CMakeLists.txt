@@ -11,19 +11,13 @@ if (POLICY CMP0058)
   cmake_policy(SET CMP0058 NEW)
 endif()
 
-if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
-  message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
-    "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
-endif()
-
 if (WIN32)
   set(NANOGUI_USE_GLAD_DEFAULT ON)
 else()
   set(NANOGUI_USE_GLAD_DEFAULT OFF)
 endif()
 
-option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
+option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI glfw example application?" ON)
 option(NANOGUI_GLFW_BACKEND  "Use GLFW backend?" ON)
 option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
 option(NANOGUI_BUILD_EDITOR  "Build NanoGUI editor application?" ON)
@@ -34,9 +28,17 @@ option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
+if (NANOGUI_GLFW_BACKEND)
+  if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
+    message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
+      "You probably did not clone the project with --recursive. It is possible to recover "
+      "by calling \"git submodule update --init --recursive\"")
+  endif()
+endif()
+
 # Required libraries, flags, and include files for compiling and linking against nanogui (all targets)
 set(NANOGUI_EXTRA_LIBS "")
-set(NANOGUI_EXTRA_DEFS "")
+set(NANOGUI_EXTRA_DEFS "") 
 set(NANOGUI_EXTRA_INCS "")
 
 # Platform-dependent files for libnanogui
@@ -76,6 +78,15 @@ if (NANOGUI_GLFW_BACKEND)
   set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
   set(GLFW_USE_CHDIR OFF CACHE BOOL " " FORCE)
   set(BUILD_SHARED_LIBS ${NANOGUI_BUILD_SHARED} CACHE BOOL " " FORCE)
+
+  # Two targets have now been defined: `glfw_objects`, which will be merged into
+  # NanoGUI at the end, and `glfw`.  The `glfw` target is the library itself
+  # (e.g., libglfw.so), but can be skipped as we do not need to link against it
+  # (because we merge `glfw_objects` into NanoGUI).  Skipping is required for
+  # XCode, but preferable for all build systems (reduces build artifacts).
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+
+  set_target_properties(glfw PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 elseif (NANOGUI_DX11_BACKEND)
 
 endif()
@@ -85,13 +96,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
 endif()
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
-# Two targets have now been defined: `glfw_objects`, which will be merged into
-# NanoGUI at the end, and `glfw`.  The `glfw` target is the library itself
-# (e.g., libglfw.so), but can be skipped as we do not need to link against it
-# (because we merge `glfw_objects` into NanoGUI).  Skipping is required for
-# XCode, but preferable for all build systems (reduces build artifacts).
-set_target_properties(glfw PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
@@ -267,7 +271,7 @@ if (NANOGUI_GLFW_BACKEND)
     endif()
   endif()
 elseif (NANOGUI_DX11_BACKEND)
-  list(APPEND NANOGUI_EXTRA_LIBS d3d11)
+  list(APPEND NANOGUI_EXTRA_LIBS d3d11 dxguid)
 endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
@@ -327,14 +331,21 @@ set(NANOGUI_BACKEND_SOURCES "")
 
 if (NANOGUI_GLFW_BACKEND)
   list(APPEND NANOGUI_BACKEND_SOURCES  
-    include/nanogui/glcanvas.h src/glcanvas.cpp
+    include/nanogui/glcanvas.h src/glfw/glcanvas_glfw.cpp
+    include/nanogui/glutil.h src/glfw/glutil_glfw.cpp
+
     include/nanogui/opengl.h
     include/nanogui/serializer/opengl.h
-    src/common_glfw.cpp
-    src/screen_glfw.cpp
+    src/glfw/common_glfw.cpp
+    src/glfw/screen_glfw.cpp
+    src/glfw/gpu_glfw.cpp
   )
 elseif (NANOGUI_DX11_BACKEND)
-
+  list(APPEND NANOGUI_BACKEND_SOURCES
+    src/dx11/common_dx11.h src/dx11/common_dx11.cpp 
+    src/dx11/screen_dx11.cpp
+    src/dx11/gpu_dx11.cpp
+  )
 endif()
 
 # Compile main NanoGUI library
@@ -345,12 +356,11 @@ add_library(nanogui-obj OBJECT
   ${LIBNANOGUI_EXTRA_SOURCE}
   # Fonts etc.
   nanogui_resources.cpp
-  include/nanogui/glutil.h src/glutil.cpp
   include/nanogui/common.h src/common.cpp
   include/nanogui/widget.h src/widget.cpp
   include/nanogui/theme.h src/theme.cpp
   include/nanogui/layout.h src/layout.cpp
-  include/nanogui/screen.h 
+  include/nanogui/screen.h src/screen.cpp
   include/nanogui/label.h src/label.cpp
   include/nanogui/window.h src/window.cpp
   include/nanogui/popup.h src/popup.cpp
@@ -409,10 +419,16 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     $<TARGET_OBJECTS:glfw_objects>
   )
 else()
-  add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-    $<TARGET_OBJECTS:nanogui-obj>
-    $<TARGET_OBJECTS:glfw_objects>
-  )
+  if (NANOGUI_GLFW_BACKEND)
+    add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
+      $<TARGET_OBJECTS:nanogui-obj>
+      $<TARGET_OBJECTS:glfw_objects>
+    )
+  else()
+    add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
+      $<TARGET_OBJECTS:nanogui-obj>
+    )
+  endif()
 endif()
 
 if (NANOGUI_BUILD_SHARED)
@@ -440,7 +456,7 @@ if (NANOGUI_INSTALL)
           FILES_MATCHING PATTERN "*.h")
 endif()
 
-if (NANOGUI_BUILD_SHARED)
+if (NANOGUI_BUILD_SHARED AND NANOGUI_GLFW_BACKEND)
   # When GLFW is merged into the NanoGUI library, this flag must be specified
   set_property(TARGET nanogui-obj APPEND PROPERTY COMPILE_DEFINITIONS "_GLFW_BUILD_DLL;NVG_SHARED")
 endif()
@@ -472,16 +488,19 @@ if(NANOGUI_BUILD_EDITOR)
 endif()
 
 if(NANOGUI_BUILD_EXAMPLE)
+  if (NANOGUI_GLFW_BACKEND)
+    add_executable(example2      src/example2.cpp)
+    add_executable(example3      src/example3.cpp)
+    add_executable(example4      src/example4.cpp)
+    add_executable(example_icons src/example_icons.cpp)
+    target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
+    target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
+    target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
+    target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
+  endif()
+
   add_executable(example1      src/example1.cpp)
-  add_executable(example2      src/example2.cpp)
-  add_executable(example3      src/example3.cpp)
-  add_executable(example4      src/example4.cpp)
-  add_executable(example_icons src/example_icons.cpp)
   target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
-  target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

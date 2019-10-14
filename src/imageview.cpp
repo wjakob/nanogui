@@ -15,63 +15,17 @@
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
 #include <nanogui/theme.h>
+#include <nanovg.h>
 #include <cmath>
 
 NAMESPACE_BEGIN(nanogui)
 
-namespace {
-    std::vector<std::string> tokenize(const std::string &string,
-                                      const std::string &delim = "\n",
-                                      bool includeEmpty = false) {
-        std::string::size_type lastPos = 0, pos = string.find_first_of(delim, lastPos);
-        std::vector<std::string> tokens;
-
-        while (lastPos != std::string::npos) {
-            std::string substr = string.substr(lastPos, pos - lastPos);
-            if (!substr.empty() || includeEmpty)
-                tokens.push_back(std::move(substr));
-            lastPos = pos;
-            if (lastPos != std::string::npos) {
-                lastPos += 1;
-                pos = string.find_first_of(delim, lastPos);
-            }
-        }
-
-        return tokens;
-    }
-
-    constexpr char const *const defaultImageViewVertexShader =
-        R"(#version 330
-        uniform vec2 scaleFactor;
-        uniform vec2 position;
-        in vec2 vertex;
-        out vec2 uv;
-        void main() {
-            uv = vertex;
-            vec2 scaledVertex = (vertex * scaleFactor) + position;
-            gl_Position  = vec4(2.0*scaledVertex.x - 1.0,
-                                1.0 - 2.0*scaledVertex.y,
-                                0.0, 1.0);
-
-        })";
-
-    constexpr char const *const defaultImageViewFragmentShader =
-        R"(#version 330
-        uniform sampler2D image;
-        out vec4 color;
-        in vec2 uv;
-        void main() {
-            color = texture(image, uv);
-        })";
-
-}
-
-ImageView::ImageView(Widget* parent, GLuint imageID)
+ImageView::ImageView(Widget* parent, uint32_t imageID)
     : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
     mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {
     updateImageParameters();
-    mShader.init("ImageViewShader", defaultImageViewVertexShader,
-                 defaultImageViewFragmentShader);
+
+    _initShader();
 
     MatrixXu indices(3, 2);
     indices.col(0) << 0, 1, 2;
@@ -83,19 +37,55 @@ ImageView::ImageView(Widget* parent, GLuint imageID)
     vertices.col(2) << 0, 1;
     vertices.col(3) << 1, 1;
 
-    mShader.bind();
-    mShader.uploadIndices(indices);
-    mShader.uploadAttrib("vertex", vertices);
+    _bindShader();
 }
 
 ImageView::~ImageView() {
-    mShader.free();
+    _deleteShader();
 }
 
-void ImageView::bindImage(GLuint imageId) {
+void ImageView::bindImage(uint32_t imageId) {
     mImageID = imageId;
     updateImageParameters();
     fit();
+}
+
+void ImageView::updateImageParameters() {
+    // Query the width of the OpenGL texture.
+    //glBindTexture(GL_TEXTURE_2D, mImageID);
+    int32_t w, h;
+    nvgImageSize(screen()->nvgContext(), mImageID, &w, &h);
+    mImageSize = Vector2i(w, h);
+}
+
+void ImageView::_internalDraw(NVGcontext* ctx)
+{   
+    Vector2f scaleFactor(mScale, mScale);
+    Vector2f positionInScreen = position().cast<float>();
+    Vector2f positionAfterOffset = positionInScreen + mOffset;
+    Vector2f imagePosition = positionAfterOffset;
+
+    NVGpaint imgPaint = nvgImagePattern(ctx, imagePosition.x(), imagePosition.y(),
+                                        mImageSize.x() * scaleFactor.x(), mImageSize.y() * scaleFactor.y(), 0, mImageID, 1.0);
+
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, imagePosition.x(), imagePosition.y(), 
+                        mImageSize.x() * scaleFactor.x(), mImageSize.y() * scaleFactor.y(), 
+                        5);
+    nvgFillPaint(ctx, imgPaint);
+    nvgFill(ctx); 
+}
+
+void ImageView::_deleteShader()
+{
+}
+
+void ImageView::_bindShader()
+{
+}
+
+void ImageView::_initShader()
+{
 }
 
 Vector2f ImageView::imageCoordinateAt(const Vector2f& position) const {
@@ -287,46 +277,18 @@ void ImageView::performLayout(NVGcontext* ctx) {
 
 void ImageView::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
-    nvgEndFrame(ctx); // Flush the NanoVG draw stack, not necessary to call nvgBeginFrame afterwards.
 
     drawImageBorder(ctx);
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be
     // properly displayed inside the widget.
-    const Screen* screen = dynamic_cast<const Screen*>(this->window()->parent());
-    assert(screen);
-    Vector2f screenSize = screen->size().cast<float>();
-    Vector2f scaleFactor = mScale * imageSizeF().cwiseQuotient(screenSize);
-    Vector2f positionInScreen = absolutePosition().cast<float>();
-    Vector2f positionAfterOffset = positionInScreen + mOffset;
-    Vector2f imagePosition = positionAfterOffset.cwiseQuotient(screenSize);
-    glEnable(GL_SCISSOR_TEST);
-    float r = screen->pixelRatio();
-    glScissor(positionInScreen.x() * r,
-              (screenSize.y() - positionInScreen.y() - size().y()) * r,
-              size().x() * r, size().y() * r);
-    mShader.bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mImageID);
-    mShader.setUniform("image", 0);
-    mShader.setUniform("scaleFactor", scaleFactor);
-    mShader.setUniform("position", imagePosition);
-    mShader.drawIndexed(GL_TRIANGLES, 0, 2);
-    glDisable(GL_SCISSOR_TEST);
+
+    _internalDraw(ctx);
 
     if (helpersVisible())
         drawHelpers(ctx);
 
     drawWidgetBorder(ctx);
-}
-
-void ImageView::updateImageParameters() {
-    // Query the width of the OpenGL texture.
-    glBindTexture(GL_TEXTURE_2D, mImageID);
-    GLint w, h;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-    mImageSize = Vector2i(w, h);
 }
 
 void ImageView::drawWidgetBorder(NVGcontext* ctx) const {
@@ -431,6 +393,29 @@ void ImageView::drawPixelInfo(NVGcontext* ctx, float stride) const {
         ++topLeft.y();
         topLeft.x() = xInitialIndex;
     }
+}
+
+namespace
+{
+  std::vector<std::string> tokenize(const std::string &string,
+    const std::string &delim = "\n",
+    bool includeEmpty = false) {
+    std::string::size_type lastPos = 0, pos = string.find_first_of(delim, lastPos);
+    std::vector<std::string> tokens;
+
+    while (lastPos != std::string::npos) {
+      std::string substr = string.substr(lastPos, pos - lastPos);
+      if (!substr.empty() || includeEmpty)
+        tokens.push_back(std::move(substr));
+      lastPos = pos;
+      if (lastPos != std::string::npos) {
+        lastPos += 1;
+        pos = string.find_first_of(delim, lastPos);
+      }
+    }
+
+    return tokens;
+  }
 }
 
 void ImageView::writePixelInfo(NVGcontext* ctx, const Vector2f& cellPosition,

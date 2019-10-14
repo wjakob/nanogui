@@ -407,7 +407,7 @@ bool TextBox::focusEvent(bool focused) {
 bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
     if (mEditable && focused()) {
         if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) {
-            if (key2fourcc(key) == FOURCCS("LEFT")) {
+            if (isKeyboardKey(key, "LEFT")) {
                 if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
@@ -417,7 +417,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos > 0)
                     mCursorPos--;
-            } else if (key2fourcc(key) == FOURCCS("RGHT")) {
+            } else if (isKeyboardKey(key, "RGHT")) {
                 if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
@@ -427,7 +427,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos < (int) mValueTemp.length())
                     mCursorPos++;
-            } else if (key2fourcc(key) == FOURCCS("HOME")) {
+            } else if (isKeyboardKey(key, "HOME")) {
                 if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;

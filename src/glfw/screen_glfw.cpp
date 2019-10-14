@@ -416,11 +416,6 @@ void Screen::drawAll() {
     glfwSwapBuffers((GLFWwindow*)mHwWindow);
 }
 
-void Screen::addChild(int index, Widget * widget)
-{
-  Widget::addChild(index, widget);
-}
-
 void Screen::setClipboardString(const std::string & text)
 {
   glfwSetClipboardString((GLFWwindow*)mHwWindow, text.c_str());
@@ -432,10 +427,8 @@ std::string Screen::getClipboardString()
   return glfwGetClipboardString((GLFWwindow*)mHwWindow);
 }
 
-void Screen::drawWidgets() {
-    if (!mVisible)
-        return;
-
+void Screen::_drawWidgetsBefore()
+{
     glfwMakeContextCurrent((GLFWwindow*)mHwWindow);
 
     glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &mFBSize[0], &mFBSize[1]);
@@ -452,220 +445,13 @@ void Screen::drawWidgets() {
 
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
     glBindSampler(0, 0);
-    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
-
-    draw(mNVGContext);
-
-    double elapsed = glfwGetTime() - mLastInteraction;
-
-    if (elapsed > 0.5f) {
-        /* Draw tooltips */
-        const Widget *widget = findWidget(mMousePos);
-        if (widget && !widget->tooltip().empty()) {
-            int tooltipWidth = 150;
-
-            float bounds[4];
-            nvgFontFace(mNVGContext, "sans");
-            nvgFontSize(mNVGContext, 15.0f);
-            nvgTextAlign(mNVGContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-            nvgTextLineHeight(mNVGContext, 1.1f);
-            Vector2i pos = widget->absolutePosition() +
-                           Vector2i(widget->width() / 2, widget->height() + 10);
-
-            nvgTextBounds(mNVGContext, pos.x(), pos.y(),
-                            widget->tooltip().c_str(), nullptr, bounds);
-            int h = (bounds[2] - bounds[0]) / 2;
-            if (h > tooltipWidth / 2) {
-                nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-                nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
-                                widget->tooltip().c_str(), nullptr, bounds);
-
-                h = (bounds[2] - bounds[0]) / 2;
-            }
-            nvgGlobalAlpha(mNVGContext,
-                           std::min(1.0, 2 * (elapsed - 0.5f)) * 0.8);
-
-            nvgBeginPath(mNVGContext);
-            nvgFillColor(mNVGContext, Color(0, 255));
-            nvgRoundedRect(mNVGContext, bounds[0] - 4 - h, bounds[1] - 4,
-                           (int) (bounds[2] - bounds[0]) + 8,
-                           (int) (bounds[3] - bounds[1]) + 8, 3);
-
-            int px = (int) ((bounds[2] + bounds[0]) / 2) - h;
-            nvgMoveTo(mNVGContext, px, bounds[1] - 10);
-            nvgLineTo(mNVGContext, px + 7, bounds[1] + 1);
-            nvgLineTo(mNVGContext, px - 7, bounds[1] + 1);
-            nvgFill(mNVGContext);
-
-            nvgFillColor(mNVGContext, Color(255, 255));
-            nvgFontBlur(mNVGContext, 0.0f);
-            nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
-                       widget->tooltip().c_str(), nullptr);
-        }
-    }
-
-    nvgEndFrame(mNVGContext);
 }
 
-bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
-    if (mFocusPath.size() > 0) {
-        for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused() && (*it)->keyboardEvent(key, scancode, action, modifiers))
-                return true;
-    }
-
-    return false;
+void Screen::_internalSetCursor(int cursor)
+{
+    glfwSetCursor((GLFWwindow*)mHwWindow, (GLFWcursor*)mCursors[(int) cursor]);
 }
 
-bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
-    if (mFocusPath.size() > 0) {
-        for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused() && (*it)->keyboardCharacterEvent(codepoint))
-                return true;
-    }
-    return false;
-}
-
-bool Screen::resizeEvent(const Vector2i& size) {
-    if (mResizeCallback) {
-        mResizeCallback(size);
-        return true;
-    }
-    return false;
-}
-
-bool Screen::cursorPosCallbackEvent(double x, double y) {
-    Vector2i p((int) x, (int) y);
-
-#if defined(_WIN32) || defined(__linux__)
-    p = (p.cast<float>() / mPixelRatio).cast<int>();
-#endif
-
-    bool ret = false;
-    mLastInteraction = glfwGetTime();
-    try {
-        p -= Vector2i(1, 2);
-
-        if (!mDragActive) {
-            Widget *widget = findWidget(p);
-            if (widget != nullptr && widget->cursor() != mCursor) {
-                mCursor = widget->cursor();
-                glfwSetCursor((GLFWwindow*)mHwWindow, (GLFWcursor*)mCursors[(int) mCursor]);
-            }
-        } else {
-            ret = mDragWidget->mouseDragEvent(
-                p - mDragWidget->parent()->absolutePosition(), p - mMousePos,
-                mMouseState, mModifiers);
-        }
-
-        if (!ret)
-            ret = mouseMotionEvent(p, p - mMousePos, mMouseState, mModifiers);
-
-        mMousePos = p;
-
-        return ret;
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        return false;
-    }
-}
-
-bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
-    mModifiers = modifiers;
-    mLastInteraction = glfwGetTime();
-    try {
-        if (mFocusPath.size() > 1) {
-            const Window *window =
-                dynamic_cast<Window *>(mFocusPath[mFocusPath.size() - 2]);
-            if (window && window->modal()) {
-                if (!window->contains(mMousePos))
-                    return false;
-            }
-        }
-
-        if (action == GLFW_PRESS)
-            mMouseState |= 1 << button;
-        else
-            mMouseState &= ~(1 << button);
-
-        auto dropWidget = findWidget(mMousePos);
-        if (mDragActive && action == GLFW_RELEASE &&
-            dropWidget != mDragWidget)
-            mDragWidget->mouseButtonEvent(
-                mMousePos - mDragWidget->parent()->absolutePosition(), button,
-                false, mModifiers);
-
-        if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
-            mCursor = dropWidget->cursor();
-            glfwSetCursor((GLFWwindow*)mHwWindow, (GLFWcursor*)mCursors[(int) mCursor]);
-        }
-
-        if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
-            mDragWidget = findWidget(mMousePos);
-            if (mDragWidget == this)
-                mDragWidget = nullptr;
-            mDragActive = mDragWidget != nullptr;
-            if (!mDragActive)
-                updateFocus(nullptr);
-        } else {
-            mDragActive = false;
-            mDragWidget = nullptr;
-        }
-
-        return mouseButtonEvent(mMousePos, button, action == GLFW_PRESS,
-                                mModifiers);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        return false;
-    }
-}
-
-bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
-    mLastInteraction = glfwGetTime();
-    try {
-        return keyboardEvent(key, scancode, action, mods);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        return false;
-    }
-}
-
-bool Screen::charCallbackEvent(unsigned int codepoint) {
-    mLastInteraction = glfwGetTime();
-    try {
-        return keyboardCharacterEvent(codepoint);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what()
-                  << std::endl;
-        return false;
-    }
-}
-
-bool Screen::dropCallbackEvent(int count, const char **filenames) {
-    std::vector<std::string> arg(count);
-    for (int i = 0; i < count; ++i)
-        arg[i] = filenames[i];
-    return dropEvent(arg);
-}
-
-bool Screen::scrollCallbackEvent(double x, double y) {
-    mLastInteraction = glfwGetTime();
-    try {
-        if (mFocusPath.size() > 1) {
-            const Window *window =
-                dynamic_cast<Window *>(mFocusPath[mFocusPath.size() - 2]);
-            if (window && window->modal()) {
-                if (!window->contains(mMousePos))
-                    return false;
-            }
-        }
-        return scrollEvent(mMousePos, Vector2f(x, y));
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what()
-                  << std::endl;
-        return false;
-    }
-}
 
 bool Screen::resizeCallbackEvent(int, int) {
     Vector2i fbSize, size;
@@ -689,73 +475,6 @@ bool Screen::resizeCallbackEvent(int, int) {
                   << std::endl;
         return false;
     }
-}
-
-void Screen::updateFocus(Widget *widget) {
-    // Save old focus path
-    auto oldFocusPath = mFocusPath;
-    mFocusPath.clear();
-    // Generate new focus path
-    Widget *window = nullptr;
-    while (widget) {
-        mFocusPath.push_back(widget);
-        if (dynamic_cast<Window *>(widget))
-            window = widget;
-        widget = widget->parent();
-    }
-    // Send unfocus events to widgets losing focus.
-    for (auto w : oldFocusPath) {
-        if (!w->focused() || find(mFocusPath.begin(), mFocusPath.end(), w) != mFocusPath.end())
-            continue;
-        w->focusEvent(false);
-    }
-    // Send focus events to widgets gaining focus.
-    for (auto it = mFocusPath.rbegin(); it != mFocusPath.rend(); ++it)
-        (*it)->focusEvent(true);
-
-    if (window)
-        moveWindowToFront((Window *) window);
-}
-
-void Screen::disposeWindow(Window *window) {
-    if (std::find(mFocusPath.begin(), mFocusPath.end(), window) != mFocusPath.end())
-        mFocusPath.clear();
-    if (mDragWidget == window)
-        mDragWidget = nullptr;
-    removeChild(window);
-}
-
-void Screen::centerWindow(Window *window) {
-    if (window->size() == Vector2i::Zero()) {
-        window->setSize(window->preferredSize(mNVGContext));
-        window->performLayout(mNVGContext);
-    }
-    window->setPosition((mSize - window->size()) / 2);
-}
-
-void Screen::moveWindowToFront(Window *window) {
-  if (!isMyChild(window))
-    return;
-
-  mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
-  mChildren.push_back(window);
-  /* Brute force topological sort (no problem for a few windows..) */
-  bool changed = false;
-  do {
-      size_t baseIndex = 0;
-      for (size_t index = 0; index < mChildren.size(); ++index)
-          if (mChildren[index] == window)
-              baseIndex = index;
-      changed = false;
-      for (size_t index = 0; index < mChildren.size(); ++index) {
-          Popup *pw = dynamic_cast<Popup *>(mChildren[index]);
-          if (pw && pw->parentWindow() == window && index < baseIndex) {
-              moveWindowToFront(pw);
-              changed = true;
-              break;
-          }
-      }
-  } while (changed);
 }
 
 NAMESPACE_END(nanogui)

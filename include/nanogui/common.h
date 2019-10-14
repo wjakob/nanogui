@@ -418,10 +418,10 @@ class Window;
  * and GLFW on your own, while still using NanoGUI's classes.
  * \endrst
  */
-extern NANOGUI_EXPORT void init();
+NANOGUI_EXPORT void init();
 
 /// Static shutdown; should be called before the application terminates.
-extern NANOGUI_EXPORT void shutdown();
+NANOGUI_EXPORT void shutdown();
 
 /**
  * \brief Enter the application main loop
@@ -459,13 +459,13 @@ extern NANOGUI_EXPORT void shutdown();
  *     wait for the termination of the main loop and then swap the two thread
  *     environments back into their initial configuration.
  */
-extern NANOGUI_EXPORT void mainloop(int refresh = 50);
+NANOGUI_EXPORT void mainloop(int refresh = 50);
 
 /// Request the application main loop to terminate (e.g. if you detached mainloop).
-extern NANOGUI_EXPORT void leave();
+NANOGUI_EXPORT void leave();
 
 /// Return whether or not a main loop is currently active
-extern NANOGUI_EXPORT bool active();
+NANOGUI_EXPORT bool active();
 
 /**
  * \brief Open a native file open/save dialog.
@@ -482,27 +482,31 @@ extern NANOGUI_EXPORT std::string
 file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
             bool save);
 
-bool isPointInsideRect(const Vector2i& p, const Vector4i& r);
-bool isMouseButtonLeft(int button);
-bool isMouseButtonLeftMod(int button);
-bool isMouseButtonRight(int button);
+NANOGUI_EXPORT bool isPointInsideRect(const Vector2i& p, const Vector4i& r);
+NANOGUI_EXPORT bool isMouseActionRelease(int action);
+NANOGUI_EXPORT bool isMouseActionPress(int action);
+NANOGUI_EXPORT bool isMouseButtonLeft(int button);
+NANOGUI_EXPORT bool isMouseButtonLeftMod(int button);
+NANOGUI_EXPORT bool isMouseButtonRight(int button);
 
 #define FOURCC(a,b,c,d) ( (uint32_t) (((d)<<24) | ((c)<<16) | ((b)<<8) | (a)) )
 #define FOURCCS(s) ( (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0])) )
-uint32_t key2fourcc(int key);
+NANOGUI_EXPORT uint32_t key2fourcc(int key);
 
-bool appPostEmptyEvent();
-void appForEachScreen(std::function<void(Screen*)> f);
-bool appIsShouldCloseScreen(Screen* screen);
-bool appWaitEvents();
-bool appPollEvents();
-float getTimeFromStart();
+NANOGUI_EXPORT bool appPostEmptyEvent();
+NANOGUI_EXPORT void appForEachScreen(std::function<void(Screen*)> f);
+NANOGUI_EXPORT bool appIsShouldCloseScreen(Screen* screen);
+NANOGUI_EXPORT bool appWaitEvents();
+NANOGUI_EXPORT bool appPollEvents();
+NANOGUI_EXPORT float getTimeFromStart();
 
-bool isKeyboardActionRelease(int action);
-bool isKeyboardModifierCtrl(int modifier);
-bool isKeyboardModifierShift(int modifier);
-bool isKeyboardActionPress(int action);
-bool isKeyboardActionRepeat(int action);
+NANOGUI_EXPORT bool isKeyboardActionRelease(int action);
+NANOGUI_EXPORT bool isKeyboardModifierCtrl(int modifier);
+NANOGUI_EXPORT bool isKeyboardModifierShift(int modifier);
+NANOGUI_EXPORT bool isKeyboardActionPress(int action);
+NANOGUI_EXPORT bool isKeyboardActionRepeat(int action);
+NANOGUI_EXPORT bool isKeyboardKeyEscape(int key);
+inline bool isKeyboardKey(int key, const std::string& fourcc) { return key2fourcc(key) == FOURCCS(fourcc); }
 
 /// Allows for conversion between nanogui::Color and the NanoVG NVGcolor class.
 inline Color::operator const NVGcolor &() const {

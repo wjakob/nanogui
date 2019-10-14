@@ -194,6 +194,9 @@ public:
     void drawWidgets();
 
 protected:
+    void _drawWidgetsBefore();
+    void _internalSetCursor(int cursor);
+
     void *mHwWindow;
     NVGcontext *mNVGContext;
     void *mCursors[(int) Cursor::CursorCount];

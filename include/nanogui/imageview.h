@@ -15,7 +15,6 @@
 #pragma once
 
 #include <nanogui/widget.h>
-#include <nanogui/glutil.h>
 #include <functional>
 
 NAMESPACE_BEGIN(nanogui)
@@ -27,12 +26,10 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
-    ImageView(Widget* parent, GLuint imageID);
+    ImageView(Widget* parent, uint32_t imageID);
     ~ImageView();
 
-    void bindImage(GLuint imageId);
-
-    GLShader& imageShader() { return mShader; }
+    void bindImage(uint32_t imageId);
 
     Vector2f positionF() const { return mPos.cast<float>(); }
     Vector2f sizeF() const { return mSize.cast<float>(); }
@@ -135,6 +132,10 @@ public:
 private:
     // Helper image methods.
     void updateImageParameters();
+    void _initShader();
+    void _bindShader();
+    void _deleteShader();
+    void _internalDraw(NVGcontext* ctx);
 
     // Helper drawing methods.
     void drawWidgetBorder(NVGcontext* ctx) const;
@@ -147,8 +148,7 @@ private:
                         const Vector2i& pixel, float stride, float fontSize) const;
 
     // Image parameters.
-    GLShader mShader;
-    GLuint mImageID;
+    uint32_t mImageID;
     Vector2i mImageSize;
 
     // Image display parameters.

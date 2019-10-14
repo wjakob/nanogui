@@ -11,6 +11,8 @@ NAMESPACE_BEGIN(nanogui)
 bool isMouseButtonLeft(int button) { return button == GLFW_MOUSE_BUTTON_1; }
 bool isMouseButtonLeftMod(int button) { return button == (1 << GLFW_MOUSE_BUTTON_1); }
 bool isMouseButtonRight(int button) { return button == GLFW_MOUSE_BUTTON_RIGHT; }
+bool isMouseActionRelease(int action) { return action == GLFW_RELEASE; }
+bool isMouseActionPress(int action) { return action == GLFW_PRESS; }
 
 void init() {
 #if !defined(_WIN32)
@@ -57,6 +59,7 @@ bool isKeyboardModifierCtrl(int modifier) { return modifier & SYSTEM_COMMAND_MOD
 bool isKeyboardModifierShift(int modifier) { return modifier & GLFW_MOD_SHIFT; }
 bool isKeyboardActionPress(int action) { return action == GLFW_PRESS; }
 bool isKeyboardActionRepeat(int action) { return action == GLFW_REPEAT; }
+bool isKeyboardKeyEscape(int key) { return key == GLFW_KEY_ESCAPE; }
 
 uint32_t key2fourcc(int key)
 {
