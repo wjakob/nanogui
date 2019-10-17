@@ -350,6 +350,9 @@ SET(double, number, u_.number_ = _val;)
 SET(int64_t, int64, u_.int64_ = _val;)
 #undef SET
 
+template <>
+inline void value::set<long>(long&& _val) { clear(); type_ = int64_type; u_.int64_ = _val; }
+
 #define MOVESET(ctype, jtype, setter)                                                                                              \
   template <> inline void value::set<ctype>(ctype && _val) {                                                                       \
     clear();                                                                                                                       \
@@ -1093,7 +1096,7 @@ inline bool operator!=(const value &x, const value &y) {
 NAMESPACE_END(nanogui)
 
 namespace std {
-template <> inline void swap(nanogui::Json::value &x, nanogui::Json::value &y) {
+template <> inline void swap(nanogui::Json::value &x, nanogui::Json::value &y) noexcept {
   x.swap(y);
 }
 }

@@ -16,10 +16,12 @@ void register_widget(py::module &m) {
         .def("theme", (Theme *(Widget::*)(void)) &Widget::theme, D(Widget, theme))
         .def("setTheme", &Widget::setTheme, D(Widget, setTheme))
         .def("position", &Widget::position, D(Widget, position))
-        .def("setPosition", &Widget::setPosition, D(Widget, setPosition))
+        .def("setPosition", (void(Widget::*)(const Vector2i&))&Widget::setPosition, D(Widget, setPosition))
+        .def("setPosition", (void(Widget::*)(int,int)) &Widget::setPosition, D(Widget, setPosition))
         .def("absolutePosition", &Widget::absolutePosition, D(Widget, absolutePosition))
         .def("size", &Widget::size, D(Widget, size))
-        .def("setSize", &Widget::setSize, D(Widget, setSize))
+        .def("setSize", (void(Widget::*)(const Vector2i&))&Widget::setSize, D(Widget, setSize))
+        .def("setSize", (void(Widget::*)(int,int)) &Widget::setSize, D(Widget, setSize))
         .def("width", &Widget::width, D(Widget, width))
         .def("setWidth", &Widget::setWidth, D(Widget, setWidth))
         .def("height", &Widget::height, D(Widget, height))
@@ -62,7 +64,9 @@ void register_widget(py::module &m) {
         .def("hasFontSize", &Widget::hasFontSize, D(Widget, hasFontSize))
         .def("cursor", &Widget::cursor, D(Widget, cursor))
         .def("setCursor", &Widget::setCursor, D(Widget, setCursor))
-        .def("findWidget", &Widget::findWidget, D(Widget, findWidget))
+        .def("findWidget", (Widget* (Widget::*)(const Vector2i&))&Widget::findWidget, D(Widget, findWidget))
+        .def("findWidget", (Widget* (Widget::*)(const std::string&, bool))&Widget::findWidget, D(Widget, findWidget))
+        .def("findWidget", (Widget* (Widget::*)(std::function<bool(Widget*)>, bool))&Widget::findWidget, D(Widget, findWidget))
         .def("contains", &Widget::contains, D(Widget, contains))
         .def("mouseButtonEvent", &Widget::mouseButtonEvent, py::arg("p"), py::arg("button"),
              py::arg("down"), py::arg("modifiers"), D(Widget, mouseButtonEvent))
@@ -79,7 +83,8 @@ void register_widget(py::module &m) {
              py::arg("action"), py::arg("modifiers"), D(Widget, keyboardEvent))
         .def("keyboardCharacterEvent", &Widget::keyboardCharacterEvent,
              D(Widget, keyboardCharacterEvent))
-        .def("preferredSize", &Widget::preferredSize, D(Widget, preferredSize))
+        .def("preferredSize", (Vector2i (Widget::*)(NVGcontext *) const)&Widget::preferredSize, D(Widget, preferredSize))
+        .def("preferredSize", (Vector2i (Widget::*)())&Widget::preferredSize, D(Widget, preferredSize))
         .def("performLayout", &Widget::performLayout, D(Widget, performLayout))
         .def("draw", &Widget::draw, D(Widget, draw));
 
@@ -104,7 +109,8 @@ void register_widget(py::module &m) {
         .def("background", &Screen::background, D(Screen, background))
         .def("setBackground", &Screen::setBackground, D(Screen, setBackground))
         .def("setVisible", &Screen::setVisible, D(Screen, setVisible))
-        .def("setSize", &Screen::setSize, D(Screen, setSize))
+        .def("setSize", (void(Screen::*)(const Vector2i&))&Screen::setSize, D(Screen, setSize))
+        .def("setSize", (void(Screen::*)(int,int)) &Screen::setSize, D(Screen, setSize))
         .def("performLayout", (void(Screen::*)(void)) &Screen::performLayout, D(Screen, performLayout))
         .def("drawAll", &Screen::drawAll, D(Screen, drawAll))
         .def("drawContents", &Screen::drawContents, D(Screen, drawContents))
@@ -114,8 +120,6 @@ void register_widget(py::module &m) {
         .def("dropEvent", &Screen::dropEvent, D(Screen, dropEvent))
         .def("mousePos", &Screen::mousePos, D(Screen, mousePos))
         .def("pixelRatio", &Screen::pixelRatio, D(Screen, pixelRatio))
-        .def("glfwWindow", &Screen::glfwWindow, D(Screen, glfwWindow),
-                py::return_value_policy::reference)
         .def("nvgContext", &Screen::nvgContext, D(Screen, nvgContext),
                 py::return_value_policy::reference);
 }

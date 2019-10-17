@@ -24,17 +24,17 @@ public:
 private:
   float getGraphAverage();
 
-	int mStyle;
-	std::string mName;
+  int mStyle;
+  std::string mName;
   float mValues[GRAPH_HISTORY_COUNT] = { 0 };
-	int mHead = 0;
+  int mHead = 0;
 };
 
 #define GPU_QUERY_COUNT 5
 struct NANOGUI_EXPORT GPUtimer {
-	int supported;
-	int cur, ret;
-	unsigned int queries[GPU_QUERY_COUNT];
+  int supported;
+  int cur, ret;
+  unsigned int queries[GPU_QUERY_COUNT];
 };
 
 void NANOGUI_EXPORT initGPUTimer(GPUtimer* timer);

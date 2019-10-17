@@ -74,8 +74,8 @@ public:
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
-    const int right() const { return mPos.x() + mSize.x(); }
-    const int left() const { return mPos.x(); }
+    int right() const { return mPos.x() + mSize.x(); }
+    int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
     void setPosition(const Vector2i &pos) { mPos = pos; }
     void setPosition(int x, int y) { setPosition(Vector2i(x, y)); }
@@ -250,7 +250,7 @@ public:
       }
       return nullptr;
     }
-    
+
 
     Window *window();
     Screen *screen();
@@ -380,7 +380,9 @@ public:
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
 
     template<typename WidgetClass, typename... Args>
-    WidgetClass& wdg(const Args&... args) { WidgetClass* widget = new WidgetClass(this, args...); return *widget; }
+    WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
+    template<typename LayoutClass, typename... Args>
+    Widget& withLayout(const Args&... args) { auto layout = new LayoutClass(args...); return *this; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
@@ -396,7 +398,7 @@ public:
     template<typename... Args>Slider& slider(const Args&... args) { return wdg<Slider>(args...); }
     template<typename... Args>TextBox& textbox(const Args&... args) { return wdg<TextBox>(args...); }
     template<typename... Args>SwitchBox& switchbox(const Args&... args) { return wdg<SwitchBox>(args...); }
-    
+
 
 protected:
     /// Free all resources used by the widget and any children

@@ -46,7 +46,7 @@ public:
   {
     setPosition(r.x(), r.y());
     setSize(r.z() - r.x(), r.w() - r.y());
-      
+
     element = nullptr;
     data = 0;
   }
@@ -58,10 +58,10 @@ public:
     else
       Label::draw(ctx);
   }
-	
-	Widget* element;
+
+  Widget* element;
   bool inEditMode = false;
-	uintptr_t data;
+  uintptr_t data;
 };
 
 class Table::HidingElement : public Widget
@@ -83,8 +83,8 @@ public:
 class Table::Column : public Label
 {
 public:
-    Column( Widget* parent, const Vector4i& r ) 
-        : Label( parent, "" ), orderingMode(Table::ColumnOrder::coNone) 
+    Column( Widget* parent, const Vector4i& r )
+        : Label( parent, "" ), orderingMode(Table::ColumnOrder::coNone)
     {
       setPosition(r.x(), r.y());
       setSize(r.z() - r.x(), r.w() - r.y());
@@ -100,16 +100,16 @@ public:
 };
 
 Table::Table( Widget* parent, const std::string& id,
-						  const Vector4i& r, bool clip,
-						  bool drawBack, bool moveOverSelect)
+              const Vector4i& r, bool clip,
+              bool drawBack, bool moveOverSelect)
 : Widget(parent),
-	_clip(clip), _moveOverSelect(moveOverSelect),
-	_selecting(false), _currentResizedColumn(-1), _resizeStart(0), _resizableColumns(true),
-	_itemHeight(0), _overItemHeight(0), _totalItemHeight(0), _totalItemWidth(0), 
+  _clip(clip), _moveOverSelect(moveOverSelect),
+  _selecting(false), _currentResizedColumn(-1), _resizeStart(0), _resizableColumns(true),
+  _itemHeight(0), _overItemHeight(0), _totalItemHeight(0), _totalItemWidth(0),
   _selectedRow(-1), _selectedColumn(-1),
   _editedRow(-1), _editedColumn(-1),
-	_cellHeightPadding(2), _cellWidthPadding(5), _activeTab(-1),
-	_currentOrdering( RowOrder::roNone )
+  _cellHeightPadding(2), _cellWidthPadding(5), _activeTab(-1),
+  _currentOrdering( RowOrder::roNone )
 {
   setPosition(r.x(), r.y());
   setSize(r.z() - r.x(), r.w() - r.y());
@@ -119,32 +119,32 @@ Table::Table( Widget* parent, const std::string& id,
   setDrawFlag( drawColumns );
   setDrawFlag( drawActiveRow );
 
-	_cellLastTimeClick = 0;
-  _header = new HidingElement( this, Vector4i( 0, 0, width(), DEFAULT_SCROLLBAR_SIZE ) );    
+  _cellLastTimeClick = 0;
+  _header = new HidingElement( this, Vector4i( 0, 0, width(), DEFAULT_SCROLLBAR_SIZE ) );
   //_header->setAlignment( alignUpperLeft, alignLowerRight, alignUpperLeft, alignUpperLeft );
   _header->setSubElement( true );
-    
+
   Widget* iaparent = new HidingElement(this, Vector4i(0, DEFAULT_SCROLLBAR_SIZE, width(), height()));
   _itemsArea = new HidingElement(iaparent, Vector4i( 0, 0, 1, 1 ) );
   //_itemsArea->setAlignment( alignUpperLeft, alignLowerRight, alignUpperLeft, alignLowerRight );
   _itemsArea->setSubElement( true );
 
-	_verticalScrollBar = new ScrollBar(this, ScrollBar::VerticalRight);
-	//_verticalScrollBar->grab();
-	//_verticalScrollBar->setNotClipped(false);
-	_verticalScrollBar->setSubElement(true);
+  _verticalScrollBar = new ScrollBar(this, ScrollBar::VerticalRight);
+  //_verticalScrollBar->grab();
+  //_verticalScrollBar->setNotClipped(false);
+  _verticalScrollBar->setSubElement(true);
   //_verticalScrollBar->setVisibleFilledArea( false );
-	//_verticalScrollBar->setAlignment( alignLowerRight, alignLowerRight, alignUpperLeft, alignLowerRight );
+  //_verticalScrollBar->setAlignment( alignLowerRight, alignLowerRight, alignUpperLeft, alignLowerRight );
 
-	_horizontalScrollBar = new ScrollBar( this, ScrollBar::HorizontalBottom );
-	//_horizontalScrollBar->grab();
-	//_horizontalScrollBar->setNotClipped(false);
-	_horizontalScrollBar->setSubElement(true);
+  _horizontalScrollBar = new ScrollBar( this, ScrollBar::HorizontalBottom );
+  //_horizontalScrollBar->grab();
+  //_horizontalScrollBar->setNotClipped(false);
+  _horizontalScrollBar->setSubElement(true);
   //_horizontalScrollBar->setVisibleFilledArea( false );
-	//_horizontalScrollBar->setAlignment( alignUpperLeft, alignLowerRight, alignLowerRight, alignLowerRight );
+  //_horizontalScrollBar->setAlignment( alignUpperLeft, alignLowerRight, alignLowerRight, alignLowerRight );
 
   _recalculateHeights();
-	_refreshControls();
+  _refreshControls();
 }
 
 Table::~Table() {}
@@ -153,100 +153,100 @@ void Table::addColumn(const std::string& caption, uint32_t columnIndex)
 {
   Column* columnHeader = new Column( _header, Vector4i( 0, 0, 1, 1 ) );
   columnHeader->setSubElement( true );
-	columnHeader->setCaption( caption );
+  columnHeader->setCaption( caption );
   columnHeader->setPosition(0, 0);
   float tw = nvgTextBounds(screen()->nvgContext(), 0, 0, caption.c_str(), nullptr, nullptr);
   columnHeader->setSize({ tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height() });
   columnHeader->setFixedSize({ tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height() });
 
-	columnHeader->orderingMode = ColumnOrder::coNone;
+  columnHeader->orderingMode = ColumnOrder::coNone;
 
-	if ( columnIndex >= _columns.size() )
-	{
-		_columns.push_back( columnHeader );
-		for (Row& row: _rows)
-			row.items.push_back( new Cell( _itemsArea, Vector4i( 0, 0, 1, 1 ) ) );
-	}
-	else
-	{
-		_columns.insert(_columns.begin() + columnIndex, columnHeader);
-		for (Row& row: _rows)
-			row.items.insert(row.items.begin() + columnIndex, new Cell( _itemsArea, Vector4i(0, 0, 1, 1) ));
-	}
+  if ( columnIndex >= _columns.size() )
+  {
+    _columns.push_back( columnHeader );
+    for (Row& row: _rows)
+      row.items.push_back( new Cell( _itemsArea, Vector4i( 0, 0, 1, 1 ) ) );
+  }
+  else
+  {
+    _columns.insert(_columns.begin() + columnIndex, columnHeader);
+    for (Row& row: _rows)
+      row.items.insert(row.items.begin() + columnIndex, new Cell( _itemsArea, Vector4i(0, 0, 1, 1) ));
+  }
 
-	if (_activeTab == -1)
-		_activeTab = 0;
+  if (_activeTab == -1)
+    _activeTab = 0;
 
-	_recalculateColumnsWidth();
+  _recalculateColumnsWidth();
   _recalculateCells();
-	_recalculateScrollBars();
+  _recalculateScrollBars();
 }
 
 //! remove a column from the table
 void Table::removeColumn(uint32_t columnIndex)
 {
-	if ( columnIndex < _columns.size() )
-	{
-		_columns.erase( _columns.begin() + columnIndex );
-		for (Row& row: _rows)
+  if ( columnIndex < _columns.size() )
+  {
+    _columns.erase( _columns.begin() + columnIndex );
+    for (Row& row: _rows)
     {
-			row.items[ columnIndex ]->remove();
+      row.items[ columnIndex ]->remove();
       row.items.erase(row.items.begin() + columnIndex );
     }
-	}
+  }
 
-	if ( (int)columnIndex <= _activeTab )
-		_activeTab = _columns.size() ? 0 : -1;
+  if ( (int)columnIndex <= _activeTab )
+    _activeTab = _columns.size() ? 0 : -1;
 
-	_recalculateColumnsWidth();
+  _recalculateColumnsWidth();
 }
 
 
-int Table::getColumnCount() const {	return _columns.size(); }
+int Table::getColumnCount() const {  return _columns.size(); }
 int Table::getRowCount() const { return _rows.size(); }
 
 bool Table::setActiveColumn(int idx, bool doOrder )
 {
-	if (idx < 0 || idx >= (int)_columns.size())
-		return false;
+  if (idx < 0 || idx >= (int)_columns.size())
+    return false;
 
-	bool changed = (_activeTab != idx);
+  bool changed = (_activeTab != idx);
 
-	_activeTab = idx;
-	if ( _activeTab < 0 )
-		return false;
+  _activeTab = idx;
+  if ( _activeTab < 0 )
+    return false;
 
-	if ( doOrder )
-	{
-		switch ( _columns[idx]->orderingMode )
-		{
+  if ( doOrder )
+  {
+    switch ( _columns[idx]->orderingMode )
+    {
     case ColumnOrder::coNone:
-				_currentOrdering = RowOrder::roNone;
-				break;
+        _currentOrdering = RowOrder::roNone;
+        break;
 
     case ColumnOrder::coCustom:
-				_currentOrdering = RowOrder::roNone;
-				break;
+        _currentOrdering = RowOrder::roNone;
+        break;
 
-			case ColumnOrder::coAscending:
-				_currentOrdering = RowOrder::roAscending;
-				break;
+      case ColumnOrder::coAscending:
+        _currentOrdering = RowOrder::roAscending;
+        break;
 
-			case ColumnOrder::coDescending:
-				_currentOrdering = RowOrder::roDescending;
-				break;
+      case ColumnOrder::coDescending:
+        _currentOrdering = RowOrder::roDescending;
+        break;
 
-			case ColumnOrder::coAscendingDescending:
-				_currentOrdering = (ColumnOrder::coAscending == _currentOrdering ? RowOrder::roDescending : RowOrder::roAscending);
-				break;
-			default:
-				_currentOrdering = RowOrder::roNone;
-		}
+      case ColumnOrder::coAscendingDescending:
+        _currentOrdering = (ColumnOrder::coAscending == _currentOrdering ? RowOrder::roDescending : RowOrder::roAscending);
+        break;
+      default:
+        _currentOrdering = RowOrder::roNone;
+    }
 
-		orderRows( getActiveColumn(), _currentOrdering );
-	}
+    orderRows( getActiveColumn(), _currentOrdering );
+  }
 
-	return true;
+  return true;
 }
 
 int Table::getActiveColumn() const { return _activeTab; }
@@ -254,142 +254,142 @@ Table::RowOrder Table::getActiveColumnOrdering() const {return _currentOrdering;
 
 void Table::setColumnWidth(uint32_t columnIndex, uint32_t width)
 {
-	if ( columnIndex < _columns.size() )
-	{
+  if ( columnIndex < _columns.size() )
+  {
     int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, _columns[columnIndex]->caption().c_str(), nullptr, nullptr );
     const uint32_t MIN_WIDTH = tw + (_cellWidthPadding * 2);
-		if ( width < MIN_WIDTH )
-			width = MIN_WIDTH;
+    if ( width < MIN_WIDTH )
+      width = MIN_WIDTH;
 
-		_columns[columnIndex]->setWidth(width);
+    _columns[columnIndex]->setWidth(width);
     _columns[columnIndex]->setFixedWidth(width);
-	}
+  }
 
-	_recalculateColumnsWidth();
-	_recalculateCells();
+  _recalculateColumnsWidth();
+  _recalculateCells();
   _recalculateScrollBars();
 }
 
 //! Get the width of a column
 uint32_t Table::getColumnWidth(uint32_t columnIndex) const
 {
-	if ( columnIndex >= _columns.size() )
-		return 0;
+  if ( columnIndex >= _columns.size() )
+    return 0;
 
-	return _columns[columnIndex]->width();
+  return _columns[columnIndex]->width();
 }
 
-void Table::setResizableColumns(bool resizable) {	_resizableColumns = resizable; }
-bool Table::hasResizableColumns() const {	return _resizableColumns; }
+void Table::setResizableColumns(bool resizable) {  _resizableColumns = resizable; }
+bool Table::hasResizableColumns() const {  return _resizableColumns; }
 
 uint32_t Table::addRow(uint32_t rowIndex)
 {
-	if ( rowIndex > _rows.size() )
-		rowIndex = _rows.size();
+  if ( rowIndex > _rows.size() )
+    rowIndex = _rows.size();
 
-	Row row;
+  Row row;
 
-	if ( rowIndex == _rows.size() )
-		_rows.push_back( row );
-	else
-		_rows.insert(_rows.begin() + rowIndex, row);
+  if ( rowIndex == _rows.size() )
+    _rows.push_back( row );
+  else
+    _rows.insert(_rows.begin() + rowIndex, row);
 
-	_rows[rowIndex].items.resize( _columns.size() );
-    
+  _rows[rowIndex].items.resize( _columns.size() );
+
   for ( uint32_t i = 0 ; i < _columns.size() ; ++i )
     _rows[rowIndex].items[ i ] = nullptr;
 
-	for ( uint32_t i = 0 ; i < _columns.size() ; ++i )
-		_rows[rowIndex].items[ i ] = new Cell( _itemsArea, Vector4i( 0, 0, 1, 1 ) );
+  for ( uint32_t i = 0 ; i < _columns.size() ; ++i )
+    _rows[rowIndex].items[ i ] = new Cell( _itemsArea, Vector4i( 0, 0, 1, 1 ) );
 
-	_recalculateHeights();
+  _recalculateHeights();
   _recalculateCells();
-	_recalculateScrollBars();
-	return rowIndex;
+  _recalculateScrollBars();
+  return rowIndex;
 }
 
 
 void Table::removeRow(uint32_t rowIndex)
 {
-	if ( rowIndex > _rows.size() )
-		return;
+  if ( rowIndex > _rows.size() )
+    return;
 
   for( uint32_t colNum=0; colNum < _columns.size(); colNum++ )
     removeCellElement( rowIndex, colNum );
 
-	_rows.erase(_rows.begin() + rowIndex );
+  _rows.erase(_rows.begin() + rowIndex );
 
-	if ( !(_selectedRow < int(_rows.size())) )
-		_selectedRow = _rows.size() - 1;
+  if ( !(_selectedRow < int(_rows.size())) )
+    _selectedRow = _rows.size() - 1;
 
-	_recalculateHeights();
-	_recalculateScrollBars();
+  _recalculateHeights();
+  _recalculateScrollBars();
 }
 
 //! adds an list item, returns id of item
 void Table::setCellText(uint32_t rowIndex, uint32_t columnIndex, const std::string& text)
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-	{
-		_rows[rowIndex].items[columnIndex]->setCaption( text );
-	}
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+  {
+    _rows[rowIndex].items[columnIndex]->setCaption( text );
+  }
 }
 
 void Table::setCellText(uint32_t rowIndex, uint32_t columnIndex, const std::string& text, const Color& color)
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-	{
-		_rows[rowIndex].items[columnIndex]->setCaption( text );
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+  {
+    _rows[rowIndex].items[columnIndex]->setCaption( text );
     _rows[rowIndex].items[columnIndex]->setColor( color );
-	}
+  }
 }
 
 void Table::setCellTextColor(uint32_t rowIndex, uint32_t columnIndex, const Color& color)
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-		_rows[rowIndex].items[columnIndex]->setColor( color );
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+    _rows[rowIndex].items[columnIndex]->setColor( color );
 }
 
 void Table::setCellDataptr(uint32_t rowIndex, uint32_t columnIndex, uintptr_t data)
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-		_rows[rowIndex].items[columnIndex]->data = data;
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+    _rows[rowIndex].items[columnIndex]->data = data;
 }
 
 std::string Table::getCellText(uint32_t rowIndex, uint32_t columnIndex ) const
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-		return _rows[rowIndex].items[columnIndex]->caption();
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+    return _rows[rowIndex].items[columnIndex]->caption();
 
-	return "";
+  return "";
 }
 
 uintptr_t Table::getCellDataptr(uint32_t rowIndex, uint32_t columnIndex ) const
 {
-	if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
-	{
-		return _rows[rowIndex].items[columnIndex]->data;
-	}
+  if ( rowIndex < _rows.size() && columnIndex < _columns.size() )
+  {
+    return _rows[rowIndex].items[columnIndex]->data;
+  }
 
-	return 0;
+  return 0;
 }
 
 void Table::clear()
 {
   _selectedRow = -1;
-  clearRows();    
+  clearRows();
 
   for(auto& col: _columns)
     col->remove();
 
-	_rows.clear();    
-	_columns.clear();
+  _rows.clear();
+  _columns.clear();
 
-	if (_verticalScrollBar) _verticalScrollBar->setScroll(0);
-	if ( _horizontalScrollBar )	_horizontalScrollBar->setScroll(0);
+  if (_verticalScrollBar) _verticalScrollBar->setScroll(0);
+  if ( _horizontalScrollBar )  _horizontalScrollBar->setScroll(0);
 
-	_recalculateHeights();
-	_recalculateColumnsWidth();
+  _recalculateHeights();
+  _recalculateColumnsWidth();
 }
 
 void Table::clearContent()
@@ -405,14 +405,14 @@ void Table::clearRows()
 {
   _selectedRow = -1;
 
-	const auto& tableAreaChilds = _itemsArea->children();
-	for(auto& w: tableAreaChilds )
-		w->remove();
+  const auto& tableAreaChilds = _itemsArea->children();
+  for(auto& w: tableAreaChilds )
+    w->remove();
 
-	_rows.clear();
+  _rows.clear();
 
-	if (_verticalScrollBar) _verticalScrollBar->setScroll(0);
-	
+  if (_verticalScrollBar) _verticalScrollBar->setScroll(0);
+
   _recalculateHeights();
 }
 
@@ -421,18 +421,18 @@ int Table::getSelected() const { return _selectedRow; }
 //! set wich row is currently selected
 void Table::setSelected( int index )
 {
-	_selectedRow = -1;
-	if ( index >= 0 && index < (int) _rows.size() )
-		_selectedRow = index;
+  _selectedRow = -1;
+  if ( index >= 0 && index < (int) _rows.size() )
+    _selectedRow = index;
 }
 
 void Table::_recalculateColumnsWidth()
 {
-	_totalItemWidth=0;
-	for (auto& col: _columns)
+  _totalItemWidth=0;
+  for (auto& col: _columns)
   {
     col->setPosition(_totalItemWidth, col->position().y());
-		_totalItemWidth += col->width();
+    _totalItemWidth += col->width();
   }
 
   _header->setWidth(_totalItemWidth);
@@ -446,84 +446,84 @@ void Table::_recalculateHeights()
   nvgTextBounds(screen()->nvgContext(), 0, 0, "A", nullptr, bounds);
   int fontH = bounds[3] - bounds[1] + (_cellHeightPadding * 2);
   _itemHeight = _overItemHeight == 0 ? fontH : _overItemHeight;
-	
-	_totalItemHeight = _itemHeight * _rows.size();		//  header is not counted, because we only want items
+
+  _totalItemHeight = _itemHeight * _rows.size();    //  header is not counted, because we only want items
 }
 
 
 // automatic enabled/disabling and resizing of scrollbars
 void Table::_recalculateScrollBars()
 {
-	if ( !_horizontalScrollBar || !_verticalScrollBar )
-		return;
+  if ( !_horizontalScrollBar || !_verticalScrollBar )
+    return;
 
-	bool wasHorizontalScrollBarVisible = _horizontalScrollBar->visible();
-	bool wasVerticalScrollBarVisible = _verticalScrollBar->visible();
-	_horizontalScrollBar->setVisible(false);
-	_verticalScrollBar->setVisible(false);
+  bool wasHorizontalScrollBarVisible = _horizontalScrollBar->visible();
+  bool wasVerticalScrollBarVisible = _verticalScrollBar->visible();
+  _horizontalScrollBar->setVisible(false);
+  _verticalScrollBar->setVisible(false);
 
-	// CAREFUL: near identical calculations for tableRect and clientClip are also done in draw
-	// area of table used for drawing without scrollbars
+  // CAREFUL: near identical calculations for tableRect and clientClip are also done in draw
+  // area of table used for drawing without scrollbars
   Vector2i taPos = _itemsArea->position();
-	Vector4i tableRect(taPos.x(), taPos.y(), _itemsArea->width(), _itemsArea->height());
-	
-	// needs horizontal scroll be visible?
-	if( _totalItemWidth > _itemsArea->width() )
-	{
-		tableRect.w() -= _horizontalScrollBar->height();
-		_horizontalScrollBar->setVisible( true );
-		_hscrollsize = std::max<int>(0, _totalItemWidth - tableRect.z());
-	}
+  Vector4i tableRect(taPos.x(), taPos.y(), _itemsArea->width(), _itemsArea->height());
 
-	// needs vertical scroll be visible?
-	if( _totalItemHeight > tableRect.w() )
-	{
-		tableRect.z() -= _verticalScrollBar->width();
-		_verticalScrollBar->setVisible( true );
-		_vscrollsize = std::max<int>(0, _totalItemHeight - tableRect.w() + 2 * _verticalScrollBar->width());
+  // needs horizontal scroll be visible?
+  if( _totalItemWidth > _itemsArea->width() )
+  {
+    tableRect.w() -= _horizontalScrollBar->height();
+    _horizontalScrollBar->setVisible( true );
+    _hscrollsize = std::max<int>(0, _totalItemWidth - tableRect.z());
+  }
 
-		// check horizontal again because we have now smaller clientClip
-		if ( !_horizontalScrollBar->visible() )
-		{
-			if( _totalItemWidth > tableRect.z() )
-			{
-				tableRect.w() -= _horizontalScrollBar->height();
-				_horizontalScrollBar->setVisible(true);
-				_hscrollsize = std::max<int>(0, _totalItemWidth - tableRect.z());
-			}
-		}
-	}
+  // needs vertical scroll be visible?
+  if( _totalItemHeight > tableRect.w() )
+  {
+    tableRect.z() -= _verticalScrollBar->width();
+    _verticalScrollBar->setVisible( true );
+    _vscrollsize = std::max<int>(0, _totalItemHeight - tableRect.w() + 2 * _verticalScrollBar->width());
 
-	// find the correct size for the vertical scrollbar
-	if ( _verticalScrollBar->visible() )
-	{
-		if  (!wasVerticalScrollBarVisible )
-			_verticalScrollBar->setScroll(0);
+    // check horizontal again because we have now smaller clientClip
+    if ( !_horizontalScrollBar->visible() )
+    {
+      if( _totalItemWidth > tableRect.z() )
+      {
+        tableRect.w() -= _horizontalScrollBar->height();
+        _horizontalScrollBar->setVisible(true);
+        _hscrollsize = std::max<int>(0, _totalItemWidth - tableRect.z());
+      }
+    }
+  }
 
-		int offset = _horizontalScrollBar->visible() 
-						? _horizontalScrollBar->height()
-						: 0;
+  // find the correct size for the vertical scrollbar
+  if ( _verticalScrollBar->visible() )
+  {
+    if  (!wasVerticalScrollBarVisible )
+      _verticalScrollBar->setScroll(0);
 
-		_verticalScrollBar->setHeight( height()-(1 + offset) );
-		_verticalScrollBar->setPosition( width() - _verticalScrollBar->width(), _verticalScrollBar->position().y() );
-	}
+    int offset = _horizontalScrollBar->visible()
+            ? _horizontalScrollBar->height()
+            : 0;
 
-	// find the correct size for the horizontal scrollbar
-	if ( _horizontalScrollBar->visible() )
-	{
-		if ( !wasHorizontalScrollBarVisible )
-			_horizontalScrollBar->setScroll(0);
+    _verticalScrollBar->setHeight( height()-(1 + offset) );
+    _verticalScrollBar->setPosition( width() - _verticalScrollBar->width(), _verticalScrollBar->position().y() );
+  }
 
-		int offset = _verticalScrollBar->visible() 
-						? _verticalScrollBar->width()
-						: 0;
-		_horizontalScrollBar->setWidth( width()-(1+offset) );
-		_horizontalScrollBar->setPosition(_horizontalScrollBar->position().x(), height() - _horizontalScrollBar->height() );
-	}
+  // find the correct size for the horizontal scrollbar
+  if ( _horizontalScrollBar->visible() )
+  {
+    if ( !wasHorizontalScrollBarVisible )
+      _horizontalScrollBar->setScroll(0);
 
-	_itemsArea->setWidth( width() - ( _verticalScrollBar->visible() ? 1 : 0 ) * _verticalScrollBar->width() );	
-	_itemsArea->setHeight( height() - _header->height() 
-							  - ( _horizontalScrollBar->visible() ? 1 : 0 ) * _horizontalScrollBar->height() );	
+    int offset = _verticalScrollBar->visible()
+            ? _verticalScrollBar->width()
+            : 0;
+    _horizontalScrollBar->setWidth( width()-(1+offset) );
+    _horizontalScrollBar->setPosition(_horizontalScrollBar->position().x(), height() - _horizontalScrollBar->height() );
+  }
+
+  _itemsArea->setWidth( width() - ( _verticalScrollBar->visible() ? 1 : 0 ) * _verticalScrollBar->width() );
+  _itemsArea->setHeight( height() - _header->height()
+                - ( _horizontalScrollBar->visible() ? 1 : 0 ) * _horizontalScrollBar->height() );
 
   _verticalScrollBar->bringToFront();
   _horizontalScrollBar->bringToFront();
@@ -531,10 +531,10 @@ void Table::_recalculateScrollBars()
 
 void Table::_refreshControls()
 {
-	//updateAbsolutePosition();
+  //updateAbsolutePosition();
 
   _recalculateColumnsWidth();
-	_recalculateHeights();
+  _recalculateHeights();
   _recalculateScrollBars();
   _recalculateCells();
 }
@@ -552,7 +552,7 @@ void Table::_recalculateCells()
       row.items[index]->setPosition((*cit)->position().x(), yPos);
       row.items[index]->setSize({ (*cit)->width(), _itemHeight });
       row.items[index]->setFixedSize({ (*cit)->width(), _itemHeight });
-			row.items[index]->sendToBack();
+      row.items[index]->sendToBack();
       xPos += (*cit)->width();
     }
 
@@ -623,79 +623,79 @@ bool Table::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button,
 
 void Table::setColumnOrdering(uint32_t columnIndex, ColumnOrder mode)
 {
-	if ( columnIndex < _columns.size() )
-		_columns[columnIndex]->orderingMode = mode;
+  if ( columnIndex < _columns.size() )
+    _columns[columnIndex]->orderingMode = mode;
 }
 
 void Table::swapRows(uint32_t rowIndexA, uint32_t rowIndexB)
 {
-	if ( rowIndexA >= _rows.size() )
-		return;
+  if ( rowIndexA >= _rows.size() )
+    return;
 
-	if ( rowIndexB >= _rows.size() )
-		return;
+  if ( rowIndexB >= _rows.size() )
+    return;
 
-	Row swap = _rows[rowIndexA];
-	_rows[rowIndexA] = _rows[rowIndexB];
-	_rows[rowIndexB] = swap;
+  Row swap = _rows[rowIndexA];
+  _rows[rowIndexA] = _rows[rowIndexB];
+  _rows[rowIndexB] = swap;
 
-	if ( _selectedRow == int(rowIndexA) )
-		_selectedRow = rowIndexB;
-	else if( _selectedRow == int(rowIndexB) )
-		_selectedRow = rowIndexA;
+  if ( _selectedRow == int(rowIndexA) )
+    _selectedRow = rowIndexB;
+  else if( _selectedRow == int(rowIndexB) )
+    _selectedRow = rowIndexA;
 }
 
 bool Table::_dragColumnStart(int xpos, int ypos)
 {
-	if ( !_resizableColumns )
-		return false;
+  if ( !_resizableColumns )
+    return false;
 
-	if ( ypos > ( absolutePosition().y() + _itemHeight ) )
-		return false;
+  if ( ypos > ( absolutePosition().y() + _itemHeight ) )
+    return false;
 
-	const int CLICK_AREA = 12;	// to left and right of line which can be dragged
-	int pos = absolutePosition().x() + 1;
+  const int CLICK_AREA = 12;  // to left and right of line which can be dragged
+  int pos = absolutePosition().x() + 1;
 
-	if ( _horizontalScrollBar && _horizontalScrollBar->visible() )
-		pos -= (_horizontalScrollBar->scroll() * _hscrollsize);
+  if ( _horizontalScrollBar && _horizontalScrollBar->visible() )
+    pos -= (_horizontalScrollBar->scroll() * _hscrollsize);
 
-	pos += _totalItemWidth;
+  pos += _totalItemWidth;
 
-	// have to search from the right as otherwise lines could no longer be resized when a column width is 0
-	for ( int i = (int)_columns.size()-1; i >= 0 ; --i )
-	{
-		uint32_t colWidth = _columns[i]->width();
+  // have to search from the right as otherwise lines could no longer be resized when a column width is 0
+  for ( int i = (int)_columns.size()-1; i >= 0 ; --i )
+  {
+    uint32_t colWidth = _columns[i]->width();
 
-		if ( xpos >= (pos - CLICK_AREA) && xpos < ( pos + CLICK_AREA ) )
-		{
-			_currentResizedColumn = i;
-			_resizeStart = xpos;
-			return true;
-		}
+    if ( xpos >= (pos - CLICK_AREA) && xpos < ( pos + CLICK_AREA ) )
+    {
+      _currentResizedColumn = i;
+      _resizeStart = xpos;
+      return true;
+    }
 
-		pos -= colWidth;
-	}
+    pos -= colWidth;
+  }
 
-	return false;
+  return false;
 }
 
 bool Table::_dragColumnUpdate(int xpos)
 {
-	if ( !_resizableColumns || _currentResizedColumn < 0 || _currentResizedColumn >= int(_columns.size()) )
-	{
-		_currentResizedColumn = -1;
-		return false;
-	}
+  if ( !_resizableColumns || _currentResizedColumn < 0 || _currentResizedColumn >= int(_columns.size()) )
+  {
+    _currentResizedColumn = -1;
+    return false;
+  }
 
-	int ww = int(_columns[_currentResizedColumn]->width()) + (xpos-_resizeStart);
-	if ( ww < 0 )
-		ww = 0;
+  int ww = int(_columns[_currentResizedColumn]->width()) + (xpos-_resizeStart);
+  if ( ww < 0 )
+    ww = 0;
 
-	setColumnWidth(_currentResizedColumn, uint32_t(ww));
-	_resizeStart = xpos;
+  setColumnWidth(_currentResizedColumn, uint32_t(ww));
+  _resizeStart = xpos;
 
   _recalculateCells();
-	return false;
+  return false;
 }
 
 int Table::_getCurrentColumn( int xpos, int ypos )
@@ -720,8 +720,8 @@ int Table::_getCurrentColumn( int xpos, int ypos )
 
 bool Table::_selectColumnHeader(int xpos, int ypos)
 {
-	if ( ypos > ( absolutePosition().y() + _itemHeight ) )
-		return false;
+  if ( ypos > ( absolutePosition().y() + _itemHeight ) )
+    return false;
 
     _selectedColumn = _getCurrentColumn( xpos, ypos );
     if( _selectedColumn >= 0 )
@@ -730,7 +730,7 @@ bool Table::_selectColumnHeader(int xpos, int ypos)
         return true;
     }
 
-	return false;
+  return false;
 }
 
 bool _nstrCmp(const std::string& s1, const std::string& s2)
@@ -740,89 +740,89 @@ bool _nstrCmp(const std::string& s1, const std::string& s2)
 
 void Table::orderRows(int columnIndex, RowOrder mode)
 {
-	Row swap;
+  Row swap;
 
-	if ( columnIndex == -1 )
-		columnIndex = getActiveColumn();
-	if ( columnIndex < 0 )
-		return;
+  if ( columnIndex == -1 )
+    columnIndex = getActiveColumn();
+  if ( columnIndex < 0 )
+    return;
 
-	if ( mode == RowOrder::roAscending )
-	{
-		for ( int i = 0 ; i < int(_rows.size()) - 1 ; ++i )
-		{
-			for ( int j = 0 ; j < int(_rows.size()) - i - 1 ; ++j )
-			{
-				if (_nstrCmp(_rows[j+1].items[columnIndex]->caption(), _rows[j].items[columnIndex]->caption()) )
-				{
-					swap = _rows[j];
-					_rows[j] = _rows[j+1];
-					_rows[j+1] = swap;
+  if ( mode == RowOrder::roAscending )
+  {
+    for ( int i = 0 ; i < int(_rows.size()) - 1 ; ++i )
+    {
+      for ( int j = 0 ; j < int(_rows.size()) - i - 1 ; ++j )
+      {
+        if (_nstrCmp(_rows[j+1].items[columnIndex]->caption(), _rows[j].items[columnIndex]->caption()) )
+        {
+          swap = _rows[j];
+          _rows[j] = _rows[j+1];
+          _rows[j+1] = swap;
 
-					if ( _selectedRow == j )
-						_selectedRow = j+1;
-					else if( _selectedRow == j+1 )
-						_selectedRow = j;
-				}
-			}
-		}
-	}
-	else if ( mode == RowOrder::roDescending )
-	{
-		for ( int i = 0 ; i < int(_rows.size()) - 1 ; ++i )
-		{
-			for ( int j = 0 ; j < int(_rows.size()) - i - 1 ; ++j )
-			{
-				if ( _nstrCmp(_rows[j].items[columnIndex]->caption(), _rows[j+1].items[columnIndex]->caption()) )
-				{
-					swap = _rows[j];
-					_rows[j] = _rows[j+1];
-					_rows[j+1] = swap;
+          if ( _selectedRow == j )
+            _selectedRow = j+1;
+          else if( _selectedRow == j+1 )
+            _selectedRow = j;
+        }
+      }
+    }
+  }
+  else if ( mode == RowOrder::roDescending )
+  {
+    for ( int i = 0 ; i < int(_rows.size()) - 1 ; ++i )
+    {
+      for ( int j = 0 ; j < int(_rows.size()) - i - 1 ; ++j )
+      {
+        if ( _nstrCmp(_rows[j].items[columnIndex]->caption(), _rows[j+1].items[columnIndex]->caption()) )
+        {
+          swap = _rows[j];
+          _rows[j] = _rows[j+1];
+          _rows[j+1] = swap;
 
-					if ( _selectedRow == j )
-						_selectedRow = j+1;
-					else if( _selectedRow == j+1 )
-						_selectedRow = j;
-				}
-			}
-		}
-	}
+          if ( _selectedRow == j )
+            _selectedRow = j+1;
+          else if( _selectedRow == j+1 )
+            _selectedRow = j;
+        }
+      }
+    }
+  }
 }
 
 void Table::_selectNew( int xpos, int ypos, bool lmb, bool onlyHover)
 {
-	int oldSelectedRow = _selectedRow;
+  int oldSelectedRow = _selectedRow;
   int oldSelectedColumn = _selectedColumn;
 
-	if ( ypos < ( absolutePosition().y() + _itemHeight ) )
-		return;
+  if ( ypos < ( absolutePosition().y() + _itemHeight ) )
+    return;
 
-	// find new selected item.
-	if (_itemHeight!=0)
-		_selectedRow = ((ypos - absolutePosition().y() - _itemHeight - 1) + (_verticalScrollBar->scroll() * _vscrollsize)) / _itemHeight;
+  // find new selected item.
+  if (_itemHeight!=0)
+    _selectedRow = ((ypos - absolutePosition().y() - _itemHeight - 1) + (_verticalScrollBar->scroll() * _vscrollsize)) / _itemHeight;
 
   _selectedColumn = _getCurrentColumn( xpos, ypos );
 
-	if (_selectedRow >= (int)_rows.size())
-		_selectedRow = _rows.size() - 1;
-	else if (_selectedRow<0)
-		_selectedRow = 0;
+  if (_selectedRow >= (int)_rows.size())
+    _selectedRow = _rows.size() - 1;
+  else if (_selectedRow<0)
+    _selectedRow = 0;
 
-	// post the news
-	if( !onlyHover )
-	{
-		bool selectedAgain = (_selectedRow != oldSelectedRow || _selectedColumn != oldSelectedColumn ) 
-                                        ? false 
+  // post the news
+  if( !onlyHover )
+  {
+    bool selectedAgain = (_selectedRow != oldSelectedRow || _selectedColumn != oldSelectedColumn )
+                                        ? false
                                         : true;
 
-		if( lmb && selectedAgain && ( getTimeFromStart() - _cellLastTimeClick ) < 200 )
-		{
+    if( lmb && selectedAgain && ( getTimeFromStart() - _cellLastTimeClick ) < 200 )
+    {
       _finishEditCell();
       _startEditCell(_selectedColumn, _selectedRow);
-		}
+    }
 
     _cellLastTimeClick = getTimeFromStart();
-	}
+  }
 }
 
 Table::Cell* Table::_getCell(int row, int col)
@@ -869,21 +869,21 @@ void Table::_finishEditCell()
 
 void Table::beforePaint(NVGcontext* ctx)
 {
-	if( _needRefreshCellsGeometry )
-	{
-		_recalculateCells();
-		_needRefreshCellsGeometry = false;
-	}
+  if( _needRefreshCellsGeometry )
+  {
+    _recalculateCells();
+    _needRefreshCellsGeometry = false;
+  }
 }
 
 //! draws the element and its children
 void Table::draw(NVGcontext* ctx)
 {
-	if ( !visible() )
-		return;
+  if ( !visible() )
+    return;
 
-	if ( _font.empty() )
-		return;
+  if ( _font.empty() )
+    return;
 
   int yOffset = _verticalScrollBar->scroll() * _vscrollsize;
   int xOffset = _horizontalScrollBar->scroll() * _hscrollsize;
@@ -936,9 +936,9 @@ void Table::draw(NVGcontext* ctx)
     nvgStroke(ctx);
   }
 
-	Widget::draw(ctx);
+  Widget::draw(ctx);
 
- 	// draw background for whole element
+   // draw background for whole element
   if (_drawflags.test(drawBorder))
   {
     nvgBeginPath(ctx);
@@ -949,7 +949,7 @@ void Table::draw(NVGcontext* ctx)
 }
 
 void Table::setDrawFlag( DrawFlag flag, bool enabled ) { _drawflags.set( flag, enabled ); }
-bool Table::isFlag( DrawFlag flag ) const {	return _drawflags.test( (int)flag ); }
+bool Table::isFlag( DrawFlag flag ) const {  return _drawflags.test( (int)flag ); }
 
 //! Writes attributes of the element.
 /*void Table::save( core::VariantArray* out ) const
@@ -963,11 +963,11 @@ bool Table::isFlag( DrawFlag flag ) const {	return _drawflags.test( (int)flag );
 
 void Table::setItemHeight( int height )
 {
-	_overItemHeight = height;
+  _overItemHeight = height;
   float bounds[4] = { 0 };
   nvgTextBounds(screen()->nvgContext(), 0, 0, "A", nullptr, bounds);
   int hh = bounds[3] - bounds[1];
-	_itemHeight = _overItemHeight == 0 ? hh + (_cellHeightPadding * 2) : _overItemHeight;
+  _itemHeight = _overItemHeight == 0 ? hh + (_cellHeightPadding * 2) : _overItemHeight;
 }
 
 int Table::getSelectedColumn() const { return _selectedColumn; }
@@ -994,16 +994,16 @@ void Table::setCellElement( uint32_t rowIndex, uint32_t columnIndex, Widget* elm
     {
       Cell* cell = _rows[rowIndex].items[columnIndex];
 
-		  if( elm != getCellElement( rowIndex, columnIndex ) )
-		  {
-			  removeCellElement( rowIndex, columnIndex );
+      if( elm != getCellElement( rowIndex, columnIndex ) )
+      {
+        removeCellElement( rowIndex, columnIndex );
 
-			  if( elm )
-			  {
-				  cell->addChild( elm );
-				  cell->element = elm;
-			  }
-		  }
+        if( elm )
+        {
+          cell->addChild( elm );
+          cell->element = elm;
+        }
+      }
     }
 
     _verticalScrollBar->bringToFront();

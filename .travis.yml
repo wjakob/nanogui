@@ -9,8 +9,15 @@ branches:
 
 matrix:
   include:
+    - os: windows
+      script:     
+        - mkdir -p build
+        - cd build
+        - cmake --version 
+        - cmake  ..
+        - cmake --build .
     - os: linux
-      compiler: gcc-4.8
+      compiler: gcc-4.9
       addons:
         apt:
           sources:
@@ -18,7 +25,7 @@ matrix:
             - deadsnakes
             - kubuntu-backports
           packages:
-            - g++-4.8
+            - g++-4.9
             - python3.5
             - python3.5-dev
             - python3.5-venv

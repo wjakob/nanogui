@@ -210,7 +210,7 @@ bool Widget::bringToFront()
 bool Widget::sendChildToBack(Widget* child)
 {
   auto it = mChildren.begin();
-  if (child == (*it))	// already there
+  if (child == (*it))  // already there
     return true;
   for (; it != mChildren.end(); ++it)
   {
@@ -340,7 +340,7 @@ void Widget::save(Json::value &save) const {
   save = Json::value(obj);
 }
 
-bool Widget::load(Json::value &save) { 
+bool Widget::load(Json::value &save) {
   auto p = save.get("position"); mPos = { p.get_int("x"), p.get_int("y") };
   auto s = save.get("size"); mSize = { s.get_int("w"), s.get_int("h") };
   auto fs = save.get("fixedSize"); mFixedSize = { fs.get_int("w"), fs.get_int("h") };
@@ -350,7 +350,7 @@ bool Widget::load(Json::value &save) {
   auto t = save.get("tooltip"); mTooltip = t.get_str("value");
   auto fh = save.get("fontSize"); mFontSize = fh.get_int("value");
   auto cr = save.get("cursor"); mCursor = (Cursor)cr.get_int("value");
-  return true; 
+  return true;
 }
 
 bool Widget::load(Serializer &s) {

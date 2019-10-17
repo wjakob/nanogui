@@ -14,6 +14,10 @@ bool isMouseButtonRight(int button) { return button == GLFW_MOUSE_BUTTON_RIGHT; 
 bool isMouseActionRelease(int action) { return action == GLFW_RELEASE; }
 bool isMouseActionPress(int action) { return action == GLFW_PRESS; }
 
+#if defined(__APPLE__)
+  extern void disable_saved_application_state_osx();
+#endif
+
 void init() {
 #if !defined(_WIN32)
   /* Avoid locale-related number parsing issues */

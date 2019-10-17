@@ -212,7 +212,7 @@ bool appPollEvents(void)
   MSG msg;
   HWND handle;
 
-  //while 
+  //while
   (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE));
   {
     if (msg.message == WM_QUIT)
@@ -296,8 +296,8 @@ static int getKeyMods(void)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
+  switch (message)
+  {
         // Keyboard handling
         case WM_KEYDOWN :
         case WM_SYSKEYDOWN:
@@ -347,14 +347,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           return 0;
         }
         break;
-	
+
         // Mouse pos
         case WM_MOUSEMOVE:
-        {     
+        {
             int xm = GET_X_LPARAM(lParam);
             int ym = GET_Y_LPARAM(lParam);
             if (cursorPosCallback)
-            	cursorPosCallback(hWnd, xm, ym);
+              cursorPosCallback(hWnd, xm, ym);
         }
         break;
 
@@ -397,21 +397,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           return 0;
         }
         break;
-    
+
         // Painting
-	    case WM_PAINT:
-        { 
+      case WM_PAINT:
+        {
             //Draw(hWnd);
             //ValidateRect(hWnd, NULL);
         }
-	    break;
+      break;
 
         // Sizing
       case WM_SIZE:
         {
             nanogui::resizeWindow(LOWORD(lParam), HIWORD(lParam));
         }
-	    break;
+      break;
 
       case WM_SETFOCUS:
       {
@@ -435,46 +435,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           return 0;
         }
 
-	    case WM_ERASEBKGND:
+      case WM_ERASEBKGND:
         {
             // No need to erase background
-		    return 1;
+        return 1;
         }
-	    break;
+      break;
 
-	    case WM_DESTROY:
+      case WM_DESTROY:
         {
             nanogui::UnInitializeDX();
 
             // Quit the app
             PostQuitMessage(0);
         }
-	    break;
+      break;
 
-	    default: return DefWindowProc(hWnd, message, wParam, lParam);
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
     }
-	return 0;
+  return 0;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-	WNDCLASSEX wcex;
+  WNDCLASSEX wcex;
 
-	wcex.cbSize = sizeof(WNDCLASSEX);
-   
-	wcex.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wcex.lpfnWndProc	= WndProc;
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= hInstance;
-	wcex.hIcon			= NULL;
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= "";
-	wcex.lpszClassName	= pszWindowClass;
-	wcex.hIconSm		= NULL;
+  wcex.cbSize = sizeof(WNDCLASSEX);
 
-	return RegisterClassEx(&wcex);
+  wcex.style      = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+  wcex.lpfnWndProc  = WndProc;
+  wcex.cbClsExtra    = 0;
+  wcex.cbWndExtra    = 0;
+  wcex.hInstance    = hInstance;
+  wcex.hIcon      = NULL;
+  wcex.hCursor    = LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+  wcex.lpszMenuName  = "";
+  wcex.lpszClassName  = pszWindowClass;
+  wcex.hIconSm    = NULL;
+
+  return RegisterClassEx(&wcex);
 }
 
 static unsigned __int64 dx11startTime = 0;

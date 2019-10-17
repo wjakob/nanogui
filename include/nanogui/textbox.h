@@ -188,10 +188,10 @@ public:
         setSpinnable(false);
     }
 
-    IntBox(Widget *parent, Scalar value, const std::function<void(Scalar)> &cb) 
+    IntBox(Widget *parent, Scalar value, const std::function<void(Scalar)> &cb)
       : IntBox(parent, value){ setCallback(cb); }
 
-    IntBox(Widget *parent, Scalar value, 
+    IntBox(Widget *parent, Scalar value,
            const std::function<void(Scalar)> &on_change,
            const std::function<void(Scalar, bool)> &on_edit)
       : IntBox(parent, value) {

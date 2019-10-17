@@ -37,7 +37,7 @@ WidgetFactory::WidgetFactory()
 
 void WidgetFactory::registerCreator(std::string wtype, creatorFunc creator)
 {
-  auto it = std::find_if(_creators_.begin(), _creators_.end(), [wtype](auto& c) { return c.name == wtype; });
+  auto it = std::find_if(_creators_.begin(), _creators_.end(), [wtype](CreatorInfo& c) { return c.name == wtype; });
   if (it == _creators_.end())
     _creators_.push_back({ wtype, creator});
 }
@@ -63,7 +63,7 @@ size_t WidgetFactory::factoriesCount() const
   return _factories_.size();
 }
 
-WidgetFactory* WidgetFactory::getFactory(int index ) const
+WidgetFactory* WidgetFactory::getFactory(size_t index ) const
 {
   if( index < _factories_.size() )
     return _factories_[ index ];

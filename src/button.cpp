@@ -22,7 +22,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
       mIconPosition(IconPosition::LeftCentered), mPushed(false),
       mBackgroundColor(Color(0, 0)),
-      mTextColor(Color(0, 0)) 
+      mTextColor(Color(0, 0))
 {
   mFlags.set(NormalButton);
 }
@@ -229,7 +229,7 @@ void Button::save(Serializer &s) const {
     s.set("icon", mIcon);
     s.set("iconPosition", (int) mIconPosition);
     s.set("pushed", mPushed);
-    s.set("flags", mFlags.to_ullong());
+    s.set("flags", (int)mFlags.to_ullong());
     s.set("backgroundColor", mBackgroundColor);
     s.set("textColor", mTextColor);
 }
@@ -276,7 +276,7 @@ void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, fl
   nvgBezierTo(ctx, c1x * kw, c1y * kh, c2x * kw, c2y * kh, x * kw, y * kh);
 }
 
-LedButton::LedButton(Widget* parent, Mode mode, int w, int h) 
+LedButton::LedButton(Widget* parent, Mode mode, int w, int h)
   : Button(parent)
 {
   setFixedSize({ w, h });

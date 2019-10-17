@@ -13,14 +13,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id ) 
+PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id )
   :  Window(parent, "Properties")
 {
   setId(id);
   setSize(parent->size());
   _nameColumnWidthPerc = 0.48f;
   _valueColumnWidthPerc = 0.48f;
-	// create attributes
+  // create attributes
 
   _propholder = new VScrollPanel(this);
   _propholder->setPosition(0, mTheme->mWindowHeaderHeight);
@@ -87,24 +87,24 @@ void PropertiesEditor::parse(Widget* w)
       wcaption->setFixedWidth(ww);
       if (typevalue == "position")
       {
-        auto e = grid->add<IntBox<int>>(jval.get_int("x"), 
+        auto e = grid->add<IntBox<int>>(jval.get_int("x"),
             [&](int v) { jval.set_int("x", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
         e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
         grid->add<Label>("");
-        e = grid->add<IntBox<int>>(jval.get_int("y"), 
+        e = grid->add<IntBox<int>>(jval.get_int("y"),
             [&](int v) { jval.set_int("y", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
         e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
       }
       else if (typevalue == "size")
       {
-        auto e = grid->add<IntBox<int>>(jval.get_int("w"), 
+        auto e = grid->add<IntBox<int>>(jval.get_int("w"),
             [&](int v) { jval.set_int("w", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
         e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
         grid->add<Label>("");
-        e = grid->add<IntBox<int>>(jval.get_int("h"), 
+        e = grid->add<IntBox<int>>(jval.get_int("h"),
             [&](int v) { jval.set_int("h", v); updateAttribs(); },
             [&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
         e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
@@ -121,7 +121,7 @@ void PropertiesEditor::parse(Widget* w)
       }
       else if (typevalue == "string")
       {
-        auto e = grid->add<TextBox>(jval.get_str("value"), 
+        auto e = grid->add<TextBox>(jval.get_str("value"),
                                     [&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; },
                                     [&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
         e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
@@ -149,7 +149,7 @@ void PropertiesEditor::setColumnWidth(float nameColWidth, float valColWidth )
 
 std::string PropertiesEditor::wtypename() const
 {
-	return "PropertiesEditor";
+  return "PropertiesEditor";
 }
 
 NAMESPACE_END(nanogui)

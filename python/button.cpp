@@ -20,7 +20,7 @@ void register_button(py::module &m) {
         .def("setTextColor", &Button::setTextColor, D(Button, setTextColor))
         .def("icon", &Button::icon, D(Button, icon))
         .def("setIcon", &Button::setIcon, D(Button, setIcon))
-        .def("flags", &Button::flags, D(Button, flags))
+        //.def("flags", &Button::flags, D(Button, flags))
         .def("setFlags", &Button::setFlags, D(Button, setFlags))
         .def("iconPosition", &Button::iconPosition, D(Button, iconPosition))
         .def("setIconPosition", &Button::setIconPosition, D(Button, setIconPosition))

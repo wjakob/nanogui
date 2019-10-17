@@ -7,16 +7,16 @@
 NAMESPACE_BEGIN(nanogui)
 
 static const std::string attrEditorName = "attributeEditor";
-		
+
 EditorWorkspace::EditorWorkspace(Widget* parent, std::string id )
     : Widget(parent),
-	_currentMode(EditMode::Select), _mouseOverMode(EditMode::Select),
-	_gridSize(10,10), _drawGrid( true ), _useGrid(true),
-	_running( true )
+  _currentMode(EditMode::Select), _mouseOverMode(EditMode::Select),
+  _gridSize(10,10), _drawGrid( true ), _useGrid(true),
+  _running( true )
 {
   setId(id);
-	// this element is never saved.
-	setSubElement(true); 
+  // this element is never saved.
+  setSubElement(true);
   //_changesManager = new core::ChangesManager( "temp", *this );
 }
 
@@ -47,40 +47,40 @@ Vector2i getOffsetToChild(Widget* w, Widget* parent)
     if (w == parent)
       break;
   }
-  
+
   return ret;
 }
 
 EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
 {
     try
-    {   
+    {
       Vector2i offset = getOffsetToChild(_selectedElement, this);
-	    if (_selectedElement)
-	    {
-		    if( isPointInsideRect( p, editArea.topleft) )
-			    return EditMode::ResizeTopLeft;
-		    else if( isPointInsideRect( p, editArea.topright) )
-			    return EditMode::ResizeTopRight;
-		    else if( isPointInsideRect( p, editArea.bottomleft) )
-			    return EditMode::ResizeBottomLeft;
-		    else if(isPointInsideRect( p, editArea.bottomright) )
-			    return EditMode::ResizeBottpmRight;
-		    else if( isPointInsideRect( p, editArea.top) )
-			    return EditMode::ResizeTop;
-		    else if( isPointInsideRect( p, editArea.bottom) )
-			    return EditMode::ResizeBottom;
-		    else if( isPointInsideRect( p, editArea.left) )
-			    return EditMode::ResizeLeft;
-		    else if( isPointInsideRect( p, editArea.right) )
-			    return EditMode::ResizeRight;
-		    else if( getEditableElementFromPoint( _selectedElement, p - offset) == _selectedElement )
-			    return EditMode::Move;
-		    else
-			    return EditMode::Select;
-	    }
+      if (_selectedElement)
+      {
+        if( isPointInsideRect( p, editArea.topleft) )
+          return EditMode::ResizeTopLeft;
+        else if( isPointInsideRect( p, editArea.topright) )
+          return EditMode::ResizeTopRight;
+        else if( isPointInsideRect( p, editArea.bottomleft) )
+          return EditMode::ResizeBottomLeft;
+        else if(isPointInsideRect( p, editArea.bottomright) )
+          return EditMode::ResizeBottpmRight;
+        else if( isPointInsideRect( p, editArea.top) )
+          return EditMode::ResizeTop;
+        else if( isPointInsideRect( p, editArea.bottom) )
+          return EditMode::ResizeBottom;
+        else if( isPointInsideRect( p, editArea.left) )
+          return EditMode::ResizeLeft;
+        else if( isPointInsideRect( p, editArea.right) )
+          return EditMode::ResizeRight;
+        else if( getEditableElementFromPoint( _selectedElement, p - offset) == _selectedElement )
+          return EditMode::Move;
+        else
+          return EditMode::Select;
+      }
 
-	    return EditMode::Select;
+      return EditMode::Select;
     }
     catch( ... )
     {
@@ -93,54 +93,54 @@ Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector
 {
     Widget* target = nullptr;
 
-	  // we have to search from back to front.
+    // we have to search from back to front.
 
     auto rev_it = start->children().rbegin();
-	  while(rev_it != start->children().rend())
-	  {
-		  target = getEditableElementFromPoint((*rev_it),point - start->position());
-		  if (target)
-		  {
-			  if (!target->isSubElement() && isMyChildRecursive(target) && target != this)
-  			  return target;
-			  else
-				  target = nullptr;
-		  }
+    while(rev_it != start->children().rend())
+    {
+      target = getEditableElementFromPoint((*rev_it),point - start->position());
+      if (target)
+      {
+        if (!target->isSubElement() && isMyChildRecursive(target) && target != this)
+          return target;
+        else
+          target = nullptr;
+      }
       ++rev_it;
-	  }
+    }
 
-	  if (isPointInsideRect(point, start->rect()))
-		  target = start;
+    if (isPointInsideRect(point, start->rect()))
+      target = start;
 
-	  return target;
+    return target;
 }
 
 void EditorWorkspace::setSelectedElement(Widget *sel)
 {
   Widget* focus = findWidget([](Widget* w) -> bool { return w->focused(); });
-	// we only give focus back to children
-	if (isMyChildRecursive(focus))
-		focus = nullptr;
+  // we only give focus back to children
+  if (isMyChildRecursive(focus))
+    focus = nullptr;
 
   bool needUpdateSelectedElm = false;
-	if (_selectedElement != this)
-	{
-		if( _selectedElement != sel)// && _editorWindow )
-		{
-			//_editorWindow->setSelectedElement(sel);
-			_selectedElement = sel;
+  if (_selectedElement != this)
+  {
+    if( _selectedElement != sel)// && _editorWindow )
+    {
+      //_editorWindow->setSelectedElement(sel);
+      _selectedElement = sel;
       needUpdateSelectedElm = true;
-		}
-	}
+    }
+  }
   else
   {
     _selectedElement = nullptr;
     needUpdateSelectedElm = true;
   }
 
-	if (focus)
+  if (focus)
      focus->requestFocus();
-	else
+  else
      requestFocus();
 
   if (mWidgetSelectedCallback && needUpdateSelectedElm)
@@ -149,60 +149,60 @@ void EditorWorkspace::setSelectedElement(Widget *sel)
 
 Widget* EditorWorkspace::getSelectedElement()
 {
-	return _selectedElement;
+  return _selectedElement;
 }
 
 void EditorWorkspace::selectNextSibling()
 {
   Widget* p=nullptr;
 
-	if (_selectedElement && _selectedElement->parent())
-		p = _selectedElement->parent();
-	else
+  if (_selectedElement && _selectedElement->parent())
+    p = _selectedElement->parent();
+  else
     p = parent();
 
   auto it = p->children().begin();
-	// find selected element
-	if (_selectedElement)
-		while (*it != _selectedElement)
-			++it;
+  // find selected element
+  if (_selectedElement)
+    while (*it != _selectedElement)
+      ++it;
 
-	if (it !=p->children().end())
-		++it;
-	
+  if (it !=p->children().end())
+    ++it;
+
   // find next non sub-element
-	while (it != p->children().end() && (*it)->isSubElement())
-		++it;
+  while (it != p->children().end() && (*it)->isSubElement())
+    ++it;
 
-	if (it != p->children().end())
-		setSelectedElement(*it);
+  if (it != p->children().end())
+    setSelectedElement(*it);
 }
 
 void EditorWorkspace::selectPreviousSibling()
 {
   Widget* p=0;
 
-	if (_selectedElement && _selectedElement->parent())
-		p = _selectedElement->parent();
-	else
+  if (_selectedElement && _selectedElement->parent())
+    p = _selectedElement->parent();
+  else
     p = parent();
 
   auto it = p->children().begin();
-	// find selected element
+  // find selected element
   if (_selectedElement)
   {
     while (*it != _selectedElement)
       ++it;
   }
 
-	if (it != p->children().end())
-	  ++it;
-	// find next non sub-element
-	while (it != p->children().end() && (*it)->isSubElement())
-		++it;
+  if (it != p->children().end())
+    ++it;
+  // find next non sub-element
+  while (it != p->children().end() && (*it)->isSubElement())
+    ++it;
 
-	if (it != p->children().end())
-		setSelectedElement(*it);
+  if (it != p->children().end())
+    setSelectedElement(*it);
 }
 
 void EditorWorkspace::_createElementsMap( Widget* start, std::map< std::string, Widget* >& mapa )
@@ -249,12 +249,12 @@ void EditorWorkspace::setElementName( Widget* elm, bool setText, std::string& wa
 
 void EditorWorkspace::bringElementToFront( Widget* elm )
 {
-	elm->bringToFront();
+  elm->bringToFront();
 }
 
 bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modifiers)
 {
-  if (isKeyboardActionRelease(action)) 
+  if (isKeyboardActionRelease(action))
   {
     int keycode = key2fourcc(key);
     switch (keycode)
@@ -457,7 +457,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
   {
     if (_currentMode == EditMode::SelectNewParent)
       return true;
-   
+
     Vector2i p = pp;
     Widget* newSelection = findWidget(p);
 
@@ -543,7 +543,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
       //  _changesManager->Update();
     }
     return true;
-  } 
+  }
 
   return false;
 }
@@ -551,14 +551,14 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
 //! called if an event happened.
 /*bool EditorWorkspace::onEvent( const NEvent &e )
 {
-	switch(e.EventType)
-	{
+  switch(e.EventType)
+  {
     /*case NRP_DRAGDROP_EVENT:
         if( e.DragDropEvent.EventType == NRP_DROP_ELEMENT && e.DragDropEvent.Element == _factoryView )
         {
             Point mousePos = e.MouseEvent.getPosition();
             Widget* parentElm = getEditableElementFromPoint(this, mousePos );
-            
+
             s32 fIndex = _factoryView->GetFactoryIndex();
             s32 elmIndex = _factoryView->GetElementIndex();
             if(  fIndex >= 0 && elmIndex >= 0 )
@@ -571,26 +571,26 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
                 if( newElement )
                 {
                     Point p = mousePos - parentElm->getAbsoluteRect().UpperLeftCorner;
-					newElement->setGeometry( RectI( p, core::NSizeU(100,100) ) );
-                    
+          newElement->setGeometry( RectI( p, core::NSizeU(100,100) ) );
+
                     String checkName;
                     setElementName( newElement, true, checkName );
                     setSelectedElement(0);
-                    setSelectedElement( newElement );    
+                    setSelectedElement( newElement );
 
                     if( _changesManager )
                         _changesManager->Update();
                 }
             }
-            
+
             getEnvironment()->setDragObject( NULL, Texture(), core::RectI( 0, 0, 0, 0 ) );
             _editorWindow->updateTree( this );
             return true;
         }
     break;
-	// even if we didn't absorb the event,
-	// we never pass events back to the GUI we're editing!
-	return false;
+  // even if we didn't absorb the event,
+  // we never pass events back to the GUI we're editing!
+  return false;
 }*/
 
 void EditorWorkspace::preview()
@@ -603,17 +603,17 @@ void EditorWorkspace::preview()
     }
     else
     {
-		 /* _factoryView->EnabledEditorMode( false );
+     /* _factoryView->EnabledEditorMode( false );
           _previewWindow = new Window( this, RectI( Point( 0, 0 ), scrSize ), L"Preview mode", -1 );
 
-		  io::FilePath saveFileName( L"temp/forPreview.ui" );
+      io::FilePath saveFileName( L"temp/forPreview.ui" );
           getEnvironment()->saveUI( saveFileName, elm );
 
           getEnvironment()->loadUI( saveFileName, _previewWindow );
-          _previewWindow->setModal(); 
+          _previewWindow->setModal();
           _previewWindow->setNotClipped( true );
-		  _previewWindow->setWindowFlag( Window::draggable, false );
-		  _factoryView->EnabledEditorMode( true ); */
+      _previewWindow->setWindowFlag( Window::draggable, false );
+      _factoryView->EnabledEditorMode( true ); */
     }
 }
 
@@ -627,23 +627,23 @@ void EditorWorkspace::draw(NVGcontext* ctx)
   nvgStrokeColor(ctx, nvgRGBA(0, 0, 0, 255));
   nvgStroke(ctx);
 
-	if( _drawGrid )
-	{
-		// draw the grid
-		int cy = _gridSize.x();
+  if( _drawGrid )
+  {
+    // draw the grid
+    int cy = _gridSize.x();
     nvgBeginPath(ctx);
 
     int row = 0;
-		while (cy < height())
-		{
+    while (cy < height())
+    {
       row++;
-      nvgStrokeColor(ctx, (row % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80) 
+      nvgStrokeColor(ctx, (row % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80)
                                          : nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
 
       nvgMoveTo(ctx, mPos.x(), mPos.y() + cy);
       nvgLineTo(ctx, mPos.x() + width(), mPos.y() + cy);
       cy += _gridSize.y();
-		}
+    }
 
     int cx = _gridSize.x();
     int col = 0;
@@ -802,72 +802,72 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
 
 void EditorWorkspace::setGridVisible( bool visible )
 {
-	_drawGrid = visible;
+  _drawGrid = visible;
 }
 
 void EditorWorkspace::setGridSize(const Vector2i& gridSize)
 {
-	_gridSize = gridSize;
-	if (_gridSize.x() < 2)
-		_gridSize.x() = 2;
-	if (_gridSize.y()< 2)
-		_gridSize.y() = 2;
+  _gridSize = gridSize;
+  if (_gridSize.x() < 2)
+    _gridSize.x() = 2;
+  if (_gridSize.y()< 2)
+    _gridSize.y() = 2;
 }
 
 void EditorWorkspace::setUseGrid(bool useGrid)
 {
-	_useGrid = useGrid;
+  _useGrid = useGrid;
 }
 
 void EditorWorkspace::copySelectedElementToJson()
 {
-	// create memory write file
-	//io::ArrayMappedFile memWrite( L"#Clipboard#" );
-	// save gui to mem file
-	//getEnvironment()->saveUI( &memWrite, _selectedElement );
+  // create memory write file
+  //io::ArrayMappedFile memWrite( L"#Clipboard#" );
+  // save gui to mem file
+  //getEnvironment()->saveUI( &memWrite, _selectedElement );
 
-	// copy to clipboard- wide chars not supported yet :(
-	//String text( memWrite.getData() );
-	//getEnvironment()->getOSOperator()->copyToClipboard( text );
+  // copy to clipboard- wide chars not supported yet :(
+  //String text( memWrite.getData() );
+  //getEnvironment()->getOSOperator()->copyToClipboard( text );
 }
 
 void EditorWorkspace::pasteJsonToSelectedElement()
 {
-	// get clipboard data
-	//String XMLText = getEnvironment()->getOSOperator()->getTextFromClipboard();
+  // get clipboard data
+  //String XMLText = getEnvironment()->getOSOperator()->getTextFromClipboard();
 
-	//io::ArrayMappedFile memFile("#Clipboard#");
+  //io::ArrayMappedFile memFile("#Clipboard#");
 
-	// write clipboard data
-	//memFile.write( XMLText.toAscii().pointer(), XMLText.size() );
+  // write clipboard data
+  //memFile.write( XMLText.toAscii().pointer(), XMLText.size() );
 
-	// rewind file
-	//memFile.seek(0, false);
+  // rewind file
+  //memFile.seek(0, false);
 
-	// read xml
-	//getEnvironment()->loadUI( &memFile, _selectedElement);
+  // read xml
+  //getEnvironment()->loadUI( &memFile, _selectedElement);
 
-	// reset focus
-	//getEnvironment()->setFocus(this);
+  // reset focus
+  //getEnvironment()->setFocus(this);
 }
 
 void EditorWorkspace::save(Serializer& out) const
 {
-	//out->AddBool( L"DrawGrid", drawGrid_);
-	//out->AddBool( L"UseGrid", UseGrid);
-	//out->AddPosition2d( L"GridSize", Point(GridSize.Width, GridSize.Height));
-	//out->AddInt( L"MenuCommandStart", MenuCommandStart);
+  //out->AddBool( L"DrawGrid", drawGrid_);
+  //out->AddBool( L"UseGrid", UseGrid);
+  //out->AddPosition2d( L"GridSize", Point(GridSize.Width, GridSize.Height));
+  //out->AddInt( L"MenuCommandStart", MenuCommandStart);
 }
 
 bool EditorWorkspace::load(Serializer& in )
 {
-	//setGridVisible(in->getAttributeAsBool(L"DrawGrid"));
-	//setUseGrid(in->getAttributeAsBool(L"UseGrid"));
+  //setGridVisible(in->getAttributeAsBool(L"DrawGrid"));
+  //setUseGrid(in->getAttributeAsBool(L"UseGrid"));
 
-	//Point tmpp = in->getAttributeAsPosition2d(L"GridSize");
-	//core::NSizeU tmpd(tmpp.X, tmpp.Y);
-	//setGridSize(tmpd);
-	//setMenuCommandIDStart(in->getAttributeAsInt( L"MenuCommandStart"));
+  //Point tmpp = in->getAttributeAsPosition2d(L"GridSize");
+  //core::NSizeU tmpd(tmpp.X, tmpp.Y);
+  //setGridSize(tmpd);
+  //setMenuCommandIDStart(in->getAttributeAsInt( L"MenuCommandStart"));
   return true;
 }
 
@@ -877,7 +877,7 @@ std::string EditorWorkspace::wtypename() const
 }
 
 void EditorWorkspace::setFactoryView( FactoryView* wnd )
-{   
+{
     _factoryView = wnd;
 }
 
@@ -893,7 +893,7 @@ void EditorWorkspace::reset()
 void EditorWorkspace::cutSelectedElement()
 {
     copySelectedElementToJson();
-    
+
     removeElement( _selectedElement );
 }
 
@@ -949,7 +949,7 @@ void EditorWorkspace::removeChild(const Widget* child )
 {
     setSelectedElement( nullptr );
     _elementUnderMouse = nullptr;
- 
+
     Widget::removeChild( child );
 }
 
@@ -969,9 +969,9 @@ void EditorWorkspace::toggleOptionsVisible()
 
     _optionsWindow = new Window( NULL, RectI(0, 0, 0, 0), L"Workspace options", -1 );
     _optionsWindow->setRelativeRectProportional( RectF(0.3f, 0.25f, 0.6f, 0.75f) );
-	  _optionsWindow->getButton( Window::buttonClose )->setVisible( false );
+    _optionsWindow->getButton( Window::buttonClose )->setVisible( false );
 
-	  AttributeEditor* editor = (AttributeEditor*)WidgetsFactoriesManager::instance().createWidget( attrEditorName, _optionsWindow);
+    AttributeEditor* editor = (AttributeEditor*)WidgetsFactoriesManager::instance().createWidget( attrEditorName, _optionsWindow);
     editor->setID( attrEditorName.getHash() );
     editor->setRelativeRectProportional( RectF(0.0f, 0.1f, 1.0f, 1.0f));
     editor->setAlignment(alignUpperLeft, alignLowerRight, alignUpperLeft, alignLowerRight);
@@ -1001,7 +1001,7 @@ void EditorWorkspace::userChangeOptions()
 
 bool EditorWorkspace::isGridVisible() const
 {
-	return _drawGrid;
+  return _drawGrid;
 }
 
 NAMESPACE_END(nanogui)

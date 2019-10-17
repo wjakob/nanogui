@@ -12,24 +12,24 @@ class ScrollBar;
 class NANOGUI_EXPORT Foldout : public Widget
 {
 public:
-	struct Page
-	{
-	  Button* button;
-	  Widget* page;
-	  std::string name;
-	  int number;
-	};
+  struct Page
+  {
+    Button* button;
+    Widget* page;
+    std::string name;
+    int number;
+  };
 
-	struct Desc
-	{
-	  std::string name;
-	  std::string caption;
-	};
-	Foldout( Widget* parent, const Vector4i& rectangle, const std::string& id="" );
-	virtual ~Foldout();
+  struct Desc
+  {
+    std::string name;
+    std::string caption;
+  };
+  Foldout( Widget* parent, const Vector4i& rectangle, const std::string& id="" );
+  virtual ~Foldout();
 
-	//! draws the element and its children
-	void draw(NVGcontext* painter);
+  //! draws the element and its children
+  void draw(NVGcontext* painter);
 
   void addPage( const std::string& pageName, const std::string& pageCaption, Widget* page );
   void setPageOpened( const std::string& pageName, bool opened );
@@ -47,18 +47,18 @@ public:
 
   Page* addPage(Widget* elemnt);
 
-	//virtual void save(* out ) const;
+  //virtual void save(* out ) const;
   //virtual void load(* in );
 protected:
-    
+
     void _reparseChilds();
     void _updateChilds();
     void _resizeEvent();
 
     typedef std::vector<Page*> _Pages;
-  	typedef std::vector<Desc> _Names;
-  	_Pages _pages;
-  	_Names _pageNames;
+    typedef std::vector<Desc> _Names;
+    _Pages _pages;
+    _Names _pageNames;
 
     uint32_t _lastChildCount;
     int _activePageIndex;

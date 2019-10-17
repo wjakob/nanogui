@@ -34,10 +34,6 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
   return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
 }
 
-#if defined(__APPLE__)
-  extern void disable_saved_application_state_osx();
-#endif
-
 static bool mainloop_active = false;
 
 void mainloop(int refresh) {
