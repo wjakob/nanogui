@@ -159,6 +159,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
   if (children.size() == 0)
     return;
 
+  Vector2i baseContainerSize = containerSize;
   while (pChildrens.size() > 0)
   {
     Widget* w = pChildrens.front();
@@ -170,14 +171,17 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
     position += mSpacing;
     Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildrens.size()+1), containerSize.y());
 
-    Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
-    Vector2i targetSize(
-      fs[0] ? fs[0] : ps[0],
-      fs[1] ? fs[1] : ps[1]
-    );
+    Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize(); 
+    Vector2f rs = w->relsize();
+
+    if (fs.x() == 0) fs.x() = rs.x() * baseContainerSize.x();
+    if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
+
+    Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
+                        fs.y() ? fs.y() : ps.y());
     Vector2i pos(position, yOffset);
 
-    if (targetSize.x() > wSize.x()) wSize.x() = targetSize.x();
+    if (targetSize.x() > 0) wSize.x() = targetSize.x();
 
     if (!w->isSubElement())
     {
@@ -188,7 +192,10 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
     w->performLayout(ctx);
 
     if (!w->isSubElement())
+    {
       position += wSize.x();
+      containerSize.x() -= wSize.x();
+    }
   }
 }
 

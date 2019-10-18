@@ -596,13 +596,15 @@ public:
       if (!logwnd)
       {
         auto& wnd = window("Example: Simple layout");
-        wnd.setLayout(new StretchLayout(Orientation::Horizontal));
+        wnd.flexlayout(Orientation::Horizontal);
         wnd.setPosition(180, 180);
         wnd.setFixedSize({ 400, 300 });
         auto& lst = wnd.listbox();
+        lst.setRelativeSize(0.33, 0);
         for (int i = 0; i < 12; i++)
           lst.addItem("Item " + std::to_string(i));
         wnd.setId("simple_layout_wnd");
+        wnd.widget();
         performLayout();
       }
       else

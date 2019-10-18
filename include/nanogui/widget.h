@@ -139,6 +139,10 @@ public:
     void setSize(const Vector2i &size) { mSize = size; }
     void setSize(int w, int h) { setSize(Vector2i( w, h )); }
 
+    const Vector2f &relsize() const { return mRelSize; }
+    void setRelativeSize(const Vector2f &size) { mRelSize = size; }
+    void setRelativeSize(float w, float h) { setRelativeSize(Vector2f(w, h)); }
+
     /// Return the width of the widget
     int width() const { return mSize.x(); }
     /// Set the width of the widget
@@ -383,8 +387,9 @@ public:
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
     template<typename LayoutClass, typename... Args>
-    Widget& withLayout(const Args&... args) { auto layout = new LayoutClass(args...); return *this; }
+    Widget& withLayout(const Args&... args) { setLayout(new LayoutClass(args...)); return *this; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
+    template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
     template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }
@@ -422,7 +427,8 @@ protected:
     ref<Theme> mTheme;
     ref<Layout> mLayout;
     std::string mId;
-    Vector2i mPos, mSize, mFixedSize, mMinSize;;
+    Vector2i mPos, mSize, mFixedSize, mMinSize;
+    Vector2f mRelSize;
     std::vector<Widget *> mChildren;
 
     /**

@@ -167,6 +167,12 @@ Listbox::Listbox(Widget* parent)
 void Listbox::draw(NVGcontext* ctx)
 {
   Widget::draw(ctx);
+
+  nvgStrokeWidth(ctx, 1.0f);
+  nvgBeginPath(ctx);
+  nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+  nvgStrokeColor(ctx, mTheme->mBorderDark);
+  nvgStroke(ctx);
 }
 
 void Listbox::addItem(const std::string& str, const std::string& id)
