@@ -18,7 +18,9 @@
 NAMESPACE_BEGIN(nanogui)
 
 VScrollPanel::VScrollPanel(Widget *parent)
-    : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f), mUpdateLayout(false) { }
+    : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f),
+      mUpdateLayout(false), mSliderWidth(8), mSliderMargin(2)
+{ }
 
 void VScrollPanel::performLayout(NVGcontext *ctx) {
     Widget::performLayout(ctx);
@@ -78,6 +80,11 @@ bool VScrollPanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int 
   return Widget::mouseMotionEvent(p, rel, button, modifiers);
 }
 
+bool VScrollPanel::isSliderVisible() const
+{
+  return mChildPreferredHeight > height();
+}
+
 bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
         float scrollAmount = rel.y() * (mSize.y() / 20.0f);
@@ -122,9 +129,9 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 
-    Vector4i rectSlider(mPos.x() + mSize.x() - 12 + 1,   //x:x
-                        mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, //y:y
-                        8 - 2,   //z:width
+    Vector4i rectSlider(mPos.x() + mSize.x() - getSliderAreaWidth() + 1,   //x:x
+                        mPos.y() + mSliderMargin * 2 + 1 + (mSize.y() - getSliderWidth() - scrollh) * mScroll, //y:y
+                        getSliderWidth() - mSliderMargin,   //z:width
                         scrollh - 2); //w:height
     bool isSliderSelected = (mLastMousePos.x() >= rectSlider.x() 
                              && mLastMousePos.y() >= rectSlider.y()
@@ -138,8 +145,8 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     sliderSupColor.w() = sliderColor.w();
 
     paint = nvgBoxGradient( ctx, 
-                            mPos.x() + mSize.x() - 12 - 1, mPos.y() + 4 + (mSize.y() - 8 - scrollh) * mScroll - 1, 
-                            8, scrollh,
+                            mPos.x() + mSize.x() - getSliderAreaWidth() - 1, mPos.y() + mSliderMargin * 2 + (mSize.y() - getSliderWidth() - scrollh) * mScroll - 1,
+                            getSliderWidth(), scrollh,
                             3, 4, sliderColor, sliderSupColor);
 
     nvgBeginPath(ctx);

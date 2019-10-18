@@ -43,6 +43,7 @@
 #include <nanogui/windowmenu.h>
 #include <nanogui/perfchart.h>
 #include <nanogui/common.h>
+#include <nanogui/listbox.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -548,6 +549,11 @@ public:
                                                     enabled = true; 
                                                     auto* w = findWidgetGlobal("log_wnd");
                                                     checked = (w && w->visible());
+                                                  })
+          .item("Simple layout", [this](bool v) { toggleSimpleLayoutWnd(v); }, [this](bool &enabled, bool &checked) {
+                                                    enabled = true; 
+                                                    auto* w = findWidgetGlobal("simple_layout_wnd");
+                                                    checked = (w && w->visible());
                                                   });
       dw.submenu("Help");
     }
@@ -572,7 +578,6 @@ public:
         auto& wnd = window("Example: Console");
         wnd.setPosition(60, 60);
         wnd.setLayout(new GroupLayout());
-        wnd.setSize(300, 300);
         wnd.setFixedSize({ 300, 300 });
         wnd.setId("console_wnd");
         performLayout();
@@ -580,6 +585,29 @@ public:
       else
       {
         console->setVisible(show);
+      }
+    }
+    
+    void toggleSimpleLayoutWnd(bool show)
+    {
+      using namespace nanogui;
+
+      auto logwnd = findWidgetGlobal("simple_layout_wnd");
+      if (!logwnd)
+      {
+        auto& wnd = window("Example: Simple layout");
+        wnd.setLayout(new StretchLayout(Orientation::Horizontal));
+        wnd.setPosition(180, 180);
+        wnd.setFixedSize({ 400, 300 });
+        auto& lst = wnd.listbox();
+        for (int i = 0; i < 12; i++)
+          lst.addItem("Item " + std::to_string(i));
+        wnd.setId("simple_layout_wnd");
+        performLayout();
+      }
+      else
+      {
+        logwnd->setVisible(show);
       }
     }
 
@@ -592,7 +620,6 @@ public:
       {
         auto& wnd = window("Example: Log");
         wnd.setPosition(120, 120);
-        wnd.setSize(400, 300);
         wnd.setFixedSize({ 400, 300 });
         wnd.setId("log_wnd");
         performLayout();

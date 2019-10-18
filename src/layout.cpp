@@ -129,6 +129,69 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     }
 }
 
+void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
+{
+  Vector2i fs_w = widget->fixedSize();
+  Vector2i containerSize(
+    fs_w[0] ? fs_w[0] : widget->width(),
+    fs_w[1] ? fs_w[1] : widget->height()
+  );
+
+  int axis1 = (int)mOrientation, axis2 = ((int)mOrientation + 1) % 2;
+  int position = mMargin;
+  int yOffset = 0;
+
+  const Window *window = dynamic_cast<const Window *>(widget);
+  if (window && !window->title().empty()) {
+    if (mOrientation == Orientation::Vertical) {
+      position += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+    }
+    else {
+      yOffset = widget->theme()->mWindowHeaderHeight;
+      containerSize[1] -= yOffset;
+    }
+  }
+
+  auto& children = widget->children();
+  std::vector<Widget*> pChildrens;
+  for (auto& a : children) pChildrens.emplace_back(a);
+
+  if (children.size() == 0)
+    return;
+
+  while (pChildrens.size() > 0)
+  {
+    Widget* w = pChildrens.front();
+    pChildrens.erase(pChildrens.begin());
+
+    if (!w->visible())
+      continue;
+    
+    position += mSpacing;
+    Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildrens.size()+1), containerSize.y());
+
+    Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
+    Vector2i targetSize(
+      fs[0] ? fs[0] : ps[0],
+      fs[1] ? fs[1] : ps[1]
+    );
+    Vector2i pos(position, yOffset);
+
+    if (targetSize.x() > wSize.x()) wSize.x() = targetSize.x();
+
+    if (!w->isSubElement())
+    {
+      w->setPosition(pos);
+      w->setSize(wSize);
+    }
+
+    w->performLayout(ctx);
+
+    if (!w->isSubElement())
+      position += wSize.x();
+  }
+}
+
 Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
     int height = mMargin, width = 2*mMargin;
 

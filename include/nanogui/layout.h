@@ -147,6 +147,13 @@ protected:
     int mSpacing;
 };
 
+class NANOGUI_EXPORT StretchLayout : public BoxLayout
+{
+public:
+  StretchLayout(Orientation orientation) : BoxLayout(orientation) {}
+  void performLayout(NVGcontext* ctx, Widget* widget) const override;
+};
+
 /**
  * \class GroupLayout layout.h nanogui/layout.h
  *

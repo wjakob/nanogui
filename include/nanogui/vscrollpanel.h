@@ -41,11 +41,16 @@ public:
     virtual void draw(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
+    int getSliderWidth() const { return mSliderWidth; }
+    int getSliderAreaWidth() const { return mSliderWidth + mSliderMargin * 2; }
+    bool isSliderVisible() const;
 protected:
     int mChildPreferredHeight;
     float mScroll;
     bool mUpdateLayout;
     Vector2i mLastMousePos;
+    int mSliderWidth;
+    int mSliderMargin;
     Color mSliderInactiveColor, mSliderActiveColor;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -1,6 +1,9 @@
 #include "nanogui/opengl.h"
-#include <glad/glad.h>
 #include <nanogui/perfchart.h>
+
+#ifndef _APPLE__
+#include <glad/glad.h>
+#endif
 
 #ifndef glGetQueryObjectuiv
 #define GL_TIME_ELAPSED                   0x88BF
