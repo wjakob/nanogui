@@ -23,7 +23,7 @@ using namespace nanogui;
 // `icon` should be the defined constant in nanogui/entypo.h
 // the button label will be the string that represents this
 #define ADD_BUTTON(icon)                                   \
-    auto b_##icon = new Button(wrapper, #icon, icon);      \
+    auto b_##icon = new Button(wrapper, std::string(#icon), icon);      \
     b_##icon->setIconPosition(Button::IconPosition::Left); \
     b_##icon->setFixedWidth(half_width);
 

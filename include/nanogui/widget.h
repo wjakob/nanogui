@@ -38,12 +38,18 @@ class Listbox;
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
 
+enum TextHAlign { hLeft = 0, hCenter, hRight };
+enum TextVAlign { vTop = 3, vMiddle, vBottom };
+
 DECLSETTER(MaxHeight,int)
 DECLSETTER(FixedHeight,int)
 DECLSETTER(WidgetId,std::string)
-
-enum TextHAlign { hLeft = 0, hCenter, hRight };
-enum TextVAlign { vTop = 3, vMiddle, vBottom };
+DECLSETTER(Icon,int)
+DECLSETTER(Caption, std::string)
+DECLSETTER(TooltipText, std::string)
+DECLSETTER(CaptionFont, std::string)
+DECLSETTER(FontSize, int)
+DECLSETTER(CaptionHAlign, TextHAlign)
 
 /**
  * \class Widget widget.h nanogui/widget.h

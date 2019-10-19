@@ -25,11 +25,6 @@ NAMESPACE_BEGIN(nanogui)
  * is used, the text is wrapped when it surpasses the specified width.
  */
 
-DECLSETTER(Caption,std::string)
-DECLSETTER(CaptionFont,std::string)
-DECLSETTER(FontSize,int)
-DECLSETTER(CaptionHAlign,TextHAlign)
-
 class NANOGUI_EXPORT Label : public Widget {
 public:
     enum TextState { tEnabled=0, tDisabled };

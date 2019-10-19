@@ -102,12 +102,12 @@ public:
        freed when the parent window is deleted */
     new Label(w, "Push buttons", "sans-bold");
 
-    Button *b = new Button(w, "Plain button");
-    b->setCallback([] { cout << "pushed!" << endl; });
-    b->setTooltip("short tooltip");
+    w->button(Caption{ "Plain button" },
+              ButtonCallback{ [] () { cout << "pushed!" << endl; } },
+              TooltipText{ "short tooltip" });
 
     /* Alternative construction notation using variadic template */
-    b = w->add<Button>("Styled", ENTYPO_ICON_ROCKET);
+    auto* b = w->add<Button>(Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET });
     b->setBackgroundColor(Color(0, 0, 255, 25));
     b->setCallback([] { cout << "pushed!" << endl; });
     b->setTooltip("This button has a fairly long tooltip. It is so long, in "
@@ -415,7 +415,7 @@ public:
     auto ib = panel->add<IntBox<int>>();
     ib->setEditable(true);
 
-    b = panel->add<Button>("", ENTYPO_ICON_FORWARD);
+    b = panel->add<Button>(Caption{ "" }, Icon{ ENTYPO_ICON_FORWARD });
     b->setFixedSize(Vector2i(22, 22));
     ib->setFixedHeight(22);
     b->setCallback([tabWidget, ib] {
@@ -499,7 +499,7 @@ public:
     w->setLayout(layout);
     w->setPosition(Vector2i(425, 500));
     new Label(w, "Combined: ");
-    b = new Button(w, "ColorWheel", ENTYPO_ICON_500PX);
+    w->button(Caption{ "ColorWheel" }, Icon{ ENTYPO_ICON_500PX });
     new Label(w, "Red: ");
     auto redIntBox = new IntBox<int>(w);
     redIntBox->setEditable(false);

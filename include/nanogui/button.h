@@ -23,6 +23,8 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief [Normal/Toggle/Radio/Popup] Button widget.
  */
+DECLSETTER(ButtonCallback, std::function<void()>)
+
 class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
@@ -53,7 +55,13 @@ public:
      * \param icon
      *     The icon to display with this Button.  See \ref nanogui::Button::mIcon.
      */
-    Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    explicit Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
+    explicit Button(Widget *parent, const char* caption)
+      : Button(parent, std::string(caption), 0) {}
+
+    template<typename... Args>
+    Button(Widget* parent, const Args&... args)
+      : Button(parent) { set<Args...>(args...); }
 
     /// Returns the caption of this Button.
     const std::string &caption() const { return mCaption; }
@@ -180,6 +188,12 @@ protected:
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    using Widget::set;
+    PROPSETTER(ButtonCallback, setCallback)
+    PROPSETTER(Caption, setCaption)
+    PROPSETTER(TooltipText, setTooltip)
+    PROPSETTER(Icon, setIcon)
 };
 
 class NANOGUI_EXPORT LedButton : public Button
