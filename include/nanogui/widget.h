@@ -26,6 +26,7 @@ class PopupButton;
 class Button;
 class ComboBox;
 class CheckBox;
+class TabWidget;
 class VScrollPanel;
 class ProgressBar;
 class Slider;
@@ -36,6 +37,14 @@ class Listbox;
 
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
+
+DECLSETTER(MaxHeight,int)
+DECLSETTER(FixedHeight,int)
+DECLSETTER(WidgetId,std::string)
+
+enum TextHAlign { hLeft = 0, hCenter, hRight };
+enum TextVAlign { vTop = 3, vMiddle, vBottom };
+
 /**
  * \class Widget widget.h nanogui/widget.h
  *
@@ -112,6 +121,13 @@ public:
     Widget *findWidgetGlobal(std::function<bool(Widget*)> cond);
 
     virtual std::string wtypename() const;
+
+    template<typename RetClass>
+    RetClass *findWidget(const std::string& id, bool inchildren = true)
+    {
+      Widget* f = findWidget(id, inchildren);
+      return f ? f->cast<RetClass>() : nullptr;
+    }
 
     template<typename RetClass>
     RetClass *findWidgetGlobal(const std::string& id)
@@ -384,6 +400,11 @@ public:
 
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
 
+    PROPSETTER(FixedHeight, setFixedHeight)
+    PROPSETTER(WidgetId,setId)
+
+    template<class none = void> void set() {}
+
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
     template<typename LayoutClass, typename... Args>
@@ -405,6 +426,7 @@ public:
     template<typename... Args>TextBox& textbox(const Args&... args) { return wdg<TextBox>(args...); }
     template<typename... Args>SwitchBox& switchbox(const Args&... args) { return wdg<SwitchBox>(args...); }
     template<typename... Args>Listbox& listbox(const Args&... args) { return wdg<Listbox>(args...); }
+    template<typename... Args>TabWidget& tabs(const Args&... args) { return wdg<TabWidget>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children

@@ -16,12 +16,12 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-Label::Label(Widget *parent, const std::string &caption, const std::string &font, int fontSize)
-    : Widget(parent), mCaption(caption), mFont(font) {
+Label::Label(Widget *parent)
+    : Widget(parent), mCaption(""), mFont("sans") {
     if (mTheme) {
         mFontSize = mTheme->mStandardFontSize;
     }
-    if (fontSize >= 0) mFontSize = fontSize;
+    //if (fontSize >= 0) mFontSize = fontSize;
 }
 
 void Label::setTheme(Theme *theme) {
@@ -84,7 +84,7 @@ void Label::draw(NVGcontext *ctx) {
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    if (mFixedSize.x() > 0 || mFixedSize.y() > 0) 
+    if (mFixedSize.x() > 0) 
       nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
     else 
       nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);

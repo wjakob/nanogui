@@ -64,12 +64,12 @@ void WindowMenu::addItem(const std::string& name, const std::string& shortcut, c
   lbl->setFontSize(fontSize());
   int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, name.c_str(), nullptr, nullptr);
   lbl->setPosition(mItemSpacing, mItemMargin);
-  lbl->setTextHAlign(Label::TextHAlign::hCenter);
+  lbl->setTextHAlign(TextHAlign::hCenter);
   lbl->setSize(tw + mItemSpacing*2, prefh);
   lbl->setFixedSize({ tw + mItemSpacing * 2, prefh });
   
   if (nvgIsFontIcon(icon)) {
-    auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
+    auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
     iconLbl->setFontSize(fontSize() + 2);
   }
 
@@ -89,14 +89,14 @@ ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
   mLabels[name] = lbl;
   lbl->setFontSize(fontSize());
   int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, name.c_str(), nullptr, nullptr);
-  lbl->setTextHAlign(Label::TextHAlign::hCenter);
+  lbl->setTextHAlign(TextHAlign::hCenter);
   lbl->setSize(tw + mItemSpacing * 2, prefh);
   lbl->setFixedSize({ tw + mItemSpacing * 2, prefh });
 
   mSubmenus[name]->setMinWidth(lbl->width());
 
   if (nvgIsFontIcon(icon)) {
-    auto iconLbl = new Label(mItemContainer, utf8(icon).data(), "icons");
+    auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
     iconLbl->setFontSize(fontSize() + 2);
   }
   return mSubmenus[name];

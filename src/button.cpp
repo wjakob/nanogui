@@ -95,8 +95,12 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             else
                 mPushed = true;
         } else if (mPushed) {
-            if (contains(p) && mCallback)
-                mCallback();
+            if (contains(p))
+            {
+                beforeDoCallback();
+                if (mCallback)
+                  mCallback();
+            }
             if (haveFlag(NormalButton))
                 mPushed = false;
         }

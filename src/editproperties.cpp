@@ -77,7 +77,7 @@ void PropertiesEditor::parse(Widget* w)
       auto typevalue = jval.get_str("type");
 
       //_data->get(keyCaption, keyCaptionValue);
-      auto wcaption = grid->add<Label>(capvalue.empty() ? obj.first : capvalue);
+      auto wcaption = grid->add<Label>(Caption{ capvalue.empty() ? obj.first : capvalue });
       std::cout << capvalue << std::endl;
 
       int wname = width() * _nameColumnWidthPerc;

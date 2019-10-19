@@ -33,9 +33,9 @@ MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title
         case Type::Question: icon = mTheme->mMessageQuestionIcon; break;
         case Type::Warning: icon = mTheme->mMessageWarningIcon; break;
     }
-    Label *iconLabel = new Label(panel1, std::string(utf8(icon).data()), "icons");
+    Label *iconLabel = new Label(panel1, Caption{ utf8(icon).data() }, CaptionFont{"icons"});
     iconLabel->setFontSize(50);
-    mMessageLabel = new Label(panel1, message);
+    mMessageLabel = new Label(panel1, Caption{ message });
     mMessageLabel->setFixedWidth(200);
     Widget *panel2 = new Widget(this);
     panel2->setLayout(new BoxLayout(Orientation::Horizontal,

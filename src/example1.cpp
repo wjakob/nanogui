@@ -601,10 +601,21 @@ public:
         wnd.setFixedSize({ 400, 300 });
         auto& lst = wnd.listbox();
         lst.setRelativeSize(0.33, 0);
+        lst.setSelectedCallback([this](ListboxItem* i) {
+          Label* lb = findWidget<Label>("#simple_layout_lb");
+          if (lb)
+            lb->setCaption("MyObject: " + i->caption());
+        });
         for (int i = 0; i < 12; i++)
           lst.addItem("Item " + std::to_string(i));
         wnd.setId("simple_layout_wnd");
-        wnd.widget();
+        auto& desc = wnd.widget();
+        desc.flexlayout(Orientation::Vertical);
+        desc.label(Caption{ "MyObject: id" }, 
+                   CaptionHAlign{ TextHAlign::hLeft },
+                   FixedHeight{ 15 },
+                   WidgetId{ "#simple_layout_lb" } );
+        desc.tabs(TabNames{"Description", "Details"});
         performLayout();
       }
       else

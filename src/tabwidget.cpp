@@ -40,6 +40,13 @@ TabWidget::TabWidget(Widget* parent)
     });
 }
 
+TabWidget::TabWidget(Widget *parent, const TabNames &tabs)
+  : TabWidget(parent)
+{
+  for (auto& t : tabs)
+    createTab(t);
+}
+
 void TabWidget::addChild(int /*index*/, Widget * /*widget*/) {
     // there may only be two children: mHeader and mContent, created in the constructor
     throw std::runtime_error(

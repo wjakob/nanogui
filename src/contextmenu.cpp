@@ -249,7 +249,7 @@ void ContextMenu::addItem(const std::string& name, const std::string& shortcut, 
   mItemLayout->appendRow(0);
   mItemLayout->setAnchor(&lbl, AdvancedGridLayout::Anchor{ 1,mItemLayout->rowCount() - 1, 1, 1 });
   if (nvgIsFontIcon(icon)) {
-    auto& iconLbl = mItemContainer->wdg<Label>(utf8(icon).data(), "icons");
+    auto& iconLbl = mItemContainer->wdg<Label>(Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
     iconLbl.setFontSize(fontSize() + 2);
     mItemLayout->setAnchor(&iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
   }
@@ -272,7 +272,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     auto& submenu = parent()->wdg<ContextMenu>(name, false);
     submenu.mRootMenu = mRootMenu ? mRootMenu : this;
     auto& lbl1 = mItemContainer->wdg<ContextMenuLabel>(name);
-    auto& lbl2 = mItemContainer->wdg<Label>(utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data(), "icons");
+    auto& lbl2 = mItemContainer->wdg<Label>(Caption{ utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data() }, CaptionFont{ "icons" });
     
     lbl1.setFontSize(fontSize());
     lbl1.setHeight(lbl1.fontSize() * 2);
@@ -281,7 +281,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     mItemLayout->setAnchor(&lbl1, AdvancedGridLayout::Anchor{1,mItemLayout->rowCount() - 1, 1, 1});
     mItemLayout->setAnchor(&lbl2, AdvancedGridLayout::Anchor{2,mItemLayout->rowCount() - 1, 1, 1});
     if (nvgIsFontIcon(icon)) {
-        auto& iconLbl = mItemContainer->wdg<Label>(utf8(icon).data(), "icons");
+      auto& iconLbl = mItemContainer->wdg<Label>(Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
         iconLbl.setFontSize(fontSize()+2);
         mItemLayout->setAnchor(&iconLbl, AdvancedGridLayout::Anchor{ 0,mItemLayout->rowCount() - 1,1,1 });
     }

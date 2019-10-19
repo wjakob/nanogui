@@ -24,13 +24,32 @@ NAMESPACE_BEGIN(nanogui)
  * The font and color can be customized. When \ref Widget::setFixedWidth()
  * is used, the text is wrapped when it surpasses the specified width.
  */
+
+DECLSETTER(Caption,std::string)
+DECLSETTER(CaptionFont,std::string)
+DECLSETTER(FontSize,int)
+DECLSETTER(CaptionHAlign,TextHAlign)
+
 class NANOGUI_EXPORT Label : public Widget {
 public:
-    enum TextHAlign { hLeft=0, hCenter, hRight };
-    enum TextVAlign { vTop=3, vMiddle, vBottom };
     enum TextState { tEnabled=0, tDisabled };
-    Label(Widget *parent, const std::string &caption,
-          const std::string &font = "sans", int fontSize = -1);
+    Label(Widget* parent);
+    
+    using Widget::set;
+    template<typename... Args>
+    Label(Widget* parent, const Args&... args)
+       : Label(parent) { set<Args...>(args...); }
+
+    explicit Label(Widget* parent, const char* caption)
+      : Label(parent) { mCaption = caption; }
+
+    explicit Label(Widget* parent, const char* caption, const char* font)
+      : Label(parent) { mCaption = caption; mFont = font; }
+
+    PROPSETTER(Caption,setCaption)
+    PROPSETTER(CaptionFont,setFont)
+    PROPSETTER(FontSize,setFontSize)
+    PROPSETTER(CaptionHAlign,setTextHAlign)
 
     /// Get the label's text caption
     const std::string &caption() const { return mCaption; }

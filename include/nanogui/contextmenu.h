@@ -21,7 +21,7 @@ class NANOGUI_EXPORT ContextMenuLabel : public Label
 {
 public:
   ContextMenuLabel(Widget* parent, const std::string& caption)
-    : Label(parent, caption) {}
+    : Label(parent, Caption{ caption }) {}
   void draw(NVGcontext* ctx) override;
   void setShortcut(const std::string& text) { mShortcut = text; }
 

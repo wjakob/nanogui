@@ -60,9 +60,12 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \endrst
  */
+using TabNames = std::vector<std::string>;
+
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
     TabWidget(Widget *parent);
+    TabWidget(Widget *parent, const TabNames& tabs);
 
     /**
      * \brief Forcibly prevent mis-use of the class by throwing an exception.

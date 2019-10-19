@@ -136,6 +136,8 @@ public:
     bool load(Json::value &s) override;
 
 protected:
+
+    virtual void beforeDoCallback() {}
     /// The caption of this Button.
     std::string mCaption;
 

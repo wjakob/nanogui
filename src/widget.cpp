@@ -23,7 +23,8 @@ NAMESPACE_BEGIN(nanogui)
 Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
-      mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
+      mFixedSize(Vector2i::Zero()), mRelSize(Vector2f::Zero()),
+      mVisible(true), mEnabled(true),
       mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
       mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
     if (parent)

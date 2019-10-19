@@ -168,4 +168,7 @@ private:
     T *m_ptr = nullptr;
 };
 
+#define PROPSETTER(type,setter) template<typename First, typename... Args> void set(const type& h, const Args&... args) { setter(h.value);  set<Args...>(args...); }
+#define DECLSETTER(name,type) struct NANOGUI_EXPORT name { type value; };
+
 NAMESPACE_END(nanogui)

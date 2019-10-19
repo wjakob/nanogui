@@ -129,15 +129,47 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     }
 }
 
+Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
+  Vector2i size = Vector2i::Constant(2 * mMargin);
+
+  int yOffset = 0;
+  const Window *window = dynamic_cast<const Window *>(widget);
+  if (window && !window->title().empty()) {
+    if (mOrientation == Orientation::Vertical)
+      size[1] += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+    else
+      yOffset = widget->theme()->mWindowHeaderHeight;
+  }
+
+  bool first = true;
+  int axis1 = (int)mOrientation, axis2 = ((int)mOrientation + 1) % 2;
+  for (auto w : widget->children()) {
+    if (!w->visible())
+      continue;
+    if (first)
+      first = false;
+    else
+      size[axis1] += mSpacing;
+
+    Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
+    Vector2i targetSize(
+      fs[0] ? fs[0] : ps[0],
+      fs[1] ? fs[1] : ps[1]
+    );
+
+    size[axis1] += targetSize[axis1];
+    size[axis2] = std::max(size[axis2], targetSize[axis2] + 2 * mMargin);
+    first = false;
+  }
+  return size + Vector2i(0, yOffset);
+}
+
 void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 {
   Vector2i fs_w = widget->fixedSize();
-  Vector2i containerSize(
-    fs_w[0] ? fs_w[0] : widget->width(),
-    fs_w[1] ? fs_w[1] : widget->height()
-  );
+  Vector2i containerSize(fs_w.x() ? fs_w.x() : widget->width(),
+                         fs_w.y() ? fs_w.y() : widget->height());
 
-  int axis1 = (int)mOrientation, axis2 = ((int)mOrientation + 1) % 2;
   int position = mMargin;
   int yOffset = 0;
 
@@ -148,7 +180,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
     }
     else {
       yOffset = widget->theme()->mWindowHeaderHeight;
-      containerSize[1] -= yOffset;
+      containerSize.y() -= yOffset;
     }
   }
 
@@ -160,41 +192,85 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
     return;
 
   Vector2i baseContainerSize = containerSize;
-  while (pChildrens.size() > 0)
+  if (mOrientation == Orientation::Horizontal)
   {
-    Widget* w = pChildrens.front();
-    pChildrens.erase(pChildrens.begin());
-
-    if (!w->visible())
-      continue;
-    
-    position += mSpacing;
-    Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildrens.size()+1), containerSize.y());
-
-    Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize(); 
-    Vector2f rs = w->relsize();
-
-    if (fs.x() == 0) fs.x() = rs.x() * baseContainerSize.x();
-    if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
-
-    Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
-                        fs.y() ? fs.y() : ps.y());
-    Vector2i pos(position, yOffset);
-
-    if (targetSize.x() > 0) wSize.x() = targetSize.x();
-
-    if (!w->isSubElement())
+    while (pChildrens.size() > 0)
     {
-      w->setPosition(pos);
-      w->setSize(wSize);
+      Widget* w = pChildrens.front();
+      pChildrens.erase(pChildrens.begin());
+
+      if (!w->visible())
+        continue;
+
+      position += mSpacing;
+      Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildrens.size() + 1), containerSize.y());
+
+      Vector2i fs = w->fixedSize();
+      Vector2f rs = w->relsize();
+
+      if (fs.x() == 0) fs.x() = rs.x() * baseContainerSize.x();
+      if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
+
+      Vector2i targetSize(fs.x() ? fs.x() : 0,
+                          fs.y() ? fs.y() : 0);
+      Vector2i pos(position, yOffset);
+
+      if (targetSize.x() > 0) wSize.x() = targetSize.x();
+
+      if (!w->isSubElement())
+      {
+        w->setPosition(pos);
+        w->setSize(wSize);
+      }
+
+      w->performLayout(ctx);
+
+      if (!w->isSubElement())
+      {
+        position += wSize.x();
+        containerSize.x() -= wSize.x();
+      }
     }
-
-    w->performLayout(ctx);
-
-    if (!w->isSubElement())
+  }
+  else
+  {
+    position = yOffset;
+    while (pChildrens.size() > 0)
     {
-      position += wSize.x();
-      containerSize.x() -= wSize.x();
+      Widget* w = pChildrens.front();
+      pChildrens.erase(pChildrens.begin());
+
+      if (!w->visible())
+        continue;
+
+      position += mSpacing;
+      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / (pChildrens.size() + 1));
+
+      Vector2i fs = w->fixedSize();
+      Vector2f rs = w->relsize();
+
+      if (fs.x() == 0) fs.x() = rs.x() * baseContainerSize.x();
+      if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
+
+      Vector2i targetSize(fs.x() ? fs.x() : 0,
+                          fs.y() ? fs.y() : 0);
+      Vector2i pos(0, position);
+
+      if (targetSize.y() > 0) wSize.y() = targetSize.y();
+
+      if (!w->isSubElement())
+      {
+        w->setPosition(pos);
+        w->setSize(wSize);
+      }
+
+      w->performLayout(ctx);
+
+      if (!w->isSubElement())
+      {
+        position += wSize.y();
+        containerSize.y() -= wSize.y();
+      }
     }
   }
 }

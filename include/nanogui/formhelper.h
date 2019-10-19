@@ -142,7 +142,7 @@ public:
 
     /// Add a new group that may contain several sub-widgets
     Label *addGroup(const std::string &caption) {
-        Label* label = new Label(mWindow, caption, mGroupFontName, mGroupFontSize);
+      Label* label = new Label(mWindow, Caption{ caption }, CaptionFont{ mGroupFontName }, FontSize{ mGroupFontSize });
         if (mLayout->rowCount() > 0)
             mLayout->appendRow(mPreGroupSpacing); /* Spacing */
         mLayout->appendRow(0);
@@ -155,7 +155,7 @@ public:
     template <typename Type> detail::FormWidget<Type> *
     addVariable(const std::string &label, const std::function<void(const Type &)> &setter,
                 const std::function<Type()> &getter, bool editable = true) {
-        Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
+      Label *labelW = new Label(mWindow, Caption{ label }, CaptionFont{ mLabelFontName }, FontSize{ mLabelFontSize });
         auto widget = new detail::FormWidget<Type>(mWindow);
         auto refresh = [widget, getter] {
             Type value = getter(), current = widget->value();
@@ -206,7 +206,7 @@ public:
         if (label == "") {
             mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
         } else {
-            Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
+          Label *labelW = new Label(mWindow, Caption{ label }, CaptionFont{ mLabelFontName }, FontSize{ mLabelFontSize });
             mLayout->setAnchor(labelW, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1));
             mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(3, mLayout->rowCount()-1));
         }
