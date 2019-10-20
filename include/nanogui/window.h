@@ -24,11 +24,23 @@ class ContextMenu;
  *
  * \brief Top-level window widget.
  */
+
+DECLSETTER(WindowSimpleLayout, Orientation)
+DECLSETTER(WindowMovable, Theme::WindowDraggable)
+
 class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
-    Window(Widget *parent, const std::string &title = "Untitled");
-    Window(Widget *parent, const std::string &title, Orientation orientation);
+    explicit Window(Widget *parent, const std::string &title = "Untitled");
+    explicit Window(Widget *parent, const std::string &title, Orientation orientation);
+
+    explicit Window(Widget *parent, const char* title)
+      : Window(parent, std::string(title)) {}
+
+    using Widget::set;
+    template<typename... Args>
+    Window(Widget* parent, const Args&... args)
+      : Window(parent, "") { set<Args...>(args...); }
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
@@ -52,6 +64,8 @@ public:
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
 
+    void setSimpleLayout(Orientation orientation);
+
     /// Dispose the window
     void dispose();
 
@@ -61,14 +75,16 @@ public:
     /// Draw the window
     virtual void draw(NVGcontext *ctx) override;
     /// Handle window drag events
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     /// Handle mouse events recursively and bring the current window to the top
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
     /// Accept scroll events and propagate them to the widget under the mouse cursor
-    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
+    bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     /// Compute the preferred size of the widget
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
     /// Invoke the associated layout generator to properly place child widgets, if any
+
+    bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual void performLayout(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
@@ -83,6 +99,8 @@ protected:
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
+    bool mDragCorner;
+    Vector2i mMousePos;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
     Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;
     bool mCollapsed = false;
@@ -91,6 +109,10 @@ protected:
     Vector2f mCollapseIconSize;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PROPSETTER(WindowMovable,setDraggable)
+    PROPSETTER(Caption, setTitle)
+    PROPSETTER(WindowSimpleLayout,setSimpleLayout)
 };
 
 NAMESPACE_END(nanogui)

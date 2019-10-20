@@ -41,11 +41,14 @@ namespace Json { class value; }
 enum TextHAlign { hLeft = 0, hCenter, hRight };
 enum TextVAlign { vTop = 3, vMiddle, vBottom };
 
-DECLSETTER(MaxHeight,int)
-DECLSETTER(FixedHeight,int)
-DECLSETTER(WidgetId,std::string)
-DECLSETTER(Icon,int)
+DECLSETTER(MaxHeight, int)
+DECLSETTER(FixedHeight, int)
+DECLSETTER(WidgetLayout, Layout*)
+struct NANOGUI_EXPORT FixedSize { Vector2i value; FixedSize(std::initializer_list<int> list) { value = { *list.begin(), *(list.begin() + 1) }; } };
+DECLSETTER(WidgetId, std::string)
+DECLSETTER(Icon, int)
 DECLSETTER(Caption, std::string)
+struct NANOGUI_EXPORT Position { Vector2i value; Position(std::initializer_list<int> list) { value = { *list.begin(), *(list.begin() + 1) }; } };
 DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
@@ -408,6 +411,9 @@ public:
 
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(WidgetId,setId)
+    PROPSETTER(Position,setPosition)
+    PROPSETTER(FixedSize,setFixedSize)
+    PROPSETTER(WidgetLayout,setLayout)
 
     template<class none = void> void set() {}
 

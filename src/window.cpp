@@ -21,12 +21,18 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr), 
+      mModal(false), mDrag(false), mDragCorner(false) { }
 
 Window::Window(Widget *parent, const std::string &title, Orientation orientation)
   : Window(parent, title)
 {
-  setLayout(new BoxLayout(orientation));
+  setSimpleLayout(orientation);
+}
+
+void Window::setSimpleLayout(Orientation orientation)
+{
+  mLayout = new BoxLayout(orientation);
 }
 
 ContextMenu& Window::submenu(const std::string& caption, const std::string& id)
@@ -95,6 +101,14 @@ bool Window::mayCollapse() const
     return theme()->mWindowCollapse == Theme::WindowCollapse::clMayCollapse;
 
   return mMayCollapse == Theme::WindowCollapse::clMayCollapse;
+}
+
+bool isTriangleContainsPoint(const Vector2i& a, const Vector2i& b, const Vector2i& c, const Vector2i& p)
+{
+  bool b1 = ((p.x() - b.x()) * (a.y() - b.y()) - (p.y() - b.y()) * (a.x() - b.x())) < 0.0f;
+  bool b2 = ((p.x() - c.x()) * (b.y() - c.y()) - (p.y() - c.y()) * (b.x() - c.x())) < 0.0f;
+  bool b3 = ((p.x() - a.x()) * (c.y() - a.y()) - (p.y() - a.y()) * (c.x() - a.x())) < 0.0f;
+  return ((b1 == b2) && (b2 == b3));
 }
 
 void Window::performLayout(NVGcontext *ctx) {
@@ -209,7 +223,20 @@ void Window::draw(NVGcontext *ctx) {
     nvgRestore(ctx);
 
     if (!isCollapsed())
+    {
       Widget::draw(ctx);
+
+      bool inCorner = mMouseFocus && 
+                      isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), mMousePos - mPos);
+      nvgBeginPath(ctx);
+      nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 15);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 5);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 5, mPos.y() + mSize.y() - 2);
+      nvgClosePath(ctx);
+      nvgFillColor(ctx, inCorner ? mTheme->mBorderDark : mTheme->mBorderLight);
+      nvgFill(ctx);
+    }
 }
 
 void Window::dispose() {
@@ -226,6 +253,12 @@ void Window::center() {
     ((Screen *) widget)->centerWindow(this);
 }
 
+bool Window::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
+{
+  mMousePos = p;
+  return Widget::mouseMotionEvent(p, rel, button, modifiers);
+}
+
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
                             int buttons, int /* modifiers */) {
   if (!isDraggable())
@@ -236,6 +269,13 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
         mPos = mPos.cwiseMax(Vector2i::Zero());
         mPos = mPos.cwiseMin(parent()->size() - mSize);
         return true;
+    }
+    else if (mDragCorner && isMouseButtonLeftMod(buttons)) {
+      mSize += rel;
+      mMousePos += rel;
+      mSize = mSize.cwiseMax(Vector2i(15, mTheme->mWindowHeaderHeight));
+      mSize = mSize.cwiseMin(parent()->size() - mSize);
+      return true;
     }
     return false;
 }
@@ -254,6 +294,13 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     }
     if ( isMouseButtonLeft(button) && mEnabled) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
+        mDragCorner = false;
+        if (!mDrag)
+        {
+          int ds = mTheme->mWindowDropShadowSize;
+          bool inCorner = isTriangleContainsPoint(mSize, mSize - Vector2i(ds, 16), mSize - Vector2i(16, ds), p - mPos);
+          mDragCorner = down && inCorner;
+        }
         return true;
     }
     return false;

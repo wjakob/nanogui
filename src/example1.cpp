@@ -93,10 +93,11 @@ public:
 
     initGPUTimer(&gpuTimer);
 
-    Window *w = new Window(this, "Button demo");
-    w->setPosition(15, 15);
-    w->setLayout(new GroupLayout());
-    w->setDraggable(Theme::WindowDraggable::dgFixed);
+    auto& refw = window(WindowMovable{ Theme::WindowDraggable::dgFixed },
+                        Caption{ "Button demo" },
+                        WidgetLayout{ new GroupLayout() },
+                        Position{ 15, 15 });
+    Window *w = &refw;
 
     /* No need to store a pointer, the data structure will be automatically
        freed when the parent window is deleted */
@@ -527,9 +528,10 @@ public:
 
     //all widgets demo
     {
-      Window& dw = window("All widgets demo", Orientation::Horizontal);
-      dw.setPosition(725, 350);
-      dw.setFixedSize({ 400, 400 });
+      Window& dw = window(WindowSimpleLayout{ Orientation::Horizontal },
+                          Caption{ "All widgets demo" },
+                          Position{725, 350},
+                          FixedSize{400, 400});
       dw.submenu("File")
           .item("(dummy item)", []() {})
           .item("New", "Ctrl+N", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
