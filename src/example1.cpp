@@ -36,6 +36,7 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/switchbox.h>
+#include <nanogui/spinner.h>
 #include <nanogui/dropdownbox.h>
 #include <nanogui/editworkspace.h>
 #include <nanogui/editproperties.h>
@@ -315,6 +316,12 @@ public:
     textBox->setFixedSize(Vector2i(60, 25));
     textBox->setFontSize(20);
     textBox->setAlignment(TextBox::Alignment::Right);
+
+    w->label(Caption{ "Spinners" }, CaptionFont{"sans-bold"});
+    auto& spinners = w->widget().boxlayout(Orientation::Horizontal,Alignment::Middle, 0, 6);
+    spinners.spinner(FixedSize{ 40, 40 });
+    spinners.spinner(SpinnerSpeed{ 0.5f }, FixedSize{ 40, 40 });
+    spinners.spinner(SpinnerSpeed{ -0.7f }, FixedSize{ 40, 40 });
 
     {
       new Label(w, "Dial and text box", "sans-bold");

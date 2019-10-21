@@ -34,6 +34,7 @@ class ImagePanel;
 class TextBox;
 class SwitchBox;
 class Listbox;
+class Spinner;
 
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
@@ -439,6 +440,7 @@ public:
     template<typename... Args>SwitchBox& switchbox(const Args&... args) { return wdg<SwitchBox>(args...); }
     template<typename... Args>Listbox& listbox(const Args&... args) { return wdg<Listbox>(args...); }
     template<typename... Args>TabWidget& tabs(const Args&... args) { return wdg<TabWidget>(args...); }
+    template<typename... Args>Spinner& spinner(const Args&... args) { return wdg<Spinner>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children
