@@ -50,6 +50,7 @@ DECLSETTER(WidgetId, std::string)
 DECLSETTER(Icon, int)
 DECLSETTER(Caption, std::string)
 struct NANOGUI_EXPORT Position { Vector2i value; Position(std::initializer_list<int> list) { value = { *list.begin(), *(list.begin() + 1) }; } };
+struct NANOGUI_EXPORT BackgroundColor { Color value; BackgroundColor(std::initializer_list<int> l) { auto i = l.begin(); value = { *(i++), *(i++), *(i++), *(i++)}; } };
 DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)

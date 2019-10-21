@@ -102,21 +102,21 @@ public:
 
     /* No need to store a pointer, the data structure will be automatically
        freed when the parent window is deleted */
-    new Label(w, "Push buttons", "sans-bold");
-
+    w->label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
     w->button(Caption{ "Plain button" },
-              ButtonCallback{ [] () { cout << "pushed!" << endl; } },
+              ButtonCallback{ [] { cout << "pushed!" << endl; } },
               TooltipText{ "short tooltip" });
 
     /* Alternative construction notation using variadic template */
-    auto* b = w->add<Button>(Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET });
-    b->setBackgroundColor(Color(0, 0, 255, 25));
-    b->setCallback([] { cout << "pushed!" << endl; });
-    b->setTooltip("This button has a fairly long tooltip. It is so long, in "
-      "fact, that the shown text will span several lines.");
+    w->button(Caption{ "Styled" }, 
+              Icon{ ENTYPO_ICON_ROCKET },
+              BackgroundColor{ 0, 0, 255, 25 },
+              ButtonCallback{ [] { cout << "pushed!" << endl; } },
+              TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                            "fact, that the shown text will span several lines." } );
 
     new Label(w, "Toggle buttons", "sans-bold");
-    b = new Button(w, "Toggle me");
+    auto b = new Button(w, "Toggle me");
     b->setFlags(Button::ToggleButton);
     b->setChangeCallback([](bool state) { cout << "Toggle button state: " << state << endl; });
 

@@ -194,6 +194,7 @@ public:
     PROPSETTER(Caption, setCaption)
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
+    PROPSETTER(BackgroundColor,setBackgroundColor)
 };
 
 class NANOGUI_EXPORT LedButton : public Button
