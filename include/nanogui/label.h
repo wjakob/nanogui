@@ -33,18 +33,13 @@ public:
     using Widget::set;
     template<typename... Args>
     Label(Widget* parent, const Args&... args)
-       : Label(parent) { set<Args...>(args...); }
+       : Label(parent) { set<Label, Args...>(args...); }
 
     explicit Label(Widget* parent, const char* caption)
       : Label(parent) { mCaption = caption; }
 
     explicit Label(Widget* parent, const char* caption, const char* font)
       : Label(parent) { mCaption = caption; mFont = font; }
-
-    PROPSETTER(Caption,setCaption)
-    PROPSETTER(CaptionFont,setFont)
-    PROPSETTER(FontSize,setFontSize)
-    PROPSETTER(CaptionHAlign,setTextHAlign)
 
     /// Get the label's text caption
     const std::string &caption() const { return mCaption; }
@@ -90,6 +85,11 @@ protected:
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PROPSETTER(Caption,setCaption)
+    PROPSETTER(CaptionFont,setFont)
+    PROPSETTER(FontSize,setFontSize)
+    PROPSETTER(CaptionHAlign,setTextHAlign)
 };
 
 NAMESPACE_END(nanogui)

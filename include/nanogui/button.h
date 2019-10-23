@@ -59,9 +59,10 @@ public:
     explicit Button(Widget *parent, const char* caption)
       : Button(parent, std::string(caption), 0) {}
 
+    using Widget::set;
     template<typename... Args>
     Button(Widget* parent, const Args&... args)
-      : Button(parent) { set<Args...>(args...); }
+      : Button(parent) { set<Button, Args...>(args...); }
 
     /// Returns the caption of this Button.
     const std::string &caption() const { return mCaption; }
@@ -189,7 +190,6 @@ protected:
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    using Widget::set;
     PROPSETTER(ButtonCallback, setCallback)
     PROPSETTER(Caption, setCaption)
     PROPSETTER(TooltipText, setTooltip)

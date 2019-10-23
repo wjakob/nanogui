@@ -94,17 +94,19 @@ public:
 
     initGPUTimer(&gpuTimer);
 
-    auto& refw = window(WindowMovable{ Theme::WindowDraggable::dgFixed },
+    auto& refw = window(Position{ 15, 15 },
+                        WindowMovable{ Theme::WindowDraggable::dgFixed },
                         Caption{ "Button demo" },
-                        WidgetLayout{ new GroupLayout() },
-                        Position{ 15, 15 });
+                        WidgetLayout{ new GroupLayout() }
+                        );
     Window *w = &refw;
 
     /* No need to store a pointer, the data structure will be automatically
        freed when the parent window is deleted */
     w->label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
-    w->button(Caption{ "Plain button" },
-              ButtonCallback{ [] { cout << "pushed!" << endl; } },
+    w->button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
+              Caption{ "Plain button" },
+              
               TooltipText{ "short tooltip" });
 
     /* Alternative construction notation using variadic template */

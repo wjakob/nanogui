@@ -37,9 +37,10 @@ public:
    void setSpeed(float speed) { mSpeed = speed; }
 
    using Widget::set;
+
    template<typename... Args>
    Spinner(Widget* parent, const Args&... args)
-     : Spinner(parent) { set<Args...>(args...); }
+     : Spinner(parent) { set<Spinner, Args...>(args...); }
 private:
    float mSpeed = 1.f;	
    float mRadius = 0.75f;

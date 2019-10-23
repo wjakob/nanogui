@@ -417,7 +417,7 @@ public:
     PROPSETTER(FixedSize,setFixedSize)
     PROPSETTER(WidgetLayout,setLayout)
 
-    template<class none = void> void set() {}
+    template<typename FF, typename none = void> void set() {}
 
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }

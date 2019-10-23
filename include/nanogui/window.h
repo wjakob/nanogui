@@ -40,7 +40,7 @@ public:
     using Widget::set;
     template<typename... Args>
     Window(Widget* parent, const Args&... args)
-      : Window(parent, "") { set<Args...>(args...); }
+      : Window(parent, "") { set<Window, Args...>(args...); }
 
     /// Return the window title
     const std::string &title() const { return mTitle; }
