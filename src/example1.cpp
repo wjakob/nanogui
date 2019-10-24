@@ -24,6 +24,7 @@
 #include <nanogui/combobox.h>
 #include <nanogui/progressbar.h>
 #include <nanogui/entypo.h>
+#include <nanogui/meter.h>
 #include <nanogui/messagedialog.h>
 #include <nanogui/textbox.h>
 #include <nanogui/slider.h>
@@ -97,8 +98,7 @@ public:
     auto& refw = window(Position{ 15, 15 },
                         WindowMovable{ Theme::WindowDraggable::dgFixed },
                         Caption{ "Button demo" },
-                        WidgetLayout{ new GroupLayout() }
-                        );
+                        WidgetLayout{ new GroupLayout() });
     Window *w = &refw;
 
     /* No need to store a pointer, the data structure will be automatically
@@ -534,6 +534,10 @@ public:
       alphaIntBox->setValue(alpha);
 
     });
+
+    auto& meter = wdg<Meter>();
+    meter.setFixedSize({ 160, 160 });
+    meter.setPosition(width() - 165, height() - 165);
 
     //all widgets demo
     {
