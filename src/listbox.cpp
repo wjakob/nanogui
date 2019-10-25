@@ -177,6 +177,11 @@ void Listbox::selectItem(ListboxItem* item)
     mSelectCallback(item);
 }
 
+void Listbox::addContent(std::function<void(Listbox&)> f)
+{
+  if (f) f(*this);
+}
+
 void Listbox::draw(NVGcontext* ctx)
 {
   Widget::draw(ctx);

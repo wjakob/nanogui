@@ -54,6 +54,7 @@ DECLSETTER(Caption, std::string)
 DECLSETTERARGS(Position, Vector2i)
 DECLSETTERARGS(WidgetSize, Vector2i)
 DECLSETTERARGS(MinimumSize, Vector2i)
+DECLSETTERARGS(RelativeSize, Vector2f)
 DECLSETTERARGS(BackgroundColor, Color)
 DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
@@ -75,6 +76,10 @@ public:
     Widget(Widget *parent);
     Widget(Widget&) = delete;
     Widget& operator =(Widget&) = delete;
+
+    template<typename... Args>
+    Widget(Widget* parent, const Args&... args)
+      : Widget(parent) { set<Widget, Args...>(args...);  }
 
     /// Return the parent widget
     Widget *parent() { return mParent; }
@@ -341,7 +346,7 @@ public:
         return (d >= 0).all() && (d < mSize.array()).all();
     }
 
-    virtual bool prefferContains(const Vector2i& p) const { return false; }
+    virtual bool prefferContains(const Vector2i&) const { return false; }
 
     bool isMyChildRecursive(Widget* w)
     {
@@ -423,6 +428,7 @@ public:
     PROPSETTER(Position,setPosition)
     PROPSETTER(WidgetSize, setSize)
     PROPSETTER(MinimumSize, setMinSize)
+    PROPSETTER(RelativeSize, setRelativeSize)
     PROPSETTER(FixedSize,setFixedSize)
     PROPSETTER(WidgetLayout,setLayout)
     PROPSETTER(WidgetStretchLayout,setLayout)

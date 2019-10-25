@@ -613,19 +613,22 @@ public:
         auto& wnd = window(Caption{ "Example: Simple layout" }, 
                            WidgetStretchLayout{ Orientation::Horizontal },
                            Position{ 180, 180  },
-                           MinimumSize{ 400, 400 });
-        auto& lst = wnd.listbox();
-        lst.setRelativeSize(0.33, 0);
-        lst.setSelectedCallback([this](ListboxItem* i) {
-          Label* lb = findWidget<Label>("#simple_layout_lb");
-          if (lb)
-            lb->setCaption("MyObject: " + i->caption());
-        });
-        for (int i = 0; i < 100; i++)
-          lst.addItem("Item " + std::to_string(i));
-        wnd.setId("simple_layout_wnd");
-        auto& desc = wnd.widget();
-        desc.flexlayout(Orientation::Vertical);
+                           MinimumSize{ 400, 400 },
+                           WidgetId{ "simple_layout_wnd" });
+
+        wnd.listbox(RelativeSize{ 0.33, 0 },
+                    ListboxCallback{ [this](ListboxItem* i) {
+                                        Label* lb = findWidget<Label>("#simple_layout_lb");
+                                        if (lb)
+                                          lb->setCaption("MyObject: " + i->caption());
+                                      } 
+                                    },
+                    ListboxContent{ [](Listbox& l) {         
+                                        for (int i = 0; i < 100; i++)
+                                          l.addItem("Item " + std::to_string(i));
+                                      }
+                                  });
+        auto& desc = wnd.widget(WidgetStretchLayout{ Orientation::Vertical });
         desc.label(Caption{ "MyObject: id" }, 
                    CaptionHAlign{ TextHAlign::hLeft },
                    FixedHeight{ 15 },
