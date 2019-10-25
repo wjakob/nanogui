@@ -22,7 +22,8 @@ NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr), 
-      mModal(false), mDrag(false), mDragCorner(false) { }
+      mModal(false), mDrag(false), mDragCorner(false) 
+{}
 
 Window::Window(Widget *parent, const std::string &title, Orientation orientation)
   : Window(parent, title)
@@ -126,6 +127,17 @@ void Window::performLayout(NVGcontext *ctx) {
         mButtonPanel->setPosition(Vector2i(width() - (mButtonPanel->preferredSize(ctx).x() + 5), 3));
         mButtonPanel->performLayout(ctx);
     }
+}
+
+void Window::afterDraw(NVGcontext *ctx)
+{
+  if (mNeedPerformUpdate)
+  {
+    mNeedPerformUpdate = false;
+    performLayout(ctx);
+  }
+
+  Widget::afterDraw(ctx);
 }
 
 void Window::draw(NVGcontext *ctx) {
@@ -239,6 +251,14 @@ void Window::draw(NVGcontext *ctx) {
     }
 }
 
+bool Window::prefferContains(const Vector2i& p) const 
+{
+  int ds = theme()->mWindowDropShadowSize;
+  return mMouseFocus 
+          && isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), p - mPos);
+}
+
+
 void Window::dispose() {
     Widget *widget = this;
     while (widget->parent())
@@ -275,6 +295,8 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
       mMousePos += rel;
       mSize = mSize.cwiseMax(Vector2i(15, mTheme->mWindowHeaderHeight));
       mSize = mSize.cwiseMin(parent()->size() - mSize);
+
+      mNeedPerformUpdate = true;
       return true;
     }
     return false;

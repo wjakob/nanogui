@@ -155,9 +155,12 @@ public:
 };
 
 Vector2i Listbox::preferredSize(NVGcontext *ctx) const {
-  if (!mItems)
-    return Vector2i::Zero();
-  return mItems->preferredSize(ctx);
+  Vector2i ret = mSize;
+  if (minWidth() > ret.x()) ret.x() = minWidth();
+  if (minHeight() > ret.y()) ret.y() = minHeight();
+  if (fixedWidth() > 0) ret.x() = fixedWidth();
+  if (fixedHeight() > 0) ret.y() = fixedHeight();
+  return ret;
 }
 
 Listbox::Listbox(Widget* parent)

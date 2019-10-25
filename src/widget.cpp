@@ -69,15 +69,17 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
 }
 
 void Widget::performLayout(NVGcontext *ctx) {
-    if (mLayout) {
+    if (mLayout) 
+    {
         mLayout->performLayout(ctx, this);
-    } else {
-        for (auto c : mChildren) {
+    } 
+    else
+    {
+        for (auto c : mChildren) 
+        {
             Vector2i pref = c->preferredSize(ctx), fix = c->fixedSize();
-            c->setSize(Vector2i(
-                fix[0] ? fix[0] : pref[0],
-                fix[1] ? fix[1] : pref[1]
-            ));
+            c->setSize(fix.x() ? fix.x() : pref.x(),
+                       fix.y() ? fix.y() : pref.y());
             c->performLayout(ctx);
         }
     }
@@ -87,7 +89,11 @@ Widget *Widget::findWidget(const Vector2i &p) {
     for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
         Widget *child = *it;
         if (child->visible() && child->contains(p - mPos))
-            return child->findWidget(p - mPos);
+        {
+          if (child->prefferContains(p - mPos))
+            return child;
+          return child->findWidget(p - mPos);
+        }
     }
     return contains(p) ? this : nullptr;
 }
@@ -312,6 +318,14 @@ void Widget::draw(NVGcontext *ctx) {
         }
     }
     nvgRestore(ctx);
+}
+
+void Widget::afterDraw(NVGcontext *ctx) {
+  if (mChildren.empty())
+    return;
+
+  for (auto child : mChildren)
+    child->afterDraw(ctx);
 }
 
 void Widget::save(Serializer &s) const {

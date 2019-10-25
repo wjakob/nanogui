@@ -544,7 +544,7 @@ public:
       Window& dw = window(WindowSimpleLayout{ Orientation::Horizontal },
                           Caption{ "All widgets demo" },
                           Position{725, 350},
-                          FixedSize{400, 400});
+                          MinimumSize{400, 400});
       dw.submenu("File")
           .item("(dummy item)", []() {})
           .item("New", "Ctrl+N", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
@@ -610,10 +610,10 @@ public:
       auto logwnd = findWidgetGlobal("simple_layout_wnd");
       if (!logwnd)
       {
-        auto& wnd = window("Example: Simple layout");
-        wnd.flexlayout(Orientation::Horizontal);
-        wnd.setPosition(180, 180);
-        wnd.setFixedSize({ 400, 300 });
+        auto& wnd = window(Caption{ "Example: Simple layout" }, 
+                           WidgetStretchLayout{ Orientation::Horizontal },
+                           Position{ 180, 180  },
+                           MinimumSize{ 400, 400 });
         auto& lst = wnd.listbox();
         lst.setRelativeSize(0.33, 0);
         lst.setSelectedCallback([this](ListboxItem* i) {
@@ -621,7 +621,7 @@ public:
           if (lb)
             lb->setCaption("MyObject: " + i->caption());
         });
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 100; i++)
           lst.addItem("Item " + std::to_string(i));
         wnd.setId("simple_layout_wnd");
         auto& desc = wnd.widget();

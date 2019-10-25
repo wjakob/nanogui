@@ -14,6 +14,7 @@
 
 #include <nanogui/object.h>
 #include <nanogui/theme.h>
+#include <nanogui/layout.h>
 #include <vector>
 
 NAMESPACE_BEGIN(nanogui)
@@ -45,12 +46,15 @@ enum TextVAlign { vTop = 3, vMiddle, vBottom };
 DECLSETTER(MaxHeight, int)
 DECLSETTER(FixedHeight, int)
 DECLSETTER(WidgetLayout, Layout*)
-struct NANOGUI_EXPORT FixedSize { Vector2i value; FixedSize(std::initializer_list<int> list) { value = { *list.begin(), *(list.begin() + 1) }; } };
+DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
+DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
 DECLSETTER(Icon, int)
 DECLSETTER(Caption, std::string)
-struct NANOGUI_EXPORT Position { Vector2i value; Position(std::initializer_list<int> list) { value = { *list.begin(), *(list.begin() + 1) }; } };
-struct NANOGUI_EXPORT BackgroundColor { Color value; BackgroundColor(std::initializer_list<int> l) { auto i = l.begin(); value = { *(i++), *(i++), *(i++), *(i++)}; } };
+DECLSETTERARGS(Position, Vector2i)
+DECLSETTERARGS(WidgetSize, Vector2i)
+DECLSETTERARGS(MinimumSize, Vector2i)
+DECLSETTERARGS(BackgroundColor, Color)
 DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
@@ -337,6 +341,8 @@ public:
         return (d >= 0).all() && (d < mSize.array()).all();
     }
 
+    virtual bool prefferContains(const Vector2i& p) const { return false; }
+
     bool isMyChildRecursive(Widget* w)
     {
       if (!w)
@@ -395,6 +401,7 @@ public:
 
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);
+    virtual void afterDraw(NVGcontext *ctx);
 
     /// Save the state of the widget into the given \ref Serializer instance
     virtual void save(Serializer &s) const;
@@ -414,8 +421,11 @@ public:
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(WidgetId,setId)
     PROPSETTER(Position,setPosition)
+    PROPSETTER(WidgetSize, setSize)
+    PROPSETTER(MinimumSize, setMinSize)
     PROPSETTER(FixedSize,setFixedSize)
     PROPSETTER(WidgetLayout,setLayout)
+    PROPSETTER(WidgetStretchLayout,setLayout)
 
     template<typename FF, typename none = void> void set() {}
 

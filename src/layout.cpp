@@ -58,7 +58,12 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
         size[axis2] = std::max(size[axis2], targetSize[axis2] + 2*mMargin);
         first = false;
     }
-    return size + Vector2i(0, yOffset);
+    size += Vector2i(0, yOffset);
+    Vector2i ms = widget->minSize();
+    size.x() = std::max(ms.x(), size.x());
+    size.y() = std::max(ms.y(), size.y());
+
+    return size;
 }
 
 void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
@@ -152,16 +157,19 @@ Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) con
       size[axis1] += mSpacing;
 
     Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
-    Vector2i targetSize(
-      fs[0] ? fs[0] : ps[0],
-      fs[1] ? fs[1] : ps[1]
-    );
+    Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
+                        fs.y() ? fs.y() : ps.y());
 
     size[axis1] += targetSize[axis1];
     size[axis2] = std::max(size[axis2], targetSize[axis2] + 2 * mMargin);
     first = false;
   }
-  return size + Vector2i(0, yOffset);
+  size += Vector2i(0, yOffset);
+  Vector2i ms = widget->minSize();
+  size.x() = std::max(ms.x(), size.x());
+  size.y() = std::max(ms.y(), size.y());
+
+  return size;
 }
 
 void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const

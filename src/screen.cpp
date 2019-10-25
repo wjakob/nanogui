@@ -33,6 +33,7 @@ void Screen::drawWidgets() {
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);
+    afterDraw(mNVGContext);
 
     double elapsed = getTimeFromStart() - mLastInteraction;
 

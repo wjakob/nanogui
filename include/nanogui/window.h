@@ -73,7 +73,8 @@ public:
     void center();
 
     /// Draw the window
-    virtual void draw(NVGcontext *ctx) override;
+    void draw(NVGcontext *ctx) override;
+    void afterDraw(NVGcontext *ctx) override;
     /// Handle window drag events
     bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     /// Handle mouse events recursively and bring the current window to the top
@@ -82,14 +83,16 @@ public:
     bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     /// Compute the preferred size of the widget
     Vector2i preferredSize(NVGcontext *ctx) const override;
-    /// Invoke the associated layout generator to properly place child widgets, if any
 
+    /// Invoke the associated layout generator to properly place child widgets, if any
     bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     virtual void performLayout(NVGcontext *ctx) override;
     virtual void save(Serializer &s) const override;
     virtual bool load(Serializer &s) override;
 
     ContextMenu& submenu(const std::string& caption, const std::string& id = "");
+
+    bool prefferContains(const Vector2i& p) const override; 
 
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
@@ -101,6 +104,7 @@ protected:
     bool mDrag;
     bool mDragCorner;
     Vector2i mMousePos;
+    bool mNeedPerformUpdate = false;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
     Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;
     bool mCollapsed = false;
