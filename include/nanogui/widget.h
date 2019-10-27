@@ -36,6 +36,7 @@ class TextBox;
 class SwitchBox;
 class Listbox;
 class Spinner;
+class Graph;
 template<class X> class IntBox;
 template<class X> class FloatBox;
 
@@ -453,6 +454,8 @@ public:
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
     template<typename LayoutClass, typename... Args>
     Widget& withLayout(const Args&... args) { setLayout(new LayoutClass(args...)); return *this; }
+    template<typename ThemeClass, typename... Args>
+    Widget& withTheme(const Args&... args) { setTheme(new ThemeClass(args...)); return *this; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
@@ -474,7 +477,9 @@ public:
     template<typename... Args>Spinner& spinner(const Args&... args) { return wdg<Spinner>(args...); }
     template<typename Scalar, typename... Args>IntBox<Scalar>& intbox(const Args&... args) { return wdg<IntBox<Scalar>>(args...); }
     template<typename Scalar, typename... Args>FloatBox<Scalar>& floatbox(const Args&... args) { return wdg<FloatBox<Scalar>>(args...); }
-
+    template<typename... Args>ColorPicker& colorpicker(const Args&... args) { return wdg<ColorPicker>(args...); }
+    template<typename... Args>Graph& graph(const Args&... args) { return wdg<Graph>(args...); }
+    
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();

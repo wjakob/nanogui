@@ -33,7 +33,7 @@ public:
     enum WindowCollapse { clAuto = -1, clNonCollapse=0, clMayCollapse = 1 };
 
     Theme(NVGcontext *ctx);
-    Theme(Theme& o) = default;
+    Theme(const Theme& o) = default;
 
     template<typename Type>
     Type get(const std::string& name) { return get(name, Type()); }
@@ -268,12 +268,31 @@ public:
     Color mTooltipBackgroundColor;
     Color mTooltipTextColor;
 
+    void update(const Theme& newtheme);
+
 protected:
     /// Default destructor does nothing; allows for inheritance.
-    virtual ~Theme() { };
+    virtual ~Theme() { }
+    Theme() {}
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+class NANOGUI_EXPORT DefaultTheme : public Theme
+{
+public:
+  DefaultTheme(NVGcontext* ctx);
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+class NANOGUI_EXPORT WhiteTheme : public Theme
+{
+public:
+  WhiteTheme(NVGcontext* ctx);
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

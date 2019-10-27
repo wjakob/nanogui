@@ -570,9 +570,8 @@ public:
       dw.submenu("Help");
     }
 
-      {
-        auto& tb = wdg<ThemeBuilder>(Position{ 1050, 15 });
-      }
+      wdg<ThemeBuilder>(Position{ 1050, 15 });
+      makeCustomThemeWindow("Custom theme");
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));
@@ -580,6 +579,177 @@ public:
 
       previousFrameTime = getTimeFromStart();
       performLayout();
+    }
+
+    void makeCustomThemeWindow(const std::string &title) 
+    {
+      using namespace nanogui;
+
+      auto& cwindow = window(title);
+      cwindow.setPosition(1100, 300);
+      cwindow.withTheme<WhiteTheme>(mNVGContext);
+      cwindow.withLayout<GroupLayout>(15, 6, 6);
+
+      /* test text box fonts */ 
+      {
+        cwindow.label("Text Boxes");
+        auto& wrapper = cwindow.widget();
+        wrapper.withLayout<GridLayout>(ColumnsAligment{ Alignment::Maximum, Alignment::Fill });
+        wrapper.label("TextBox : ");
+        wrapper.textbox(TextValue{ "Some Text" }, IsEditable{true});
+        wrapper.label("IntBox : ");
+        wrapper.intbox<int>(IsSpinnable{ true } );
+        wrapper.label("FloatBox : ");
+        wrapper.floatbox<float>(IsSpinnable{ true });
+      }
+
+      /* Message dialogs */ 
+      {
+        cwindow.label("Message Dialogues");
+        auto& tools = cwindow.widget();
+        tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+        auto& b = tools.button("Info");
+        Theme* ctheme = cwindow.theme();
+        b.setCallback([this, ctheme] () {
+          auto& dlg = msgdialog( MessageDialog::Type::Information,
+                                    "Title",
+                                    "This is an information message" );
+          dlg.setTheme(ctheme);
+          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
+        });
+        auto& bw = tools.button("Warn");
+        bw.setCallback([this, ctheme] () {
+          auto& dlg = msgdialog( MessageDialog::Type::Warning,
+                                     "Title",
+                                     "This is a warning message" );
+          dlg.setTheme(ctheme);
+          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
+        });
+        auto& ba = tools.button("Ask");
+        ba.setCallback([this, ctheme] () {
+          auto& dlg = msgdialog( MessageDialog::Type::Question,
+                                    "Title",
+                                    "This is a question message",
+                                    "Yes",
+                                    "No",
+                                    true );
+          dlg.setTheme(ctheme);
+          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
+        });
+      }
+
+      // TabWidget used to test TabHeader and others while keeping the size manageable
+      cwindow.label("Tab Widget");
+      auto& tabWidget = cwindow.tabs();
+
+      /* test button and checkbox fonts */ 
+      {
+        auto& layer = *tabWidget.createTab("Button Like");
+        layer.withLayout<GroupLayout>();
+
+        // green color, produces white chevron at start
+        auto& cp = layer.colorpicker(Color{ 0.28573f, 0.56702f, 0.25104f, 1.0f });
+        cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose() << std::endl; });
+
+        // combobox
+        std::vector<std::string> items{ "Combo box item 1", "Combo box item 2", "Combo box item 3" };
+        layer.combobox(items);
+
+        // popup button
+        int icon = ENTYPO_ICON_EXPORT;
+        auto& popupBtn = layer.popupbutton("Popup", icon);
+        auto& popup = popupBtn.popupref();
+        popup.withLayout<GroupLayout>();
+        popup.label("Arbitrary widgets can be placed here");
+        popup.checkbox("A check box");
+        // popup right
+        icon = ENTYPO_ICON_FLASH;
+        auto& popupBtn2 = popup.popupbutton("Recursive popup", icon);
+        auto& popupRight = popupBtn2.popupref();
+        popupRight.withLayout<GroupLayout>();
+        popupRight.checkbox("Another check box");
+        // popup left
+        auto& popupBtn3 = popup.popupbutton("Recursive popup", icon);
+        popupBtn3.setSide(Popup::Side::Left);
+        auto& popupLeft = popupBtn3.popupref();
+        popupLeft.withLayout<GroupLayout>();
+        popupLeft.checkbox("Another check box");
+
+        // regular buttons
+        auto& button = layer.button("PushButton");
+
+        // test that non-bold fonts for buttons work (applying to radio buttons)
+        //std::string radio_font = cwindow.theme()->mDefaultFont;
+
+        auto& button2 = layer.button("Radio 1 (Hover for Tooltip)");
+        //button2.setFont(radio_font);
+        button2.setFlags(Button::Flags::RadioButton);
+        button2.setTooltip("Short tooltip!");
+
+        auto& button3 = layer.button("Radio 2 (Hover for Tooltip)");
+        //button3.setFont(radio_font);
+        button3.setFlags(Button::Flags::RadioButton);
+        button3.setTooltip( "This is a much longer tooltip that will get wrapped automatically!" );
+        
+        auto& button4 = layer.button("ToggleButton");
+        button4.setFlags(Button::Flags::ToggleButton);
+
+        // checkbox (top level)
+        layer.checkbox("A CheckBox");
+      }
+
+      /* test the graph widget fonts */ 
+      {
+        auto& layer = *tabWidget.createTab("Graph");
+        layer.withLayout<GroupLayout>();
+
+        layer.label("Function Graph Widget");
+        auto& graph = layer.graph("Some Function");
+
+        graph.setHeader("E = 2.35e-3");
+        graph.setFooter("Iteration 89");
+        
+        VectorXf &func = graph.values();
+        func.resize(100);
+        for (int i = 0; i < 100; ++i)
+          func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
+            0.5f * std::cos(i / 23.f) + 1);
+      }
+
+      // Dummy tab used to represent the last tab button.
+      tabWidget.createTab("+");
+
+      // A simple counter.
+      int counter = 1;
+      tabWidget.setCallback([&](int index) 
+      {
+        if (index == (tabWidget.tabCount() - 1)) 
+        {
+          // When the "+" tab has been clicked, simply add a new tab.
+          std::string tabName = "Dynamic " + std::to_string(counter);
+          auto& layerDyn = *tabWidget.createTab(index, tabName);
+          layerDyn.withLayout<GroupLayout>();
+          layerDyn.label("Function graph widget", "spectrum-bold");
+          auto& graphDyn = layerDyn.graph("Dynamic function");
+
+          graphDyn.setHeader("E = 2.35e-3");
+          graphDyn.setFooter("Iteration " + std::to_string(index*counter));
+          
+          VectorXf &funcDyn = graphDyn.values();
+          funcDyn.resize(100);
+          for (int i = 0; i < 100; ++i)
+            funcDyn[i] = 0.5f * std::abs((0.5f * std::sin(i / 10.f + counter) +
+                         0.5f * std::cos(i / 23.f + 1 + counter)));
+          ++counter;
+          // We must invoke perform layout from the screen instance to keep everything in order.
+          // This is essential when creating tabs dynamically.
+          tabWidget.screen()->performLayout();
+          // Ensure that the newly added header is visible on screen
+          tabWidget.ensureTabVisible(index);
+
+        }
+      });
+      tabWidget.setActiveTab(0);
     }
 
     ~ExampleApplication() {}

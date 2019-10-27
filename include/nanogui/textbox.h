@@ -313,7 +313,7 @@ public:
 template <typename Scalar>
 class FloatBox : public TextBox {
 public:
-    FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
+    explicit FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
         mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
@@ -322,6 +322,11 @@ public:
         setValue(value);
         setSpinnable(false);
     }
+
+    using TextBox::set;
+    template<typename... Args>
+    FloatBox(Widget* parent, const Args&... args)
+      : FloatBox(parent, 0.f) { set<FloatBox<Scalar>, Args...>(args...); }
 
     std::string numberFormat() const { return mNumberFormat; }
     void numberFormat(const std::string &format) { mNumberFormat = format; }
@@ -414,6 +419,10 @@ private:
     Scalar mMinValue, mMaxValue;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PROPSETTER(InitialValue, setValue)
+    PROPSETTER(MinValue, setMinValue)
+    PROPSETTER(MaxValue, setMaxValue)
 };
 
 NAMESPACE_END(nanogui)

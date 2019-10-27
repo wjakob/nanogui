@@ -68,6 +68,8 @@ public:
      */
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
 
+    template<typename FF, typename none = void> void set() {}
+
 protected:
     /// Default destructor (exists for inheritance).
     virtual ~Layout() { }
@@ -245,6 +247,12 @@ protected:
  * specified per axis. The horizontal/vertical alignment can be specified per
  * row and column.
  */
+struct NANOGUI_EXPORT ColumnsAligment { 
+  std::vector<Alignment> value; 
+  ColumnsAligment(std::initializer_list<Alignment> l) 
+  { for (auto& a: l) value.push_back(a); }; 
+};
+
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
     /**
@@ -265,13 +273,18 @@ public:
      * \param spacing
      *     The amount of spacing between widgets added to the grid.
      */
-    GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
-               Alignment alignment = Alignment::Middle,
-               int margin = 0, int spacing = 0)
+    explicit GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
+                        Alignment alignment = Alignment::Middle,
+                        int margin = 0, int spacing = 0)
         : mOrientation(orientation), mResolution(resolution), mMargin(margin) {
         mDefaultAlignment[0] = mDefaultAlignment[1] = alignment;
         mSpacing = Vector2i::Constant(spacing);
     }
+
+    using Layout::set;
+    template<typename... Args>
+    GridLayout(const Args&... args)
+      : GridLayout(Orientation::Horizontal,2,Alignment::Middle,0,0) { set<GridLayout, Args...>(args...); }
 
     /// The Orientation of this GridLayout.
     Orientation orientation() const { return mOrientation; }
@@ -357,6 +370,8 @@ protected:
     int mMargin;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PROPSETTER(ColumnsAligment,setColAlignment)
 };
 
 /**
