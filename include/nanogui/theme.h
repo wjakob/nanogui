@@ -18,6 +18,7 @@
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
+#include <string.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -32,6 +33,19 @@ public:
     enum WindowCollapse { clAuto = -1, clNonCollapse=0, clMayCollapse = 1 };
 
     Theme(NVGcontext *ctx);
+    Theme(Theme& o) = default;
+
+    template<typename Type>
+    Type get(const std::string& name) { return get(name, Type()); }
+
+    template<typename Type>
+    void set(const std::string& name, const Type& v) { return set(name, v); }
+
+    Color get(const std::string& name, const Color&);
+    void set(const std::string& name, const Color& v);
+
+    int get(const std::string& name, const int&);
+    void set(const std::string& name, const int& v);
 
     /* Fonts */
     /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
@@ -79,6 +93,7 @@ public:
     int mTabButtonHorizontalPadding;
     /// The amount of vertical padding for a TabHeader widget (default: ``2``).
     int mTabButtonVerticalPadding;
+    int mWindowFontSize;
 
     int mWindowMenuHeaderOffset;
 
@@ -248,6 +263,10 @@ public:
     int mTextBoxUpIcon;
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
+
+    int mTooltipOpacity;
+    Color mTooltipBackgroundColor;
+    Color mTooltipTextColor;
 
 protected:
     /// Default destructor does nothing; allows for inheritance.

@@ -104,6 +104,7 @@ protected:
     bool mDrag;
     bool mDragCorner;
     Vector2i mMousePos;
+    int mFontSize = 0;
     bool mNeedPerformUpdate = false;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
     Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;

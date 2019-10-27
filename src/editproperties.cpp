@@ -70,69 +70,84 @@ void PropertiesEditor::parse(Widget* w)
     for (auto& obj : objects)
     {
       Json::value& jval = obj.second;
-      Widget* grid = new Widget(panel);
-      grid->setLayout(new GridLayout());
+      auto& grid = panel->widget();
+      grid.setLayout(new GridLayout());
 
       auto capvalue = jval.get_str("name");
       auto typevalue = jval.get_str("type");
 
       //_data->get(keyCaption, keyCaptionValue);
-      auto wcaption = grid->add<Label>(Caption{ capvalue.empty() ? obj.first : capvalue });
+      auto& wcaption = grid.label(Caption{ capvalue.empty() ? obj.first : capvalue });
       std::cout << capvalue << std::endl;
 
       int wname = width() * _nameColumnWidthPerc;
       int ww = width() * _valueColumnWidthPerc;
       int hh = 20;
-      wcaption->setWidth(wname);
-      wcaption->setFixedWidth(ww);
+      wcaption.setWidth(wname);
+      wcaption.setFixedWidth(ww);
       if (typevalue == "position")
       {
-        auto e = grid->add<IntBox<int>>(jval.get_int("x"),
-            [&](int v) { jval.set_int("x", v); updateAttribs(); },
-            [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
-        grid->add<Label>("");
-        e = grid->add<IntBox<int>>(jval.get_int("y"),
-            [&](int v) { jval.set_int("y", v); updateAttribs(); },
-            [&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
+        auto& ex = grid.intbox<int>(InitialValue{ (float)jval.get_int("x") });
+        ex.setCallback([&](int v) { jval.set_int("x", v); updateAttribs(); });
+        ex.setEditCallback( [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
+        ex.setEditable(true); 
+        ex.setSize(ww, hh); 
+        ex.setFixedSize({ ww, hh });
+        grid.label("");
+        auto& ey = grid.intbox<int>(InitialValue{ (float)jval.get_int("y") });
+        ey.setCallback([&](int v) { jval.set_int("y", v); updateAttribs(); });
+        ey.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
+        ey.setEditable(true); 
+        ey.setSize(ww, hh); 
+        ey.setFixedSize({ ww, hh });
       }
       else if (typevalue == "size")
       {
-        auto e = grid->add<IntBox<int>>(jval.get_int("w"),
-            [&](int v) { jval.set_int("w", v); updateAttribs(); },
-            [&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
-        grid->add<Label>("");
-        e = grid->add<IntBox<int>>(jval.get_int("h"),
-            [&](int v) { jval.set_int("h", v); updateAttribs(); },
-            [&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
+        auto& ew = grid.intbox<int>(InitialValue{ (float)jval.get_int("w") });
+        ew.setCallback([&](int v) { jval.set_int("w", v); updateAttribs(); });
+        ew.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
+        ew.setEditable(true); 
+        ew.setSize(ww, hh); 
+        ew.setFixedSize({ ww, hh });
+        grid.label("");
+        auto& eh = grid.intbox<int>(InitialValue{ (float)jval.get_int("h") });
+        eh.setCallback([&](int v) { jval.set_int("h", v); updateAttribs(); });
+        eh.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
+        eh.setEditable(true); 
+        eh.setSize(ww, hh); 
+        eh.setFixedSize({ ww, hh });
       }
       else if (typevalue == "boolean")
       {
-        auto ch = grid->add<CheckBox>("", [&](bool v) { jval.set_bool("value", v); updateAttribs(); });
-        ch->setSize(ww, hh); ch->setFixedSize({ ww, hh }); ch->setChecked(jval.get_bool("value"));
+        auto& ch = grid.checkbox("", [&](bool v) { jval.set_bool("value", v); updateAttribs(); });
+        ch.setSize(ww, hh); 
+        ch.setFixedSize({ ww, hh });
+        ch.setChecked(jval.get_bool("value"));
       }
       else if (typevalue == "integer")
       {
-        auto e = grid->add<IntBox<int>>(jval.get_int("value"), [&](int v) { jval.set_int("value", v); updateAttribs(); });
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
+        auto& e = grid.intbox<int>(InitialValue{ (float)jval.get_int("value") });
+        e.setCallback([&](int v) { jval.set_int("value", v); updateAttribs(); });
+        e.setEditable(true); 
+        e.setSize(ww, hh); 
+        e.setFixedSize({ ww, hh });
       }
       else if (typevalue == "string")
       {
-        auto e = grid->add<TextBox>(jval.get_str("value"),
-                                    [&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; },
-                                    [&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
-        e->setEditable(true); e->setSize(ww, hh); e->setFixedSize({ ww, hh });
+        auto& e = grid.wdg<TextBox>(TextValue{ jval.get_str("value") });
+        e.setCallback([&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; });
+        e.setEditCallback([&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
+        e.setEditable(true); 
+        e.setSize(ww, hh);
+        e.setFixedSize({ ww, hh });
       }
       else if (typevalue == "color")
       {
-        auto cp = grid->add<ColorPicker>(Color(jval.get_int("color")));
-        cp->setFixedSize({ww, hh});
-        cp->setSide(Popup::Side::Left);
-        cp->setFinalCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
-        cp->setCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
+        auto& cp = grid.wdg<ColorPicker>(Color(jval.get_int("color")));
+        cp.setFixedSize({ww, hh});
+        cp.setSide(Popup::Side::Left);
+        cp.setFinalCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
+        cp.setCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
       }
     }
 

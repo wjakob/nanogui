@@ -46,6 +46,7 @@
 #include <nanogui/perfchart.h>
 #include <nanogui/common.h>
 #include <nanogui/listbox.h>
+#include <nanogui/themebuilder.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -90,7 +91,7 @@ nanogui::GPUtimer gpuTimer;
 
 class ExampleApplication : public nanogui::Screen {
 public:
-  ExampleApplication() : nanogui::Screen({ 1280, 800 }, "NanoGUI Test") {
+  ExampleApplication() : nanogui::Screen({ 1600, 900 }, "NanoGUI Test") {
     using namespace nanogui;
 
     initGPUTimer(&gpuTimer);
@@ -482,8 +483,7 @@ public:
     }
 
     new Label(w, "Combo box :", "sans-bold");
-    ComboBox *cobo =
-      new ComboBox(w, { "Item 1", "Item 2", "Item 3" });
+    ComboBox *cobo = new ComboBox(w, { "Item 1", "Item 2", "Item 3" });
     cobo->setFontSize(16);
     cobo->setFixedSize(Vector2i(100, 20));
 
@@ -500,11 +500,8 @@ public:
     // setup a fast callback for the color picker widget on a new window
     // for demonstrative purposes
     w = new Window(this, "Color Picker Fast Callback");
-    layout =
-      new GridLayout(Orientation::Horizontal, 2,
-        Alignment::Middle, 15, 5);
-    layout->setColAlignment(
-    { Alignment::Maximum, Alignment::Fill });
+    layout = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
+    layout->setColAlignment({ Alignment::Maximum, Alignment::Fill });
     layout->setSpacing(0, 10);
     w->setLayout(layout);
     w->setPosition(Vector2i(425, 500));
@@ -572,6 +569,10 @@ public:
                                                   });
       dw.submenu("Help");
     }
+
+      {
+        auto& tb = wdg<ThemeBuilder>(Position{ 1050, 15 });
+      }
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));

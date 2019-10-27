@@ -36,6 +36,8 @@ class TextBox;
 class SwitchBox;
 class Listbox;
 class Spinner;
+template<class X> class IntBox;
+template<class X> class FloatBox;
 
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
@@ -45,6 +47,7 @@ enum TextVAlign { vTop = 3, vMiddle, vBottom };
 
 DECLSETTER(MaxHeight, int)
 DECLSETTER(FixedHeight, int)
+DECLSETTER(FixedWidth, int)
 DECLSETTER(WidgetLayout, Layout*)
 DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
 DECLSETTERARGS(FixedSize, Vector2i)
@@ -168,6 +171,16 @@ public:
 
       return ret;
     }
+
+    template<typename WidgetClass>
+    void forEachChild(std::function<void (WidgetClass*)> f)
+    {
+      auto widgets = findAll<WidgetClass>();
+      for (WidgetClass* w : widgets) f(w);
+    }
+
+    void forEachChild(const std::function<void (Widget*)>& f)
+    { for (Widget* w : mChildren) f(w); }
 
     /// Return the size of the widget
     const Vector2i &size() const { return mSize; }
@@ -424,6 +437,7 @@ public:
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
 
     PROPSETTER(FixedHeight, setFixedHeight)
+    PROPSETTER(FixedWidth, setFixedWidth)
     PROPSETTER(WidgetId,setId)
     PROPSETTER(Position,setPosition)
     PROPSETTER(WidgetSize, setSize)
@@ -458,6 +472,8 @@ public:
     template<typename... Args>Listbox& listbox(const Args&... args) { return wdg<Listbox>(args...); }
     template<typename... Args>TabWidget& tabs(const Args&... args) { return wdg<TabWidget>(args...); }
     template<typename... Args>Spinner& spinner(const Args&... args) { return wdg<Spinner>(args...); }
+    template<typename Scalar, typename... Args>IntBox<Scalar>& intbox(const Args&... args) { return wdg<IntBox<Scalar>>(args...); }
+    template<typename Scalar, typename... Args>FloatBox<Scalar>& floatbox(const Args&... args) { return wdg<FloatBox<Scalar>>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children

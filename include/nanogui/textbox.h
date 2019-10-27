@@ -31,6 +31,10 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
+DECLSETTER(IsSpinnable,bool)
+DECLSETTER(IsEditable,bool)
+DECLSETTER(TextValue,std::string)
+
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
     /// How to align the text in the text box.
@@ -40,35 +44,12 @@ public:
         Right
     };
 
-    TextBox(Widget *parent, const std::string &value = "Untitled");
-    TextBox(Widget* parent, const std::string &value,
-      const std::function<bool(const std::string& str)> &cb,
-      const std::function<void(Widget*)> &cmcb)
-      : TextBox(parent, value)
-    {
-      setCallback(cb);
-      setComitCallback(cmcb);
-    }
+    explicit TextBox(Widget   *parent, const std::string &value = "Untitled");
 
-    TextBox(Widget* parent, const std::string &value,
-      const std::function<bool(const std::string& str)> &on_change,
-      const std::function<void(Widget*)> &on_comit,
-      const std::function<void(const std::string&,bool)> &on_edit)
-      : TextBox(parent, value)
-    {
-      setCallback(on_change);
-      setComitCallback(on_comit);
-      setEditCallback(on_edit);
-    }
-
-    TextBox(Widget* parent, const std::string &value,
-      const std::function<bool(const std::string& str)> &on_change,
-      const std::function<void(const std::string&, bool)> &on_edit)
-      : TextBox(parent, value)
-    {
-      setCallback(on_change);
-      setEditCallback(on_edit);
-    }
+    using Widget::set;
+    template<typename... Args>
+    TextBox(Widget* parent, const Args&... args)
+      : TextBox(parent, std::string("")) { set<TextBox, Args...>(args...); }
 
     bool editable() const { return mEditable; }
     void setEditable(bool editable);
@@ -166,6 +147,10 @@ protected:
     double mLastClick;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    
+    PROPSETTER(IsSpinnable,setSpinnable)
+    PROPSETTER(IsEditable,setEditable)
+    PROPSETTER(TextValue,setValue)
 };
 
 /**
@@ -176,10 +161,14 @@ public:
  * Template parameters should be integral types, e.g. ``int``, ``long``,
  * ``uint32_t``, etc.
  */
+DECLSETTER(InitialValue,float)
+DECLSETTER(MinValue,float)
+DECLSETTER(MaxValue,float)
+
 template <typename Scalar>
 class IntBox : public TextBox {
 public:
-    IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent) {
+    explicit IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent, std::string("")) {
         setDefaultValue("0");
         setFormat(std::is_signed<Scalar>::value ? "[-]?[0-9]*" : "[0-9]*");
         setValueIncrement(1);
@@ -188,16 +177,21 @@ public:
         setSpinnable(false);
     }
 
-    IntBox(Widget *parent, Scalar value, const std::function<void(Scalar)> &cb)
+    /*explicit IntBox(Widget *parent, Scalar value, const std::function<void(Scalar)> &cb)
       : IntBox(parent, value){ setCallback(cb); }
 
-    IntBox(Widget *parent, Scalar value,
+    explicit IntBox(Widget *parent, Scalar value,
            const std::function<void(Scalar)> &on_change,
            const std::function<void(Scalar, bool)> &on_edit)
       : IntBox(parent, value) {
       setCallback(on_change);
       setEditCallback(on_edit);
-    }
+    }*/
+
+    using TextBox::set;
+    template<typename... Args>
+    IntBox(Widget* parent, const Args&... args)
+      : IntBox(parent, 0) { set<IntBox<Scalar>, Args...>(args...); }
 
     Scalar value() const {
         std::istringstream iss(TextBox::value());
@@ -302,6 +296,10 @@ private:
     Scalar mMinValue, mMaxValue;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    PROPSETTER(InitialValue,setValue)
+    PROPSETTER(MinValue,setMinValue)
+    PROPSETTER(MaxValue,setMaxValue)
 };
 
 /**
