@@ -264,20 +264,23 @@ public:
       return{ stringData, textColor };
     });
 
-    new Label(w, "File dialog", "sans-bold");
-    tools = new Widget(w);
-    tools->setLayout(new BoxLayout(Orientation::Horizontal,
-      Alignment::Middle, 0, 6));
-    b = new Button(tools, "Open");
-    b->setCallback([&] {
-      cout << "File dialog result: " << file_dialog(
-      { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, false) << endl;
-    });
-    b = new Button(tools, "Save");
-    b->setCallback([&] {
-      cout << "File dialog result: " << file_dialog(
-      { {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) << endl;
-    });
+    {
+      w->label("File dialog", "sans-bold");
+      auto& fdtools = w->widget();
+      fdtools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+      fdtools.button(Caption{ "Open" },
+        ButtonCallback{ [&] {
+           cout << "File dialog result: "
+                << file_dialog({ {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, false)
+                << endl;
+        } });
+      fdtools.button(Caption{ "Save" },
+                     ButtonCallback{ [&] {
+                        cout << "File dialog result: " 
+                             << file_dialog({ {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) 
+                             << endl;
+                     }});
+    }
 
     new Label(w, "Combo box", "sans-bold");
     new DropdownBox(w, { "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" });
@@ -293,8 +296,16 @@ public:
     cb = new CheckBox(w, "Flag 2",
       [](bool state) { cout << "Check box 2 state: " << state << endl; }
     );
-    new Label(w, "Progress bar", "sans-bold");
-    mProgress = new ProgressBar(w);
+
+    {
+      w->label("Progress bar", "sans-bold");
+
+      auto& bars = w->widget();
+      bars.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+      bars.wdg<ProgressBar>(WidgetId{ "#lineprogressbar" });
+      bars.wdg<CircleProgressBar>(WidgetId{ "#circleprogressbar" }, 
+                                  FixedSize{ 40, 40 });
+    }
 
     new Label(w, "Slider and text box", "sans-bold");
 
@@ -873,19 +884,23 @@ public:
 
     virtual void draw(NVGcontext *ctx) {
         /* Animate the scrollbar */
-        if (mProgress)
-          mProgress->setValue(std::fmod((float) nanogui::getTimeFromStart() / 10, 1.0f));
+      using namespace nanogui;
+      float value = std::fmod((float)getTimeFromStart() / 10, 1.0f);
+        if (auto progress = findWidget<ProgressBar>("#lineprogressbar"))
+          progress->setValue(value);
+        if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
+          progress->setValue( std::fmod(value * 2, 1.0f));
 
         startGPUTimer(&gpuTimer);
 
-        double t = nanogui::getTimeFromStart();
+        double t = getTimeFromStart();
         double dt = t - previousFrameTime;
         previousFrameTime = t;
 
         /* Draw the user interface */
         Screen::draw(ctx);
 
-        cpuTime = nanogui::getTimeFromStart() - t;
+        cpuTime = getTimeFromStart() - t;
 
         if (fpsGraph) fpsGraph->update(dt);
         if (cpuGraph) cpuGraph->update(cpuTime);
@@ -924,8 +939,6 @@ public:
     }
 
 private:
-    nanogui::ProgressBar *mProgress = nullptr;
-    //nanogui::GLShader mShader;
     nanogui::PerfGraph *fpsGraph = nullptr;
     nanogui::PerfGraph *cpuGraph = nullptr;
     nanogui::PerfGraph *gpuGraph = nullptr;
