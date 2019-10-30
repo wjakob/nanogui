@@ -20,6 +20,7 @@ endif()
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI glfw example application?" ON)
 option(NANOGUI_GLFW_BACKEND  "Use GLFW backend?" ON)
 option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
+option(NANOGUI_DX12_BACKEND  "Use DX12 backend?" OFF)
 option(NANOGUI_BUILD_EDITOR  "Build NanoGUI editor application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
@@ -28,7 +29,24 @@ option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
-if (NANOGUI_GLFW_BACKEND)
+# Check that we select backend and only one backend
+
+if (NANOGUI_DX11_BACKEND OR NANOGUI_GLFW_BACKEND OR NANOGUI_DX12_BACKEND)  
+  if (
+    (NANOGUI_GLFW_BACKEND AND (NANOGUI_DX12_BACKEND OR NANOGUI_DX11_BACKEND)) OR
+    (NANOGUI_DX12_BACKEND AND NANOGUI_DX11_BACKEND)
+  )
+    message(FATAL_ERROR "Multiple backends selected! "
+      "Select one of backends: glfw, dx11, dx12."
+      )	
+  endif()    
+else()
+  message(FATAL_ERROR "No backends selected! "
+    "Select one of backends: glfw, dx11, dx12."
+    )	  
+endif()
+
+if (NANOGUI_GLFW_BACKEND)  
   if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
     message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
       "You probably did not clone the project with --recursive. It is possible to recover "
@@ -234,6 +252,8 @@ if (NANOGUI_GLFW_BACKEND)
   list(APPEND NANOGUI_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
 elseif (NANOGUI_DX11_BACKEND)
   add_definitions(-DNANOVG_D3D11)  
+elseif (NANOGUI_DX11_BACKEND)
+  add_definitions(-DNANOVG_D3D12)  
 endif()
 
 if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
@@ -272,6 +292,8 @@ if (NANOGUI_GLFW_BACKEND)
   endif()
 elseif (NANOGUI_DX11_BACKEND)
   list(APPEND NANOGUI_EXTRA_LIBS d3d11 dxguid)
+elseif (NANOGUI_DX12_BACKEND)
+  list(APPEND NANOGUI_EXTRA_LIBS d3d12 dxguid)
 endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
@@ -345,6 +367,12 @@ elseif (NANOGUI_DX11_BACKEND)
     src/dx11/common_dx11.h src/dx11/common_dx11.cpp 
     src/dx11/screen_dx11.cpp
     src/dx11/gpu_dx11.cpp
+  )
+elseif (NANOGUI_DX12_BACKEND)
+  list(APPEND NANOGUI_BACKEND_SOURCES
+    src/dx12/common_dx12.h src/dx12/common_dx12.cpp 
+    src/dx12/screen_dx12.cpp
+    src/dx12/gpu_dx12.cpp
   )
 endif()
 
@@ -529,7 +557,11 @@ endif()
 if (NANOGUI_BUILD_PYTHON)
   # Need PIC code in libnanogui even when compiled as a static library
   set_target_properties(nanogui-obj PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  
+  if (NANOGUI_GLFW_BACKEND)  
+    set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
+ 
 
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
   add_library(nanogui-python-obj OBJECT
