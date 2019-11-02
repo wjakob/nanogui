@@ -293,7 +293,7 @@ if (NANOGUI_GLFW_BACKEND)
 elseif (NANOGUI_DX11_BACKEND)
   list(APPEND NANOGUI_EXTRA_LIBS d3d11 dxguid)
 elseif (NANOGUI_DX12_BACKEND)
-  list(APPEND NANOGUI_EXTRA_LIBS d3d12 dxguid)
+  list(APPEND NANOGUI_EXTRA_LIBS dxgi)
 endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
@@ -373,6 +373,20 @@ elseif (NANOGUI_DX12_BACKEND)
     src/dx12/common_dx12.h src/dx12/common_dx12.cpp 
     src/dx12/screen_dx12.cpp
     src/dx12/gpu_dx12.cpp
+	
+	include/nanogui/nanovg_d3d12.h    
+    src/dx12/nanovg_d3d12.cpp
+	src/dx12/nanovg_dx12_utils.cpp
+	src/dx12/nanovg_dx12_render.cpp
+	src/dx12/nanovg_dx12_alloc.cpp
+	src/dx12/nanovg_dx12_res.cpp
+    
+	src/dx12/dx12_dyn_imports.h src/dx12/dx12_dyn_imports.cpp
+    src/dx12/dx12_subset.h src/dx12/dx12_subset.cpp
+	src/dx12/dx12_subset_resource.h src/dx12/dx12_subset_resource.cpp
+	src/dx12/dx12_subset_dheap.h src/dx12/dx12_subset_dheap.cpp
+	src/dx12/dx12_subset_pso_lib.cpp
+	
   )
 endif()
 
