@@ -315,7 +315,7 @@ void dx12_subset_resource::MapWriteTex2D(void * data)
 
 	BTransit4(D3D12_RESOURCE_STATE_GENERIC_READ);
 
-	for (int i = 0; i != dsc.Height; ++i)
+	for (UINT i = 0; i != dsc.Height; ++i)
 	{
 		memcpy((void*)((intptr_t)mappedPtr + i*subresFootprints.Footprint.RowPitch), (void*)((intptr_t)data + i*wPitch), wPitch);
 	}
@@ -380,7 +380,9 @@ void * dx12_subset_resource::UploadTexFR(dx12_subset_resource * dst, UINT64 uplo
 	D3D12_TEXTURE_COPY_LOCATION dstR = { dst->GetD12Obj(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, lv };
 	D3D12_TEXTURE_COPY_LOCATION srcR = { res, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, 0 };
 	
-	dx12->dev->GetCopyableFootprints(&dst->GetD12Obj()->GetDesc(), lv, 1, 0, &srcR.PlacedFootprint, 0, 0, 0);
+	D3D12_RESOURCE_DESC dstDsc = dst->GetD12Obj()->GetDesc();
+
+	dx12->dev->GetCopyableFootprints(&dstDsc, lv, 1, 0, &srcR.PlacedFootprint, 0, 0, 0);
 
 	srcR.PlacedFootprint.Offset = upload_offset;
 

@@ -50,8 +50,8 @@ typedef struct dx12_cmd_list {
 	ID3D12CommandAllocator* alc;
 } dx12_cmd_list;
 
-#define _DEBUG_DX12
-#define _ENABLE_DX12_LOGGING
+//#define _DEBUG_DX12
+//#define _ENABLE_DX12_LOGGING
 
 #ifdef _DEBUG_DX12
 	#define LOG_DBG_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")

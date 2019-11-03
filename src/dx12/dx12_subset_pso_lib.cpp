@@ -318,7 +318,7 @@ ID3D12RootSignature * dx12_subset::ConstructRootSignature(D3D12_ROOT_SIGNATURE_D
 
 	HRESULT ret;
 
-	ret = imports.dx12.SerializeRootSignature(rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+	ret = imports.fun.dx12.SerializeRootSignature(rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
 
 	if (FAILED(ret))
 	{

@@ -48,7 +48,7 @@ dx12_subset_dheap::dx12_subset_dheap(dx12_subset* dev, UINT idx)
 	for (int i = 0; DX12_SUBSET_DHEAP_STACK_COUNT != i; ++i)
 		stacks[i] = new dx12_subset_dheap_slot_stack(desc->NumDescriptors);
 
-	for (int i = 0; i != desc->NumDescriptors; ++i)
+	for (UINT i = 0; i != desc->NumDescriptors; ++i)
 		stacks[DX12_SUBSET_DHEAP_STACK_FREE]->Push((desc->NumDescriptors - 1) - i);
 
 	m_desc = desc;
@@ -270,8 +270,7 @@ dx12_subset_dheap_slot_type dx12_subset_dheap_slot_stack::Pop()
 	if (idx < 0)
 	{		
 		printf("dx12 backend: out of dheap slots");
-		abort();
-		return 0;
+		abort();		
 	}
 	else
 		ret = data[idx];

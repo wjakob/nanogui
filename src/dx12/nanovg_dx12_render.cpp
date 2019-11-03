@@ -170,16 +170,14 @@ int D3Dnvg__renderCreateTexture(D3DNVGcontext * D3D, int type, int w, int h, int
 	}
 
 	if (data != NULL)
-	{
-		//TODO
-		tex->tex->MapWriteTex2D((void*)data);
-		//D3D_API_6(D3D->pDeviceContext, UpdateSubresource, (ID3D11Resource*)tex->tex, 0, NULL, data, tex->width * pixelWidthBytes, (tex->width * tex->height) * pixelWidthBytes);
+	{		
+		tex->tex->MapWriteTex2D((void*)data);		
 	}
 	
 
 	if (data != NULL && levels != 1)
 	{
-		//TODO		
+		//TODO	
 	}
 
 	return tex->id;

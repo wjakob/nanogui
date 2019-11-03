@@ -130,7 +130,7 @@ public:
 				pD3DCompile_47 Compile;
 				pD3DCompileFromFile_47 CompileFromFile;
 			} d3d_compiler;
-		} ;
+		} fun;
 		void* import_fun_ptrs[4];
 	};
 

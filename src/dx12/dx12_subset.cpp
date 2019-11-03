@@ -359,7 +359,7 @@ ComPtr<ID3D12Device> dx12_subset::SelectSutiableGPU()
 			{
 				for (int j = 1; j != 10; ++j)
 				{
-					flTestMask |= SUCCEEDED(imports.dx12.CreateDevice(dxgiAdapter1.Get(), featureToCreate[j], __uuidof(ID3D12Device), nullptr)) << (j - 1);
+					flTestMask |= SUCCEEDED(imports.fun.dx12.CreateDevice(dxgiAdapter1.Get(), featureToCreate[j], __uuidof(ID3D12Device), nullptr)) << (j - 1);
 				}
 
 				while ((flTestMask & 1) == 0)
@@ -415,7 +415,7 @@ ComPtr<ID3D12Device> dx12_subset::SelectSutiableGPU()
 	//megai2: create device actually
 
 	ComPtr<ID3D12Device> ret;
-	LOG_ERR_THROW2(imports.dx12.CreateDevice(gpu.Get(), usingFeatures, IID_PPV_ARGS(&ret)), "dx12CreateDevice");
+	LOG_ERR_THROW2(imports.fun.dx12.CreateDevice(gpu.Get(), usingFeatures, IID_PPV_ARGS(&ret)), "dx12CreateDevice");
 
 	// Enable debug messages in debug mode.
 #ifdef _DEBUG_DX12
@@ -553,12 +553,12 @@ void dx12_subset::ReleaseAfterFrameObjects()
 void dx12_subset::dxgi_setup()
 {
 	ComPtr<IDXGIFactory2> dxgiFactory4;
-#ifdef _DEBUG
+#ifdef _DEBUG_DX12
 	UINT createFactoryFlags = 0;
 	createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 	LOG_ERR_THROW2(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory4)), "DXGI factory 2 @ InitDXGISwapChain");
 #else
-	ThrowCritialError(CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory4)), "DXGI factory 1 @ InitDXGISwapChain");
+	LOG_ERR_THROW2(CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory4)), "DXGI factory 1 @ InitDXGISwapChain");
 #endif
 
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
