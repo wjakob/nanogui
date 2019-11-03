@@ -110,6 +110,8 @@ void dx12_subset::init(HWND window, int w, int h)
 	winH = h;
 	winW = w;
 
+	w7_cq = NULL;
+
 	if (!FAILED(cmdQue->QueryInterface<ID3D12CommandQueueDownlevel>(&w7_cq)))
 	{
 		LOG_INFO_DTDM("downleveled queue is present, running w7 swap path");
@@ -170,6 +172,9 @@ void dx12_subset::deinit()
 		cl_stack[0]->cl->Release();
 		cl_stack[0]->alc->Release();
 	}
+
+	if (w7_cq)
+		w7_cq->Release();
 
 	cmdQue->Release();
 	dev->Release();
@@ -620,10 +625,16 @@ void dx12_subset::dxgi_present()
 
 void dx12_subset::dxgi_present_w7()
 {
-}
+	dx12_cmd_list* w7cl = GetUnusedCL();
 
-void dx12_subset::dxgi_setup_w7()
-{
+	w7_cq->Present(w7cl->cl, rt->GetD12Obj(), dxgi_win, D3D12_DOWNLEVEL_PRESENT_FLAG_NONE);
+
+	ExecuteCL(w7cl);
+
+	if (dxgi_resize_query)
+	{
+		dxgi_state = dxgi_state_resize;
+	}
 }
 
 void dx12_subset::dxgi_error()
@@ -634,26 +645,33 @@ void dx12_subset::dxgi_error()
 	{
 		dxgi_sc->Release();
 		dxgi_sc = 0;
-	}
+	} 
 
 	dxgi_state = dxgi_state_setup;
 }
 
 void dx12_subset::dxgi_resize()
-{
+{	
+	ResizeFrResources();
+
 	dxgi_resize_query = 0;
 
-	ResizeFrResources();
-	dxgi_release_buffers();
-
-	if (FAILED(dxgi_sc->ResizeBuffers(2, winW, winH, DXGI_FORMAT_B8G8R8A8_UNORM, 0)))
+	if (!w7_cq)
 	{
-		dxgi_state = dxgi_state_error;
+		dxgi_release_buffers();
+
+		if (FAILED(dxgi_sc->ResizeBuffers(2, winW, winH, DXGI_FORMAT_B8G8R8A8_UNORM, 0)))
+		{
+			dxgi_state = dxgi_state_error;
+		}
+		else {			
+			dxgi_state = dxgi_state_present;
+			dxgi_sc->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer[0]));
+			dxgi_sc->GetBuffer(1, IID_PPV_ARGS(&dxgiBackBuffer[1]));
+		}
 	}
-	else {
-		dxgi_state = dxgi_state_present;
-		dxgi_sc->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer[0]));
-		dxgi_sc->GetBuffer(1, IID_PPV_ARGS(&dxgiBackBuffer[1]));
+	else {		
+		dxgi_state = dxgi_state_present_w7;
 	}
 }
 

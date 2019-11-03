@@ -146,8 +146,7 @@ private:
 	//dxgi
 	void dxgi_setup();
 	void dxgi_present();
-	void dxgi_present_w7();
-	void dxgi_setup_w7();
+	void dxgi_present_w7();	
 	void dxgi_error();
 	void dxgi_resize();
 
@@ -202,8 +201,7 @@ private:
 	dx12_dynamic_imports imports;
 
 	//w7 port
-	ID3D12CommandQueueDownlevel* w7_cq;	
-	UINT32 w7_cl_idx;
+	ID3D12CommandQueueDownlevel* w7_cq;		
 
 	//ppso & rsig lib
 
