@@ -321,5 +321,16 @@ void Object::decRef(bool dealloc) const noexcept {
 
 Object::~Object() { }
 
+float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds)
+{
+  float _bounds[4];
+  if (!bounds)
+    bounds = _bounds;
+
+  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+  nvgTextBounds(ctx, x, y, string, NULL, bounds);
+  return bounds[3] - bounds[1];
+}
+
 NAMESPACE_END(nanogui)
 

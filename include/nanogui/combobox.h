@@ -23,6 +23,7 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple combo box widget based on a popup button.
  */
+using ComboBoxItems = std::vector<std::string>;
 class NANOGUI_EXPORT ComboBox : public PopupButton {
 public:
     /// Create an empty combo box

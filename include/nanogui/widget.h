@@ -37,6 +37,7 @@ class SwitchBox;
 class Listbox;
 class Spinner;
 class Graph;
+class TreeView;
 template<class X> class IntBox;
 template<class X> class FloatBox;
 
@@ -480,6 +481,7 @@ public:
     template<typename Scalar, typename... Args>FloatBox<Scalar>& floatbox(const Args&... args) { return wdg<FloatBox<Scalar>>(args...); }
     template<typename... Args>ColorPicker& colorpicker(const Args&... args) { return wdg<ColorPicker>(args...); }
     template<typename... Args>Graph& graph(const Args&... args) { return wdg<Graph>(args...); }
+    template<typename... Args>TreeView& treeview(const Args&... args) { return wdg<TreeView>(args...); }
     
 protected:
     /// Free all resources used by the widget and any children

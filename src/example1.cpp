@@ -47,9 +47,13 @@
 #include <nanogui/common.h>
 #include <nanogui/listbox.h>
 #include <nanogui/themebuilder.h>
+#include <nanogui/treeview.h>
+#include <nanogui/treeviewitem.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <numeric>
+#include <tuple>
 
 // Includes for the GLTexture class.
 #include <cstdint>
@@ -87,791 +91,839 @@ using std::vector;
 using std::pair;
 using std::to_string;
 
-nanogui::GPUtimer gpuTimer;
+using namespace nanogui;
 
-class ExampleApplication : public nanogui::Screen {
-public:
-  ExampleApplication() : nanogui::Screen({ 1600, 900 }, "NanoGUI Test") {
-    using namespace nanogui;
+GPUtimer gpuTimer;
 
-    initGPUTimer(&gpuTimer);
+void createButtonDemoWindow(Screen* screen)
+{
+  auto& w = screen->window(Position{ 15, 15 },
+                           WindowMovable{ Theme::WindowDraggable::dgFixed },
+                           Caption{ "Button demo" },
+                           WidgetLayout{ new GroupLayout() });
 
-    auto& refw = window(Position{ 15, 15 },
-                        WindowMovable{ Theme::WindowDraggable::dgFixed },
-                        Caption{ "Button demo" },
-                        WidgetLayout{ new GroupLayout() });
-    Window *w = &refw;
+  /* No need to store a pointer, the data structure will be automatically
+  freed when the parent window is deleted */
+  w.label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
+  w.button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
+           Caption{ "Plain button" },
+           TooltipText{ "short tooltip" });
 
-    /* No need to store a pointer, the data structure will be automatically
-       freed when the parent window is deleted */
-    w->label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
-    w->button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
-              Caption{ "Plain button" },
-              
-              TooltipText{ "short tooltip" });
+  /* Alternative construction notation using variadic template */
+  w.button(Caption{ "Styled" },
+           Icon{ ENTYPO_ICON_ROCKET },
+           BackgroundColor{ 0, 0, 255, 25 },
+           ButtonCallback{ [] { cout << "pushed!" << endl; } },
+           TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                        "fact, that the shown text will span several lines." });
 
-    /* Alternative construction notation using variadic template */
-    w->button(Caption{ "Styled" }, 
-              Icon{ ENTYPO_ICON_ROCKET },
-              BackgroundColor{ 0, 0, 255, 25 },
-              ButtonCallback{ [] { cout << "pushed!" << endl; } },
-              TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                            "fact, that the shown text will span several lines." } );
+  w.label("Toggle buttons", "sans-bold");
+  w.button(Caption{ "Toggle me" },
+           ButtonFlags{ Button::ToggleButton },
+           ButtonChangeCallback{ [](bool state) { cout << "Toggle button state: " << state << endl; } });
 
-    new Label(w, "Toggle buttons", "sans-bold");
-    auto b = new Button(w, "Toggle me");
-    b->setFlags(Button::ToggleButton);
-    b->setChangeCallback([](bool state) { cout << "Toggle button state: " << state << endl; });
+  w.label("Radio buttons", "sans-bold");
+  w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } );
+  w.button(Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } );
 
-    new Label(w, "Radio buttons", "sans-bold");
-    b = new Button(w, "Radio button 1");
-    b->setFlags(Button::RadioButton);
-    b = new Button(w, "Radio button 2");
-    b->setFlags(Button::RadioButton);
+  w.label("A tool palette", "sans-bold");
+  auto& tools = w.widget();
+  tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  tools.toolbutton(Icon{ ENTYPO_ICON_CLOUD });
+  tools.toolbutton(Icon{ ENTYPO_ICON_CONTROLLER_FAST_FORWARD });
+  tools.toolbutton(Icon{ ENTYPO_ICON_COMPASS });
+  tools.toolbutton(Icon{ ENTYPO_ICON_INSTALL });
 
-    new Label(w, "A tool palette", "sans-bold");
-    Widget *tools = new Widget(w);
-    tools->setLayout(new BoxLayout(Orientation::Horizontal,
-      Alignment::Middle, 0, 6));
+  w.label("Popup buttons", "sans-bold");
+  auto& popupBtn = w.wdg<PopupButton>("Popup", ENTYPO_ICON_EXPORT);
+  auto& popup = popupBtn.popupref();
+  popup.withLayout<GroupLayout>();
+  popup.label("Arbitrary widgets can be placed here");
+  popup.checkbox("A check box");
+  // popup right
+  auto& popupBtnR = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
+  auto& popupRight = popupBtnR.popupref();
+  popupRight.withLayout<GroupLayout>();
+  popupRight.checkbox("Another check box");
+  // popup left
+  auto& popupBtnL = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
+  popupBtnL.setSide(Popup::Side::Left);
+  auto& popupLeft = popupBtnL.popupref();
+  popupLeft.withLayout<GroupLayout>();
+  popupLeft.checkbox("Another check box");
 
-    b = new ToolButton(tools, ENTYPO_ICON_CLOUD);
-    b = new ToolButton(tools, ENTYPO_ICON_CONTROLLER_FAST_FORWARD);
-    b = new ToolButton(tools, ENTYPO_ICON_COMPASS);
-    b = new ToolButton(tools, ENTYPO_ICON_INSTALL);
+  w.label("A switch boxes", "sans-bold");
+  auto& switchboxArea = w.widget();
+  switchboxArea.withLayout<GridLayout>(Orientation::Horizontal, 2);
 
-    new Label(w, "Popup buttons", "sans-bold");
-    PopupButton *popupBtn = new PopupButton(w, "Popup", ENTYPO_ICON_EXPORT);
-    Popup *popup = popupBtn->popup();
-    popup->setLayout(new GroupLayout());
-    new Label(popup, "Arbitrary widgets can be placed here");
-    new CheckBox(popup, "A check box");
-    // popup right
-    popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
-    Popup *popupRight = popupBtn->popup();
-    popupRight->setLayout(new GroupLayout());
-    new CheckBox(popupRight, "Another check box");
-    // popup left
-    popupBtn = new PopupButton(popup, "Recursive popup", ENTYPO_ICON_FLASH);
-    popupBtn->setSide(Popup::Side::Left);
-    Popup *popupLeft = popupBtn->popup();
-    popupLeft->setLayout(new GroupLayout());
-    new CheckBox(popupLeft, "Another check box");
+  auto& switchboxHorizontal = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
+  switchboxHorizontal.setFixedSize(Vector2i(80, 30));
+  switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
 
-    w->wdg<Label>("A switch boxes", "sans-bold");
-    auto& switchboxArea = w->wdg<Widget>();
-    switchboxArea.setLayout(new GridLayout(Orientation::Horizontal, 2));
+  auto& switchboxVerticalColored = switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
+  switchboxVerticalColored.setFixedSize(Vector2i(28, 60));
+  switchboxVerticalColored.setBackgroundColor({ 0,0,129,255 });
 
-    auto& switchboxHorizontal = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-    switchboxHorizontal.setFixedSize(Vector2i(80, 30));
-    switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
+  auto& switchboxHorizontalColored = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
+  switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
+  switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
 
-    auto& switchboxVerticalColored = switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
-    switchboxVerticalColored.setFixedSize(Vector2i(28, 60));
-    switchboxVerticalColored.setBackgroundColor({ 0,0,129,255 });
+  w.label("A led buttons", "sans-bold");
+  auto& ledbuttonsArea = w.widget();
+  ledbuttonsArea.withLayout<GridLayout>(Orientation::Horizontal, 4);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleBlack, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleBlue, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleGreen, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleGray, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleOrange, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleRed, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circleYellow, 30, 30);
+  ledbuttonsArea.wdg<LedButton>(LedButton::circlePurple, 30, 30);
+}
 
-    auto& switchboxHorizontalColored = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-    switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
-    switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
+using ImagesDataType = std::vector<pair<int, std::string>>;
 
-    w->wdg<Label>("A led buttons", "sans-bold");
-    auto& ledbuttonsArea = w->wdg<Widget>();
-    ledbuttonsArea.setLayout(new GridLayout(Orientation::Horizontal, 4));
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleBlack, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleBlue, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleGreen, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleGray, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleOrange, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleRed, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circleYellow, 30, 30);
-    ledbuttonsArea.wdg<LedButton>(LedButton::circlePurple, 30, 30);
-
-    w = new Window(this, "Basic widgets");
-    w->setPosition(Vector2i(200, 15));
-    w->setLayout(new GroupLayout());
-
-    new Label(w, "Message dialog", "sans-bold");
-    tools = new Widget(w);
-    tools->setLayout(new BoxLayout(Orientation::Horizontal,
-      Alignment::Middle, 0, 6));
-    b = new Button(tools, "Info");
-    b->setCallback([&] {
-      auto dlg = new MessageDialog(this, MessageDialog::Type::Information, "Title", "This is an information message");
-      dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-    });
-    b = new Button(tools, "Warn");
-    b->setCallback([&] {
-      auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is a warning message");
-      dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-    });
-    b = new Button(tools, "Ask");
-    b->setCallback([&] {
-      auto dlg = new MessageDialog(this, MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
-      dlg->setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-    });
-
-    vector<pair<int, string>> icons = loadImageDirectory(mNVGContext, "icons");
+void createBasicWidgets(Screen* parent)
+{
 #if defined(_WIN32)
-    string resourcesFolderPath("../resources/");
+  string resourcesFolderPath("../resources/");
 #else
-    string resourcesFolderPath("./");
+  string resourcesFolderPath("./");
 #endif
+  static vector<pair<int, string>> icons = loadImageDirectory(parent->nvgContext(), "icons");
+  static ImagesDataType mImagesData;
 
-    new Label(w, "Image panel & scroll panel", "sans-bold");
-    PopupButton *imagePanelBtn = new PopupButton(w, "Image Panel");
-    imagePanelBtn->setIcon(ENTYPO_ICON_FOLDER);
-    popup = imagePanelBtn->popup();
-    VScrollPanel *vscroll = new VScrollPanel(popup);
-    ImagePanel *imgPanel = new ImagePanel(vscroll);
-    imgPanel->setImages(icons);
-    popup->setFixedSize(Vector2i(245, 150));
+  // Load all of the images by creating a GLTexture object and saving the pixel data.
+  for (auto& icon : icons) {
+    auto fullpath = resourcesFolderPath + icon.second + ".png";
+    auto data = nvgCreateImage(parent->nvgContext(), fullpath.c_str(), 0);
+    mImagesData.emplace_back(data, fullpath);
+  }
 
-    auto imageWindow = new Window(this, "Selected image");
-    imageWindow->setPosition(Vector2i(710, 15));
-    imageWindow->setLayout(new GroupLayout());
+  auto& w = parent->window("Basic widgets");
+  w.setPosition(Vector2i(200, 15));
+  w.withLayout<GroupLayout>();
 
-    // Load all of the images by creating a GLTexture object and saving the pixel data.
-    for (auto& icon : icons) {
-      auto fullpath = resourcesFolderPath + icon.second + ".png";
-      auto data = nvgCreateImage(mNVGContext, fullpath.c_str(), 0);
-      mImagesData.emplace_back(data, fullpath);
-    }
+  w.label("Message dialog", "sans-bold");
+  auto& tools = w.widget();
+  tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  tools.button(Caption{ "Info" },
+               ButtonCallback { [&] {
+                 auto& dlg = parent->msgdialog(MessageDialog::Type::Information, "Title", "This is an information message");
+                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+               }});
+  
+  tools.button(Caption{ "Warn" },
+               ButtonCallback{ [&] {
+                 auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a warning message");
+                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+               }});
 
-    // Set the first texture
-    auto imageView = new ImageView(imageWindow, mImagesData[0].first);
-    mCurrentImage = 0;
-    // Change the active textures.
-    imgPanel->setCallback([this, imageView](int i) {
+
+  tools.button(Caption{ "Ask" },
+               ButtonCallback{ [&] {
+                 auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
+                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+               }});
+
+  w.label("Image panel & scroll panel", "sans-bold");
+  auto& imagePanelBtn = w.popupbutton("Image Panel");
+  imagePanelBtn.setIcon(ENTYPO_ICON_FOLDER);
+  auto& popup = imagePanelBtn.popupref();
+  popup.setFixedSize({ 245, 150 });
+
+  auto& vscroll = popup.vscrollpanel();
+
+  //need for change texture
+  static int currentImage = 0;
+
+  auto& imgPanel = vscroll.wdg<ImagePanel>();
+  imgPanel.setImages(icons);
+  imgPanel.setCallback([&](int i) {
+    if (auto* imageView = parent->findWidget<ImageView>("#image_view"))
+    {
       imageView->bindImage(mImagesData[i].first);
-      mCurrentImage = i;
+      currentImage = i;
       cout << "Selected item " << i << '\n';
-    });
-    imageView->setGridThreshold(20);
-    imageView->setPixelInfoThreshold(20);
-    imageView->setPixelInfoCallback(
-      [this, imageView](const Vector2i& index) -> pair<string, Color> {
-      auto& imageData = mImagesData[mCurrentImage].second;
-      auto& textureSize = imageView->imageSize();
-      string stringData;
-      uint16_t channelSum = 0;
-      for (int i = 0; i != 4; ++i) {
-        auto& channelData = imageData[4 * index.y()*textureSize.x() + 4 * index.x() + i];
-        channelSum += channelData;
-        stringData += (to_string(static_cast<int>(channelData)) + "\n");
+    }
+  });
+
+  auto& imageWindow = parent->window("Selected image");
+  imageWindow.setPosition(Vector2i(710, 15));
+  imageWindow.withLayout<GroupLayout>();
+
+  // Set the first texture
+  auto& imageView = imageWindow.wdg<ImageView>(mImagesData[0].first);
+  imageView.setGridThreshold(20);
+  imageView.setPixelInfoThreshold(20);
+  imageView.setPixelInfoCallback(
+    [&](const Vector2i& index) -> pair<string, Color> {
+      auto& imageData = mImagesData[currentImage].second;
+      if (auto* imageView = parent->findWidget<ImageView>("#image_view"))
+      {
+        auto& textureSize = imageView->imageSize();
+        string stringData;
+        uint16_t channelSum = 0;
+        for (int i = 0; i != 4; ++i) {
+          auto& channelData = imageData[4 * index.y()*textureSize.x() + 4 * index.x() + i];
+          channelSum += channelData;
+          stringData += (to_string(static_cast<int>(channelData)) + "\n");
+        }
+        float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
+        float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
+        Color textColor = Color(colorScale, 1.0f);
+        return { stringData, textColor };
       }
-      float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
-      float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
-      Color textColor = Color(colorScale, 1.0f);
-      return{ stringData, textColor };
-    });
+      return { "", Color() };
+  });
 
-    {
-      w->label("File dialog", "sans-bold");
-      auto& fdtools = w->widget();
-      fdtools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-      fdtools.button(Caption{ "Open" },
-        ButtonCallback{ [&] {
-           cout << "File dialog result: "
-                << file_dialog({ {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, false)
-                << endl;
-        } });
-      fdtools.button(Caption{ "Save" },
-                     ButtonCallback{ [&] {
-                        cout << "File dialog result: " 
-                             << file_dialog({ {"png", "Portable Network Graphics"}, {"txt", "Text file"} }, true) 
-                             << endl;
-                     }});
+  w.label("File dialog", "sans-bold");
+  auto& fdtools = w.widget();
+  fdtools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  fdtools.button(Caption{ "Open" },
+                 ButtonCallback{ [&] {
+                    cout << "File dialog result: "
+                         << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, false)
+                         << endl;
+                 }});
+  fdtools.button(Caption{ "Save" },
+                 ButtonCallback{ [&] {
+                    cout << "File dialog result: "
+                         << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, true)
+                         << endl;
+                 }});
+   
+  w.label("Combo box", "sans-bold");
+  w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" });
+  w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" });
+  w.label("Check box", "sans-bold");
+  auto& cb = w.checkbox("Flag 1", [](bool state) { cout << "Check box 1 state: " << state << endl; });
+  cb.setChecked(true);
+  cb.setUncheckedColor(Color(128, 0, 0, 255));
+  cb.setCheckedColor(Color(0, 128, 0, 255));
+  cb.setPushedColor(Color(128, 128, 0, 255));
+  w.checkbox("Flag 2", [](bool state) { cout << "Check box 2 state: " << state << endl; });
+
+  w.label("Progress bar", "sans-bold");
+
+  auto& bars = w.widget();
+  bars.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  bars.wdg<ProgressBar>(WidgetId{ "#lineprogressbar" });
+  bars.wdg<CircleProgressBar>(WidgetId{ "#circleprogressbar" },
+                              FixedSize{ 40, 40 });
+
+  w.label("Slider and text box", "sans-bold");
+
+  auto& panel = w.widget();
+  panel.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
+
+  auto& slider = panel.slider();
+  slider.setValue(0.5f);
+  slider.setFixedWidth(80);
+
+  auto& textBox = panel.textbox();
+  textBox.setFixedSize(Vector2i(60, 25));
+  textBox.setValue("50");
+  textBox.setUnits("%");
+
+  slider.setCallback([&](float value) { textBox.setValue(std::to_string((int)(value * 100))); });
+  slider.setFinalCallback([&](float value) { cout << "Final slider value: " << (int)(value * 100) << endl; });
+  textBox.setFixedSize(Vector2i(60, 25));
+  textBox.setFontSize(20);
+  textBox.setAlignment(TextBox::Alignment::Right);
+
+  w.label(Caption{ "Spinners" }, CaptionFont{ "sans-bold" });
+  auto& spinners = w.widget().boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  spinners.spinner(FixedSize{ 40, 40 });
+  spinners.spinner(SpinnerSpeed{ 0.5f }, FixedSize{ 40, 40 });
+  spinners.spinner(SpinnerSpeed{ -0.7f }, FixedSize{ 40, 40 });
+
+  w.label("Dial and text box", "sans-bold");
+
+  auto& dials = w.widget();
+  dials.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
+
+  auto& dial = dials.wdg<Dial>();
+  dial.setValue(0.01f);
+  dial.setFixedWidth(80);
+
+  auto& dialTextBox = dials.textbox();
+  dialTextBox.setFixedSize({ 60, 25 });
+  dialTextBox.setValue("0.01");
+  dial.setCallback([&](float value) {
+    value = 0.01f + 99.99f*powf(value, 5.0f);
+    std::ostringstream sval;
+    sval.precision(2);
+    sval << std::fixed << value;
+    dialTextBox.setValue(sval.str());
+  });
+  dial.setFinalCallback([&](float value) {
+    dial.setHighlightedRange(std::pair<float, float>(0.0f, value));
+    value = 0.01f + 99.99f*powf(value, 5.0f);
+    cout << "Final dial value: " << value << endl;
+  });
+  dialTextBox.setFixedSize({ 60, 25 });
+  dialTextBox.setFontSize(20);
+  dialTextBox.setAlignment(TextBox::Alignment::Right);
+}
+
+void createMiscWidgets(Screen* screen)
+{
+  auto& mw = screen->window(Caption{ "Misc. widgets" },
+    Position{ 425, 15 });
+  mw.withLayout<GroupLayout>();
+
+  auto& tabWidget = mw.tabs();
+
+  auto& layer = *tabWidget.createTab("Color Wheel");
+  layer.withLayout<GroupLayout>();
+
+  // Use overloaded variadic add to fill the tab widget with Different tabs.
+  layer.label("Color wheel widget", "sans-bold");
+  layer.wdg<ColorWheel>();
+
+  auto& layer2 = *tabWidget.createTab("Function Graph");
+  layer2.withLayout<GroupLayout>();
+  layer2.label("Function graph widget", "sans-bold");
+
+  auto& graph = layer2.graph("Some Function");
+  graph.setHeader("E = 2.35e-3");
+  graph.setFooter("Iteration 89");
+
+  VectorXf &func = graph.values();
+  func.resize(100);
+  for (int i = 0; i < 100; ++i)
+    func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
+      0.5f * std::cos(i / 23.f) + 1);
+
+  // Dummy tab used to represent the last tab button.
+  tabWidget.createTab("+");
+
+  // A simple counter.
+  int counter = 1;
+  tabWidget.setCallback([&](int index) mutable {
+    if (index == (tabWidget.tabCount() - 1)) {
+      // When the "+" tab has been clicked, simply add a new tab.
+      string tabName = "Dynamic " + to_string(counter);
+      auto& layerDyn = *tabWidget.createTab(index, tabName);
+      layerDyn.withLayout<GroupLayout>();
+      layerDyn.label("Function graph widget", "sans-bold");
+
+      auto& graphDyn = layerDyn.graph("Dynamic function");
+
+      graphDyn.setHeader("E = 2.35e-3");
+      graphDyn.setFooter("Iteration " + to_string(index*counter));
+      VectorXf &funcDyn = graphDyn.values();
+      funcDyn.resize(100);
+      for (int i = 0; i < 100; ++i)
+        funcDyn[i] = 0.5f *
+        std::abs((0.5f * std::sin(i / 10.f + counter) +
+          0.5f * std::cos(i / 23.f + 1 + counter)));
+      ++counter;
+      // We must invoke perform layout from the screen instance to keep everything in order.
+      // This is essential when creating tabs dynamically.
+      screen->performLayout();
+      // Ensure that the newly added header is visible on screen
+      tabWidget.ensureTabVisible(index);
     }
+  });
+  tabWidget.setActiveTab(0);
 
-    new Label(w, "Combo box", "sans-bold");
-    new DropdownBox(w, { "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" });
-    new ComboBox(w, { "Combo box item 1", "Combo box item 2", "Combo box item 3" });
-    new Label(w, "Check box", "sans-bold");
-    CheckBox *cb = new CheckBox(w, "Flag 1",
-      [](bool state) { cout << "Check box 1 state: " << state << endl; }
-    );
-    cb->setChecked(true);
-    cb->setUncheckedColor(Color(128, 0, 0, 255));
-    cb->setCheckedColor(Color(0, 128, 0, 255));
-    cb->setPushedColor(Color(128, 128, 0, 255));
-    cb = new CheckBox(w, "Flag 2",
-      [](bool state) { cout << "Check box 2 state: " << state << endl; }
-    );
+  // A button to go back to the first tab and scroll the window.
+  auto& panelJump = mw.widget();
+  panelJump.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+  panelJump.label("Jump to tab: ");
 
-    {
-      w->label("Progress bar", "sans-bold");
+  auto& ib = panelJump.intbox<int>();
+  ib.setEditable(true);
 
-      auto& bars = w->widget();
-      bars.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-      bars.wdg<ProgressBar>(WidgetId{ "#lineprogressbar" });
-      bars.wdg<CircleProgressBar>(WidgetId{ "#circleprogressbar" }, 
-                                  FixedSize{ 40, 40 });
+  auto& bf = panelJump.button(Caption{ "" }, Icon{ ENTYPO_ICON_FORWARD });
+  bf.setFixedSize({ 22, 22 });
+  ib.setFixedHeight(22);
+  bf.setCallback([&] {
+    int value = ib.value();
+    if (value >= 0 && value < tabWidget.tabCount()) {
+      tabWidget.setActiveTab(value);
+      tabWidget.ensureTabVisible(value);
     }
+  });
+}
 
-    new Label(w, "Slider and text box", "sans-bold");
+void createGridSmallObjects(Screen* screen)
+{
+  auto& w = screen->window("Grid of small widgets");
+  w.setPosition(425, 300);
+  auto layoutw = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
+  layoutw->setColAlignment({ Alignment::Maximum, Alignment::Fill });
+  layoutw->setSpacing(0, 10);
+  w.setLayout(layoutw);
 
-    Widget *panel = new Widget(w);
-    panel->setLayout(new BoxLayout(Orientation::Horizontal,
-      Alignment::Middle, 0, 20));
 
-    Slider *slider = new Slider(panel);
-    slider->setValue(0.5f);
-    slider->setFixedWidth(80);
+  /* FP widget */
+  w.label("Floating point :", "sans-bold");
+  auto& textBox = w.textbox();
+  textBox.setEditable(true);
+  textBox.setFixedSize(Vector2i(100, 20));
+  textBox.setValue("50");
+  textBox.setUnits("GiB");
+  textBox.setDefaultValue("0.0");
+  textBox.setFontSize(16);
+  textBox.setFormat("[-]?[0-9]*\\.?[0-9]+");
 
-    TextBox *textBox = new TextBox(panel);
-    textBox->setFixedSize(Vector2i(60, 25));
-    textBox->setValue("50");
-    textBox->setUnits("%");
-    slider->setCallback([textBox](float value) {
-      textBox->setValue(std::to_string((int)(value * 100)));
+  /* Positive integer widget */
+  w.label("Positive integer :", "sans-bold");
+  auto& intBox = w.intbox<int>();
+  intBox.setEditable(true);
+  intBox.setFixedSize(Vector2i(100, 20));
+  intBox.setValue(50);
+  intBox.setUnits("Mhz");
+  intBox.setDefaultValue("0");
+  intBox.setFontSize(16);
+  intBox.setFormat("[1-9][0-9]*");
+  intBox.setSpinnable(true);
+  intBox.setMinValue(1);
+  intBox.setValueIncrement(2);
+
+  /* Checkbox widget */
+  w.label("Checkbox :", "sans-bold");
+  auto& cb = w.checkbox("Check me");
+  cb.setFontSize(16);
+  cb.setChecked(true);
+  
+  w.label("Combo box :", "sans-bold");
+  auto& cobo = w.combobox(ComboBoxItems{ "Item 1", "Item 2", "Item 3" });
+  cobo.setFontSize(16);
+  cobo.setFixedSize(Vector2i(100, 20));
+
+  w.label("Color picker :", "sans-bold");
+  auto& cp = w.wdg<ColorPicker>(Color{ 255, 120, 0, 255 });
+  cp.setFixedSize({ 100, 20 });
+  cp.setFinalCallback([](const Color &c) {
+    std::cout << "ColorPicker Final Callback: ["
+      << c.r() << ", "
+      << c.g() << ", "
+      << c.b() << ", "
+      << c.w() << "]" << std::endl;
+  });
+
+  auto& cpw = screen->window("Color Picker Fast Callback");
+  auto* layout = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
+  layout->setColAlignment({ Alignment::Maximum, Alignment::Fill });
+  layout->setSpacing(0, 10);
+  cpw.setLayout(layout);
+  cpw.setPosition(425, 500);
+
+  cpw.label("Combined: ");
+  auto& btn = cpw.button(Caption{ "ColorWheel" }, Icon{ ENTYPO_ICON_500PX });
+  cpw.label("Red: ");
+  auto& re = cpw.intbox<int>(IsEditable{ false });
+  cpw.label("Green: ");
+  auto& ge = cpw.intbox<int>(IsEditable{ false });
+  cpw.label("Blue: ");
+  auto& be = cpw.intbox<int>(IsEditable{ false });
+  cpw.label("Alpha: ");
+  auto& ae = cpw.intbox<int>(IsEditable{ false });
+
+  cp.setCallback([&](const Color &c) {
+    btn.setBackgroundColor(c);
+    btn.setTextColor(c.contrastingColor());
+    re.setValue((int)(c.r() * 255.0f));
+    ge.setValue((int)(c.g() * 255.0f));
+    be.setValue((int)(c.b() * 255.0f));
+    ae.setValue((int)(c.w() * 255.0f));
+  });
+}
+
+void createMeter(Screen* screen)
+{
+  auto& meter = screen->wdg<Meter>();
+  meter.setFixedSize({ 160, 160 });
+  meter.setPosition(screen->width() - 165, screen->height() - 165);
+  meter.setId("#meter");
+}
+
+void toggleMainMenu(Screen* screen, bool show)
+{
+  using namespace nanogui;
+
+  auto menus = screen->findAll<WindowMenu>();
+
+  if (menus.empty())
+  {
+    auto& mmenu = screen->wdg<WindowMenu>();
+    mmenu.activate({ 0, 0 });
+    mmenu.submenu("File")
+      .item("New", [=]() { screen->msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
+      .item("Open", [=]() { screen->msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
+      .item("Save", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+    mmenu.submenu("Edit")
+      .item("Undo", "Ctrl+Z", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+      .item("Redo", "Ctrl+Y", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+      .item("Cut", "Ctrl+X", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+      .item("Copy", "Ctrl+C", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
+      .item("Paste", "Ctrl+V", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
+
+    screen->performLayout();
+  }
+  else
+  {
+    menus.front()->setVisible(show);
+  }
+}
+
+void toggleConsoleWnd(Screen* screen, bool show)
+{
+  using namespace nanogui;
+
+  auto console = screen->findWidgetGlobal("#console_wnd");
+  if (!console)
+  {
+    auto& wnd = screen->window("Example: Console");
+    wnd.setPosition(60, 60);
+    wnd.withLayout<GroupLayout>();
+    wnd.setFixedSize({ 300, 300 });
+    wnd.setId("#console_wnd");
+    screen->performLayout();
+  }
+  else
+  {
+    console->setVisible(show);
+  }
+}
+
+void toggleLogWnd(Screen* screen, bool show)
+{
+  using namespace nanogui;
+
+  auto logwnd = screen->findWidgetGlobal("#log_wnd");
+  if (!logwnd)
+  {
+    auto& wnd = screen->window("Example: Log");
+    wnd.setPosition(120, 120);
+    wnd.setFixedSize({ 400, 300 });
+    wnd.setId("#log_wnd");
+    screen->performLayout();
+  }
+  else
+  {
+    logwnd->setVisible(show);
+  }
+}
+
+void toggleSimpleLayoutWnd(Screen* screen, bool show)
+{
+  using namespace nanogui;
+
+  auto logwnd = screen->findWidgetGlobal("#simple_layout_wnd");
+  if (!logwnd)
+  {
+    auto& wnd = screen->window(Caption{ "Example: Simple layout" },
+                               WidgetStretchLayout{ Orientation::Horizontal },
+                               Position{ 180, 180 },
+                               MinimumSize{ 400, 400 },
+                               WidgetId{ "#simple_layout_wnd" });
+
+    wnd.listbox(RelativeSize{ 0.33, 0 },
+                ListboxCallback{ [screen](ListboxItem* i) {
+                  if (Label* lb = screen->findWidget<Label>("#simple_layout_lb"))
+                    lb->setCaption("MyObject: " + i->caption());
+                }},
+                ListboxContent{ [](Listbox& l) {
+                  for (int i = 0; i < 100; i++)
+                    l.addItem("Item " + std::to_string(i));
+                }});
+    auto& desc = wnd.widget(WidgetStretchLayout{ Orientation::Vertical });
+    desc.label(Caption{ "MyObject: id" },
+               CaptionHAlign{ TextHAlign::hLeft },
+               FixedHeight{ 15 },
+               WidgetId{ "#simple_layout_lb" });
+    desc.tabs(TabNames{ "Description", "Details" });
+    screen->performLayout();
+  }
+  else
+  {
+    logwnd->setVisible(show);
+  }
+}
+
+void toggleTreeView(Screen* screen, bool show)
+{
+  using namespace nanogui;
+
+  auto treeview = screen->findWidgetGlobal("#tree_view_wnd");
+  if (!treeview)
+  {
+    auto& wnd = screen->window(Caption{ "Example: Tree view" },
+                               WidgetStretchLayout{ Orientation::Horizontal },
+                               Position{ 180, 180 },
+                               MinimumSize{ 400, 400 },
+                               WidgetId{ "#tree_view_wnd" });
+
+    auto& view = wnd.treeview(RelativeSize{ 0.5, 0 });
+    auto n1 = view.rootNode()->addNode("Node1");
+    auto n1_c1 = n1->addNode("Node1_C1");
+    n1_c1->addNode("NodeC1_c1");
+    auto n2 = view.rootNode()->addNode("Node2");
+    n2->addNode("Some text here");
+    view.rootNode()->addNode("Node3");
+    view.rootNode()->addNode("Node4");
+    auto n5 = view.rootNode()->addNode("Node5");
+    n5->addNode("Node5_C1")
+        ->addNode("yet one node")
+          ->addNode("yet second node")
+            ->addNode("and third node")
+              ->addNode("anybody show me?");
+  }
+  else
+  {
+    treeview->setVisible(show);
+  }
+}
+
+void createAllWidgetsDemo(Screen* screen)
+{
+  Window& dw = screen->window(WindowSimpleLayout{ Orientation::Horizontal },
+    Caption{ "All widgets demo" },
+    Position{ 725, 350 },
+    MinimumSize{ 400, 400 });
+  
+  dw.submenu("File")
+    .item("(dummy item)", []() {})
+    .item("New", "Ctrl+N", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
+    .item("Very larget text", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
+    .item("Save", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "Save", "New Clicked!"); });
+  dw.submenu("File").item("(dummy item)").setEnabled(false);
+  dw.submenu("File").item("Save").setShortcut("Ctrl+S");
+
+  dw.submenu("Examples")
+    .item("Global menu", [screen](bool v) { toggleMainMenu(screen, v); })
+    .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); }, 
+                     [screen](bool &enabled, bool &checked) {
+                       enabled = true;
+                       auto* w = screen->findWidgetGlobal("#console_wnd");
+                       checked = (w && w->visible());
+                     })
+    .item("Log", [screen](bool v) { toggleLogWnd(screen, v); },
+                 [screen](bool &enabled, bool &checked) {
+                   enabled = true;
+                   auto* w = screen->findWidgetGlobal("#log_wnd");
+                   checked = (w && w->visible());
+                 })
+    .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); }, 
+                           [screen](bool &enabled, bool &checked) {
+                             enabled = true;
+                             auto* w = screen->findWidgetGlobal("#simple_layout_wnd");
+                             checked = (w && w->visible());
+                           })
+    .item("Tree view", [screen](bool v) { toggleTreeView(screen, v); },
+                       [screen](bool &enabled, bool &checked) {
+                         enabled = true;
+                         auto* w = screen->findWidgetGlobal("#tree_view_wnd");
+                         checked = (w && w->visible());
+                       });
+  dw.submenu("Help");
+}
+
+void makeCustomThemeWindow(Screen* screen, const std::string &title)
+{
+  auto& cwindow = screen->window(title);
+  cwindow.setPosition(1100, 300);
+  cwindow.withTheme<WhiteTheme>(screen->nvgContext());
+  cwindow.withLayout<GroupLayout>(15, 6, 6);
+
+  /* test text box fonts */
+  {
+    cwindow.label("Text Boxes");
+    auto& wrapper = cwindow.widget();
+    wrapper.withLayout<GridLayout>(ColumnsAligment{ Alignment::Maximum, Alignment::Fill });
+    wrapper.label("TextBox : ");
+    wrapper.textbox(TextValue{ "Some Text" }, IsEditable{ true });
+    wrapper.label("IntBox : ");
+    wrapper.intbox<int>(IsSpinnable{ true });
+    wrapper.label("FloatBox : ");
+    wrapper.floatbox<float>(IsSpinnable{ true });
+  }
+
+  /* Message dialogs */
+  {
+    cwindow.label("Message Dialogues");
+    auto& tools = cwindow.widget();
+    tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+    auto& b = tools.button("Info");
+    Theme* ctheme = cwindow.theme();
+    b.setCallback([screen, ctheme]() {
+      auto& dlg = screen->msgdialog(MessageDialog::Type::Information,
+        "Title",
+        "This is an information message");
+      dlg.setTheme(ctheme);
+      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
     });
-    slider->setFinalCallback([&](float value) {
-      cout << "Final slider value: " << (int)(value * 100) << endl;
+    auto& bw = tools.button("Warn");
+    bw.setCallback([screen, ctheme]() {
+      auto& dlg = screen->msgdialog(MessageDialog::Type::Warning,
+        "Title",
+        "This is a warning message");
+      dlg.setTheme(ctheme);
+      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
     });
-    textBox->setFixedSize(Vector2i(60, 25));
-    textBox->setFontSize(20);
-    textBox->setAlignment(TextBox::Alignment::Right);
+    auto& ba = tools.button("Ask");
+    ba.setCallback([&, ctheme]() {
+      auto& dlg = screen->msgdialog(MessageDialog::Type::Question,
+        "Title",
+        "This is a question message",
+        "Yes",
+        "No",
+        true);
+      dlg.setTheme(ctheme);
+      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
+    });
+  }
 
-    w->label(Caption{ "Spinners" }, CaptionFont{"sans-bold"});
-    auto& spinners = w->widget().boxlayout(Orientation::Horizontal,Alignment::Middle, 0, 6);
-    spinners.spinner(FixedSize{ 40, 40 });
-    spinners.spinner(SpinnerSpeed{ 0.5f }, FixedSize{ 40, 40 });
-    spinners.spinner(SpinnerSpeed{ -0.7f }, FixedSize{ 40, 40 });
+  // TabWidget used to test TabHeader and others while keeping the size manageable
+  cwindow.label("Tab Widget");
+  auto& tabWidget = cwindow.tabs();
 
-    {
-      new Label(w, "Dial and text box", "sans-bold");
+  /* test button and checkbox fonts */
+  {
+    auto& layer = *tabWidget.createTab("Button Like");
+    layer.withLayout<GroupLayout>();
 
-      panel = new Widget(w);
-      panel->setLayout(new BoxLayout(Orientation::Horizontal,
-        Alignment::Middle, 0, 20));
+    // green color, produces white chevron at start
+    auto& cp = layer.colorpicker(Color{ 0.28573f, 0.56702f, 0.25104f, 1.0f });
+    cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose() << std::endl; });
 
-      Dial *dial = new Dial(panel);
-      dial->setValue(0.01f);
-      dial->setFixedWidth(80);
+    // combobox
+    std::vector<std::string> items{ "Combo box item 1", "Combo box item 2", "Combo box item 3" };
+    layer.combobox(items);
 
-      auto dialTextBox = new TextBox(panel);
-      dialTextBox->setFixedSize(Vector2i(60, 25));
-      dialTextBox->setValue("0.01");
-      dial->setCallback([dialTextBox](float value) {
-        value = 0.01f + 99.99f*powf(value, 5.0f);
-        std::ostringstream sval;
-        sval.precision(2); sval << std::fixed << value;
-        dialTextBox->setValue(sval.str());
-      });
-      dial->setFinalCallback([&, d = dial](float value) {
-        d->setHighlightedRange(std::pair<float, float>(0.0f, value));
-        value = 0.01f + 99.99f*powf(value, 5.0f);
-        cout << "Final dial value: " << value << endl;
-      });
-      dialTextBox->setFixedSize(Vector2i(60, 25));
-      dialTextBox->setFontSize(20);
-      dialTextBox->setAlignment(TextBox::Alignment::Right);
-    }
+    // popup button
+    int icon = ENTYPO_ICON_EXPORT;
+    auto& popupBtn = layer.popupbutton("Popup", icon);
+    auto& popup = popupBtn.popupref();
+    popup.withLayout<GroupLayout>();
+    popup.label("Arbitrary widgets can be placed here");
+    popup.checkbox("A check box");
+    // popup right
+    icon = ENTYPO_ICON_FLASH;
+    auto& popupBtn2 = popup.popupbutton("Recursive popup", icon);
+    auto& popupRight = popupBtn2.popupref();
+    popupRight.withLayout<GroupLayout>();
+    popupRight.checkbox("Another check box");
+    // popup left
+    auto& popupBtn3 = popup.popupbutton("Recursive popup", icon);
+    popupBtn3.setSide(Popup::Side::Left);
+    auto& popupLeft = popupBtn3.popupref();
+    popupLeft.withLayout<GroupLayout>();
+    popupLeft.checkbox("Another check box");
 
-    w = new Window(this, "Misc. widgets");
-    w->setPosition(Vector2i(425, 15));
-    w->setLayout(new GroupLayout());
+    // regular buttons
+    auto& button = layer.button("PushButton");
 
-    TabWidget* tabWidget = w->add<TabWidget>();
+    // test that non-bold fonts for buttons work (applying to radio buttons)
+    //std::string radio_font = cwindow.theme()->mDefaultFont;
 
-    Widget* layer = tabWidget->createTab("Color Wheel");
-    layer->setLayout(new GroupLayout());
+    auto& button2 = layer.button("Radio 1 (Hover for Tooltip)");
+    //button2.setFont(radio_font);
+    button2.setFlags(Button::Flags::RadioButton);
+    button2.setTooltip("Short tooltip!");
 
-    // Use overloaded variadic add to fill the tab widget with Different tabs.
-    layer->add<Label>("Color wheel widget", "sans-bold");
-    layer->add<ColorWheel>();
+    auto& button3 = layer.button("Radio 2 (Hover for Tooltip)");
+    //button3.setFont(radio_font);
+    button3.setFlags(Button::Flags::RadioButton);
+    button3.setTooltip("This is a much longer tooltip that will get wrapped automatically!");
 
-    layer = tabWidget->createTab("Function Graph");
-    layer->setLayout(new GroupLayout());
+    auto& button4 = layer.button("ToggleButton");
+    button4.setFlags(Button::Flags::ToggleButton);
 
-    layer->add<Label>("Function graph widget", "sans-bold");
+    // checkbox (top level)
+    layer.checkbox("A CheckBox");
+  }
 
-    Graph *graph = layer->add<Graph>("Some Function");
+  /* test the graph widget fonts */
+  {
+    auto& layer = *tabWidget.createTab("Graph");
+    layer.withLayout<GroupLayout>();
 
-    graph->setHeader("E = 2.35e-3");
-    graph->setFooter("Iteration 89");
-    VectorXf &func = graph->values();
+    layer.label("Function Graph Widget");
+    auto& graph = layer.graph("Some Function");
+
+    graph.setHeader("E = 2.35e-3");
+    graph.setFooter("Iteration 89");
+
+    VectorXf &func = graph.values();
     func.resize(100);
     for (int i = 0; i < 100; ++i)
       func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
         0.5f * std::cos(i / 23.f) + 1);
+  }
 
-    // Dummy tab used to represent the last tab button.
-    tabWidget->createTab("+");
+  // Dummy tab used to represent the last tab button.
+  tabWidget.createTab("+");
 
-    // A simple counter.
-    int counter = 1;
-    tabWidget->setCallback([tabWidget, this, counter](int index) mutable {
-      if (index == (tabWidget->tabCount() - 1)) {
-        // When the "+" tab has been clicked, simply add a new tab.
-        string tabName = "Dynamic " + to_string(counter);
-        Widget* layerDyn = tabWidget->createTab(index, tabName);
-        layerDyn->setLayout(new GroupLayout());
-        layerDyn->add<Label>("Function graph widget", "sans-bold");
-        Graph *graphDyn = layerDyn->add<Graph>("Dynamic function");
-
-        graphDyn->setHeader("E = 2.35e-3");
-        graphDyn->setFooter("Iteration " + to_string(index*counter));
-        VectorXf &funcDyn = graphDyn->values();
-        funcDyn.resize(100);
-        for (int i = 0; i < 100; ++i)
-          funcDyn[i] = 0.5f *
-          std::abs((0.5f * std::sin(i / 10.f + counter) +
-            0.5f * std::cos(i / 23.f + 1 + counter)));
-        ++counter;
-        // We must invoke perform layout from the screen instance to keep everything in order.
-        // This is essential when creating tabs dynamically.
-        performLayout();
-        // Ensure that the newly added header is visible on screen
-        tabWidget->ensureTabVisible(index);
-
-      }
-    });
-    tabWidget->setActiveTab(0);
-
-    // A button to go back to the first tab and scroll the window.
-    panel = w->add<Widget>();
-    panel->add<Label>("Jump to tab: ");
-    panel->setLayout(new BoxLayout(Orientation::Horizontal,
-      Alignment::Middle, 0, 6));
-
-    auto ib = panel->add<IntBox<int>>();
-    ib->setEditable(true);
-
-    b = panel->add<Button>(Caption{ "" }, Icon{ ENTYPO_ICON_FORWARD });
-    b->setFixedSize(Vector2i(22, 22));
-    ib->setFixedHeight(22);
-    b->setCallback([tabWidget, ib] {
-      int value = ib->value();
-      if (value >= 0 && value < tabWidget->tabCount()) {
-        tabWidget->setActiveTab(value);
-        tabWidget->ensureTabVisible(value);
-      }
-    });
-
-    w = new Window(this, "Grid of small widgets");
-    w->setPosition(Vector2i(425, 300));
-    GridLayout *layout =
-      new GridLayout(Orientation::Horizontal, 2,
-        Alignment::Middle, 15, 5);
-    layout->setColAlignment(
-    { Alignment::Maximum, Alignment::Fill });
-    layout->setSpacing(0, 10);
-    w->setLayout(layout);
-
-    /* FP widget */ {
-      new Label(w, "Floating point :", "sans-bold");
-      textBox = new TextBox(w);
-      textBox->setEditable(true);
-      textBox->setFixedSize(Vector2i(100, 20));
-      textBox->setValue("50");
-      textBox->setUnits("GiB");
-      textBox->setDefaultValue("0.0");
-      textBox->setFontSize(16);
-      textBox->setFormat("[-]?[0-9]*\\.?[0-9]+");
-    }
-
-    /* Positive integer widget */ {
-      new Label(w, "Positive integer :", "sans-bold");
-      auto intBox = new IntBox<int>(w);
-      intBox->setEditable(true);
-      intBox->setFixedSize(Vector2i(100, 20));
-      intBox->setValue(50);
-      intBox->setUnits("Mhz");
-      intBox->setDefaultValue("0");
-      intBox->setFontSize(16);
-      intBox->setFormat("[1-9][0-9]*");
-      intBox->setSpinnable(true);
-      intBox->setMinValue(1);
-      intBox->setValueIncrement(2);
-    }
-
-    /* Checkbox widget */ {
-      new Label(w, "Checkbox :", "sans-bold");
-
-      cb = new CheckBox(w, "Check me");
-      cb->setFontSize(16);
-      cb->setChecked(true);
-    }
-
-    new Label(w, "Combo box :", "sans-bold");
-    ComboBox *cobo = new ComboBox(w, { "Item 1", "Item 2", "Item 3" });
-    cobo->setFontSize(16);
-    cobo->setFixedSize(Vector2i(100, 20));
-
-    new Label(w, "Color picker :", "sans-bold");
-    auto cp = new ColorPicker(w, { 255, 120, 0, 255 });
-    cp->setFixedSize({ 100, 20 });
-    cp->setFinalCallback([](const Color &c) {
-      std::cout << "ColorPicker Final Callback: ["
-        << c.r() << ", "
-        << c.g() << ", "
-        << c.b() << ", "
-        << c.w() << "]" << std::endl;
-    });
-    // setup a fast callback for the color picker widget on a new window
-    // for demonstrative purposes
-    w = new Window(this, "Color Picker Fast Callback");
-    layout = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
-    layout->setColAlignment({ Alignment::Maximum, Alignment::Fill });
-    layout->setSpacing(0, 10);
-    w->setLayout(layout);
-    w->setPosition(Vector2i(425, 500));
-    new Label(w, "Combined: ");
-    w->button(Caption{ "ColorWheel" }, Icon{ ENTYPO_ICON_500PX });
-    new Label(w, "Red: ");
-    auto redIntBox = new IntBox<int>(w);
-    redIntBox->setEditable(false);
-    new Label(w, "Green: ");
-    auto greenIntBox = new IntBox<int>(w);
-    greenIntBox->setEditable(false);
-    new Label(w, "Blue: ");
-    auto blueIntBox = new IntBox<int>(w);
-    blueIntBox->setEditable(false);
-    new Label(w, "Alpha: ");
-    auto alphaIntBox = new IntBox<int>(w);
-    cp->setCallback([b, redIntBox, blueIntBox, greenIntBox, alphaIntBox](const Color &c) {
-      b->setBackgroundColor(c);
-      b->setTextColor(c.contrastingColor());
-      int red = (int)(c.r() * 255.0f);
-      redIntBox->setValue(red);
-      int green = (int)(c.g() * 255.0f);
-      greenIntBox->setValue(green);
-      int blue = (int)(c.b() * 255.0f);
-      blueIntBox->setValue(blue);
-      int alpha = (int)(c.w() * 255.0f);
-      alphaIntBox->setValue(alpha);
-
-    });
-
-    auto& meter = wdg<Meter>();
-    meter.setFixedSize({ 160, 160 });
-    meter.setPosition(width() - 165, height() - 165);
-
-    //all widgets demo
+  // A simple counter.
+  int counter = 1;
+  tabWidget.setCallback([&](int index)
+  {
+    if (index == (tabWidget.tabCount() - 1))
     {
-      Window& dw = window(WindowSimpleLayout{ Orientation::Horizontal },
-                          Caption{ "All widgets demo" },
-                          Position{725, 350},
-                          MinimumSize{400, 400});
-      dw.submenu("File")
-          .item("(dummy item)", []() {})
-          .item("New", "Ctrl+N", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-          .item("Very larget text", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
-          .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
-      dw.submenu("File").item("(dummy item)").setEnabled(false);
-      dw.submenu("File").item("Save").setShortcut("Ctrl+S");
+      // When the "+" tab has been clicked, simply add a new tab.
+      std::string tabName = "Dynamic " + std::to_string(counter);
+      auto& layerDyn = *tabWidget.createTab(index, tabName);
+      layerDyn.withLayout<GroupLayout>();
+      layerDyn.label("Function graph widget", "spectrum-bold");
+      auto& graphDyn = layerDyn.graph("Dynamic function");
 
-      dw.submenu("Examples")
-          .item("Global menu", [this](bool v) { toggleMainMenu(v); })
-          .item("Console",     [this](bool v) { toggleConsoleWnd(v); }, [this](bool &enabled, bool &checked) {
-                                                      enabled = true; 
-                                                      auto* w = findWidgetGlobal("console_wnd");
-                                                      checked = (w && w->visible());
-                                                  })
-          .item("Log", [this](bool v) { toggleLogWnd(v); }, [this](bool &enabled, bool &checked) {
-                                                    enabled = true; 
-                                                    auto* w = findWidgetGlobal("log_wnd");
-                                                    checked = (w && w->visible());
-                                                  })
-          .item("Simple layout", [this](bool v) { toggleSimpleLayoutWnd(v); }, [this](bool &enabled, bool &checked) {
-                                                    enabled = true; 
-                                                    auto* w = findWidgetGlobal("simple_layout_wnd");
-                                                    checked = (w && w->visible());
-                                                  });
-      dw.submenu("Help");
+      graphDyn.setHeader("E = 2.35e-3");
+      graphDyn.setFooter("Iteration " + std::to_string(index*counter));
+
+      VectorXf &funcDyn = graphDyn.values();
+      funcDyn.resize(100);
+      for (int i = 0; i < 100; ++i)
+        funcDyn[i] = 0.5f * std::abs((0.5f * std::sin(i / 10.f + counter) +
+          0.5f * std::cos(i / 23.f + 1 + counter)));
+      ++counter;
+      // We must invoke perform layout from the screen instance to keep everything in order.
+      // This is essential when creating tabs dynamically.
+      tabWidget.screen()->performLayout();
+      // Ensure that the newly added header is visible on screen
+      tabWidget.ensureTabVisible(index);
+
     }
+  });
+  tabWidget.setActiveTab(0);
+}
 
-      wdg<ThemeBuilder>(Position{ 1050, 15 });
-      makeCustomThemeWindow("Custom theme");
+void createThemeBuilderWindow(Screen* screen)
+{
+  screen->wdg<ThemeBuilder>(Position{ 1050, 15 });
+}
 
-      fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40 ));
+class ExampleApplication : public nanogui::Screen {
+public:
+  ExampleApplication() : nanogui::Screen({ 1600, 900 }, "NanoGUI Test") {
+      initGPUTimer(&gpuTimer);
+
+      createButtonDemoWindow(this);
+      createBasicWidgets(this);
+      createMiscWidgets(this);
+      createGridSmallObjects(this);
+      createMeter(this);
+      createAllWidgetsDemo(this);
+      createThemeBuilderWindow(this);
+      makeCustomThemeWindow(this, "Custom theme");
+      toggleTreeView(this, true);
+
+      fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));
       gpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "GPU Time", Vector2i(5, height() - 40 * 3));
 
       previousFrameTime = getTimeFromStart();
+
       performLayout();
     }
-
-    void makeCustomThemeWindow(const std::string &title) 
-    {
-      using namespace nanogui;
-
-      auto& cwindow = window(title);
-      cwindow.setPosition(1100, 300);
-      cwindow.withTheme<WhiteTheme>(mNVGContext);
-      cwindow.withLayout<GroupLayout>(15, 6, 6);
-
-      /* test text box fonts */ 
-      {
-        cwindow.label("Text Boxes");
-        auto& wrapper = cwindow.widget();
-        wrapper.withLayout<GridLayout>(ColumnsAligment{ Alignment::Maximum, Alignment::Fill });
-        wrapper.label("TextBox : ");
-        wrapper.textbox(TextValue{ "Some Text" }, IsEditable{true});
-        wrapper.label("IntBox : ");
-        wrapper.intbox<int>(IsSpinnable{ true } );
-        wrapper.label("FloatBox : ");
-        wrapper.floatbox<float>(IsSpinnable{ true });
-      }
-
-      /* Message dialogs */ 
-      {
-        cwindow.label("Message Dialogues");
-        auto& tools = cwindow.widget();
-        tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-        auto& b = tools.button("Info");
-        Theme* ctheme = cwindow.theme();
-        b.setCallback([this, ctheme] () {
-          auto& dlg = msgdialog( MessageDialog::Type::Information,
-                                    "Title",
-                                    "This is an information message" );
-          dlg.setTheme(ctheme);
-          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
-        });
-        auto& bw = tools.button("Warn");
-        bw.setCallback([this, ctheme] () {
-          auto& dlg = msgdialog( MessageDialog::Type::Warning,
-                                     "Title",
-                                     "This is a warning message" );
-          dlg.setTheme(ctheme);
-          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
-        });
-        auto& ba = tools.button("Ask");
-        ba.setCallback([this, ctheme] () {
-          auto& dlg = msgdialog( MessageDialog::Type::Question,
-                                    "Title",
-                                    "This is a question message",
-                                    "Yes",
-                                    "No",
-                                    true );
-          dlg.setTheme(ctheme);
-          dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
-        });
-      }
-
-      // TabWidget used to test TabHeader and others while keeping the size manageable
-      cwindow.label("Tab Widget");
-      auto& tabWidget = cwindow.tabs();
-
-      /* test button and checkbox fonts */ 
-      {
-        auto& layer = *tabWidget.createTab("Button Like");
-        layer.withLayout<GroupLayout>();
-
-        // green color, produces white chevron at start
-        auto& cp = layer.colorpicker(Color{ 0.28573f, 0.56702f, 0.25104f, 1.0f });
-        cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose() << std::endl; });
-
-        // combobox
-        std::vector<std::string> items{ "Combo box item 1", "Combo box item 2", "Combo box item 3" };
-        layer.combobox(items);
-
-        // popup button
-        int icon = ENTYPO_ICON_EXPORT;
-        auto& popupBtn = layer.popupbutton("Popup", icon);
-        auto& popup = popupBtn.popupref();
-        popup.withLayout<GroupLayout>();
-        popup.label("Arbitrary widgets can be placed here");
-        popup.checkbox("A check box");
-        // popup right
-        icon = ENTYPO_ICON_FLASH;
-        auto& popupBtn2 = popup.popupbutton("Recursive popup", icon);
-        auto& popupRight = popupBtn2.popupref();
-        popupRight.withLayout<GroupLayout>();
-        popupRight.checkbox("Another check box");
-        // popup left
-        auto& popupBtn3 = popup.popupbutton("Recursive popup", icon);
-        popupBtn3.setSide(Popup::Side::Left);
-        auto& popupLeft = popupBtn3.popupref();
-        popupLeft.withLayout<GroupLayout>();
-        popupLeft.checkbox("Another check box");
-
-        // regular buttons
-        auto& button = layer.button("PushButton");
-
-        // test that non-bold fonts for buttons work (applying to radio buttons)
-        //std::string radio_font = cwindow.theme()->mDefaultFont;
-
-        auto& button2 = layer.button("Radio 1 (Hover for Tooltip)");
-        //button2.setFont(radio_font);
-        button2.setFlags(Button::Flags::RadioButton);
-        button2.setTooltip("Short tooltip!");
-
-        auto& button3 = layer.button("Radio 2 (Hover for Tooltip)");
-        //button3.setFont(radio_font);
-        button3.setFlags(Button::Flags::RadioButton);
-        button3.setTooltip( "This is a much longer tooltip that will get wrapped automatically!" );
-        
-        auto& button4 = layer.button("ToggleButton");
-        button4.setFlags(Button::Flags::ToggleButton);
-
-        // checkbox (top level)
-        layer.checkbox("A CheckBox");
-      }
-
-      /* test the graph widget fonts */ 
-      {
-        auto& layer = *tabWidget.createTab("Graph");
-        layer.withLayout<GroupLayout>();
-
-        layer.label("Function Graph Widget");
-        auto& graph = layer.graph("Some Function");
-
-        graph.setHeader("E = 2.35e-3");
-        graph.setFooter("Iteration 89");
-        
-        VectorXf &func = graph.values();
-        func.resize(100);
-        for (int i = 0; i < 100; ++i)
-          func[i] = 0.5f * (0.5f * std::sin(i / 10.f) +
-            0.5f * std::cos(i / 23.f) + 1);
-      }
-
-      // Dummy tab used to represent the last tab button.
-      tabWidget.createTab("+");
-
-      // A simple counter.
-      int counter = 1;
-      tabWidget.setCallback([&](int index) 
-      {
-        if (index == (tabWidget.tabCount() - 1)) 
-        {
-          // When the "+" tab has been clicked, simply add a new tab.
-          std::string tabName = "Dynamic " + std::to_string(counter);
-          auto& layerDyn = *tabWidget.createTab(index, tabName);
-          layerDyn.withLayout<GroupLayout>();
-          layerDyn.label("Function graph widget", "spectrum-bold");
-          auto& graphDyn = layerDyn.graph("Dynamic function");
-
-          graphDyn.setHeader("E = 2.35e-3");
-          graphDyn.setFooter("Iteration " + std::to_string(index*counter));
-          
-          VectorXf &funcDyn = graphDyn.values();
-          funcDyn.resize(100);
-          for (int i = 0; i < 100; ++i)
-            funcDyn[i] = 0.5f * std::abs((0.5f * std::sin(i / 10.f + counter) +
-                         0.5f * std::cos(i / 23.f + 1 + counter)));
-          ++counter;
-          // We must invoke perform layout from the screen instance to keep everything in order.
-          // This is essential when creating tabs dynamically.
-          tabWidget.screen()->performLayout();
-          // Ensure that the newly added header is visible on screen
-          tabWidget.ensureTabVisible(index);
-
-        }
-      });
-      tabWidget.setActiveTab(0);
-    }
-
+ 
     ~ExampleApplication() {}
-
-    void toggleConsoleWnd(bool show)
-    {
-      using namespace nanogui;
-
-      auto console = findWidgetGlobal("console_wnd");
-      if (!console)
-      {
-        auto& wnd = window("Example: Console");
-        wnd.setPosition(60, 60);
-        wnd.setLayout(new GroupLayout());
-        wnd.setFixedSize({ 300, 300 });
-        wnd.setId("console_wnd");
-        performLayout();
-      }
-      else
-      {
-        console->setVisible(show);
-      }
-    }
-    
-    void toggleSimpleLayoutWnd(bool show)
-    {
-      using namespace nanogui;
-
-      auto logwnd = findWidgetGlobal("simple_layout_wnd");
-      if (!logwnd)
-      {
-        auto& wnd = window(Caption{ "Example: Simple layout" }, 
-                           WidgetStretchLayout{ Orientation::Horizontal },
-                           Position{ 180, 180  },
-                           MinimumSize{ 400, 400 },
-                           WidgetId{ "simple_layout_wnd" });
-
-        wnd.listbox(RelativeSize{ 0.33, 0 },
-                    ListboxCallback{ [this](ListboxItem* i) {
-                                        Label* lb = findWidget<Label>("#simple_layout_lb");
-                                        if (lb)
-                                          lb->setCaption("MyObject: " + i->caption());
-                                      } 
-                                    },
-                    ListboxContent{ [](Listbox& l) {         
-                                        for (int i = 0; i < 100; i++)
-                                          l.addItem("Item " + std::to_string(i));
-                                      }
-                                  });
-        auto& desc = wnd.widget(WidgetStretchLayout{ Orientation::Vertical });
-        desc.label(Caption{ "MyObject: id" }, 
-                   CaptionHAlign{ TextHAlign::hLeft },
-                   FixedHeight{ 15 },
-                   WidgetId{ "#simple_layout_lb" } );
-        desc.tabs(TabNames{"Description", "Details"});
-        performLayout();
-      }
-      else
-      {
-        logwnd->setVisible(show);
-      }
-    }
-
-    void toggleLogWnd(bool show)
-    {
-      using namespace nanogui;
-
-      auto logwnd = findWidgetGlobal("log_wnd");
-      if (!logwnd)
-      {
-        auto& wnd = window("Example: Log");
-        wnd.setPosition(120, 120);
-        wnd.setFixedSize({ 400, 300 });
-        wnd.setId("log_wnd");
-        performLayout();
-      }
-      else
-      {
-        logwnd->setVisible(show);
-      }
-    }
-
-    void toggleMainMenu(bool show)
-    {
-      using namespace nanogui;
-
-      auto menus = findAll<WindowMenu>();
-
-      if (menus.empty())
-      {
-        auto& mmenu = wdg<WindowMenu>();
-        mmenu.activate({ 0, 0 });
-        mmenu.submenu("File")
-                .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
-                .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
-        mmenu.submenu("Edit")
-                .item("Undo", "Ctrl+Z", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Redo", "Ctrl+Y", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Cut", "Ctrl+X", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Copy", "Ctrl+C", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Paste", "Ctrl+V", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
-
-        performLayout();
-      }
-      else
-      {
-        menus.front()->setVisible(show);
-      }
-    }
-
+   
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
@@ -883,7 +935,6 @@ public:
     }
 
     virtual void draw(NVGcontext *ctx) {
-        /* Animate the scrollbar */
       using namespace nanogui;
       float value = std::fmod((float)getTimeFromStart() / 10, 1.0f);
         if (auto progress = findWidget<ProgressBar>("#lineprogressbar"))
@@ -901,6 +952,14 @@ public:
         Screen::draw(ctx);
 
         cpuTime = getTimeFromStart() - t;
+
+        if (auto meter = findWidget<Meter>("#meter"))
+        {
+          static int i = 0;
+          static int v[30] = { 0 };
+          v[(++i)%30] = (int)(1 / dt);
+          meter->setValue(std::accumulate(std::begin(v), std::end(v), 0) / 30);
+        }
 
         if (fpsGraph) fpsGraph->update(dt);
         if (cpuGraph) cpuGraph->update(cpuTime);
@@ -943,10 +1002,6 @@ private:
     nanogui::PerfGraph *cpuGraph = nullptr;
     nanogui::PerfGraph *gpuGraph = nullptr;
     double previousFrameTime = 0, cpuTime = 0;
-
-    using ImagesDataType = vector<pair<int, std::string>>;
-    ImagesDataType mImagesData;
-    int mCurrentImage;
 };
 
 int main(int /* argc */, char ** /* argv */) {

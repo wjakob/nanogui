@@ -168,7 +168,7 @@ Listbox::Listbox(Widget* parent)
 {
   mPanel = add<VScrollPanel>();
   mItems = mPanel->add<WidgetsArea>();
-  mItems->setLayout(new BoxLayout(Orientation::Vertical, Alignment::Minimum));
+  mItems->boxlayout(Orientation::Vertical, Alignment::Minimum);
 }
 
 void Listbox::selectItem(ListboxItem* item)

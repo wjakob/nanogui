@@ -423,6 +423,8 @@ add_library(nanogui-obj OBJECT
   include/nanogui/imagepanel.h src/imagepanel.cpp
   include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/themebuilder.h src/themebuilder.cpp
+  include/nanogui/treeview.h src/treeview.cpp
+  include/nanogui/treeviewitem.h src/treeviewitem.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/colorpicker.h src/colorpicker.cpp

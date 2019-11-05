@@ -681,16 +681,11 @@ void EditorWorkspace::_drawWidthRectangle(NVGcontext* ctx, Color& color, int ww,
   nvgStroke(ctx);
 }
 
-Vector2i getCenterRect(const Vector4i& r)
-{
-  return Vector2i((r.z() + r.x()) / 2, (r.w() + r.y()) / 2);
-}
-
 void EditorWorkspace::_drawResizePoint(NVGcontext* ctx, const Color& color, const Vector4i& tr)
 {
   nvgBeginPath(ctx);
   nvgFillColor(ctx, color);
-  Vector2i c = getCenterRect(tr);
+  Vector2i c = rect_center(tr);
   float r = (tr.z() - tr.x()) / 2;
   nvgCircle(ctx, c.x(), c.y(), r );
   //nvgRect(ctx, tr.x(), tr.y(), tr.z() - tr.x(), tr.w() - tr.y());
@@ -715,7 +710,7 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
             m = _mouseOverMode;
 
         int dfHalf = 3;
-        Vector2i c = getCenterRect(r);
+        Vector2i c = rect_center(r);
 
         editArea.topleft =  Vector4i(r.x() - dfHalf, r.y() - dfHalf, r.x() + dfHalf, r.y() + dfHalf);
         editArea.topright = Vector4i(r.z() - dfHalf, r.y() - dfHalf, r.z() + dfHalf, r.y() + dfHalf);

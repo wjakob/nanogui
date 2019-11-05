@@ -23,20 +23,21 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple dropdownbox box widget based on a popup button.
  */
+using DropdownBoxItems = std::vector<std::string>;
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
     /// Create an empty combo box
     DropdownBox(Widget *parent);
 
     /// Create a new combo box with the given items
-    DropdownBox(Widget *parent, const std::vector<std::string> &items);
+    DropdownBox(Widget *parent, const DropdownBoxItems &items);
 
     /**
      * \brief Create a new dropdownbox with the given items, providing both short and
      * long descriptive labels for each item
      */
-    DropdownBox(Widget *parent, const std::vector<std::string> &items,
-             const std::vector<std::string> &itemsShort);
+    DropdownBox(Widget *parent, const DropdownBoxItems &items,
+             const DropdownBoxItems &itemsShort);
 
     /// The callback to execute for this widget.
     std::function<void(int)> callback() const { return mCallback; }
@@ -53,16 +54,16 @@ public:
     void setSelectedIndex(int idx);
 
     /// Sets the items for this dropdownbox, providing both short and long descriptive lables for each item.
-    void setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort);
+    void setItems(const DropdownBoxItems &items, const DropdownBoxItems &itemsShort);
 
     /// Sets the items for this dropdownbox.
-    void setItems(const std::vector<std::string> &items) { setItems(items, items); }
+    void setItems(const DropdownBoxItems &items) { setItems(items, items); }
 
     /// The items associated with this dropdownbox.
-    const std::vector<std::string> &items() const { return mItems; }
+    const DropdownBoxItems &items() const { return mItems; }
 
     /// The short descriptions associated with this dropdownbox.
-    const std::vector<std::string> &itemsShort() const { return mItemsShort; }
+    const DropdownBoxItems &itemsShort() const { return mItemsShort; }
 
     /// Handles mouse scrolling events for this dropdownbox.
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
@@ -78,10 +79,10 @@ public:
 
 protected:
     /// The items associated with this dropdownbox.
-    std::vector<std::string> mItems;
+    DropdownBoxItems mItems;
 
     /// The short descriptions of items associated with this dropdownbox.
-    std::vector<std::string> mItemsShort;
+    DropdownBoxItems mItemsShort;
 
     /// The callback for this dropdownbox.
     std::function<void(int)> mCallback;

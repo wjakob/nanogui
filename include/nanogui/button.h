@@ -24,6 +24,8 @@ NAMESPACE_BEGIN(nanogui)
  * \brief [Normal/Toggle/Radio/Popup] Button widget.
  */
 DECLSETTER(ButtonCallback, std::function<void()>)
+DECLSETTER(ButtonFlags, int)
+DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 
 class NANOGUI_EXPORT Button : public Widget {
 public:
@@ -195,6 +197,8 @@ public:
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
     PROPSETTER(BackgroundColor,setBackgroundColor)
+    PROPSETTER(ButtonFlags,setFlags)
+    PROPSETTER(ButtonChangeCallback,setChangeCallback)
 };
 
 class NANOGUI_EXPORT LedButton : public Button

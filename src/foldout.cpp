@@ -91,9 +91,7 @@ Foldout::Foldout( Widget* parent, const Vector4i& rectangle, const std::string& 
   _lastChildCount = 0;
   _activePageIndex = -1;
 
-  _scrollBar = 0;
-  _scrollBar = new ScrollBar(this, ScrollBar::Alignment::VerticalRight);
-    
+  _scrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);    
   _scrollBar->setSubElement( true );
 }
 

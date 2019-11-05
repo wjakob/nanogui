@@ -226,8 +226,7 @@ public:
   }
 
   float path = 0.f;
-  int clamp(int val, int min, int max) { return val < min ? min : (val > max ? max : val); }
-
+  
   void draw(NVGcontext* ctx) override
   {
     refreshRelativePlacement();
@@ -239,7 +238,7 @@ public:
     int ww = mFixedSize.x() > 0 ? mFixedSize.x() : mSize.x();
 
     int headerH = mChildren[0]->height();
-    int realH = clamp(mSize.y() * path, headerH, mSize.y());
+    int realH = clamp<int>(mSize.y() * path, headerH, mSize.y());
 
     nvgSave(ctx);
     nvgResetScissor(ctx);
