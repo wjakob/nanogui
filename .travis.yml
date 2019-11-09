@@ -14,7 +14,7 @@ matrix:
         - mkdir -p build
         - cd build
         - cmake --version 
-        - cmake  ..
+        - cmake -G "Visual Studio 14 2014 Win64" ..
         - cmake --build .
     - os: linux
       compiler: gcc-4.9

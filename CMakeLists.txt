@@ -563,7 +563,7 @@ if (NANOGUI_BUILD_PYTHON)
   find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
-    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
+    # set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
     message(WARNING "NanoGUI: not building the Python plugin!")
   else()
     message(STATUS "NanoGUI: building the Python plugin.")
@@ -574,8 +574,13 @@ if (NANOGUI_BUILD_PYTHON)
   # Need PIC code in libnanogui even when compiled as a static library
   set_target_properties(nanogui-obj PROPERTIES POSITION_INDEPENDENT_CODE ON)
   
+  set(PYTHON_BACKEND_SOURCES "")  
   if (NANOGUI_GLFW_BACKEND)  
     set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+    list(APPEND PYTHON_BACKEND_SOURCES 
+         python/glcanvas.cpp 
+         python/glutil.cpp)
   endif()
  
 
@@ -592,12 +597,13 @@ if (NANOGUI_BUILD_PYTHON)
     python/tabs.cpp
     python/textbox.cpp
     python/theme.cpp
-    python/glcanvas.cpp
+    
     python/formhelper.cpp
     python/misc.cpp
-    python/glutil.cpp
+
     python/nanovg.cpp
     python/python.h python/py_doc.h
+    ${PYTHON_BACKEND_SOURCES}
     ${LIBNANOGUI_PYTHON_EXTRA_SOURCE})
 
   add_library(nanogui-python SHARED $<TARGET_OBJECTS:nanogui-python-obj>)

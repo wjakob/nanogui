@@ -1,6 +1,7 @@
 #ifdef NANOGUI_PYTHON
 
 #include "python.h"
+#include <nanogui/glutil.h>
 #include <pybind11/numpy.h>
 
 static void uploadAttribPy(GLShader &sh, const std::string &name, py::array M, int version) {
