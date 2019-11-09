@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(nanogui)
 Meter::Meter(Widget *parent)
     : Widget(parent)
 {
-   m_precision=0;	
+   m_precision=0;  
    m_steps=10;
    m_thresholdFlag=false;
 
@@ -38,16 +38,16 @@ void Meter::setValue(double value)
 {
     if(value>m_maxValue)
     {
-    	m_value=m_maxValue;
+      m_value=m_maxValue;
       if (onError)
-    	  onError(OutOfRange);
+        onError(OutOfRange);
     }
-    else	
+    else  
       if(value<m_minValue)
       {
-        m_value=m_minValue;	
+        m_value=m_minValue;  
         if (onError)
-          onError(OutOfRange);	
+          onError(OutOfRange);  
       }
       else      
           m_value=value;
@@ -73,11 +73,11 @@ void Meter::setMinValue(int value)
 
 void Meter::setMaxValue(double value)
 {
-	if(value > m_minValue)
-	{
-    	m_maxValue=value;
- 	}
- 	else
+  if(value > m_minValue)
+  {
+      m_maxValue=value;
+   }
+   else
   {
     if (onError)
       onError(MaxValueError);
@@ -92,14 +92,14 @@ void Meter::setMaxValue(int value)
 
 void Meter::setThreshold(double value)
 {
-	if(value > m_minValue && value < m_maxValue)
-	{
-    	m_threshold=value;
- 	}
- 	else
+  if(value > m_minValue && value < m_maxValue)
+  {
+      m_threshold=value;
+   }
+   else
   {
     if (onError)
- 		  onError(ThresholdError);
+       onError(ThresholdError);
   }
 }
 
@@ -156,27 +156,27 @@ void Meter::draw(NVGcontext *ctx)
 
 void Meter::setSteps(int nSteps)
 {
-	m_steps=nSteps;
+  m_steps=nSteps;
 }
 
 void Meter::setStartAngle(double value)
 {
-	m_startAngle=value;
+  m_startAngle=value;
 }
 
 void Meter::setEndAngle(double value)
 {
-	m_endAngle=value;
+  m_endAngle=value;
 }
 
 void Meter::setForeground(const Color& newForeColor)
 {
-	m_foreground=newForeColor;
+  m_foreground=newForeColor;
 }
 
 void Meter::setBackground(const Color& newBackColor)
 {
-	m_background=newBackColor;
+  m_background=newBackColor;
 }
 
 void Meter::thresholdManager()
@@ -187,18 +187,18 @@ void Meter::thresholdManager()
   mLastValue = m_value;
   mNeedUpdateLastValueText = true;
 
-	if(m_value > m_threshold && !m_thresholdFlag)
-	{
+  if(m_value > m_threshold && !m_thresholdFlag)
+  {
     m_thresholdFlag=true;
     if (onTreshold)
       onTreshold(m_thresholdFlag);    
   }
-	else if(m_value < m_threshold && m_thresholdFlag)
-	{
-  	m_thresholdFlag=false;
+  else if(m_value < m_threshold && m_thresholdFlag)
+  {
+    m_thresholdFlag=false;
     if (onTreshold)
-  	  onTreshold(m_thresholdFlag);    
-	}    
+      onTreshold(m_thresholdFlag);    
+  }    
 }
 
 void Meter::setThresholdEnabled(bool enable)

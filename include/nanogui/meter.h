@@ -33,23 +33,23 @@ public:
 
 public:
 
-	void setValue(double);
-	void setValue(int);	
-	void setMinValue(double);
-	void setMinValue(int);	
-	void setMaxValue(double);	
-	void setMaxValue(int);		
-	void setThreshold(double);
-	void setThreshold(int);		
+  void setValue(double);
+  void setValue(int);  
+  void setMinValue(double);
+  void setMinValue(int);  
+  void setMaxValue(double);  
+  void setMaxValue(int);    
+  void setThreshold(double);
+  void setThreshold(int);    
   void setPrecision(int);
-  void setPrecisionNumeric(int);  	
-	void setUnits(std::string);
+  void setPrecisionNumeric(int);    
+  void setUnits(std::string);
   void setLabel(std::string);
-	void setSteps(int);	
-	void setStartAngle(double);	
-	void setEndAngle(double);	
-	void setForeground(const Color&);
-	void setBackground(const Color&);
+  void setSteps(int);  
+  void setStartAngle(double);  
+  void setEndAngle(double);  
+  void setForeground(const Color&);
+  void setBackground(const Color&);
   void setThresholdEnabled(bool);
   void setNumericIndicatorEnabled(bool);
   void setBeginValidValue(double);
@@ -91,21 +91,21 @@ protected:
     void drawValidWindow(NVGcontext *painter);
     void drawWarningWindow(NVGcontext *painter);
     
-	  std::string m_units;
+    std::string m_units;
     std::string m_label;
     std::string m_value_text;
-	  int m_steps;
-	  double m_startAngle,m_endAngle;
-	  double m_threshold;
+    int m_steps;
+    double m_startAngle,m_endAngle;
+    double m_threshold;
     bool m_thresholdFlag;
     bool m_enableValidWindow;
     double m_beginValidValue, m_endValidValue;    
     bool m_enableWarningWindow;
     double m_beginWarningValue, m_endWarningValue;
-	  bool m_thresholdEnabled;
-	  bool m_numericIndicatorEnabled;
-	  Color m_foreground;
-	  Color m_background;
+    bool m_thresholdEnabled;
+    bool m_numericIndicatorEnabled;
+    Color m_foreground;
+    Color m_background;
 };
 
 NAMESPACE_END(nanogui)

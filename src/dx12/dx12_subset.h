@@ -46,27 +46,27 @@ class dx12_subset_resource;
 #define dxgi_state_count 5
 
 typedef struct dx12_cmd_list {
-	ID3D12GraphicsCommandList* cl;
-	ID3D12CommandAllocator* alc;
+  ID3D12GraphicsCommandList* cl;
+  ID3D12CommandAllocator* alc;
 } dx12_cmd_list;
 
 //#define _DEBUG_DX12
 //#define _ENABLE_DX12_LOGGING
 
 #ifdef _DEBUG_DX12
-	#define LOG_DBG_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
+  #define LOG_DBG_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
 #else
-	#define LOG_DBG_DTDM2(...) 
+  #define LOG_DBG_DTDM2(...) 
 #endif
 
 #ifdef _ENABLE_DX12_LOGGING
-	#define LOG_WARN_DTDM(...) printf(__VA_ARGS__); printf("\r\n")
-	#define LOG_INFO_DTDM(...) printf(__VA_ARGS__); printf("\r\n")
-	#define LOG_INFO_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
+  #define LOG_WARN_DTDM(...) printf(__VA_ARGS__); printf("\r\n")
+  #define LOG_INFO_DTDM(...) printf(__VA_ARGS__); printf("\r\n")
+  #define LOG_INFO_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
 #else
-	#define LOG_WARN_DTDM(...) 
-	#define LOG_INFO_DTDM(...) 
-	#define LOG_INFO_DTDM2(...)
+  #define LOG_WARN_DTDM(...) 
+  #define LOG_INFO_DTDM(...) 
+  #define LOG_INFO_DTDM2(...)
 #endif
 
 #define LOG_ERR_THROW2(hr, hr2) ThrowError(hr, #hr2 )
@@ -101,116 +101,116 @@ class dx12_subset_dheap;
 class dx12_subset {
 
 public:
-	dx12_subset();
-	~dx12_subset();
+  dx12_subset();
+  ~dx12_subset();
 
-	void init(HWND window, int w, int h);
-	void deinit();
-	
-	void set_size(int w, int h);
+  void init(HWND window, int w, int h);
+  void deinit();
+  
+  void set_size(int w, int h);
 
-	void fr_start();
-	void fr_end();	
+  void fr_start();
+  void fr_end();  
 
-	void ThrowError(HRESULT hr, const char * msg);
+  void ThrowError(HRESULT hr, const char * msg);
 
-	void Use_PPSO(int id);
-	void Use_RSIG(int id);
-	void OM_RTDS(dx12_subset_resource* rtSurf, dx12_subset_resource* dsSurf);
+  void Use_PPSO(int id);
+  void Use_RSIG(int id);
+  void OM_RTDS(dx12_subset_resource* rtSurf, dx12_subset_resource* dsSurf);
 
-	D3D12_HEAP_PROPERTIES GetResourceHeap(D3D12_HEAP_TYPE Type);
+  D3D12_HEAP_PROPERTIES GetResourceHeap(D3D12_HEAP_TYPE Type);
 
-	dx12_cmd_list* FrameCL2() { return frCl; };
-	ID3D12GraphicsCommandList* FrameCL() { return frCl->cl; };
-	ID3D12Device* dev;
-	UINT32 isRunning;
+  dx12_cmd_list* FrameCL2() { return frCl; };
+  ID3D12GraphicsCommandList* FrameCL() { return frCl->cl; };
+  ID3D12Device* dev;
+  UINT32 isRunning;
 
-	dx12_subset_resource* GetUploadBuffer(unsigned int space, UINT64* offset, UINT32 align);
-	
-	void ReleaseAfterFrameEnd(IUnknown* obj);
+  dx12_subset_resource* GetUploadBuffer(unsigned int space, UINT64* offset, UINT32 align);
+  
+  void ReleaseAfterFrameEnd(IUnknown* obj);
 
-	dx12_subset_dheap* CurrentDHeap(int idx);
+  dx12_subset_dheap* CurrentDHeap(int idx);
 
-	void UseSamplerAtRSIG(int rsigIdx, int samplerDHslot);
-		   
+  void UseSamplerAtRSIG(int rsigIdx, int samplerDHslot);
+       
 private:
-	ComPtr<ID3D12Device> SelectSutiableGPU();
-	void InitCL();
-	dx12_cmd_list* GetUnusedCL();
-	void RecycleCL(dx12_cmd_list* cl);
-	void ExecuteCL(dx12_cmd_list* cl);
-	void ResizeFrResources();
-	void WaitForGPU();
-	void ReleaseAfterFrameObjects();
-	
-	//dxgi
-	void dxgi_setup();
-	void dxgi_present();
-	void dxgi_present_w7();	
-	void dxgi_error();
-	void dxgi_resize();
+  ComPtr<ID3D12Device> SelectSutiableGPU();
+  void InitCL();
+  dx12_cmd_list* GetUnusedCL();
+  void RecycleCL(dx12_cmd_list* cl);
+  void ExecuteCL(dx12_cmd_list* cl);
+  void ResizeFrResources();
+  void WaitForGPU();
+  void ReleaseAfterFrameObjects();
+  
+  //dxgi
+  void dxgi_setup();
+  void dxgi_present();
+  void dxgi_present_w7();  
+  void dxgi_error();
+  void dxgi_resize();
 
-	void dxgi_release_buffers();
+  void dxgi_release_buffers();
 
-	void (dx12_subset::*dxgi_handlers[dxgi_state_count])();
+  void (dx12_subset::*dxgi_handlers[dxgi_state_count])();
 
-	void CopyFrameToDXGI();
-		
-	IDXGISwapChain3* dxgi_sc;
-	HWND dxgi_win;
-	int dxgi_state;
-	int dxgi_resize_query;
-	ID3D12Resource* dxgiBackBuffer[2];
+  void CopyFrameToDXGI();
+    
+  IDXGISwapChain3* dxgi_sc;
+  HWND dxgi_win;
+  int dxgi_state;
+  int dxgi_resize_query;
+  ID3D12Resource* dxgiBackBuffer[2];
 
-	//fr resources
-	dx12_subset_resource* rt;
-	dx12_subset_resource* ds;
-	dx12_cmd_list* frCl;
-	int winH;
-	int winW;
+  //fr resources
+  dx12_subset_resource* rt;
+  dx12_subset_resource* ds;
+  dx12_cmd_list* frCl;
+  int winH;
+  int winW;
 
-	std::queue<IUnknown*> frameEndCleanupQue[2];
-	int frameEndCleanupQueId;
+  std::queue<IUnknown*> frameEndCleanupQue[2];
+  int frameEndCleanupQueId;
 
-	//upload buffer managment
-	void SwapUploadBuffer();
-	dx12_subset_resource* uploadBuffer[2];	
-	unsigned int uploadBufferPos;
-	unsigned int uploadBufferSize[2];
-	int uploadBufferIdx = 0;
-	
+  //upload buffer managment
+  void SwapUploadBuffer();
+  dx12_subset_resource* uploadBuffer[2];  
+  unsigned int uploadBufferPos;
+  unsigned int uploadBufferSize[2];
+  int uploadBufferIdx = 0;
+  
 
-	//dx12 objects	
-	ID3D12CommandQueue* cmdQue;	
-	ID3D12Fence* fence;
-	HANDLE fenceEvent;
-	UINT64 fenceId;
-	UINT32 gpuWorkIssued;	
+  //dx12 objects  
+  ID3D12CommandQueue* cmdQue;  
+  ID3D12Fence* fence;
+  HANDLE fenceEvent;
+  UINT64 fenceId;
+  UINT32 gpuWorkIssued;  
 
-	dx12_subset_dheap* dHeaps[4];
+  dx12_subset_dheap* dHeaps[4];
 
-	dx12_cmd_list cl_buffer[10];
-	dx12_cmd_list* cl_buffer_seek;
+  dx12_cmd_list cl_buffer[10];
+  dx12_cmd_list* cl_buffer_seek;
 
-	dx12_cmd_list* cl_stack_buffer[10];
-	dx12_cmd_list** cl_stack;	
+  dx12_cmd_list* cl_stack_buffer[10];
+  dx12_cmd_list** cl_stack;  
 
-	dx12_cmd_list* cl_cleanup_stack_buffer[10];
-	dx12_cmd_list** cl_cleanup_stack;
+  dx12_cmd_list* cl_cleanup_stack_buffer[10];
+  dx12_cmd_list** cl_cleanup_stack;
 
-	dx12_dynamic_imports imports;
+  dx12_dynamic_imports imports;
 
-	//w7 port
-	ID3D12CommandQueueDownlevel* w7_cq;		
+  //w7 port
+  ID3D12CommandQueueDownlevel* w7_cq;    
 
-	//ppso & rsig lib
+  //ppso & rsig lib
 
-	ID3D12RootSignature* RootSigArr[DX12_SUBSET_RSIG_COUNT];
-	ID3D12PipelineState* PPSOArr[DX12_SUBSET_PPSO_COUNT];
+  ID3D12RootSignature* RootSigArr[DX12_SUBSET_RSIG_COUNT];
+  ID3D12PipelineState* PPSOArr[DX12_SUBSET_PPSO_COUNT];
 
-	void InitPPSOLib();
-	void InitRootSigs();
-	ID3D12RootSignature * ConstructRootSignature(D3D12_ROOT_SIGNATURE_DESC* rootSignatureDesc);
+  void InitPPSOLib();
+  void InitRootSigs();
+  ID3D12RootSignature * ConstructRootSignature(D3D12_ROOT_SIGNATURE_DESC* rootSignatureDesc);
 };
 
 #endif

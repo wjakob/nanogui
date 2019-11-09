@@ -10,33 +10,33 @@ NAMESPACE_BEGIN(nanogui)
 
 //! constructor
 TreeView::TreeView( Widget* parent, bool clip,
-	bool drawBack, bool scrollBarVertical, bool scrollBarHorizontal)
-	: Widget( parent ),
-	mItemHeight( 0 ),
-	mIndentWidth( 0 ),
-	mScrollBarH( nullptr ),
-	mScrollBarV( nullptr ),
-	mLinesVisible( true ),
-	mSelecting( false ),
-	mClip( clip ),
-	mDrawBack( drawBack ),
-	mImageLeftOfIcon( true )
+  bool drawBack, bool scrollBarVertical, bool scrollBarHorizontal)
+  : Widget( parent ),
+  mItemHeight( 0 ),
+  mIndentWidth( 0 ),
+  mScrollBarH( nullptr ),
+  mScrollBarV( nullptr ),
+  mLinesVisible( true ),
+  mSelecting( false ),
+  mClip( clip ),
+  mDrawBack( drawBack ),
+  mImageLeftOfIcon( true )
 {
-	int s = DEFAULT_SCROLLBAR_SIZE;
+  int s = DEFAULT_SCROLLBAR_SIZE;
 
-	if ( scrollBarVertical )
-	{
-		mScrollBarV = add<ScrollBar>(ScrollBar::VerticalRight);    
-		mScrollBarV->setSubElement( true );
-	}
+  if ( scrollBarVertical )
+  {
+    mScrollBarV = add<ScrollBar>(ScrollBar::VerticalRight);    
+    mScrollBarV->setSubElement( true );
+  }
 
-	if ( scrollBarHorizontal )
-	{
-		mScrollBarH = add<ScrollBar>(ScrollBar::HorizontalBottom);
-		mScrollBarH->setSubElement(true);
-	}
+  if ( scrollBarHorizontal )
+  {
+    mScrollBarH = add<ScrollBar>(ScrollBar::HorizontalBottom);
+    mScrollBarH->setSubElement(true);
+  }
 
-	mRoot = add<TreeViewItem>();
+  mRoot = add<TreeViewItem>();
   mRoot->mExpanded = true;
   mNeedRecalculateItemsRectangle = true;
   mSelected = nullptr;
@@ -50,206 +50,206 @@ void TreeView::_recalculateItemsRectangle(NVGcontext* ctx)
     return;
 
   mNeedRecalculateItemsRectangle = false;
-	TreeViewItem*	node;
+  TreeViewItem*  node;
 
   nvgFontFace(ctx, mFont.c_str());
-	mItemHeight = nvgTextHeight(ctx, 0, 0, "A", nullptr, nullptr ) + 4;
+  mItemHeight = nvgTextHeight(ctx, 0, 0, "A", nullptr, nullptr ) + 4;
 
-	mIndentWidth = clamp<int>( mItemHeight, 9, 15) - 1;
+  mIndentWidth = clamp<int>( mItemHeight, 9, 15) - 1;
 
-	mTotalItemSize = Vector2i( 0, 0 );
-	node = mRoot->front();
-	while( node )
-	{
-		mTotalItemSize.y() += mItemHeight;
-		mTotalItemSize.x() = std::max( mTotalItemSize.x(), node->right() - mRoot->left() );
-		node = node->nextVisible();
-	}
+  mTotalItemSize = Vector2i( 0, 0 );
+  node = mRoot->front();
+  while( node )
+  {
+    mTotalItemSize.y() += mItemHeight;
+    mTotalItemSize.x() = std::max( mTotalItemSize.x(), node->right() - mRoot->left() );
+    node = node->nextVisible();
+  }
 
   mScrollBarVscale = std::max(0, mTotalItemSize.y() - height() + mItemHeight);
-	mScrollBarV->setVisible( mTotalItemSize.y() > height() );
+  mScrollBarV->setVisible( mTotalItemSize.y() > height() );
 
-	mScrollBarH->setVisible( mTotalItemSize.x() > width() );
+  mScrollBarH->setVisible( mTotalItemSize.x() > width() );
   mScrollBarHscale = std::max(0, mTotalItemSize.x() - width());
 }
 
 bool TreeView::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
 {
-	if (isMouseButtonLeft(button) && down)
-	{
-		if ( focused() && !isPointInsideRect(p, rect()) )
-		{
-			//removeFocus();
-			return false;
-		}
+  if (isMouseButtonLeft(button) && down)
+  {
+    if ( focused() && !isPointInsideRect(p, rect()) )
+    {
+      //removeFocus();
+      return false;
+    }
 
-		/*if( focused() &&
-			(	
-		       ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
-			  || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) && ScrollBarH->onEvent( event ) )
-			)
-		  )
-		{
-			return true;
-		}*/
+    /*if( focused() &&
+      (  
+           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
+        || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) && ScrollBarH->onEvent( event ) )
+      )
+      )
+    {
+      return true;
+    }*/
 
-		mSelecting = true;
-		requestFocus();
-		return true;
-	}
+    mSelecting = true;
+    requestFocus();
+    return true;
+  }
 
-	if (isMouseButtonLeft(button) && !down)
-	{
-	   /*if ( focused() &&
-			(	  
-		       ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
-			  || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) &&	ScrollBarH->onEvent( event ) )
-			)
-		  )
-		{
-			return true;
-		}*/
+  if (isMouseButtonLeft(button) && !down)
+  {
+     /*if ( focused() &&
+      (    
+           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
+        || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) &&  ScrollBarH->onEvent( event ) )
+      )
+      )
+    {
+      return true;
+    }*/
 
-		mSelecting = false;
-		//removeFocus();
-		_mouseAction( p.x(), p.y() );
-		return true;
-  }					
+    mSelecting = false;
+    //removeFocus();
+    _mouseAction( p.x(), p.y() );
+    return true;
+  }          
 
-	return Widget::mouseButtonEvent(p, button, down, modifiers);
+  return Widget::mouseButtonEvent(p, button, down, modifiers);
 }
 
 bool TreeView::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
 {
-	if( mSelecting )
-	{
-		if( isPointInsideRect(p, rect() ) )
-		{
-			_mouseAction( p.x(), p.y(), true );
-			return true;
-		}
-	}
-	return Widget::mouseMotionEvent(p, rel, button, modifiers);
+  if( mSelecting )
+  {
+    if( isPointInsideRect(p, rect() ) )
+    {
+      _mouseAction( p.x(), p.y(), true );
+      return true;
+    }
+  }
+  return Widget::mouseMotionEvent(p, rel, button, modifiers);
 }
 
 bool TreeView::scrollEvent(const Vector2i &p, const Vector2f &rel)
 {
-	if ( mScrollBarV )
-		mScrollBarV->setScroll( mScrollBarV->scroll() + (rel.y() < 0 ? -0.1 : 0.1) );
+  if ( mScrollBarV )
+    mScrollBarV->setScroll( mScrollBarV->scroll() + (rel.y() < 0 ? -0.1 : 0.1) );
   
   return true;
 }
 
 bool TreeView::focusEvent(bool focused)
 {
-	if (!focused)
-	{
-		mSelecting = false;
-		return false;
-	}
+  if (!focused)
+  {
+    mSelecting = false;
+    return false;
+  }
 
-	return Widget::focusEvent(focused);
+  return Widget::focusEvent(focused);
 }
 
 //! called if an event happened.
 /*bool TreeView::onEvent( const NEvent &event )
 {
-	if (isEnabled())
-	{
-		switch( event.EventType )
-		{
-		case NRP_GUI_EVENT:
-			switch( event.GuiEvent.EventType )
-			{
-			case NRP_SCROLL_BAR_CHANGED:
-				if( event.GuiEvent.Caller == ScrollBarV || event.GuiEvent.Caller == ScrollBarH )
-				{
-					//int pos = ( ( gui::IGUIScrollBar* )event.GUIEvent.Caller )->getPos();
-					updateItems();
-					return true;
-				}
-				break;
-			}
-			break;
-		}
-	}
+  if (isEnabled())
+  {
+    switch( event.EventType )
+    {
+    case NRP_GUI_EVENT:
+      switch( event.GuiEvent.EventType )
+      {
+      case NRP_SCROLL_BAR_CHANGED:
+        if( event.GuiEvent.Caller == ScrollBarV || event.GuiEvent.Caller == ScrollBarH )
+        {
+          //int pos = ( ( gui::IGUIScrollBar* )event.GUIEvent.Caller )->getPos();
+          updateItems();
+          return true;
+        }
+        break;
+      }
+      break;
+    }
+  }
 
-	return getParent()->onEvent( event );
+  return getParent()->onEvent( event );
 }*/
 
 void TreeView::_mouseAction( int xpos, int ypos, bool onlyHover /*= false*/ )
 {
-	auto oldSelected = mSelected;
+  auto oldSelected = mSelected;
   TreeViewItem* hitNode;
-	int	 selIdx;
-	int	 n;
-	TreeViewItem*	node;
+  int   selIdx;
+  int   n;
+  TreeViewItem*  node;
 
-	xpos -= mPos.x();//_absoluteRect.UpperLeftCorner.X;
-	ypos -= mPos.y();//_absoluteRect.UpperLeftCorner.Y;
+  xpos -= mPos.x();//_absoluteRect.UpperLeftCorner.X;
+  ypos -= mPos.y();//_absoluteRect.UpperLeftCorner.Y;
 
-	// find new selected item.
-	if( mItemHeight != 0 && mScrollBarV )
-	{
-		selIdx = ( ( ypos - 1 ) + mScrollBarV->scroll() * mScrollBarVscale ) / mItemHeight;
-	}
+  // find new selected item.
+  if( mItemHeight != 0 && mScrollBarV )
+  {
+    selIdx = ( ( ypos - 1 ) + mScrollBarV->scroll() * mScrollBarVscale ) / mItemHeight;
+  }
 
-	hitNode = nullptr;
-	node = mRoot->front();
-	n = 0;
+  hitNode = nullptr;
+  node = mRoot->front();
+  n = 0;
 
-	while( node )
-	{
-		if( selIdx == n )
-		{
-			hitNode = node;
-			break;
-		}
-		node = node->nextVisible();
-		++n;
-	}
+  while( node )
+  {
+    if( selIdx == n )
+    {
+      hitNode = node;
+      break;
+    }
+    node = node->nextVisible();
+    ++n;
+  }
 
-	if( hitNode && xpos > hitNode->getLevel() * mIndentWidth )
-	{
-		mSelected = hitNode;
-	}
+  if( hitNode && xpos > hitNode->getLevel() * mIndentWidth )
+  {
+    mSelected = hitNode;
+  }
 
-	if( hitNode && !onlyHover
-		  && xpos < hitNode->getLevel() * mIndentWidth
-		  && xpos > ( hitNode->getLevel() - 1 ) * mIndentWidth
-		  && hitNode->hasNodes() )
-	{
+  if( hitNode && !onlyHover
+      && xpos < hitNode->getLevel() * mIndentWidth
+      && xpos > ( hitNode->getLevel() - 1 ) * mIndentWidth
+      && hitNode->hasNodes() )
+  {
         hitNode->setExpanded( !hitNode->isExpanded() );
 
-		// post expand/collaps news
+    // post expand/collaps news
     bool expanded = hitNode->isExpanded();
-		mLastEventNode = hitNode;
-		//nodeExpand(mLastEventNode, !expanded);
-		mLastEventNode = nullptr;
-	}
+    mLastEventNode = hitNode;
+    //nodeExpand(mLastEventNode, !expanded);
+    mLastEventNode = nullptr;
+  }
 
-	if( mSelected && !mSelected->isVisible() )
-	{
-		mSelected = nullptr;
-	}
+  if( mSelected && !mSelected->isVisible() )
+  {
+    mSelected = nullptr;
+  }
 
-	// post selection news
+  // post selection news
 
-	if( !onlyHover && mSelected != oldSelected )
-	{
-		if( oldSelected )
-		{
-			mLastEventNode = oldSelected;
-			//nodeDeselect(mLastEventNode);
-			mLastEventNode = nullptr;
-		}
-		if( mSelected )
-		{
-			mLastEventNode = mSelected;
-			//nodeSelect(_lastEventNode);
-			mLastEventNode = nullptr;
-		}
-	}
+  if( !onlyHover && mSelected != oldSelected )
+  {
+    if( oldSelected )
+    {
+      mLastEventNode = oldSelected;
+      //nodeDeselect(mLastEventNode);
+      mLastEventNode = nullptr;
+    }
+    if( mSelected )
+    {
+      mLastEventNode = mSelected;
+      //nodeSelect(_lastEventNode);
+      mLastEventNode = nullptr;
+    }
+  }
 }
 
 void TreeView::updateItems() { mNeedUpdateItems = true; }
@@ -271,63 +271,63 @@ std::string TreeView::_getCurrentNodeFont( TreeViewItem* node)
 
 void TreeView::afterDraw(NVGcontext* ctx)
 {
-	if( !visible() )
-		return;
+  if( !visible() )
+    return;
 
-	if( mNeedUpdateItems )
-	{
-		mNeedUpdateItems = false;
+  if( mNeedUpdateItems )
+  {
+    mNeedUpdateItems = false;
 
-		_recalculateItemsRectangle(ctx); // if the font changed
+    _recalculateItemsRectangle(ctx); // if the font changed
 
-  	// draw background
+    // draw background
     Vector2i framePos = { 6, 6 };
 
     framePos.x() -= mScrollBarH->scroll() * mScrollBarHscale;
     framePos.y() -= mScrollBarV->scroll() * mScrollBarVscale;
 
     Vector2i pos = framePos;
-		TreeViewItem* node = mRoot->front();
+    TreeViewItem* node = mRoot->front();
 
     while( node )
-		{
-			pos.x() = framePos.x() + (node->getLevel()-1) * mIndentWidth;
+    {
+      pos.x() = framePos.x() + (node->getLevel()-1) * mIndentWidth;
       pos.y() = framePos.y();
-			
+      
       Vector2i offset = { 0, 0 };
-			TreeViewItem* itemOffset = node->baseNode();
-			while( itemOffset != nullptr )
-			{
-				//offset += itemOffset->position();
-				itemOffset = itemOffset->baseNode();
-			}
+      TreeViewItem* itemOffset = node->baseNode();
+      while( itemOffset != nullptr )
+      {
+        //offset += itemOffset->position();
+        itemOffset = itemOffset->baseNode();
+      }
 
-			std::string fontNode = node->getActiveFont();
-			if ( fontNode.empty() )
-				fontNode = "sans";
+      std::string fontNode = node->getActiveFont();
+      if ( fontNode.empty() )
+        fontNode = "sans";
 
       Vector2i pfsize = node->preferredSize(ctx);
-			node->setPosition( pos + offset );		
+      node->setPosition( pos + offset );    
       node->setSize(pfsize);
 
-			node = node->nextVisible();
+      node = node->nextVisible();
 
       framePos.y() += mItemHeight;
-		}
-	}
+    }
+  }
 
-	Widget::afterDraw(ctx);
+  Widget::afterDraw(ctx);
 }
 
 //! draws the element and its children
 void TreeView::draw(NVGcontext* ctx)
 {
-	if( !visible() )
-		return;
+  if( !visible() )
+    return;
 
   _recalculateItemsRectangle(ctx);
  
-	// draw background
+  // draw background
   if (mDrawBack)
   {
     nvgStrokeWidth(ctx, 1.0f);
@@ -337,21 +337,21 @@ void TreeView::draw(NVGcontext* ctx)
     nvgStroke(ctx);
   }
 
-	TreeViewItem* node = mRoot->front();
+  TreeViewItem* node = mRoot->front();
   Vector2i rsize(mIndentWidth - 4, mIndentWidth - 4);
 
-	Vector2i framePos;
-	while (node)
-	{
+  Vector2i framePos;
+  while (node)
+  {
     framePos = node->position();
     Vector2i ns = node->size();
     int centerYofs = (ns.y() - rsize.y()) / 2;
     Vector2i center = mPos + framePos + rsize / 2;
     center.y() += centerYofs;
 
-		if( node->hasNodes() )
-		{
-			//rect for '+/-' sign
+    if( node->hasNodes() )
+    {
+      //rect for '+/-' sign
       nvgStrokeWidth(ctx, 1.0f);
       nvgBeginPath(ctx);
       nvgRect(ctx, mPos.x() + framePos.x(), mPos.y() + framePos.y() + centerYofs,
@@ -359,7 +359,7 @@ void TreeView::draw(NVGcontext* ctx)
       nvgStrokeColor(ctx, theme()->mBorderLight );
       nvgStroke(ctx);
 
-			// horizontal '-' line			
+      // horizontal '-' line      
       int offset = rsize.x()/2-2;
 
       nvgStrokeWidth(ctx, 1.0f);
@@ -367,26 +367,26 @@ void TreeView::draw(NVGcontext* ctx)
       nvgMoveTo(ctx, center.x() - offset, center.y());
       nvgLineTo(ctx, center.x() + offset, center.y());
 
-			if( !node->isExpanded() )
-			{
-				// vertical '+' line
+      if( !node->isExpanded() )
+      {
+        // vertical '+' line
         nvgMoveTo(ctx, center.x(), center.y() - offset);
         nvgLineTo(ctx, center.x(), center.y() + offset);
-			}
+      }
 
       nvgStrokeColor(ctx, theme()->mBorderLight);
       nvgStroke(ctx);
-		}			
+    }      
 
     // draw the lines if neccessary
-		if( mLinesVisible )
-		{
-			Vector2i rc_s, rc_e;
+    if( mLinesVisible )
+    {
+      Vector2i rc_s, rc_e;
       nvgBeginPath(ctx);
  
       auto baseNode = node->baseNode();
-			if (baseNode != mRoot )
-			{
+      if (baseNode != mRoot )
+      {
         Vector2i prevCenter = mPos + baseNode->position();
         prevCenter += Vector2i( rsize.x() / 2, baseNode->height());
 
@@ -400,41 +400,41 @@ void TreeView::draw(NVGcontext* ctx)
         nvgLineTo(ctx, rc_s.x(), rc_s.y());
         nvgLineTo(ctx, rc_e.x(), rc_e.y());
 
-				// vertical line
-				/*int offsetY = ( node == node->baseNode()->front() ? mIndentWidth : 0 );
-				rc_s.y() = framePos.y() + ( mItemHeight - offsetY ) / 2;
-				rc_e.x() = rc_s.x() + 1;
+        // vertical line
+        /*int offsetY = ( node == node->baseNode()->front() ? mIndentWidth : 0 );
+        rc_s.y() = framePos.y() + ( mItemHeight - offsetY ) / 2;
+        rc_e.x() = rc_s.x() + 1;
 
         nvgMoveTo(ctx, rc_s.x(), rc_s.y());
         nvgLineTo(ctx, rc_e.x(), rc_e.y());
 
-				// the vertical lines of all parents
-				TreeViewItem* nodeTmp = node->baseNode();
-				rc_s.y() = framePos.y();
+        // the vertical lines of all parents
+        TreeViewItem* nodeTmp = node->baseNode();
+        rc_s.y() = framePos.y();
 
-				for( int n = 0; n < node->getLevel() - 2; ++n )
-				{
+        for( int n = 0; n < node->getLevel() - 2; ++n )
+        {
           rc_s.x() -= mIndentWidth;
           rc_e.x() -= mIndentWidth;
 
-					if( nodeTmp != nodeTmp->baseNode()->back() )
-					{
+          if( nodeTmp != nodeTmp->baseNode()->back() )
+          {
             nvgMoveTo(ctx, rc_s.x(), rc_s.y());
             nvgLineTo(ctx, rc_e.x(), rc_e.y());
-					}
-					nodeTmp = nodeTmp->baseNode();
-				}*/
-			}
+          }
+          nodeTmp = nodeTmp->baseNode();
+        }*/
+      }
 
       nvgStrokeColor(ctx, theme()->mBorderLight);
       nvgStroke(ctx);
-		}
+    }
 
-		node = node->nextVisible();
-	}
+    node = node->nextVisible();
+  }
 
-	// draw items
-	Widget::draw(ctx);
+  // draw items
+  Widget::draw(ctx);
 }
 
 

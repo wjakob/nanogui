@@ -65,17 +65,17 @@ BOOL InitializeDX(void* window, unsigned int x, unsigned int y)
 // Frees everything
 void UnInitializeDX()
 {  
-	pDX12.deinit();
+  pDX12.deinit();
 }
 
 void clearDxContext()
 {
-	pDX12.fr_start();
+  pDX12.fr_start();
 }
 
 void swapDxContextxBuffers()
 {
-	pDX12.fr_end();
+  pDX12.fr_end();
 }
 
 HRESULT resizeWindow(unsigned int x, unsigned int y)
@@ -350,9 +350,9 @@ Screen::~Screen() {
             DestroyIcon((HICON) mCursors[i]);
     }
     if (mNVGContext)
-		nvgDeleteD3D12(mNVGContext);
+    nvgDeleteD3D12(mNVGContext);
 
-	nanogui::UnInitializeDX();
+  nanogui::UnInitializeDX();
 
     //if (mHwWindow && mShutdownOnDestruct)
     //    glfwDestroyWindow((GLFWwindow*)mHwWindow);
@@ -372,8 +372,8 @@ void Screen::setSize(const Vector2i &size) {
 }
 
 void Screen::drawAll() {
-	if (!pDX12.isRunning)
-		return;
+  if (!pDX12.isRunning)
+    return;
 
     clearDxContext();
  

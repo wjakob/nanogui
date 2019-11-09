@@ -98,7 +98,7 @@ enum D3DNVGshaderType {
 
 typedef struct D3DNVGtexture {
     int id;
-    dx12_subset_resource* tex;	
+    dx12_subset_resource* tex;  
     int width, height;
     int type;
     int flags;
@@ -145,30 +145,30 @@ typedef struct D3DNVGcontext {
 
     int fragSize;
     int flags;
-	int psoId;
+  int psoId;
 
     // Per frame buffers
-	struct D3DNVGcall* calls;
-	int ccalls;
-	int ncalls;
-	struct D3DNVGpath* paths;
-	int cpaths;
-	int npaths;
-	struct NVGvertex* verts;
-	int cverts;
-	int nverts;
-	unsigned char* uniforms;
-	int cuniforms;
-	int nuniforms;
+  struct D3DNVGcall* calls;
+  int ccalls;
+  int ncalls;
+  struct D3DNVGpath* paths;
+  int cpaths;
+  int npaths;
+  struct NVGvertex* verts;
+  int cverts;
+  int nverts;
+  unsigned char* uniforms;
+  int cuniforms;
+  int nuniforms;
 
     // D3D
     // Geometry
     D3DNVGBuffer VertexBuffer;
-	dx12_subset_resource* pFanIndexBuffer;
+  dx12_subset_resource* pFanIndexBuffer;
 
     // State
     dx12_subset_resource* pVSConstants;
-	dx12_subset_resource* pPSConstants;
+  dx12_subset_resource* pPSConstants;
 
     dx12_subset* dx12;    
 } D3DNVGcontext;
@@ -196,11 +196,11 @@ void D3Dnvg__renderDelete(D3DNVGcontext* D3D);
 void D3Dnvg__renderCancel(D3DNVGcontext* D3D);
 void D3Dnvg__renderFlush(D3DNVGcontext* D3D);
 void D3Dnvg__renderFill(D3DNVGcontext* D3D, struct NVGpaint* paint, NVGcompositeOperationState compositeOperation, struct NVGscissor* scissor, float fringe,
-	const float* bounds, const struct NVGpath* paths, int npaths);
+  const float* bounds, const struct NVGpath* paths, int npaths);
 void D3Dnvg__renderStroke(D3DNVGcontext* D3D, struct NVGpaint* paint, NVGcompositeOperationState compositeOperation, struct NVGscissor* scissor, float fringe,
-	float strokeWidth, const struct NVGpath* paths, int npaths);
+  float strokeWidth, const struct NVGpath* paths, int npaths);
 void D3Dnvg__renderTriangles(D3DNVGcontext* D3D, struct NVGpaint* paint, NVGcompositeOperationState compositeOperation, struct NVGscissor* scissor,
-	const struct NVGvertex* verts, int nverts);
+  const struct NVGvertex* verts, int nverts);
 void D3Dnvg__renderViewport(D3DNVGcontext* D3D, float width, float height, float pixelRatio = 1);
 
 //dymem funcs
@@ -230,8 +230,8 @@ int D3Dnvg__deleteTexture(D3DNVGcontext* D3D, int id);
 
 //inner drawers
 int D3Dnvg__convertPaint(D3DNVGcontext* D3D, struct D3DNVGfragUniforms* frag,
-	struct NVGpaint* paint, struct NVGscissor* scissor,
-	float width, float fringe, float strokeThr);
+  struct NVGpaint* paint, struct NVGscissor* scissor,
+  float width, float fringe, float strokeThr);
 void D3Dnvg__fill(D3DNVGcontext* D3D, struct D3DNVGcall* call);
 void D3Dnvg__convexFill(D3DNVGcontext* D3D, struct D3DNVGcall* call);
 void D3Dnvg__stroke(D3DNVGcontext* D3D, struct D3DNVGcall* call);

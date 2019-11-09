@@ -21,47 +21,47 @@
 
 int D3Dnvg__maxi(int a, int b)
 { 
-	return a > b ? a : b; 
+  return a > b ? a : b; 
 }
 
 void D3Dnvg_copyMatrix3to4(float* pDest, const float* pSource)
 {
-	unsigned int i;
-	for (i = 0; i < 4; i++)
-	{
-		memcpy(&pDest[i * 4], &pSource[i * 3], sizeof(float) * 3);
-	}
+  unsigned int i;
+  for (i = 0; i < 4; i++)
+  {
+    memcpy(&pDest[i * 4], &pSource[i * 3], sizeof(float) * 3);
+  }
 }
 
 void D3Dnvg__xformToMat3x3(float* m3, float* t)
 {
-	m3[0] = t[0];
-	m3[1] = t[1];
-	m3[2] = 0.0f;
-	m3[3] = t[2];
-	m3[4] = t[3];
-	m3[5] = 0.0f;
-	m3[6] = t[4];
-	m3[7] = t[5];
-	m3[8] = 1.0f;
+  m3[0] = t[0];
+  m3[1] = t[1];
+  m3[2] = 0.0f;
+  m3[3] = t[2];
+  m3[4] = t[3];
+  m3[5] = 0.0f;
+  m3[6] = t[4];
+  m3[7] = t[5];
+  m3[8] = 1.0f;
 }
 
 struct NVGcolor D3Dnvg__premulColor(struct NVGcolor c)
 {
-	c.r *= c.a;
-	c.g *= c.a;
-	c.b *= c.a;
-	return c;
+  c.r *= c.a;
+  c.g *= c.a;
+  c.b *= c.a;
+  return c;
 }
 
 int D3Dnvg__checkError(HRESULT hr, const char* str)
 {
-	if (!SUCCEEDED(hr))
-	{
-		printf("nanovg dx12: Error %08x after %s\n", hr, str);
-		return 1;
-	}
-	return 0;
+  if (!SUCCEEDED(hr))
+  {
+    printf("nanovg dx12: Error %08x after %s\n", hr, str);
+    return 1;
+  }
+  return 0;
 }
 
 

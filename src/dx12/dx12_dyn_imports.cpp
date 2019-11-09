@@ -33,46 +33,46 @@ dx12_dynamic_imports::~dx12_dynamic_imports()
 }
 
 int dx12_dynamic_imports::Init()
-{	
-	UINT dynLibSet = LoadDynLib(DYNIMP_DX12, DYNIMP_LIB_SET_WIN7) ? DYNIMP_LIB_SET_WIN7 : DYNIMP_LIB_SET_WIN10;
-	
-	//megai2: tricky cycle start
-	for (int i = dynLibSet; i != DYNIMP_COUNT; ++i)
-	{
-		if (!LoadDynLib((dx12_dynamic_import_lib)i, dynLibSet))		
-			return 0;
-	}
+{  
+  UINT dynLibSet = LoadDynLib(DYNIMP_DX12, DYNIMP_LIB_SET_WIN7) ? DYNIMP_LIB_SET_WIN7 : DYNIMP_LIB_SET_WIN10;
+  
+  //megai2: tricky cycle start
+  for (int i = dynLibSet; i != DYNIMP_COUNT; ++i)
+  {
+    if (!LoadDynLib((dx12_dynamic_import_lib)i, dynLibSet))    
+      return 0;
+  }
 
-	UINT funIdx = 0;
+  UINT funIdx = 0;
 
-	while (dx12_dynamic_import_funcs[funIdx].fn)
-	{
-		dx12_dynamic_import_lib libId = dx12_dynamic_import_funcs[funIdx].libId;
+  while (dx12_dynamic_import_funcs[funIdx].fn)
+  {
+    dx12_dynamic_import_lib libId = dx12_dynamic_import_funcs[funIdx].libId;
 
-		import_fun_ptrs[funIdx] = GetProcAddress(libHandles[libId], dx12_dynamic_import_funcs[funIdx].fn);
+    import_fun_ptrs[funIdx] = GetProcAddress(libHandles[libId], dx12_dynamic_import_funcs[funIdx].fn);
 
-		if (!import_fun_ptrs[funIdx])		
-			return 0;
-		
-		++funIdx;
-	}
+    if (!import_fun_ptrs[funIdx])    
+      return 0;
+    
+    ++funIdx;
+  }
 
-	return 1;
+  return 1;
 }
 
 UINT dx12_dynamic_imports::LoadDynLib(dx12_dynamic_import_lib lib, UINT set)
 {
-	if (dx12_dynamic_import_libs[set].dllName[lib])
-	{
-		wchar_t buf[1024];
-		wsprintfW(buf, L"%s%s", dx12_dynamic_import_libs[set].pathPrefix[lib], dx12_dynamic_import_libs[set].dllName[lib]);
+  if (dx12_dynamic_import_libs[set].dllName[lib])
+  {
+    wchar_t buf[1024];
+    wsprintfW(buf, L"%s%s", dx12_dynamic_import_libs[set].pathPrefix[lib], dx12_dynamic_import_libs[set].dllName[lib]);
 
-		libHandles[lib] = LoadLibraryW(buf);
-		
-		return libHandles[lib] != 0;
-	}
-	else
-		libHandles[lib] = NULL;
+    libHandles[lib] = LoadLibraryW(buf);
+    
+    return libHandles[lib] != 0;
+  }
+  else
+    libHandles[lib] = NULL;
 
-	return 1;
+  return 1;
 }

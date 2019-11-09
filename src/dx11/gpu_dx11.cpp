@@ -9,8 +9,8 @@ void initGPUTimer(GPUtimer* timer)
 
 void startGPUTimer(GPUtimer* timer)
 {
-	if (!timer->supported)
-		return;
+  if (!timer->supported)
+    return;
 }
 
 int stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)

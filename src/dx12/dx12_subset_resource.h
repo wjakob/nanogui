@@ -31,61 +31,61 @@ SOFTWARE.
 class dx12_subset_resource 
 {
 public:
-	dx12_subset_resource(dx12_subset* parent);
-	~dx12_subset_resource();
+  dx12_subset_resource(dx12_subset* parent);
+  ~dx12_subset_resource();
 
-	void ModRef(int v);
+  void ModRef(int v);
 
-	HRESULT	zbuf(DXGI_FORMAT fmt, float clearV, UINT width, UINT height, DXGI_FORMAT clearVFmt);
-	HRESULT	rtgt(DXGI_FORMAT fmt, float* clearV, UINT width, UINT height);	
-	HRESULT	buffer(size_t size, D3D12_HEAP_TYPE heap);		
-	HRESULT vbuffer(size_t size, int isIB);
-	HRESULT tex2d(UINT width, UINT height, DXGI_FORMAT fmt, UINT16* levels, UINT arrSz);	
+  HRESULT  zbuf(DXGI_FORMAT fmt, float clearV, UINT width, UINT height, DXGI_FORMAT clearVFmt);
+  HRESULT  rtgt(DXGI_FORMAT fmt, float* clearV, UINT width, UINT height);  
+  HRESULT  buffer(size_t size, D3D12_HEAP_TYPE heap);    
+  HRESULT vbuffer(size_t size, int isIB);
+  HRESULT tex2d(UINT width, UINT height, DXGI_FORMAT fmt, UINT16* levels, UINT arrSz);  
 
-	static void BTransitOOC(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl, ID3D12Resource* res);
-	void BTransit(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl);
-	void BTransit2(D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl);
-	void BTransit3(D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from);
-	void BTransit4(D3D12_RESOURCE_STATES to);
+  static void BTransitOOC(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl, ID3D12Resource* res);
+  void BTransit(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl);
+  void BTransit2(D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl);
+  void BTransit3(D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from);
+  void BTransit4(D3D12_RESOURCE_STATES to);
 
-	ID3D12Resource* GetD12Obj() { return res; };
+  ID3D12Resource* GetD12Obj() { return res; };
 
-	void* MapWrite(unsigned int offset, unsigned int size);
-	void MapWriteTex2D(void* data);
+  void* MapWrite(unsigned int offset, unsigned int size);
+  void MapWriteTex2D(void* data);
 
-	void* UploadBlockFR(dx12_subset_resource* dst, UINT64 block_offset, UINT64 upload_offset, UINT64 sz);
-	void* UploadTexFR(dx12_subset_resource* dst, UINT64 upload_offset, UINT32 lv);
-	
-	intptr_t DPtrOffset(UINT64 offset);
+  void* UploadBlockFR(dx12_subset_resource* dst, UINT64 block_offset, UINT64 upload_offset, UINT64 sz);
+  void* UploadTexFR(dx12_subset_resource* dst, UINT64 upload_offset, UINT32 lv);
+  
+  intptr_t DPtrOffset(UINT64 offset);
 
-	//cl&res related calls
-	void ClearAsRTV(FLOAT * color4f, D3D12_RECT* clearRect);
-	void ClearAsDSV(FLOAT Depth, UINT8 Stencil, D3D12_CLEAR_FLAGS flag, D3D12_RECT* clearRect);
-	void SetIB();
-	void SetVB(int stream, int offset, int stride);
-	void UseAsSRVatRSIG(int rsigIdx);
-	void UseAsCBVatRSIG(int rsigIdx, int offset);
+  //cl&res related calls
+  void ClearAsRTV(FLOAT * color4f, D3D12_RECT* clearRect);
+  void ClearAsDSV(FLOAT Depth, UINT8 Stencil, D3D12_CLEAR_FLAGS flag, D3D12_RECT* clearRect);
+  void SetIB();
+  void SetVB(int stream, int offset, int stride);
+  void UseAsSRVatRSIG(int rsigIdx);
+  void UseAsCBVatRSIG(int rsigIdx, int offset);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE* GetHHforRTDS(D3D12_RESOURCE_STATES state);
-	
+  D3D12_CPU_DESCRIPTOR_HANDLE* GetHHforRTDS(D3D12_RESOURCE_STATES state);
+  
 private:
-	dx12_subset* dx12;
-	D3D12_RESOURCE_STATES stateCache;
+  dx12_subset* dx12;
+  D3D12_RESOURCE_STATES stateCache;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dheapHH;
-	dx12_subset_dheap* srvHeap;
-	UINT32 srvId;
+  D3D12_CPU_DESCRIPTOR_HANDLE dheapHH;
+  dx12_subset_dheap* srvHeap;
+  UINT32 srvId;
 
-	ID3D12Resource* res;
+  ID3D12Resource* res;
 
-	void* mappedPtr;
+  void* mappedPtr;
 
-	union bindData {
-		D3D12_VERTEX_BUFFER_VIEW v;
-		D3D12_INDEX_BUFFER_VIEW i;
-	} bindData;
+  union bindData {
+    D3D12_VERTEX_BUFFER_VIEW v;
+    D3D12_INDEX_BUFFER_VIEW i;
+  } bindData;
 
-	int refs;
+  int refs;
 };
 
 #endif

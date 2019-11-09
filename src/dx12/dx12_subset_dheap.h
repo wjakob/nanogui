@@ -31,18 +31,18 @@ SOFTWARE.
 class dx12_subset_dheap_slot_stack {
 
 public:
-	dx12_subset_dheap_slot_stack(UINT32 size);
-	~dx12_subset_dheap_slot_stack();
+  dx12_subset_dheap_slot_stack(UINT32 size);
+  ~dx12_subset_dheap_slot_stack();
 
-	void Push(dx12_subset_dheap_slot_type val);
-	dx12_subset_dheap_slot_type Pop();
+  void Push(dx12_subset_dheap_slot_type val);
+  dx12_subset_dheap_slot_type Pop();
 
-	LONG Count() { return top; };
+  LONG Count() { return top; };
 
 private:
 
-	dx12_subset_dheap_slot_type* data;
-	LONG top;	
+  dx12_subset_dheap_slot_type* data;
+  LONG top;  
 };
 
 #define DX12_SUBSET_DHEAP_STACK_FREE 0
@@ -60,49 +60,49 @@ private:
 class dx12_subset_dheap 
 {
 public:
-	dx12_subset_dheap(dx12_subset* dev, UINT idx);
-	~dx12_subset_dheap();
+  dx12_subset_dheap(dx12_subset* dev, UINT idx);
+  ~dx12_subset_dheap();
 
-	UINT OccupySlot();
-	void FreeSlot(UINT slot);
-	void FreeSlotByPtr(D3D12_CPU_DESCRIPTOR_HANDLE cptr);
+  UINT OccupySlot();
+  void FreeSlot(UINT slot);
+  void FreeSlotByPtr(D3D12_CPU_DESCRIPTOR_HANDLE cptr);
 
-	void CleanupSlots(UINT maxCount);
+  void CleanupSlots(UINT maxCount);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDHeapHandle(UINT slot);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDHeapHandle(UINT slot);
+  D3D12_CPU_DESCRIPTOR_HANDLE GetDHeapHandle(UINT slot);
+  D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDHeapHandle(UINT slot);
 
-	UINT CreateRTV(ID3D12Resource* resource, D3D12_RENDER_TARGET_VIEW_DESC* dsc);
-	UINT CreateDSV(ID3D12Resource* resource, D3D12_DEPTH_STENCIL_VIEW_DESC* dsc);
-	UINT CreateSRV_at(ID3D12Resource* resource, D3D12_SHADER_RESOURCE_VIEW_DESC* dsc, UINT32 slot);
-	UINT CreateSRV(ID3D12Resource* resource, D3D12_SHADER_RESOURCE_VIEW_DESC* dsc);
-	UINT CreateCBV(D3D12_CONSTANT_BUFFER_VIEW_DESC* dsc);
-	UINT CreateUAV(D3D12_UNORDERED_ACCESS_VIEW_DESC* dsc, ID3D12Resource* iRes);
-	UINT CreateSampler(D3D12_SAMPLER_DESC* dsc);
+  UINT CreateRTV(ID3D12Resource* resource, D3D12_RENDER_TARGET_VIEW_DESC* dsc);
+  UINT CreateDSV(ID3D12Resource* resource, D3D12_DEPTH_STENCIL_VIEW_DESC* dsc);
+  UINT CreateSRV_at(ID3D12Resource* resource, D3D12_SHADER_RESOURCE_VIEW_DESC* dsc, UINT32 slot);
+  UINT CreateSRV(ID3D12Resource* resource, D3D12_SHADER_RESOURCE_VIEW_DESC* dsc);
+  UINT CreateCBV(D3D12_CONSTANT_BUFFER_VIEW_DESC* dsc);
+  UINT CreateUAV(D3D12_UNORDERED_ACCESS_VIEW_DESC* dsc, ID3D12Resource* iRes);
+  UINT CreateSampler(D3D12_SAMPLER_DESC* dsc);
 
-	ID3D12DescriptorHeap* GetHeapObj() {
-		return heap;
-	};
+  ID3D12DescriptorHeap* GetHeapObj() {
+    return heap;
+  };
 
-	const D3D12_DESCRIPTOR_HEAP_DESC* GetDesc() {
-		return m_desc;
-	}
+  const D3D12_DESCRIPTOR_HEAP_DESC* GetDesc() {
+    return m_desc;
+  }
 
 private:
-	UINT selfIID;
+  UINT selfIID;
 
-	//megai2: slot status filled in stacks
-	dx12_subset_dheap_slot_stack* stacks[DX12_SUBSET_DHEAP_STACK_COUNT];
+  //megai2: slot status filled in stacks
+  dx12_subset_dheap_slot_stack* stacks[DX12_SUBSET_DHEAP_STACK_COUNT];
 
-	ID3D12DescriptorHeap* heap;
+  ID3D12DescriptorHeap* heap;
 
-	const D3D12_DESCRIPTOR_HEAP_DESC* m_desc;
-	UINT handleSz;
+  const D3D12_DESCRIPTOR_HEAP_DESC* m_desc;
+  UINT handleSz;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuBase;
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuBase;
+  D3D12_CPU_DESCRIPTOR_HANDLE cpuBase;
+  D3D12_GPU_DESCRIPTOR_HANDLE gpuBase;
 
-	dx12_subset* dx12;
+  dx12_subset* dx12;
 };
 
 #endif

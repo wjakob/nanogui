@@ -13,9 +13,9 @@ class NANOGUI_EXPORT TreeView : public Widget
 {
 public:
     explicit TreeView( Widget* parent,
-			  bool clip = true,
-			  bool drawBack = true, bool scrollBarVertical = true, 
-			  bool scrollBarHorizontal = true );
+        bool clip = true,
+        bool drawBack = true, bool scrollBarVertical = true, 
+        bool scrollBarHorizontal = true );
 
     using Widget::set;
     template<typename... Args>
@@ -50,21 +50,21 @@ private:
     std::string _getCurrentNodeFont( TreeViewItem* node );
 
     bool mNeedRecalculateItemsRectangle = false;
-	  TreeViewItem* mRoot;
-    TreeViewItem*	mSelected;
-    TreeViewItem*	mHoverNode;
-    int			mItemHeight;
-    int			mIndentWidth;
+    TreeViewItem* mRoot;
+    TreeViewItem*  mSelected;
+    TreeViewItem*  mHoverNode;
+    int      mItemHeight;
+    int      mIndentWidth;
 
-	  ScrollBar*		mScrollBarH;
-    ScrollBar*		mScrollBarV;
+    ScrollBar*    mScrollBarH;
+    ScrollBar*    mScrollBarV;
 
-    TreeViewItem*	mLastEventNode;
-    bool			mLinesVisible;
-    bool			mSelecting;
-    bool			mDrawBack;
+    TreeViewItem*  mLastEventNode;
+    bool      mLinesVisible;
+    bool      mSelecting;
+    bool      mDrawBack;
     bool      mClip;
-    bool			mImageLeftOfIcon;
+    bool      mImageLeftOfIcon;
     std::string mFont = "sans";
 
     //ElementState _currentDrawState;
