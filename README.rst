@@ -208,6 +208,12 @@ To also get the Python bindings, you'll need to run
 
    $ sudo dnf install python3-devel
 
+To build editor, you will need to run
+
+.. code-block:: bash
+
+   $ mkdir build && cd build && cmake -DNANOGUI_USE_GLAD=ON .. && make editor
+
 License
 ----------------------------------------------------------------------------------------
 

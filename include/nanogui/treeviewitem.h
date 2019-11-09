@@ -2,6 +2,9 @@
 
 #include <nanogui/label.h>
 
+#include <list>
+
+
 NAMESPACE_BEGIN(nanogui)
 
 class TreeView;
@@ -15,13 +18,13 @@ public:
 	using NodeList = std::list<TreeViewItem*>;
 	using TvIterator = NodeList::iterator;
 
-  TreeViewItem(Widget* widget);
-	virtual ~TreeViewItem();
+	explicit TreeViewItem(Widget* widget);
+	~TreeViewItem() override;
 
 	TreeView* source() const;
 	TreeViewItem* baseNode() const;
 
-  Vector2i TreeViewItem::preferredSize(NVGcontext *ctx) const override;
+	Vector2i preferredSize(NVGcontext *ctx) const override;
 
 	int getIcon() const { return mIcon; }
 	void setIcon( int icon );
