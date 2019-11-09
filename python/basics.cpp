@@ -12,9 +12,8 @@ DECLARE_WIDGET(Slider);
 
 void register_basics(py::module &m) {
     py::class_<Label, Widget, ref<Label>, PyLabel>(m, "Label", D(Label))
-        .def(py::init<Widget *, const std::string &, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
-             py::arg("fontSize") = -1,
+        .def(py::init<Widget *, const char*, const char*>(),
+             py::arg("parent"), py::arg("caption"), py::arg("font"),
              D(Label, Label))
         .def("caption", &Label::caption, D(Label, caption))
         .def("setCaption", &Label::setCaption, D(Label, setCaption))
