@@ -3,12 +3,13 @@
 
 #ifndef __APPLE__
 #include <glad/glad.h>
-#endif
 
 #ifndef glGetQueryObjectuiv
 #define GL_TIME_ELAPSED                   0x88BF
 typedef void (APIENTRY *pfnGLGETQUERYOBJECTUI64V)(GLuint id, GLenum pname, GLuint64* params);
 pfnGLGETQUERYOBJECTUI64V glGetQueryObjectui64v = 0;
+#endif
+
 #endif
 
 NAMESPACE_BEGIN(nanogui)
@@ -19,9 +20,13 @@ void initGPUTimer(GPUtimer* timer)
 
   timer->supported = glfwExtensionSupported("GL_ARB_timer_query");
   if (timer->supported) {
+#ifndef __APPLE__
+
 #ifndef glGetQueryObjectuiv
     glGetQueryObjectui64v = (pfnGLGETQUERYOBJECTUI64V)glfwGetProcAddress("glGetQueryObjectui64v");
 #endif
+
+#endif    
     printf("glGetQueryObjectui64v=%p\n", glGetQueryObjectui64v);
     if (!glGetQueryObjectui64v) {
       timer->supported = GL_FALSE;
