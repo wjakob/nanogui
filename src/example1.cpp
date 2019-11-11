@@ -212,7 +212,7 @@ void createBasicWidgets(Screen* parent)
                  auto& dlg = parent->msgdialog(MessageDialog::Type::Information, "Title", "This is an information message");
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
                }});
-  
+
   tools.button(Caption{ "Warn" },
                ButtonCallback{ [&] {
                  auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a warning message");
@@ -292,7 +292,7 @@ void createBasicWidgets(Screen* parent)
                          << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, true)
                          << endl;
                  }});
-   
+
   w.label("Combo box", "sans-bold");
   w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" });
   w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" });
@@ -489,7 +489,7 @@ void createGridSmallObjects(Screen* screen)
   auto& cb = w.checkbox("Check me");
   cb.setFontSize(16);
   cb.setChecked(true);
-  
+
   w.label("Combo box :", "sans-bold");
   auto& cobo = w.combobox(ComboBoxItems{ "Item 1", "Item 2", "Item 3" });
   cobo.setFontSize(16);
@@ -686,7 +686,7 @@ void createAllWidgetsDemo(Screen* screen)
     Caption{ "All widgets demo" },
     Position{ 725, 350 },
     MinimumSize{ 400, 400 });
-  
+
   dw.submenu("File")
     .item("(dummy item)", []() {})
     .item("New", "Ctrl+N", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
@@ -697,7 +697,7 @@ void createAllWidgetsDemo(Screen* screen)
 
   dw.submenu("Examples")
     .item("Global menu", [screen](bool v) { toggleMainMenu(screen, v); })
-    .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); }, 
+    .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); },
                      [screen](bool &enabled, bool &checked) {
                        enabled = true;
                        auto* w = screen->findWidgetGlobal("#console_wnd");
@@ -709,7 +709,7 @@ void createAllWidgetsDemo(Screen* screen)
                    auto* w = screen->findWidgetGlobal("#log_wnd");
                    checked = (w && w->visible());
                  })
-    .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); }, 
+    .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); },
                            [screen](bool &enabled, bool &checked) {
                              enabled = true;
                              auto* w = screen->findWidgetGlobal("#simple_layout_wnd");
@@ -921,9 +921,9 @@ public:
 
       performLayout();
     }
- 
+
     ~ExampleApplication() {}
-   
+
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;

@@ -21,7 +21,7 @@ public:
   Color MARKED_COLOR = Color(0, 0, 0, 0);
   static std::vector<ExplicitColorPicker*> ALL_PICKERS;
   bool marked = false;
-  
+
   IntBox<int>* textColor(Widget& wrapper, std::string text, float initValue)
   {
     wrapper.label(Caption{ text });
@@ -168,7 +168,7 @@ public:
         master_callback(color);
       }
     };
-    setFinalCallback(final_cb);        
+    setFinalCallback(final_cb);
   }
 
 
@@ -225,7 +225,7 @@ public:
     }
   }
 
-  void mark(ExplicitColorPicker* picker) 
+  void mark(ExplicitColorPicker* picker)
   {
     for (auto& p : ALL_PICKERS)
     {
@@ -236,7 +236,7 @@ public:
     picker->setMarked(!picker->marked);
   }
 
-  bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override 
+  bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override
   {
     if (down && isMouseButtonLeft(button))
     {
@@ -279,7 +279,7 @@ void ThemeBuilder::colorPicker(Widget& parent, std::string name)
     mDynTheme->set<Color>(name, color);
     screen()->performLayout();
   };
-  
+
   auto& cp = wrapper.wdg<ExplicitColorPicker>(val, cp_func);
   cp.setRelativeSize(0.4f, 0);
 
@@ -308,8 +308,8 @@ void numberPicker(Widget& parent, Theme* dynamicTheme, std::string name)
 {
   auto& wrapper = parent.widget();
   wrapper.flexlayout(Orientation::Horizontal);
-  wrapper.label(Caption{ name }, 
-                CaptionFont{ "sans" },           
+  wrapper.label(Caption{ name },
+                CaptionFont{ "sans" },
                 RelativeSize{ 0.5, 0 } );
 
   auto val = dynamicTheme->get<ValueType>(name);
@@ -332,7 +332,7 @@ void numberPicker(Widget& parent, Theme* dynamicTheme, std::string name)
 
   auto& reset = wrapper.button(Caption{ "" }, Icon{ ENTYPO_ICON_BACK });
   reset.setTooltip("Reset to NanoGUI Default?");
-  auto reset_cb = [&] () { 
+  auto reset_cb = [&] () {
     box.setValue(val);
     set_value(val);
   };
@@ -352,7 +352,7 @@ ThemeBuilder::ThemeBuilder(Widget* parent)
   auto& tabWidget = this->tabs();
   tabWidget.setFixedSize({ width(), height() });
 
-  // Font Sizes                        
+  // Font Sizes
   {
     auto& layerSizes = *tabWidget.createTab("Sizes");
     auto& vscroll = layerSizes.vscrollpanel();
@@ -365,13 +365,13 @@ ThemeBuilder::ThemeBuilder(Widget* parent)
     numberPicker<int>(wrapper, mDynTheme, "mButtonFontSize");
     numberPicker<int>(wrapper, mDynTheme, "mTextBoxFontSize");
     numberPicker<int>(wrapper, mDynTheme, "mWindowFontSize");
-    // Curvature Sizes                                                                  
+    // Curvature Sizes
     wrapper.label(Caption{ "Curvature Sizes" }, CaptionFont{ "sans-bold" });
     numberPicker<int>(wrapper, mDynTheme, "mWindowCornerRadius");
     numberPicker<int>(wrapper, mDynTheme, "mWindowHeaderHeight");
     numberPicker<int>(wrapper, mDynTheme, "mWindowDropShadowSize");
     numberPicker<int>(wrapper, mDynTheme, "mButtonCornerRadius");
-    // TabWidget Sizes                                                                  
+    // TabWidget Sizes
     wrapper.label(Caption{ "TabWidget Sizes" }, CaptionFont{ "sans-bold" });
     numberPicker<int>(wrapper, mDynTheme, "mTabBorderWidth");
     numberPicker<int>(wrapper, mDynTheme, "mTabInnerMargin");
@@ -381,7 +381,7 @@ ThemeBuilder::ThemeBuilder(Widget* parent)
     numberPicker<int>(wrapper, mDynTheme, "mTabButtonHorizontalPadding");
     numberPicker<int>(wrapper, mDynTheme, "mTabButtonVerticalPadding");
   }
-  // Core Colors                                                                      
+  // Core Colors
   {
     auto& layerColors = *tabWidget.createTab("Colors");
     auto& vscroll = layerColors.vscrollpanel();
@@ -405,7 +405,7 @@ ThemeBuilder::ThemeBuilder(Widget* parent)
     colorPicker(wrapper, "mDisabledTextColor");
     colorPicker(wrapper, "mTextColorShadow");
     colorPicker(wrapper, "mIconColor");
-    // Button Colors                                                                    
+    // Button Colors
     wrapper.label(Caption{ "Button Colors" }, CaptionFont{ "sans-bold" });
     colorPicker(wrapper, "mButtonGradientTopFocused");
     colorPicker(wrapper, "mButtonGradientBotFocused");
@@ -413,12 +413,12 @@ ThemeBuilder::ThemeBuilder(Widget* parent)
     colorPicker(wrapper, "mButtonGradientBotUnfocused");
     colorPicker(wrapper, "mButtonGradientTopPushed");
     colorPicker(wrapper, "mButtonGradientBotPushed");
-      // Tooltip Colors                                                                   
+      // Tooltip Colors
     wrapper.label("Tooltip Colors", "sans-bold");
     numberPicker<int>(wrapper, mDynTheme, "mTooltipOpacity");
     colorPicker(wrapper, "mTooltipBackgroundColor");
     colorPicker(wrapper, "mTooltipTextColor");
-      // Window Colors                                                                    
+      // Window Colors
     wrapper.label("Window Colors", "sans-bold");
     colorPicker(wrapper, "mWindowFillUnfocused");
     colorPicker(wrapper, "mWindowFillFocused");

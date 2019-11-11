@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 WindowMenu::WindowMenu(Widget *parent)
     : ContextMenu(parent, "", false)
 {
-  mItemMargin = 2; 
+  mItemMargin = 2;
   setSubElement(true);
   mItemHLayout = new BoxLayout(Orientation::Horizontal);
   mItemContainer->setLayout(mItemHLayout);
@@ -54,7 +54,7 @@ void WindowMenu::performLayout(NVGcontext* ctx)
   ContextMenu::performLayout(ctx);
 }
 
-void WindowMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon) 
+void WindowMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
 {
   mItems[name] = value;
   auto lbl = new ContextMenuLabel(mItemContainer, name);
@@ -67,7 +67,7 @@ void WindowMenu::addItem(const std::string& name, const std::string& shortcut, c
   lbl->setTextHAlign(TextHAlign::hCenter);
   lbl->setSize(tw + mItemSpacing*2, prefh);
   lbl->setFixedSize({ tw + mItemSpacing * 2, prefh });
-  
+
   if (nvgIsFontIcon(icon)) {
     auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
     iconLbl->setFontSize(fontSize() + 2);
@@ -76,7 +76,7 @@ void WindowMenu::addItem(const std::string& name, const std::string& shortcut, c
   performLayout(screen()->nvgContext());
 }
 
-ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon) 
+ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
 {
   if (!mParent)
     return nullptr;
@@ -140,7 +140,7 @@ bool WindowMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int bu
   return true;
 }
 
-void WindowMenu::draw(NVGcontext* ctx) 
+void WindowMenu::draw(NVGcontext* ctx)
 {
   nvgSave(ctx);
   nvgTranslate(ctx, mPos.x(), mPos.y());
@@ -155,7 +155,7 @@ void WindowMenu::draw(NVGcontext* ctx)
   nvgFill(ctx);
 
   /* Draw margin background */
-  if (!mLabels.empty()) 
+  if (!mLabels.empty())
   {
     auto lbl = mLabels.begin()->second;
 
@@ -177,7 +177,7 @@ void WindowMenu::draw(NVGcontext* ctx)
   nvgStrokeColor(ctx, mTheme->mBorderDark);
   nvgStroke(ctx);
 
-  if (mHighlightedItem) 
+  if (mHighlightedItem)
   {
     nvgBeginPath(ctx);
     Vector4i r = mHighlightedItem->rect();

@@ -92,7 +92,7 @@ public:
 
     ContextMenu& submenu(const std::string& caption, const std::string& id = "");
 
-    bool prefferContains(const Vector2i& p) const override; 
+    bool prefferContains(const Vector2i& p) const override;
 
 protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup

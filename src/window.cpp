@@ -21,8 +21,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), 
-      mModal(false), mDrag(false), mDragCorner(false) 
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr),
+      mModal(false), mDrag(false), mDragCorner(false)
 {}
 
 Window::Window(Widget *parent, const std::string &title, Orientation orientation)
@@ -170,7 +170,7 @@ void Window::draw(NVGcontext *ctx) {
     nvgFill(ctx);
     nvgRestore(ctx);
 
-    bool collapsable = mayCollapse(); 
+    bool collapsable = mayCollapse();
     if (!mTitle.empty()) {
         /* Draw header */
         NVGpaint headerPaint = nvgLinearGradient(
@@ -238,7 +238,7 @@ void Window::draw(NVGcontext *ctx) {
     {
       Widget::draw(ctx);
 
-      bool inCorner = mMouseFocus && 
+      bool inCorner = mMouseFocus &&
                       isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), mMousePos - mPos);
       nvgBeginPath(ctx);
       nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
@@ -251,10 +251,10 @@ void Window::draw(NVGcontext *ctx) {
     }
 }
 
-bool Window::prefferContains(const Vector2i& p) const 
+bool Window::prefferContains(const Vector2i& p) const
 {
   int ds = theme()->mWindowDropShadowSize;
-  return mMouseFocus 
+  return mMouseFocus
           && isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), p - mPos);
 }
 

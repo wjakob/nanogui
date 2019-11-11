@@ -23,9 +23,9 @@
 int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
 {
   HRESULT hr;
-  
-  if (D3D->flags & NVG_ANTIALIAS) 
-    D3D->psoId = DX12_SUBSET_PPSO_AA_OFFSET;      
+
+  if (D3D->flags & NVG_ANTIALIAS)
+    D3D->psoId = DX12_SUBSET_PPSO_AA_OFFSET;
   else
     D3D->psoId = DX12_SUBSET_PPSO_DEF;
 
@@ -43,7 +43,7 @@ int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
     D3D->VertexBuffer.pBuffer->vbuffer(sizeof(struct NVGvertex)* D3D->VertexBuffer.MaxBufferEntries, 0),
     "Create Vertex Buffer"
   );
-  
+
   D3Dnvg__checkError(
     D3D->pFanIndexBuffer->vbuffer(sizeof(UINT32)* D3D->VertexBuffer.MaxBufferEntries, 1),
     "Create Vertex Buffer Static"
@@ -58,16 +58,16 @@ int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
     D3D->pPSConstants->vbuffer(sizeof(struct D3DNVGfragUniforms), 0),
     "Create PS Constant Buffer"
   );
-  
+
   D3Dnvg_buildFanIndices(D3D);
-  
+
   unsigned int alignedBufSz = sizeof(struct D3DNVGfragUniforms);
   if ((alignedBufSz % 16) != 0)
   {
     alignedBufSz += 16 - (alignedBufSz % 16);
   }
   D3D->fragSize = alignedBufSz;
-  
+
   D3D12_SAMPLER_DESC sampDesc;
   dx12_subset_dheap* srvDH = D3D->dx12->CurrentDHeap(DX12_SUBSET_DHEAP_SPL);
 
@@ -82,7 +82,7 @@ int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
   sampDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
   sampDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
   D3D->pSamplerState[0] = srvDH->CreateSampler(&sampDesc);
-  
+
   sampDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
   sampDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
   D3D->pSamplerState[1] = srvDH->CreateSampler(&sampDesc);
@@ -99,17 +99,17 @@ int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
 }
 
 void D3Dnvg__renderDelete(D3DNVGcontext * D3D)
-{  
+{
   int i;
   if (D3D == NULL)
   {
     return;
   }
-  
+
   for (i = 0; i < D3D->ntextures; i++)
   {
-    if (D3D->textures[i].tex != 0 && (D3D->textures[i].flags & NVG_IMAGE_NODELETE) == 0)    
-      D3D->textures[i].tex->ModRef(-1);          
+    if (D3D->textures[i].tex != 0 && (D3D->textures[i].flags & NVG_IMAGE_NODELETE) == 0)
+      D3D->textures[i].tex->ModRef(-1);
   }
 
   D3D->VertexBuffer.pBuffer->ModRef(-1);
@@ -118,7 +118,7 @@ void D3Dnvg__renderDelete(D3DNVGcontext * D3D)
   D3D->pPSConstants->ModRef(-1);
 
   D3D->pFanIndexBuffer->ModRef(-1);
-    
+
   free(D3D->textures);
 
   free(D3D->paths);
@@ -130,9 +130,9 @@ void D3Dnvg__renderDelete(D3DNVGcontext * D3D)
 }
 
 int D3Dnvg__renderCreateTexture(D3DNVGcontext * D3D, int type, int w, int h, int imageFlags, const unsigned char * data)
-{  
+{
   struct D3DNVGtexture* tex = D3Dnvg__allocTexture(D3D);
-  
+
   int pixelWidthBytes;
   HRESULT hr;
 
@@ -150,34 +150,34 @@ int D3Dnvg__renderCreateTexture(D3DNVGcontext * D3D, int type, int w, int h, int
   UINT16 levels = 1;
 
   if (type == NVG_TEXTURE_RGBA)
-  {          
+  {
     if (imageFlags & NVG_IMAGE_GENERATE_MIPMAPS)
       levels = 0;
 
     hr = tex->tex->tex2d(w, h, DXGI_FORMAT_R8G8B8A8_UNORM, &levels, 1);
-  
-    pixelWidthBytes = 4;    
+
+    pixelWidthBytes = 4;
   }
   else
-  {    
+  {
     hr = tex->tex->tex2d(w, h, DXGI_FORMAT_R8_UNORM, &levels, 1);
-    pixelWidthBytes = 1;    
+    pixelWidthBytes = 1;
   }
-    
+
   if (D3Dnvg__checkError(hr, "create tex"))
   {
     return 0;
   }
 
   if (data != NULL)
-  {    
-    tex->tex->MapWriteTex2D((void*)data);    
+  {
+    tex->tex->MapWriteTex2D((void*)data);
   }
-  
+
 
   if (data != NULL && levels != 1)
   {
-    //TODO  
+    //TODO
   }
 
   return tex->id;
@@ -189,7 +189,7 @@ int D3Dnvg__renderDeleteTexture(D3DNVGcontext * D3D, int image)
 }
 
 int D3Dnvg__renderUpdateTexture(D3DNVGcontext * D3D, int image, int x, int y, int w, int h, const unsigned char * data)
-{  
+{
   struct D3DNVGtexture* tex = D3Dnvg__findTexture(D3D, image);
   /*D3D11_BOX box;
   unsigned int pixelWidthBytes;
@@ -225,7 +225,7 @@ int D3Dnvg__renderUpdateTexture(D3DNVGcontext * D3D, int image, int x, int y, in
 }
 
 int D3Dnvg__renderGetTextureSize(D3DNVGcontext * D3D, int image, int * w, int * h)
-{  
+{
   struct D3DNVGtexture* tex = D3Dnvg__findTexture(D3D, image);
   if (tex == NULL)
   {
@@ -245,7 +245,7 @@ void D3Dnvg__renderCancel(D3DNVGcontext * D3D)
 }
 
 void D3Dnvg__renderFlush(D3DNVGcontext * D3D)
-{  
+{
   int i;
 
   if (D3D->ncalls > 0)
@@ -267,7 +267,7 @@ void D3Dnvg__renderFlush(D3DNVGcontext * D3D)
         struct D3DNVGtexture* tex = D3Dnvg__findTexture(D3D, call->image);
         if (tex != NULL)
         {
-          D3D->dx12->UseSamplerAtRSIG(DX12_SUBSET_RSIG_IDX_DEFAULT_SPL0, D3D->pSamplerState[(tex->flags & NVG_IMAGE_REPEATX ? 1 : 0) + (tex->flags & NVG_IMAGE_REPEATY ? 2 : 0)]);    
+          D3D->dx12->UseSamplerAtRSIG(DX12_SUBSET_RSIG_IDX_DEFAULT_SPL0, D3D->pSamplerState[(tex->flags & NVG_IMAGE_REPEATX ? 1 : 0) + (tex->flags & NVG_IMAGE_REPEATY ? 2 : 0)]);
         }
       }
 
@@ -290,7 +290,7 @@ void D3Dnvg__renderFlush(D3DNVGcontext * D3D)
 }
 
 void D3Dnvg__renderFill(D3DNVGcontext * D3D, NVGpaint * paint, NVGcompositeOperationState compositeOperation, NVGscissor * scissor, float fringe, const float * bounds, const NVGpath * paths, int npaths)
-{  
+{
   struct D3DNVGcall* call = D3Dnvg__allocCall(D3D);
   struct NVGvertex* quad;
   struct D3DNVGfragUniforms* frag;
@@ -370,7 +370,7 @@ error:
 }
 
 void D3Dnvg__renderStroke(D3DNVGcontext * D3D, NVGpaint * paint, NVGcompositeOperationState compositeOperation, NVGscissor * scissor, float fringe, float strokeWidth, const NVGpath * paths, int npaths)
-{  
+{
   struct D3DNVGcall* call = D3Dnvg__allocCall(D3D);
   int i, maxverts, offset;
 
@@ -424,7 +424,7 @@ error:
 }
 
 void D3Dnvg__renderTriangles(D3DNVGcontext * D3D, NVGpaint * paint, NVGcompositeOperationState compositeOperation, NVGscissor * scissor, const NVGvertex * verts, int nverts)
-{  
+{
   struct D3DNVGcall* call = D3Dnvg__allocCall(D3D);
   struct D3DNVGfragUniforms* frag;
 
@@ -456,10 +456,10 @@ error:
 }
 
 void D3Dnvg__renderViewport(D3DNVGcontext * D3D, float width, float height, float pixelRatio)
-{  
+{
   //D3D->alphaMode = alphaBlend;
   VS_CONSTANTS* vc = (VS_CONSTANTS*)D3D->pVSConstants->MapWrite(0, sizeof(VS_CONSTANTS));
   vc->viewSize[0] = (float)width;
-  vc->viewSize[1] = (float)height;  
+  vc->viewSize[1] = (float)height;
 }
 

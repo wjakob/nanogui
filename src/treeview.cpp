@@ -26,7 +26,7 @@ TreeView::TreeView( Widget* parent, bool clip,
 
   if ( scrollBarVertical )
   {
-    mScrollBarV = add<ScrollBar>(ScrollBar::VerticalRight);    
+    mScrollBarV = add<ScrollBar>(ScrollBar::VerticalRight);
     mScrollBarV->setSubElement( true );
   }
 
@@ -84,8 +84,8 @@ bool TreeView::mouseButtonEvent(const Vector2i &p, int button, bool down, int mo
     }
 
     /*if( focused() &&
-      (  
-           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
+      (
+           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) )
         || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) && ScrollBarH->onEvent( event ) )
       )
       )
@@ -101,8 +101,8 @@ bool TreeView::mouseButtonEvent(const Vector2i &p, int button, bool down, int mo
   if (isMouseButtonLeft(button) && !down)
   {
      /*if ( focused() &&
-      (    
-           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) ) 
+      (
+           ( mScrollBarV && ScrollBarV->getAbsoluteRect().isPointInside( p ) && ScrollBarV->onEvent( event ) )
         || ( mScrollBarH && ScrollBarH->getAbsoluteRect().isPointInside( p ) &&  ScrollBarH->onEvent( event ) )
       )
       )
@@ -114,7 +114,7 @@ bool TreeView::mouseButtonEvent(const Vector2i &p, int button, bool down, int mo
     //removeFocus();
     _mouseAction( p.x(), p.y() );
     return true;
-  }          
+  }
 
   return Widget::mouseButtonEvent(p, button, down, modifiers);
 }
@@ -136,7 +136,7 @@ bool TreeView::scrollEvent(const Vector2i &p, const Vector2f &rel)
 {
   if ( mScrollBarV )
     mScrollBarV->setScroll( mScrollBarV->scroll() + (rel.y() < 0 ? -0.1 : 0.1) );
-  
+
   return true;
 }
 
@@ -293,7 +293,7 @@ void TreeView::afterDraw(NVGcontext* ctx)
     {
       pos.x() = framePos.x() + (node->getLevel()-1) * mIndentWidth;
       pos.y() = framePos.y();
-      
+
       Vector2i offset = { 0, 0 };
       TreeViewItem* itemOffset = node->baseNode();
       while( itemOffset != nullptr )
@@ -307,7 +307,7 @@ void TreeView::afterDraw(NVGcontext* ctx)
         fontNode = "sans";
 
       Vector2i pfsize = node->preferredSize(ctx);
-      node->setPosition( pos + offset );    
+      node->setPosition( pos + offset );
       node->setSize(pfsize);
 
       node = node->nextVisible();
@@ -326,7 +326,7 @@ void TreeView::draw(NVGcontext* ctx)
     return;
 
   _recalculateItemsRectangle(ctx);
- 
+
   // draw background
   if (mDrawBack)
   {
@@ -359,7 +359,7 @@ void TreeView::draw(NVGcontext* ctx)
       nvgStrokeColor(ctx, theme()->mBorderLight );
       nvgStroke(ctx);
 
-      // horizontal '-' line      
+      // horizontal '-' line
       int offset = rsize.x()/2-2;
 
       nvgStrokeWidth(ctx, 1.0f);
@@ -376,14 +376,14 @@ void TreeView::draw(NVGcontext* ctx)
 
       nvgStrokeColor(ctx, theme()->mBorderLight);
       nvgStroke(ctx);
-    }      
+    }
 
     // draw the lines if neccessary
     if( mLinesVisible )
     {
       Vector2i rc_s, rc_e;
       nvgBeginPath(ctx);
- 
+
       auto baseNode = node->baseNode();
       if (baseNode != mRoot )
       {
@@ -392,7 +392,7 @@ void TreeView::draw(NVGcontext* ctx)
 
         int nodeh = baseNode->height();
         //prevCenter += Vector2i( nodeh - rsize.x(), nodeh - rsize.x() )/2;
-        
+
         rc_s = Vector2i( prevCenter.x(), center.y());
         rc_e = Vector2i( rc_s.x(), prevCenter.y());
 

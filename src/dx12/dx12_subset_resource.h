@@ -28,7 +28,7 @@ SOFTWARE.
 #include "dx12_subset.h"
 #include "dx12_subset_dheap.h"
 
-class dx12_subset_resource 
+class dx12_subset_resource
 {
 public:
   dx12_subset_resource(dx12_subset* parent);
@@ -37,10 +37,10 @@ public:
   void ModRef(int v);
 
   HRESULT  zbuf(DXGI_FORMAT fmt, float clearV, UINT width, UINT height, DXGI_FORMAT clearVFmt);
-  HRESULT  rtgt(DXGI_FORMAT fmt, float* clearV, UINT width, UINT height);  
-  HRESULT  buffer(size_t size, D3D12_HEAP_TYPE heap);    
+  HRESULT  rtgt(DXGI_FORMAT fmt, float* clearV, UINT width, UINT height);
+  HRESULT  buffer(size_t size, D3D12_HEAP_TYPE heap);
   HRESULT vbuffer(size_t size, int isIB);
-  HRESULT tex2d(UINT width, UINT height, DXGI_FORMAT fmt, UINT16* levels, UINT arrSz);  
+  HRESULT tex2d(UINT width, UINT height, DXGI_FORMAT fmt, UINT16* levels, UINT arrSz);
 
   static void BTransitOOC(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl, ID3D12Resource* res);
   void BTransit(UINT subres, D3D12_RESOURCE_STATES to, D3D12_RESOURCE_STATES from, dx12_cmd_list* cl);
@@ -55,7 +55,7 @@ public:
 
   void* UploadBlockFR(dx12_subset_resource* dst, UINT64 block_offset, UINT64 upload_offset, UINT64 sz);
   void* UploadTexFR(dx12_subset_resource* dst, UINT64 upload_offset, UINT32 lv);
-  
+
   intptr_t DPtrOffset(UINT64 offset);
 
   //cl&res related calls
@@ -67,7 +67,7 @@ public:
   void UseAsCBVatRSIG(int rsigIdx, int offset);
 
   D3D12_CPU_DESCRIPTOR_HANDLE* GetHHforRTDS(D3D12_RESOURCE_STATES state);
-  
+
 private:
   dx12_subset* dx12;
   D3D12_RESOURCE_STATES stateCache;

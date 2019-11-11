@@ -7,9 +7,9 @@
 NAMESPACE_BEGIN(nanogui)
 
 void Foldout::_reparseChilds()
-{    
-	if( !_scrollBar )
-		return;
+{
+  if( !_scrollBar )
+    return;
 
   int maxHeigth = 0;
   for (auto& page: _pages)
@@ -83,7 +83,7 @@ void Foldout::_reparseChilds()
 }
 
 Foldout::Foldout( Widget* parent, const Vector4i& rectangle, const std::string& id )
-	: Widget(parent)
+  : Widget(parent)
 {
   setId(id);
   setGeometry(rectangle);
@@ -91,7 +91,7 @@ Foldout::Foldout( Widget* parent, const Vector4i& rectangle, const std::string& 
   _lastChildCount = 0;
   _activePageIndex = -1;
 
-  _scrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);    
+  _scrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);
   _scrollBar->setSubElement( true );
 }
 
@@ -99,7 +99,7 @@ void Foldout::removeChild(const Widget* child)
 {
   for( uint32_t index=0; index < _pages.size(); index++ )
   {
-    if( _pages[ index ]->page == child ) 
+    if( _pages[ index ]->page == child )
     {
       delete _pages[ index ];
       _pages.erase(_pages.begin() + index );
@@ -107,17 +107,17 @@ void Foldout::removeChild(const Widget* child)
       break;
     }
   }
-    
+
   Widget::removeChild(child);
   _reparseChilds();
 }
 
 void Foldout::draw(NVGcontext* ctx)
 {
-	if( !mVisible )
-		return;
+  if( !mVisible )
+    return;
 
-	Widget::draw(ctx);
+  Widget::draw(ctx);
 }
 
 bool Foldout::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
@@ -176,7 +176,7 @@ Foldout::Page* Foldout::addPage(Widget* elm)
     Desc info = { pageName, caption };
     _pageNames.push_back( info );
     _pages.push_back( descr );
- 
+
     return descr;
 }
 
@@ -216,7 +216,7 @@ void Foldout::addPage( const std::string& pageName, const std::string& pageCapti
 
 void Foldout::setPageOpened( const std::string& pageName, bool opened )
 {
-   
+
 }
 
 //void Foldout::save( core::VariantArray* out ) const

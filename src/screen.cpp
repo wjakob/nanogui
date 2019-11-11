@@ -29,7 +29,7 @@ void Screen::drawWidgets() {
         return;
 
     _drawWidgetsBefore();
-    
+
     nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
 
     draw(mNVGContext);

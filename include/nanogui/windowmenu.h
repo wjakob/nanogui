@@ -59,7 +59,7 @@ public:
 
     Vector2i submenuPosition(const std::string &name) const override;
     void requestPerformLayout() override;
-    void deactivate() override; 
+    void deactivate() override;
 private:
     bool _isLabelSelected(const std::string& name, const Vector2i& p) const;
 

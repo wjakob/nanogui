@@ -69,13 +69,13 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
 }
 
 void Widget::performLayout(NVGcontext *ctx) {
-    if (mLayout) 
+    if (mLayout)
     {
         mLayout->performLayout(ctx, this);
-    } 
+    }
     else
     {
-        for (auto c : mChildren) 
+        for (auto c : mChildren)
         {
             Vector2i pref = c->preferredSize(ctx), fix = c->fixedSize();
             c->setSize(fix.x() ? fix.x() : pref.x(),

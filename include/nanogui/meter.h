@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT Meter : public Widget
 {
-public: 
+public:
   enum ErrorCode {MaxValueError=1,MinValueError,ThresholdError,TargetError,PrecisionError,ColorError,UnitsEmpty,OutOfRange};
   Meter(Widget *parent);
   double value() const { return m_value; }
@@ -34,20 +34,20 @@ public:
 public:
 
   void setValue(double);
-  void setValue(int);  
+  void setValue(int);
   void setMinValue(double);
-  void setMinValue(int);  
-  void setMaxValue(double);  
-  void setMaxValue(int);    
+  void setMinValue(int);
+  void setMaxValue(double);
+  void setMaxValue(int);
   void setThreshold(double);
-  void setThreshold(int);    
+  void setThreshold(int);
   void setPrecision(int);
-  void setPrecisionNumeric(int);    
+  void setPrecisionNumeric(int);
   void setUnits(std::string);
   void setLabel(std::string);
-  void setSteps(int);  
-  void setStartAngle(double);  
-  void setEndAngle(double);  
+  void setSteps(int);
+  void setStartAngle(double);
+  void setEndAngle(double);
   void setForeground(const Color&);
   void setBackground(const Color&);
   void setThresholdEnabled(bool);
@@ -77,7 +77,7 @@ protected:
     Vector2i mValueTextRealSize;
     Vector2i mLabelTextRealSize;
     void thresholdManager();
-    void draw(NVGcontext *event) override;        
+    void draw(NVGcontext *event) override;
     void drawCrown(NVGcontext *painter);
     void drawBackground(NVGcontext *painter);
     void drawTicks(NVGcontext *painter);
@@ -90,7 +90,7 @@ protected:
     void drawLabel(NVGcontext *painter);
     void drawValidWindow(NVGcontext *painter);
     void drawWarningWindow(NVGcontext *painter);
-    
+
     std::string m_units;
     std::string m_label;
     std::string m_value_text;
@@ -99,7 +99,7 @@ protected:
     double m_threshold;
     bool m_thresholdFlag;
     bool m_enableValidWindow;
-    double m_beginValidValue, m_endValidValue;    
+    double m_beginValidValue, m_endValidValue;
     bool m_enableWarningWindow;
     double m_beginWarningValue, m_endWarningValue;
     bool m_thresholdEnabled;

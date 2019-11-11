@@ -204,7 +204,7 @@ public:
 class NANOGUI_EXPORT LedButton : public Button
 {
 public:
-  enum Mode { circleCustom=0, rectCustom, triangleCustom, roundrectCustom, 
+  enum Mode { circleCustom=0, rectCustom, triangleCustom, roundrectCustom,
               circleBlack, circleBlue, circleGreen, circleGray, circleOrange, circleRed, circleYellow, circlePurple
   };
   LedButton(Widget* parent, Mode mode = circleBlack, int w = 40, int h = 40);

@@ -62,7 +62,7 @@ public:
     int icon = -1,
     int imageIndex = -1,
     int selectedImageIndex = -1,
-    void* data = nullptr) 
+    void* data = nullptr)
   { return addNodeBack(text, icon, imageIndex, selectedImageIndex, data); }
 
 
@@ -152,7 +152,7 @@ private:
   int  mImageIndex;
   int  SelectedImageIndex;
   void*  Data;
-  bool mExpanded;  
+  bool mExpanded;
   NodeList mNodeChildren;
   std::string mActiveFont;
 

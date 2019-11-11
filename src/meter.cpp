@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(nanogui)
 Meter::Meter(Widget *parent)
     : Widget(parent)
 {
-   m_precision=0;  
+   m_precision=0;
    m_steps=10;
    m_thresholdFlag=false;
 
@@ -42,18 +42,18 @@ void Meter::setValue(double value)
       if (onError)
         onError(OutOfRange);
     }
-    else  
+    else
       if(value<m_minValue)
       {
-        m_value=m_minValue;  
+        m_value=m_minValue;
         if (onError)
-          onError(OutOfRange);  
+          onError(OutOfRange);
       }
-      else      
+      else
           m_value=value;
 
     if(m_thresholdEnabled)
-     thresholdManager();    
+     thresholdManager();
 }
 
 void Meter::setValue(int value)
@@ -81,7 +81,7 @@ void Meter::setMaxValue(double value)
   {
     if (onError)
       onError(MaxValueError);
-  } 
+  }
 }
 
 void Meter::setMaxValue(int value)
@@ -191,14 +191,14 @@ void Meter::thresholdManager()
   {
     m_thresholdFlag=true;
     if (onTreshold)
-      onTreshold(m_thresholdFlag);    
+      onTreshold(m_thresholdFlag);
   }
   else if(m_value < m_threshold && m_thresholdFlag)
   {
     m_thresholdFlag=false;
     if (onTreshold)
-      onTreshold(m_thresholdFlag);    
-  }    
+      onTreshold(m_thresholdFlag);
+  }
 }
 
 void Meter::setThresholdEnabled(bool enable)
@@ -257,7 +257,7 @@ void Meter::drawCrown(NVGcontext *ctx)
 
   int startAngle = 0;
   int spanAngle = 360;
-  auto g = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x() + mSize.x(), mPos.y() + mSize.y(), 
+  auto g = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x() + mSize.x(), mPos.y() + mSize.y(),
                                   Color(0xff, 0xff, 0xff, 0xff), Color(60,60,60,250));
   nvgStrokeWidth(ctx, 6);
 
@@ -328,8 +328,8 @@ void Meter::drawScale(NVGcontext *ctx)
   for (int i = 0; i <= m_steps; i++)
   {
     float ax = sin(deg2rad(m_startAngle + angleStep * i)) * r1;
-    float ay = cos(deg2rad(m_startAngle + angleStep * i)) * r1;  
-    
+    float ay = cos(deg2rad(m_startAngle + angleStep * i)) * r1;
+
     double tmpVal=i*((m_maxValue-m_minValue)/m_steps);
 
     tmpVal += m_minValue;
@@ -339,7 +339,7 @@ void Meter::drawScale(NVGcontext *ctx)
     int w = nvgTextBounds(ctx, 0, 0, str.c_str(), nullptr, nullptr) + 2;
 
     nvgText(ctx, center.x() + ax - w/2, center.y() + ay - h/2, str.c_str(), nullptr);
-  }   
+  }
 }
 
 void Meter::drawUnits(NVGcontext *ctx)
@@ -398,10 +398,10 @@ float cosdr(float angle, float r) { return cos(deg2rad(angle)) * r; }
 void Meter::drawNeedle(NVGcontext *ctx)
 {
   nvgSave(ctx);
- 
+
   int degRotate=0;
-  degRotate = (int)( m_startAngle+(m_endAngle-m_startAngle)/(m_maxValue-m_minValue)*(m_value-m_minValue) );  
-   
+  degRotate = (int)( m_startAngle+(m_endAngle-m_startAngle)/(m_maxValue-m_minValue)*(m_value-m_minValue) );
+
   Vector2i c = mPos + mSize / 2;
   int w = std::min<int>(width(), height());
 
@@ -429,8 +429,8 @@ void Meter::drawNeedle(NVGcontext *ctx)
 
   //draw needle hat
   nvgBeginPath(ctx);
-  auto linearGrad = nvgLinearGradient(ctx, c.x() - 0.07 * w, c.y() - 0.07 * w, 
-                                           c.x() + 0.14 * w, c.y() + 0.14 * w, 
+  auto linearGrad = nvgLinearGradient(ctx, c.x() - 0.07 * w, c.y() - 0.07 * w,
+                                           c.x() + 0.14 * w, c.y() + 0.14 * w,
                                            Color(0xff, 0xff, 0xff, 0xff), Color(0, 0, 0, 0xff));
   nvgFillPaint(ctx, linearGrad);
   nvgEllipse(ctx, c.x() + 0, c.y() + 0, 0.07 * w, 0.07 * w);

@@ -31,7 +31,7 @@ public:
   bool checked() const { return mChecked; }
   bool checkable() const { return mCheckable; }
   bool toggle() { if (mCheckable) mChecked = !mChecked; return mChecked; }
-  
+
 private:
   std::string mShortcut;
   bool mChecked = false;
@@ -157,7 +157,7 @@ protected:
     void deactivateSubmenu();
     /// Remove the context menu and all submenus from their parent widget.
     void dispose();
-    
+
     Widget *mItemContainer;
     AdvancedGridLayout *mItemLayout = nullptr;
     std::unordered_map<std::string, std::function<void()>> mItems;

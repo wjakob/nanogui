@@ -9,7 +9,7 @@ Spinner::Spinner(Widget* parent)
 
 }
 
-Vector2i Spinner::preferredSize(NVGcontext *ctx) const 
+Vector2i Spinner::preferredSize(NVGcontext *ctx) const
 {
   const Vector2i& ps = parent()->size();
   const Vector2i& fs = fixedSize();

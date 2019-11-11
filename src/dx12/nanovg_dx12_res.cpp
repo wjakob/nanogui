@@ -21,7 +21,7 @@
 #include "dx12_subset_resource.h"
 
 struct NVGvertex* D3Dnvg_beginVertexBuffer(D3DNVGcontext* D3D, unsigned int maxCount, unsigned int* baseOffset)
-{  
+{
   if (maxCount >= D3D->VertexBuffer.MaxBufferEntries)
   {
     D3Dnvg__checkError(E_FAIL, "Vertex buffer too small!");
@@ -31,19 +31,19 @@ struct NVGvertex* D3Dnvg_beginVertexBuffer(D3DNVGcontext* D3D, unsigned int maxC
   if ((D3D->VertexBuffer.CurrentBufferEntry + maxCount) >= D3D->VertexBuffer.MaxBufferEntries)
   {
     *baseOffset = 0;
-    D3D->VertexBuffer.CurrentBufferEntry = maxCount;    
+    D3D->VertexBuffer.CurrentBufferEntry = maxCount;
   }
   else
   {
     *baseOffset = D3D->VertexBuffer.CurrentBufferEntry;
-    D3D->VertexBuffer.CurrentBufferEntry = *baseOffset + maxCount;    
+    D3D->VertexBuffer.CurrentBufferEntry = *baseOffset + maxCount;
   }
   return ((struct NVGvertex*)D3D->VertexBuffer.pBuffer->MapWrite(*baseOffset* sizeof(NVGvertex), maxCount* sizeof(NVGvertex)));
 }
 
 void D3Dnvg_endVertexBuffer(struct D3DNVGcontext* D3D)
 {
-  
+
 }
 
 void D3Dnvg__copyVerts(struct NVGvertex* pDest, const struct NVGvertex* pSource, unsigned int num)
@@ -76,13 +76,13 @@ void D3Dnvg_buildFanIndices(D3DNVGcontext* D3D)
   UINT32 index2 = 2;
   UINT32 current = 0;
   UINT32* pIndices = (UINT32*)D3D->pFanIndexBuffer->MapWrite(0, sizeof(UINT32)* D3D->VertexBuffer.MaxBufferEntries);
-  
+
   while (current < (D3D->VertexBuffer.MaxBufferEntries - 3))
   {
     pIndices[current++] = index0;
     pIndices[current++] = index1++;
     pIndices[current++] = index2++;
-  }  
+  }
 }
 
 void D3Dnvg_setBuffers(struct D3DNVGcontext* D3D, unsigned int dynamicOffset)
@@ -93,7 +93,7 @@ void D3Dnvg_setBuffers(struct D3DNVGcontext* D3D, unsigned int dynamicOffset)
 }
 
 unsigned int D3Dnvg_updateVertexBuffer(D3DNVGBuffer* buffer, const struct NVGvertex* verts, unsigned int nverts)
-{  
+{
   unsigned int retEntry;
 
   if (nverts > buffer->MaxBufferEntries)
@@ -104,15 +104,15 @@ unsigned int D3Dnvg_updateVertexBuffer(D3DNVGBuffer* buffer, const struct NVGver
 
   if ((buffer->CurrentBufferEntry + nverts) >= buffer->MaxBufferEntries)
   {
-    buffer->CurrentBufferEntry = 0;    
+    buffer->CurrentBufferEntry = 0;
   }
-  
+
   D3Dnvg__copyVerts(
     (NVGvertex*)buffer->pBuffer->MapWrite(buffer->CurrentBufferEntry * sizeof(NVGvertex), nverts * sizeof(NVGvertex)),
-    (const struct NVGvertex*)verts, 
+    (const struct NVGvertex*)verts,
     nverts
   );
-  
+
   retEntry = buffer->CurrentBufferEntry;
   buffer->CurrentBufferEntry += nverts;
   return retEntry;
@@ -121,10 +121,10 @@ unsigned int D3Dnvg_updateVertexBuffer(D3DNVGBuffer* buffer, const struct NVGver
 void D3Dnvg__setUniforms(struct D3DNVGcontext* D3D, int uniformOffset, int image)
 {
   struct D3DNVGfragUniforms* frag = nvg__fragUniformPtr(D3D, uniformOffset);
-  
-  // Pixel shader constants  
+
+  // Pixel shader constants
   memcpy(D3D->pPSConstants->MapWrite(0, sizeof(struct D3DNVGfragUniforms)), frag, sizeof(struct D3DNVGfragUniforms));
-    
+
   if (image != 0)
   {
     //megai2: this is not optimal
@@ -152,7 +152,7 @@ int D3Dnvg__deleteTexture(D3DNVGcontext* D3D, int id)
     if (D3D->textures[i].id == id) {
       if (D3D->textures[i].tex != 0 && (D3D->textures[i].flags & NVG_IMAGE_NODELETE) == 0)
       {
-        D3D->textures[i].tex->ModRef(-1);        
+        D3D->textures[i].tex->ModRef(-1);
       }
       memset(&D3D->textures[i], 0, sizeof(D3D->textures[i]));
       return 1;

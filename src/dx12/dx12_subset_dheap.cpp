@@ -31,7 +31,7 @@ static const D3D12_DESCRIPTOR_HEAP_DESC dx12_heap_config[DX12_SUBSET_DHEAP_MAX] 
   { D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024*64, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0 }
 };
 
-dx12_subset_dheap::dx12_subset_dheap(dx12_subset* dev, UINT idx) 
+dx12_subset_dheap::dx12_subset_dheap(dx12_subset* dev, UINT idx)
 {
   dx12 = dev;
   const D3D12_DESCRIPTOR_HEAP_DESC* desc = &dx12_heap_config[idx];
@@ -246,7 +246,7 @@ UINT dx12_subset_dheap::CreateSRV_at(ID3D12Resource* resource, D3D12_SHADER_RESO
 
 dx12_subset_dheap_slot_stack::dx12_subset_dheap_slot_stack(UINT32 size)
 {
-  data = (dx12_subset_dheap_slot_type*)malloc(size * sizeof(dx12_subset_dheap_slot_type));  
+  data = (dx12_subset_dheap_slot_type*)malloc(size * sizeof(dx12_subset_dheap_slot_type));
   top = 0;
 }
 
@@ -268,9 +268,9 @@ dx12_subset_dheap_slot_type dx12_subset_dheap_slot_stack::Pop()
   LONG idx = --top;
 
   if (idx < 0)
-  {    
+  {
     printf("dx12 backend: out of dheap slots");
-    abort();    
+    abort();
   }
   else
     ret = data[idx];

@@ -59,7 +59,7 @@ Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
 }
 
 bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
-                            int button, int modifiers) 
+                            int button, int modifiers)
 {
     mLastMousePos = p - mPos;
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
@@ -133,18 +133,18 @@ void VScrollPanel::draw(NVGcontext *ctx) {
                         mPos.y() + mSliderMargin * 2 + 1 + (mSize.y() - getSliderWidth() - scrollh) * mScroll, //y:y
                         getSliderWidth() - mSliderMargin,   //z:width
                         scrollh - 2); //w:height
-    bool isSliderSelected = (mLastMousePos.x() >= rectSlider.x() 
+    bool isSliderSelected = (mLastMousePos.x() >= rectSlider.x()
                              && mLastMousePos.y() >= rectSlider.y()
-                             && mLastMousePos.x() < rectSlider.x() + rectSlider.z() 
+                             && mLastMousePos.x() < rectSlider.x() + rectSlider.z()
                              && mLastMousePos.y() < rectSlider.y() + rectSlider.w());
-    Color sliderColor = isSliderSelected 
+    Color sliderColor = isSliderSelected
                               ? (mSliderActiveColor.w() > 0 ? mSliderActiveColor : mTheme->mScrollBarActiveColor)
                               : (mSliderInactiveColor.w() > 0 ? mSliderInactiveColor : mTheme->mScrollBarInactiveColor);
     Color sliderSupColor = sliderColor;
     sliderSupColor /= 2;
     sliderSupColor.w() = sliderColor.w();
 
-    paint = nvgBoxGradient( ctx, 
+    paint = nvgBoxGradient( ctx,
                             mPos.x() + mSize.x() - getSliderAreaWidth() - 1, mPos.y() + mSliderMargin * 2 + (mSize.y() - getSliderWidth() - scrollh) * mScroll - 1,
                             getSliderWidth(), scrollh,
                             3, 4, sliderColor, sliderSupColor);

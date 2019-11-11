@@ -98,7 +98,7 @@ enum D3DNVGshaderType {
 
 typedef struct D3DNVGtexture {
     int id;
-    dx12_subset_resource* tex;  
+    dx12_subset_resource* tex;
     int width, height;
     int type;
     int flags;
@@ -135,7 +135,7 @@ typedef struct D3DNVGBuffer {
     dx12_subset_resource* pBuffer;
 } D3DNVGBuffer;
 
-typedef struct D3DNVGcontext {    
+typedef struct D3DNVGcontext {
     struct D3DNVGtexture* textures;
     float view[2];
     int ntextures;
@@ -170,7 +170,7 @@ typedef struct D3DNVGcontext {
     dx12_subset_resource* pVSConstants;
   dx12_subset_resource* pPSConstants;
 
-    dx12_subset* dx12;    
+    dx12_subset* dx12;
 } D3DNVGcontext;
 
 //util functions

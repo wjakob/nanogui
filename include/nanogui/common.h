@@ -302,7 +302,7 @@ public:
      */
     Color(float r, float g, float b, float a) : Color(Vector4f(r, g, b, a)) { }
 
-    Color(int rgba) 
+    Color(int rgba)
       : Color((rgba >> 24) & 0xff, (rgba >> 16) & 0xff, (rgba >> 8) & 0xff, rgba & 0xff) {}
 
     /**
@@ -594,7 +594,7 @@ extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
 #define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)
-template<typename T> T 
+template<typename T> T
 clamp(const T& val, const T& min, const T& max) { return val < min ? min : (val > max ? max : val); }
 
 inline Vector2i NANOGUI_EXPORT rect_center(const Vector4i& r) { return Vector2i((r.z() + r.x()) / 2, (r.w() + r.y()) / 2); }
@@ -602,7 +602,7 @@ inline Vector2i NANOGUI_EXPORT rect_center(const Vector4i& r) { return Vector2i(
 /// Helper function used by nvgImageIcon
 extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 
-// Measures the specified text string height. 
+// Measures the specified text string height.
 // Returns the vertical advance of the measured text (i.e. where the next character should drawn).
 // Measured values are returned in local coordinate space.
 extern NANOGUI_EXPORT float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);

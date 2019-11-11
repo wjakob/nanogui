@@ -47,7 +47,7 @@ Vector2i SwitchBox::preferredSize(NVGcontext *ctx) const {
     }
 }
 
-void SwitchBox::draw(NVGcontext *ctx) 
+void SwitchBox::draw(NVGcontext *ctx)
 {
   if (mChecked)
   {

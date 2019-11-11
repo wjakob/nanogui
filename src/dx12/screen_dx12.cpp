@@ -64,7 +64,7 @@ BOOL InitializeDX(void* window, unsigned int x, unsigned int y)
 
 // Frees everything
 void UnInitializeDX()
-{  
+{
   pDX12.deinit();
 }
 
@@ -132,24 +132,24 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mHwWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
-      mShutdownOnDestruct(false), mFullscreen(fullscreen) 
+      mShutdownOnDestruct(false), mFullscreen(fullscreen)
 {
     //memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
     RECT rcWin;
 
     if (fullscreen) {
         //???
-    } else {       
+    } else {
         rcWin.left = 0;
         rcWin.right = size.x();
         rcWin.top = 0;
         rcWin.bottom = size.y();
-      
+
         AdjustWindowRectEx(&rcWin, WS_OVERLAPPEDWINDOW, FALSE, 0);
-        
+
         rcWin.right += -rcWin.left;
         rcWin.bottom += -rcWin.top;
-      
+
         mHwWindow = (void*)CreateWindowEx(0, pszWindowClass, (caption + " (DX12)").c_str(), WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, (int)rcWin.right, (int)rcWin.bottom, NULL, NULL, hInstance, NULL);
     }
@@ -253,7 +253,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
             // focused: 0 when false, 1 when true
             s->focusEvent(focused != 0);
         }
-    ); 
+    );
 
     initialize(mHwWindow, true);
 }
@@ -300,7 +300,7 @@ void Screen::initialize(void *window, bool shutdownOnDestruct) {
         int ww = mSize.x() * mPixelRatio;
         int hh = mSize.y() * mPixelRatio;
         setWindowSize((HWND)window, ww, hh);
-    }    
+    }
 
     int flags = 0;
    // if (nStencilBits >= 8)
@@ -376,7 +376,7 @@ void Screen::drawAll() {
     return;
 
     clearDxContext();
- 
+
     drawContents();
     drawWidgets();
 

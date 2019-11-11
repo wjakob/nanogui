@@ -18,8 +18,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 ScrollBar::ScrollBar(Widget *parent, Alignment align)
-    : Widget(parent), 
-      mSliderPreferredSide(1), 
+    : Widget(parent),
+      mSliderPreferredSide(1),
       mScroll(0.0f),
       mAlign(align)
 {}
@@ -55,13 +55,13 @@ Vector2i ScrollBar::preferredSize(NVGcontext *ctx) const {
   {
     return Vector2i(12, parent()->height());
   }
-  else 
+  else
     return Vector2i(parent()->width(), 12);
 }
 
 bool ScrollBar::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
                                 int button, int modifiers) {
-  if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight) 
+  if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight)
   {
     if (mSliderPreferredSide > mSize.y()) {
       float scrollh = height() * std::min(1.0f, height() / (float)mSliderPreferredSide);
@@ -83,7 +83,7 @@ bool ScrollBar::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
       return true;
     }
   }
-  else 
+  else
   {
     return Widget::mouseDragEvent(p, rel, button, modifiers);
   }
@@ -116,7 +116,7 @@ bool ScrollBar::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     }
     return true;
   }
-  else 
+  else
   {
     return Widget::scrollEvent(p, rel);
   }
@@ -133,7 +133,7 @@ void ScrollBar::draw(NVGcontext *ctx) {
     int ww = mAlign == Alignment::VerticalLeft ? 0 : mSize.x();
     int wx = mAlign == Alignment::VerticalLeft ? 0 : 12;
     int dx = mAlign == Alignment::VerticalLeft ? -2 : 0;
-    NVGpaint paint = nvgBoxGradient( ctx, mPos.x() + ww - wx + 1, mPos.y() + 4 + 1, 8, mSize.y() - 8, 
+    NVGpaint paint = nvgBoxGradient( ctx, mPos.x() + ww - wx + 1, mPos.y() + 4 + 1, 8, mSize.y() - 8,
                                      3, 4, Color(0, 32), Color(0, 92));
     //body
     nvgBeginPath(ctx);
@@ -168,7 +168,7 @@ void ScrollBar::draw(NVGcontext *ctx) {
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 
-    paint = nvgBoxGradient(ctx, mPos.x() + 4 + (mSize.x() - 8 - scrollw) * mScroll - 1, 
+    paint = nvgBoxGradient(ctx, mPos.x() + 4 + (mSize.x() - 8 - scrollw) * mScroll - 1,
                                 mPos.y() + mSize.y() - 12 - 1, scrollw, 9,
                            3, 4, Color(220, 100), Color(128, 100));
 

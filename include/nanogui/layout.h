@@ -247,10 +247,10 @@ protected:
  * specified per axis. The horizontal/vertical alignment can be specified per
  * row and column.
  */
-struct NANOGUI_EXPORT ColumnsAligment { 
-  std::vector<Alignment> value; 
-  ColumnsAligment(std::initializer_list<Alignment> l) 
-  { for (auto& a: l) value.push_back(a); }; 
+struct NANOGUI_EXPORT ColumnsAligment {
+  std::vector<Alignment> value;
+  ColumnsAligment(std::initializer_list<Alignment> l)
+  { for (auto& a: l) value.push_back(a); };
 };
 
 class NANOGUI_EXPORT GridLayout : public Layout {

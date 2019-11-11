@@ -26,7 +26,7 @@ public:
   DropdownListItem(Widget* parent, const std::string& str, bool inlist=true)
     : Button(parent, str), mInlist(inlist) {}
 
-  void draw(NVGcontext *ctx) override 
+  void draw(NVGcontext *ctx) override
   {
     if (!mInlist)
     {
@@ -169,7 +169,7 @@ public:
     nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
     nvgFillColor(ctx, textColor);
     nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
-    
+
     //Widget::draw(ctx);
   }
 };
@@ -226,7 +226,7 @@ public:
   }
 
   float path = 0.f;
-  
+
   void draw(NVGcontext* ctx) override
   {
     refreshRelativePlacement();
@@ -281,7 +281,7 @@ public:
   }
 };
 
-DropdownBox::DropdownBox(Widget *parent) 
+DropdownBox::DropdownBox(Widget *parent)
   : PopupButton(parent)
 {
   mSelectedIndex = 0;
@@ -332,10 +332,10 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
     mItemsShort = itemsShort;
     if (mSelectedIndex < 0 || mSelectedIndex >= (int) items.size())
         mSelectedIndex = 0;
-    
+
     while (mPopup->childCount() != 0)
       mPopup->removeChild(mPopup->childCount() - 1);
-   
+
     mPopup->setLayout(new GroupLayout(0,0,0,0));
     if (!items.empty())
     {
@@ -360,7 +360,7 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
     setSelectedIndex(mSelectedIndex);
 }
 
-bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
+bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
 {
   if (isMouseButtonLeft(button) && mEnabled) {
     if (!mItems.empty())

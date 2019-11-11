@@ -482,7 +482,7 @@ public:
     template<typename... Args>ColorPicker& colorpicker(const Args&... args) { return wdg<ColorPicker>(args...); }
     template<typename... Args>Graph& graph(const Args&... args) { return wdg<Graph>(args...); }
     template<typename... Args>TreeView& treeview(const Args&... args) { return wdg<TreeView>(args...); }
-    
+
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();

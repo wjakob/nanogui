@@ -20,8 +20,8 @@
 #include "../../include/nanogui/nanovg_d3d12.h"
 
 int D3Dnvg__maxi(int a, int b)
-{ 
-  return a > b ? a : b; 
+{
+  return a > b ? a : b;
 }
 
 void D3Dnvg_copyMatrix3to4(float* pDest, const float* pSource)

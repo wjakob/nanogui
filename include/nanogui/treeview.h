@@ -14,7 +14,7 @@ class NANOGUI_EXPORT TreeView : public Widget
 public:
     explicit TreeView( Widget* parent,
         bool clip = true,
-        bool drawBack = true, bool scrollBarVertical = true, 
+        bool drawBack = true, bool scrollBarVertical = true,
         bool scrollBarHorizontal = true );
 
     using Widget::set;
@@ -29,14 +29,14 @@ public:
     void setSelected(TreeViewItem* item) { mSelected = item; }
     bool getLinesVisible() const { return mLinesVisible; }
     void setLinesVisible( bool visible ) { mLinesVisible = visible; }
-     
+
     void draw(NVGcontext* ctx) override;
     void afterDraw(NVGcontext* ctx) override;
-    
+
     void setImageLeftOfIcon( bool bLeftOf );
     bool getImageLeftOfIcon() const;
     TreeViewItem* getLastEventNode() const;
-    void updateItems(); 
+    void updateItems();
 
     bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;

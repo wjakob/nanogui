@@ -29,7 +29,7 @@ class NANOGUI_EXPORT Label : public Widget {
 public:
     enum TextState { tEnabled=0, tDisabled };
     Label(Widget* parent);
-    
+
     using Widget::set;
     template<typename... Args>
     Label(Widget* parent, const Args&... args)

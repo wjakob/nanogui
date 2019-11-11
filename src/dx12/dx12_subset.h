@@ -56,7 +56,7 @@ typedef struct dx12_cmd_list {
 #ifdef _DEBUG_DX12
   #define LOG_DBG_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
 #else
-  #define LOG_DBG_DTDM2(...) 
+  #define LOG_DBG_DTDM2(...)
 #endif
 
 #ifdef _ENABLE_DX12_LOGGING
@@ -64,8 +64,8 @@ typedef struct dx12_cmd_list {
   #define LOG_INFO_DTDM(...) printf(__VA_ARGS__); printf("\r\n")
   #define LOG_INFO_DTDM2(...) printf(__VA_ARGS__); printf("\r\n")
 #else
-  #define LOG_WARN_DTDM(...) 
-  #define LOG_INFO_DTDM(...) 
+  #define LOG_WARN_DTDM(...)
+  #define LOG_INFO_DTDM(...)
   #define LOG_INFO_DTDM2(...)
 #endif
 
@@ -106,11 +106,11 @@ public:
 
   void init(HWND window, int w, int h);
   void deinit();
-  
+
   void set_size(int w, int h);
 
   void fr_start();
-  void fr_end();  
+  void fr_end();
 
   void ThrowError(HRESULT hr, const char * msg);
 
@@ -126,13 +126,13 @@ public:
   UINT32 isRunning;
 
   dx12_subset_resource* GetUploadBuffer(unsigned int space, UINT64* offset, UINT32 align);
-  
+
   void ReleaseAfterFrameEnd(IUnknown* obj);
 
   dx12_subset_dheap* CurrentDHeap(int idx);
 
   void UseSamplerAtRSIG(int rsigIdx, int samplerDHslot);
-       
+
 private:
   ComPtr<ID3D12Device> SelectSutiableGPU();
   void InitCL();
@@ -142,11 +142,11 @@ private:
   void ResizeFrResources();
   void WaitForGPU();
   void ReleaseAfterFrameObjects();
-  
+
   //dxgi
   void dxgi_setup();
   void dxgi_present();
-  void dxgi_present_w7();  
+  void dxgi_present_w7();
   void dxgi_error();
   void dxgi_resize();
 
@@ -155,7 +155,7 @@ private:
   void (dx12_subset::*dxgi_handlers[dxgi_state_count])();
 
   void CopyFrameToDXGI();
-    
+
   IDXGISwapChain3* dxgi_sc;
   HWND dxgi_win;
   int dxgi_state;
@@ -174,18 +174,18 @@ private:
 
   //upload buffer managment
   void SwapUploadBuffer();
-  dx12_subset_resource* uploadBuffer[2];  
+  dx12_subset_resource* uploadBuffer[2];
   unsigned int uploadBufferPos;
   unsigned int uploadBufferSize[2];
   int uploadBufferIdx = 0;
-  
 
-  //dx12 objects  
-  ID3D12CommandQueue* cmdQue;  
+
+  //dx12 objects
+  ID3D12CommandQueue* cmdQue;
   ID3D12Fence* fence;
   HANDLE fenceEvent;
   UINT64 fenceId;
-  UINT32 gpuWorkIssued;  
+  UINT32 gpuWorkIssued;
 
   dx12_subset_dheap* dHeaps[4];
 
@@ -193,7 +193,7 @@ private:
   dx12_cmd_list* cl_buffer_seek;
 
   dx12_cmd_list* cl_stack_buffer[10];
-  dx12_cmd_list** cl_stack;  
+  dx12_cmd_list** cl_stack;
 
   dx12_cmd_list* cl_cleanup_stack_buffer[10];
   dx12_cmd_list** cl_cleanup_stack;
@@ -201,7 +201,7 @@ private:
   dx12_dynamic_imports imports;
 
   //w7 port
-  ID3D12CommandQueueDownlevel* w7_cq;    
+  ID3D12CommandQueueDownlevel* w7_cq;
 
   //ppso & rsig lib
 

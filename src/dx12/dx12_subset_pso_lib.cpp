@@ -45,14 +45,14 @@ void dx12_subset::InitPPSOLib()
   const D3D12_RASTERIZER_DESC RSCull = { D3D12_FILL_MODE_SOLID, D3D12_CULL_MODE_BACK, TRUE, 0.0f, 0.0f, TRUE, 0, 0, 0, D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF };
 
   D3D12_RENDER_TARGET_BLEND_DESC rtBSnull = { 0 };
-  D3D12_RENDER_TARGET_BLEND_DESC rtBSBlend = 
-    { 
-      TRUE, FALSE, 
-      D3D12_BLEND_ONE, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD, 
-      D3D12_BLEND_ONE, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD, 
-      D3D12_LOGIC_OP_NOOP, D3D12_COLOR_WRITE_ENABLE_ALL 
+  D3D12_RENDER_TARGET_BLEND_DESC rtBSBlend =
+    {
+      TRUE, FALSE,
+      D3D12_BLEND_ONE, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD,
+      D3D12_BLEND_ONE, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD,
+      D3D12_LOGIC_OP_NOOP, D3D12_COLOR_WRITE_ENABLE_ALL
     };
-  D3D12_RENDER_TARGET_BLEND_DESC rtBSNoWrite = 
+  D3D12_RENDER_TARGET_BLEND_DESC rtBSNoWrite =
     {
       FALSE, FALSE,
       D3D12_BLEND_ONE, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD,
@@ -108,8 +108,8 @@ void dx12_subset::InitPPSOLib()
 
   D3D12_GRAPHICS_PIPELINE_STATE_DESC cDscBase;
   ZeroMemory(&cDscBase, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-  
-  {    
+
+  {
     cDscBase.pRootSignature = RootSigArr[0];
     cDscBase.NumRenderTargets = 1;
     cDscBase.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -117,11 +117,11 @@ void dx12_subset::InitPPSOLib()
     cDscBase.SampleDesc.Count = 1;
     cDscBase.SampleDesc.Quality = 0;
     cDscBase.SampleMask = 0xFFFFFFFF;
-    
+
     cDscBase.GS.pShaderBytecode = NULL;
     cDscBase.DS.pShaderBytecode = NULL;
     cDscBase.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    
+
     cDscBase.PS.BytecodeLength = sizeof(g_D3D12PixelShader_Main);
     cDscBase.PS.pShaderBytecode = g_D3D12PixelShader_Main;
 
@@ -130,7 +130,7 @@ void dx12_subset::InitPPSOLib()
 
     cDscBase.InputLayout.NumElements = 2;
     cDscBase.InputLayout.pInputElementDescs = LayoutRenderTriangles;
-    
+
     //dev->CreateGraphicsPipelineState(&cDscBase, IID_PPV_ARGS(&PPSOArr[0]));
 
     //DX12_SUBSET_PPSO_DEF_Def_Blend_Cull
@@ -265,7 +265,7 @@ void dx12_subset::InitRootSigs()
   //rsig 0 - default
   {
     D3D12_DESCRIPTOR_RANGE ranges[2];
-    
+
     ranges[0].BaseShaderRegister = 0;
     ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     ranges[0].NumDescriptors = 1;
@@ -305,7 +305,7 @@ void dx12_subset::InitRootSigs()
     rootSignatureDesc.pParameters = rootParameters;
     rootSignatureDesc.pStaticSamplers = 0;
 
-    RootSigArr[0] = ConstructRootSignature(&rootSignatureDesc);    
+    RootSigArr[0] = ConstructRootSignature(&rootSignatureDesc);
   }
 }
 

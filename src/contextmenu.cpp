@@ -237,7 +237,7 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::string& short
 }
 
 void ContextMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
-{  
+{
   auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
   mLabels[name] = &lbl;
   if (value != nullptr)
@@ -273,7 +273,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     submenu.mRootMenu = mRootMenu ? mRootMenu : this;
     auto& lbl1 = mItemContainer->wdg<ContextMenuLabel>(name);
     auto& lbl2 = mItemContainer->wdg<Label>(Caption{ utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data() }, CaptionFont{ "icons" });
-    
+
     lbl1.setFontSize(fontSize());
     lbl1.setHeight(lbl1.fontSize() * 2);
     lbl2.setFontSize(fontSize());
@@ -347,12 +347,12 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
             if (isRowSelected_(w.first, mousePos) && !_isSubMenu(w.first)) {
                 std::function<void()> callback;
                 if (mLabels[w.first]->checkable())
-                  callback = [lbCallback = mChItems[w.first], checked = mLabels[w.first]->checked()]() { 
+                  callback = [lbCallback = mChItems[w.first], checked = mLabels[w.first]->checked()]() {
                     if (lbCallback) lbCallback(!checked);
                   };
-                else 
+                else
                   callback = mItems[w.first];
-                
+
                 if (mRootMenu)
                     mRootMenu->deactivate();
                 else
@@ -424,9 +424,9 @@ bool ContextMenu::focusEvent(bool focused) {
     return true;
 }
 
-Vector2i ContextMenu::minSize() const { 
+Vector2i ContextMenu::minSize() const {
   Vector2i ret = mMinSize;
-  ret.x() = std::max(mMinSize.x(), mTheme->mContextMenuMinWidth); 
+  ret.x() = std::max(mMinSize.x(), mTheme->mContextMenuMinWidth);
   return ret;
 }
 

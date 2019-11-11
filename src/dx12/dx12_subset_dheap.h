@@ -42,7 +42,7 @@ public:
 private:
 
   dx12_subset_dheap_slot_type* data;
-  LONG top;  
+  LONG top;
 };
 
 #define DX12_SUBSET_DHEAP_STACK_FREE 0
@@ -57,7 +57,7 @@ private:
 
 #define FRAME_METRIC_DHEAP(...)
 
-class dx12_subset_dheap 
+class dx12_subset_dheap
 {
 public:
   dx12_subset_dheap(dx12_subset* dev, UINT idx);

@@ -147,7 +147,7 @@ protected:
     double mLastClick;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    
+
     PROPSETTER(IsSpinnable,setSpinnable)
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)

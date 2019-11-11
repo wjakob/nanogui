@@ -90,15 +90,15 @@ void PropertiesEditor::parse(Widget* w)
         auto& ex = grid.intbox<int>(InitialValue{ (float)jval.get_int("x") });
         ex.setCallback([&](int v) { jval.set_int("x", v); updateAttribs(); });
         ex.setEditCallback( [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
-        ex.setEditable(true); 
-        ex.setSize(ww, hh); 
+        ex.setEditable(true);
+        ex.setSize(ww, hh);
         ex.setFixedSize({ ww, hh });
         grid.label("");
         auto& ey = grid.intbox<int>(InitialValue{ (float)jval.get_int("y") });
         ey.setCallback([&](int v) { jval.set_int("y", v); updateAttribs(); });
         ey.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
-        ey.setEditable(true); 
-        ey.setSize(ww, hh); 
+        ey.setEditable(true);
+        ey.setSize(ww, hh);
         ey.setFixedSize({ ww, hh });
       }
       else if (typevalue == "size")
@@ -106,21 +106,21 @@ void PropertiesEditor::parse(Widget* w)
         auto& ew = grid.intbox<int>(InitialValue{ (float)jval.get_int("w") });
         ew.setCallback([&](int v) { jval.set_int("w", v); updateAttribs(); });
         ew.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
-        ew.setEditable(true); 
-        ew.setSize(ww, hh); 
+        ew.setEditable(true);
+        ew.setSize(ww, hh);
         ew.setFixedSize({ ww, hh });
         grid.label("");
         auto& eh = grid.intbox<int>(InitialValue{ (float)jval.get_int("h") });
         eh.setCallback([&](int v) { jval.set_int("h", v); updateAttribs(); });
         eh.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
-        eh.setEditable(true); 
-        eh.setSize(ww, hh); 
+        eh.setEditable(true);
+        eh.setSize(ww, hh);
         eh.setFixedSize({ ww, hh });
       }
       else if (typevalue == "boolean")
       {
         auto& ch = grid.checkbox("", [&](bool v) { jval.set_bool("value", v); updateAttribs(); });
-        ch.setSize(ww, hh); 
+        ch.setSize(ww, hh);
         ch.setFixedSize({ ww, hh });
         ch.setChecked(jval.get_bool("value"));
       }
@@ -128,8 +128,8 @@ void PropertiesEditor::parse(Widget* w)
       {
         auto& e = grid.intbox<int>(InitialValue{ (float)jval.get_int("value") });
         e.setCallback([&](int v) { jval.set_int("value", v); updateAttribs(); });
-        e.setEditable(true); 
-        e.setSize(ww, hh); 
+        e.setEditable(true);
+        e.setSize(ww, hh);
         e.setFixedSize({ ww, hh });
       }
       else if (typevalue == "string")
@@ -137,7 +137,7 @@ void PropertiesEditor::parse(Widget* w)
         auto& e = grid.wdg<TextBox>(TextValue{ jval.get_str("value") });
         e.setCallback([&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; });
         e.setEditCallback([&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
-        e.setEditable(true); 
+        e.setEditable(true);
         e.setSize(ww, hh);
         e.setFixedSize({ ww, hh });
       }

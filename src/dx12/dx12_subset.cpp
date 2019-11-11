@@ -37,9 +37,9 @@ dx12_subset::dx12_subset()
   dxgi_handlers[dxgi_state_error] = &dx12_subset::dxgi_error;
   dxgi_handlers[dxgi_state_resize] = &dx12_subset::dxgi_resize;
   dxgi_handlers[dxgi_state_present_w7] = &dx12_subset::dxgi_present_w7;
-  uploadBuffer[0] = 0;  
+  uploadBuffer[0] = 0;
   uploadBufferSize[0] = 0;
-  uploadBuffer[1] = 0;  
+  uploadBuffer[1] = 0;
   uploadBufferSize[1] = 0;
   uploadBufferPos = 0;
   isRunning = 0;
@@ -66,7 +66,7 @@ void dx12_subset::init(HWND window, int w, int h)
 
   LOG_ERR_THROW2(dev->CreateCommandQueue(&desc, IID_PPV_ARGS(&cmdQue)), "can't create command queue on dx12 device");
 
-  //initial ul buffer  
+  //initial ul buffer
   for (int i = 0; i != 2; ++i)
   {
     uploadBufferSize[i] = 65535;
@@ -187,7 +187,7 @@ void dx12_subset::set_size(int w, int h)
 
   winH = h;
   winW = w;
-  dxgi_resize_query = 1;  
+  dxgi_resize_query = 1;
 }
 
 void dx12_subset::fr_start()
@@ -210,14 +210,14 @@ void dx12_subset::fr_start()
 
   D3D12_RECT scissor;
   scissor.bottom = winH;
-  scissor.top = 0;  
+  scissor.top = 0;
   scissor.right = winW;
   scissor.left = 0;
 
   frCl->cl->RSSetScissorRects(1, &scissor);
-  
+
   const ID3D12DescriptorHeap* dheapPtrArray[2];
-  
+
   for (int i = 0; i!=2;++i)
     dheapPtrArray[i] = dHeaps[i+2]->GetHeapObj();
 
@@ -243,12 +243,12 @@ void dx12_subset::fr_end()
   SwapUploadBuffer();
 
   WaitForGPU();
-  ReleaseAfterFrameObjects();  
+  ReleaseAfterFrameObjects();
 
   ExecuteCL(frCl);
 
   (this->*dxgi_handlers[dxgi_state])();
-  
+
   const UINT64 fenceVal = fenceId;
   LOG_ERR_THROW2(cmdQue->Signal(fence, fenceVal), "can't set signal on fence");
 }
@@ -257,7 +257,7 @@ dx12_subset_resource * dx12_subset::GetUploadBuffer(unsigned int space, UINT64 *
 {
   if (align && (uploadBufferPos & (align - 1)))
   {
-    uploadBufferPos = (uploadBufferPos & ~(align - 1)) + align;    
+    uploadBufferPos = (uploadBufferPos & ~(align - 1)) + align;
   }
 
   if (space >= (uploadBufferSize[uploadBufferIdx] - uploadBufferPos))
@@ -452,7 +452,7 @@ ComPtr<ID3D12Device> dx12_subset::SelectSutiableGPU()
     NewFilter.DenyList.NumSeverities = _countof(Severities);
     NewFilter.DenyList.pSeverityList = Severities;
     NewFilter.DenyList.NumIDs = _countof(DenyIds);
-    NewFilter.DenyList.pIDList = DenyIds;    
+    NewFilter.DenyList.pIDList = DenyIds;
   }
 #endif
 
@@ -476,14 +476,14 @@ void dx12_subset::InitCL()
 dx12_cmd_list * dx12_subset::GetUnusedCL()
 {
   --cl_stack;
-  dx12_cmd_list* ret = cl_stack[0];  
+  dx12_cmd_list* ret = cl_stack[0];
   return ret;
 }
 
 void dx12_subset::RecycleCL(dx12_cmd_list * cl)
 {
   cl->alc->Reset();
-  cl->cl->Reset(cl->alc, 0);  
+  cl->cl->Reset(cl->alc, 0);
 
   cl_stack[0] = cl;
   ++cl_stack;
@@ -581,7 +581,7 @@ void dx12_subset::dxgi_setup()
   swapChainDesc.Flags = 0;
 
   IDXGISwapChain1* dxgi_sc1 = 0;
-  
+
   HRESULT swapRet = dxgiFactory4->CreateSwapChainForHwnd(
     cmdQue,
     dxgi_win,
@@ -611,7 +611,7 @@ void dx12_subset::dxgi_setup()
 void dx12_subset::dxgi_present()
 {
   HRESULT ret = dxgi_sc->Present(0, 0);
-  
+
   if (!((ret == DXGI_ERROR_WAS_STILL_DRAWING) || (ret == S_OK) || (ret == DXGI_STATUS_OCCLUDED)))
   {
     dxgi_state = dxgi_state_error;
@@ -645,13 +645,13 @@ void dx12_subset::dxgi_error()
   {
     dxgi_sc->Release();
     dxgi_sc = 0;
-  } 
+  }
 
   dxgi_state = dxgi_state_setup;
 }
 
 void dx12_subset::dxgi_resize()
-{  
+{
   ResizeFrResources();
 
   dxgi_resize_query = 0;
@@ -664,13 +664,13 @@ void dx12_subset::dxgi_resize()
     {
       dxgi_state = dxgi_state_error;
     }
-    else {      
+    else {
       dxgi_state = dxgi_state_present;
       dxgi_sc->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer[0]));
       dxgi_sc->GetBuffer(1, IID_PPV_ARGS(&dxgiBackBuffer[1]));
     }
   }
-  else {    
+  else {
     dxgi_state = dxgi_state_present_w7;
   }
 }
@@ -713,7 +713,7 @@ void dx12_subset::ThrowError(HRESULT hr, const char * msg)
 {
   if (!FAILED(hr))
     return;
-  
+
   printf("dx12 backend critical error: %s", msg);
   //MessageBoxA(0, msg, "nanogui dx12 backend", MB_ICONERROR);
 

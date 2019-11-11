@@ -57,7 +57,7 @@ static const dx12_dynamic_import_lib_array dx12_dynamic_import_libs[] = {
       L"",
       L""
     }
-  }, 
+  },
   {
     {
       L"d3d12.dll",
@@ -110,7 +110,7 @@ typedef HRESULT(WINAPI *pD3DCompileFromFile_47)(
   ID3DBlob** ppErrorMsgs
   );
 
-class dx12_dynamic_imports 
+class dx12_dynamic_imports
 {
 public:
   dx12_dynamic_imports();

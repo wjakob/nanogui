@@ -59,7 +59,7 @@ void ImageView::updateImageParameters() {
 }
 
 void ImageView::_internalDraw(NVGcontext* ctx)
-{   
+{
     Vector2f scaleFactor(mScale, mScale);
     Vector2f positionInScreen = position().cast<float>();
     Vector2f positionAfterOffset = positionInScreen + mOffset;
@@ -69,11 +69,11 @@ void ImageView::_internalDraw(NVGcontext* ctx)
                                         mImageSize.x() * scaleFactor.x(), mImageSize.y() * scaleFactor.y(), 0, mImageID, 1.0);
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, imagePosition.x(), imagePosition.y(), 
-                        mImageSize.x() * scaleFactor.x(), mImageSize.y() * scaleFactor.y(), 
+    nvgRoundedRect(ctx, imagePosition.x(), imagePosition.y(),
+                        mImageSize.x() * scaleFactor.x(), mImageSize.y() * scaleFactor.y(),
                         5);
     nvgFillPaint(ctx, imgPaint);
-    nvgFill(ctx); 
+    nvgFill(ctx);
 }
 
 void ImageView::_deleteShader()
@@ -184,7 +184,7 @@ bool ImageView::scrollEvent(const Vector2i& p, const Vector2f& rel) {
 bool ImageView::keyboardEvent(int key, int /*scancode*/, int action, int modifiers) {
     if (action) {
         int keycode = key2fourcc(key);
-        switch (keycode) 
+        switch (keycode)
         {
         case FOURCCS("LEFT"):
             if (!mFixedOffset) {

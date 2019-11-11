@@ -89,7 +89,7 @@ HRESULT dx12_subset_resource::zbuf(DXGI_FORMAT fmt, float clearV, UINT width, UI
     D3D12_RESOURCE_STATE_DEPTH_WRITE,
     &optimizedClearValue,
     IID_PPV_ARGS(&res)
-  );  
+  );
 
   if (FAILED(hr))
     return hr;
@@ -131,7 +131,7 @@ HRESULT dx12_subset_resource::rtgt(DXGI_FORMAT fmt, float * clearV, UINT width, 
     D3D12_RESOURCE_STATE_RENDER_TARGET,
     &optimizedClearValue,
     IID_PPV_ARGS(&res)
-  );  
+  );
 
   if (FAILED(hr))
     return hr;
@@ -274,7 +274,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE * dx12_subset_resource::GetHHforRTDS(D3D12_RESOURCE_
 {
   BTransit4(state);
 
-  return &dheapHH;    
+  return &dheapHH;
 }
 
 UINT64 AlignValueByPow2(UINT64 val, UINT64 pow2val)
@@ -308,10 +308,10 @@ void dx12_subset_resource::MapWriteTex2D(void * data)
   UINT64 ul_memory_space = AlignValueByPow2(subresFootprints.Footprint.RowPitch*dsc.Height, D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT);
 
   BTransit4(D3D12_RESOURCE_STATE_COPY_DEST);
-  
+
   UINT64 ulOffset = 0;
   dx12_subset_resource* ul = dx12->GetUploadBuffer(ul_memory_space, &ulOffset, 512);
-  mappedPtr = ul->UploadTexFR(this, ulOffset, 0);    
+  mappedPtr = ul->UploadTexFR(this, ulOffset, 0);
 
   BTransit4(D3D12_RESOURCE_STATE_GENERIC_READ);
 
@@ -376,10 +376,10 @@ void* dx12_subset_resource::UploadBlockFR(dx12_subset_resource * dst, UINT64 blo
 }
 
 void * dx12_subset_resource::UploadTexFR(dx12_subset_resource * dst, UINT64 upload_offset, UINT32 lv)
-{  
+{
   D3D12_TEXTURE_COPY_LOCATION dstR = { dst->GetD12Obj(), D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX, lv };
   D3D12_TEXTURE_COPY_LOCATION srcR = { res, D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT, 0 };
-  
+
   D3D12_RESOURCE_DESC dstDsc = dst->GetD12Obj()->GetDesc();
 
   dx12->dev->GetCopyableFootprints(&dstDsc, lv, 1, 0, &srcR.PlacedFootprint, 0, 0, 0);

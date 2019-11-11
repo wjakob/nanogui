@@ -31,11 +31,11 @@ NVGcontext * nvgCreateD3D12(dx12_subset * pDX12subset, int flags)
 
   memset(D3D, 0, sizeof(struct D3DNVGcontext));
   D3D->dx12 = pDX12subset;
-  
+
   memset(&params, 0, sizeof(params));
 
   void** fnArr = (void**)&params.renderCreate;
-  
+
   fnArr[0] = D3Dnvg__renderCreate;
   fnArr[1] = D3Dnvg__renderCreateTexture;
   fnArr[2] = D3Dnvg__renderDeleteTexture;
@@ -161,7 +161,7 @@ void D3Dnvg__fill(D3DNVGcontext* D3D, struct D3DNVGcall* call)
   // Draw shapes
 
   D3D->dx12->Use_PPSO(D3D->psoId + DX12_SUBSET_PPSO_DEF_DrawShapes_NoWrite_NoCull);
-  
+
   // set bindpoint for solid loc
   D3Dnvg__setUniforms(D3D, call->uniformOffset, 0);
 
@@ -171,27 +171,27 @@ void D3Dnvg__fill(D3DNVGcontext* D3D, struct D3DNVGcall* call)
   for (i = 0; i < npaths; i++)
   {
     unsigned int numIndices = ((paths[i].fillCount - 2) * 3);
-    
-    if (numIndices < D3D->VertexBuffer.MaxBufferEntries)    
-      cl->DrawIndexedInstanced(numIndices, 1, 0, paths[i].fillOffset, 0);    
+
+    if (numIndices < D3D->VertexBuffer.MaxBufferEntries)
+      cl->DrawIndexedInstanced(numIndices, 1, 0, paths[i].fillOffset, 0);
   }
 
-  // Draw anti-aliased pixels    
-  cl->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);  
+  // Draw anti-aliased pixels
+  cl->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
   D3Dnvg__setUniforms(D3D, call->uniformOffset + D3D->fragSize, call->image);
 
   if (D3D->flags & NVG_ANTIALIAS)
   {
-    D3D->dx12->Use_PPSO(D3D->psoId + DX12_SUBSET_PPSO_DEF_DrawAA_Blend_Cull);    
+    D3D->dx12->Use_PPSO(D3D->psoId + DX12_SUBSET_PPSO_DEF_DrawAA_Blend_Cull);
     // Draw fringes
     for (i = 0; i < npaths; i++)
     {
-      cl->DrawInstanced(paths[i].strokeCount, 1, paths[i].strokeOffset, 0);      
+      cl->DrawInstanced(paths[i].strokeCount, 1, paths[i].strokeOffset, 0);
     }
   }
 
-  // Draw fill  
+  // Draw fill
   D3D->dx12->Use_PPSO(D3D->psoId + DX12_SUBSET_PPSO_DEF_Fill_Blend_NoCull);
 
   cl->DrawInstanced(call->triangleCount, 1, call->triangleOffset, 0);
@@ -214,10 +214,10 @@ void D3Dnvg__convexFill(D3DNVGcontext* D3D, struct D3DNVGcall* call)
     // Draws a fan using indices to fake it up, since there isn't a fan primitive in D3D11.
     if (paths[i].fillCount > 2)
     {
-      unsigned int numIndices = ((paths[i].fillCount - 2) * 3);      
+      unsigned int numIndices = ((paths[i].fillCount - 2) * 3);
       if (numIndices < D3D->VertexBuffer.MaxBufferEntries)
       {
-        cl->DrawIndexedInstanced(numIndices, 1, 0, paths[i].fillOffset, 0);        
+        cl->DrawIndexedInstanced(numIndices, 1, 0, paths[i].fillOffset, 0);
       }
     }
   }
@@ -229,7 +229,7 @@ void D3Dnvg__convexFill(D3DNVGcontext* D3D, struct D3DNVGcall* call)
     // Draw fringes
     for (i = 0; i < npaths; i++)
     {
-      cl->DrawInstanced(paths[i].strokeCount, 1, paths[i].strokeOffset, 0);      
+      cl->DrawInstanced(paths[i].strokeCount, 1, paths[i].strokeOffset, 0);
     }
   }
 }
@@ -244,7 +244,7 @@ void D3Dnvg__stroke(D3DNVGcontext* D3D, struct D3DNVGcall* call)
 
   if (D3D->flags & NVG_STENCIL_STROKES)
   {
-    // Fill the stroke base without overlap    
+    // Fill the stroke base without overlap
     D3D->dx12->Use_PPSO(D3D->psoId + DX12_SUBSET_PPSO_DEF_Def_Blend_Cull);
 
     D3Dnvg__setUniforms(D3D, call->uniformOffset + D3D->fragSize, call->image);
@@ -284,12 +284,12 @@ void D3Dnvg__stroke(D3DNVGcontext* D3D, struct D3DNVGcall* call)
 
 void D3Dnvg__triangles(D3DNVGcontext* D3D, struct D3DNVGcall* call)
 {
-  ID3D12GraphicsCommandList* cl = D3D->dx12->FrameCL();  
+  ID3D12GraphicsCommandList* cl = D3D->dx12->FrameCL();
   cl->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
   D3Dnvg__setUniforms(D3D, call->uniformOffset, call->image);
 
-  cl->DrawInstanced(call->triangleCount, 1, call->triangleOffset, 0);  
+  cl->DrawInstanced(call->triangleCount, 1, call->triangleOffset, 0);
 }
 
 int D3Dnvg__maxVertCount(const struct NVGpath* paths, int npaths)

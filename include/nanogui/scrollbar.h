@@ -26,7 +26,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ScrollBar : public Widget {
 public:
-  enum Alignment { VerticalRight = 0, 
+  enum Alignment { VerticalRight = 0,
                    HorizontalBottom = 1,
                    VerticalLeft = 2,
                    HorizontalTop = 3};
