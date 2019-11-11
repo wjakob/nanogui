@@ -1,7 +1,7 @@
 #include "nanogui/opengl.h"
 #include <nanogui/perfchart.h>
 
-#ifndef _APPLE__
+#ifndef __APPLE__
 #include <glad/glad.h>
 #endif
 
