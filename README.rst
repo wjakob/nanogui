@@ -6,7 +6,7 @@ NanoGUI
     :target: http://nanogui.readthedocs.org/en/latest/?badge=latest
     :alt: Docs
 
-.. |travis| image:: https://travis-ci.org/daleank/nanogui.svg?branch=master
+.. |travis| image:: https://travis-ci.org/dalerank/nanogui.svg?branch=master
    :target: https://travis-ci.org/dalerank/nanogui
    :alt: Travis Build Status
 
