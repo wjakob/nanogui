@@ -138,7 +138,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                unsigned int glMajor, unsigned int glMinor)
     : Widget(nullptr), mHwWindow(nullptr), mNVGContext(nullptr),
       mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f), mCaption(caption),
-      mShutdownOnDestruct(false), mFullscreen(fullscreen) 
+      mShutdownOnDestruct(false), mFullscreen(fullscreen)
 {
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 

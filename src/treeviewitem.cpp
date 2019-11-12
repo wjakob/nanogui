@@ -26,7 +26,7 @@ void TreeViewItem::init_()
 
 TreeViewItem::~TreeViewItem()
 {
-  if(mOwner && this == mOwner->selectedNode() )
+  if (mOwner && this == mOwner->selectedNode() )
   {
     setSelected( false );
   }
@@ -59,7 +59,7 @@ TreeViewItem* TreeViewItem::addNodeBack(
   node.itemParent_ = this;
   node.SelectedImageIndex = selectedImageIndex;
   node.Data = data;
-  
+
   return &node;
 }
 
@@ -91,9 +91,9 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
   int          selectedImageIndex /*= -1*/,
   void*          data /*= 0*/)
 {
-  for(auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
+  for (auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
   {
-    if( other == *it )
+    if ( other == *it )
     {
       auto& node = source()->wdg<TreeViewItem>();
       node.setCaption( text );
@@ -118,9 +118,9 @@ TreeViewItem* TreeViewItem::insertNodeBefore(
   int    selectedImageIndex /*= -1*/,
   void*  data /*= 0*/)
 {
-  for(auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
+  for (auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
   {
-    if( other == *it )
+    if ( other == *it )
     {
       auto& node = source()->wdg<TreeViewItem>();
       node.setCaption( text );
@@ -156,13 +156,13 @@ TreeViewItem* TreeViewItem::prevSibling() const
   TvIterator  itOther;
   TreeViewItem*                  other = 0;
 
-  if( itemParent_ )
+  if ( itemParent_ )
   {
-    for( itThis = itemParent_->mNodeChildren.begin(); itThis != itemParent_->mNodeChildren.end(); itThis++ )
+    for ( itThis = itemParent_->mNodeChildren.begin(); itThis != itemParent_->mNodeChildren.end(); itThis++ )
     {
-      if( this == *itThis )
+      if ( this == *itThis )
       {
-        if( itThis != itemParent_->mNodeChildren.begin() )
+        if ( itThis != itemParent_->mNodeChildren.begin() )
           other = *itOther;
         break;
       }
@@ -176,13 +176,13 @@ TreeViewItem* TreeViewItem::nextSibling() const
 {
   TreeViewItem*                  other = nullptr;
 
-  if( itemParent_ )
+  if ( itemParent_ )
   {
-    for(auto it = itemParent_->mNodeChildren.begin(); it != itemParent_->mNodeChildren.end(); it++ )
+    for (auto it = itemParent_->mNodeChildren.begin(); it != itemParent_->mNodeChildren.end(); it++ )
     {
-      if( this == *it )
+      if ( this == *it )
       {
-        if( *it != itemParent_->mNodeChildren.back() )
+        if ( *it != itemParent_->mNodeChildren.back() )
           other = *( ++it );
         break;
       }
@@ -200,7 +200,7 @@ TreeViewItem* TreeViewItem::nextVisible() const
   TreeViewItem*  next = nullptr;
   TreeViewItem*  node = node = const_cast< TreeViewItem* >( this );
 
-  if( node->isExpanded() && node->hasNodes() )
+  if ( node->isExpanded() && node->hasNodes() )
   {
     next = node->front();
   }
@@ -208,10 +208,10 @@ TreeViewItem* TreeViewItem::nextVisible() const
   {
     next = node->nextSibling();
   }
-  while( !next && node->baseNode() )
+  while ( !next && node->baseNode() )
   {
     next = node->baseNode()->nextSibling();
-    if( !next )
+    if ( !next )
     {
       node = node->baseNode();
     }
@@ -237,11 +237,11 @@ bool TreeViewItem::moveNodeUp( TreeViewItem* child )
   TreeViewItem*                  nodeTmp;
   bool                          moved = false;
 
-  for(auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
+  for (auto it = mNodeChildren.begin(); it != mNodeChildren.end(); it++ )
   {
-    if( child == *it )
+    if ( child == *it )
     {
-      if( it != mNodeChildren.begin() )
+      if ( it != mNodeChildren.begin() )
       {
         nodeTmp = *it;
         *it = *itOther;
@@ -262,11 +262,11 @@ bool TreeViewItem::moveNodeDown( TreeViewItem* child )
   TreeViewItem*                  nodeTmp;
   bool                          moved = false;
 
-  for( itChild = mNodeChildren.begin(); itChild != mNodeChildren.end(); itChild++ )
+  for ( itChild = mNodeChildren.begin(); itChild != mNodeChildren.end(); itChild++ )
   {
-    if( child == *itChild )
+    if ( child == *itChild )
     {
-      if( *itChild != mNodeChildren.back() )
+      if ( *itChild != mNodeChildren.back() )
       {
         itOther = itChild;
         ++itOther;
@@ -284,21 +284,21 @@ bool TreeViewItem::moveNodeDown( TreeViewItem* child )
 void TreeViewItem::setExpanded( bool expanded )
 {
   mExpanded = expanded;
-  if(mOwner)
+  if (mOwner)
     mOwner->updateItems();
 }
 
 void TreeViewItem::setSelected( bool selected )
 {
-  if(mOwner)
+  if (mOwner)
   {
-    if( selected )
+    if ( selected )
     {
       mOwner->setSelected(this);
     }
     else
     {
-      if(mOwner->selectedNode() == this)
+      if (mOwner->selectedNode() == this)
       {
         mOwner->setSelected(nullptr);
       }
@@ -308,7 +308,7 @@ void TreeViewItem::setSelected( bool selected )
 
 bool TreeViewItem::isSelected() const
 {
-  if(mOwner)
+  if (mOwner)
   {
     return mOwner->selectedNode() == this;
   }
@@ -331,7 +331,7 @@ TreeViewItem* TreeViewItem::baseNode() const { return itemParent_; }
 
 bool TreeViewItem::isVisible() const
 {
-  if( itemParent_ )
+  if ( itemParent_ )
   {
     return itemParent_->isExpanded() && itemParent_->isVisible();
   }
@@ -348,7 +348,7 @@ TreeView* TreeViewItem::view() { return findParent<TreeView>(); }
 
 void TreeViewItem::draw(NVGcontext *ctx)
 {
-  if( !isVisible() )
+  if ( !isVisible() )
     return;
 
   Widget::draw(ctx);

@@ -91,7 +91,7 @@ struct {
 
 class ExampleApplication : public Screen {
 public:
-    ExampleApplication() : Screen(Eigen::Vector2i(1920, 1080), "Editor") 
+    ExampleApplication() : Screen(Eigen::Vector2i(1920, 1080), "Editor")
     {
       auto& mmenu = createMainMenu();
 
@@ -177,7 +177,7 @@ public:
     {
       auto& wa = area.widget(RelativeSize{ relw, 1.f }, WidgetStretchLayout{ Orientation::Vertical } );
       auto& waheader = wa.widget(FixedHeight{ 30 }, WidgetStretchLayout{ Orientation::Horizontal });
-      
+
       auto& wawidgets = wa.widget(RelativeSize{ 1, 0 }, WidgetStretchLayout{ Orientation::Vertical });
       auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
       fo.show();
@@ -189,7 +189,7 @@ public:
       auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, WidgetId{ "#treeview_ed" });
       view.setRelativeSize(1, 1);
       view.hide();
-      
+
       waheader.button(Caption{ "Assets" }, ButtonCallback{ [&] { view.hide(); fo.show(); } });
       waheader.button(Caption{ "Layers" }, ButtonCallback{ [&] { view.show(); fo.hide(); } });
 
@@ -239,7 +239,7 @@ public:
     bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override {
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
-        if(down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
+        if (down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
             auto menu = new nanogui::ContextMenu(this, "", true);
             menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
 

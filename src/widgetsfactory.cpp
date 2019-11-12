@@ -65,7 +65,7 @@ size_t WidgetFactory::factoriesCount() const
 
 WidgetFactory* WidgetFactory::getFactory(size_t index ) const
 {
-  if( index < _factories_.size() )
+  if ( index < _factories_.size() )
     return _factories_[ index ];
   else
     return nullptr;

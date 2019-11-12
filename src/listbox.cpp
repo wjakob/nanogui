@@ -10,13 +10,13 @@ NAMESPACE_BEGIN(nanogui)
 ListboxItem::ListboxItem(Widget* parent, const std::string& str, bool inlist)
     : Button(parent, str) {}
 
-void ListboxItem::performLayout(NVGcontext *ctx) 
+void ListboxItem::performLayout(NVGcontext *ctx)
 {
   Button::performLayout(ctx);
   setWidth(parent()->width());
 }
 
-void ListboxItem::beforeDoCallback() 
+void ListboxItem::beforeDoCallback()
 {
   if (Listbox* lst = findParent<Listbox>())
   {
@@ -26,7 +26,7 @@ void ListboxItem::beforeDoCallback()
 
 void ListboxItem::draw(NVGcontext *ctx)
 {
-  if (mMouseFocus && mEnabled) 
+  if (mMouseFocus && mEnabled)
   {
     NVGcolor gradTop = mTheme->mButtonGradientTopFocused;
     NVGcolor gradBot = mTheme->mButtonGradientBotFocused;
@@ -200,7 +200,7 @@ void Listbox::addItem(const std::string& str, const std::string& id)
 
   auto& i = mItems->wdg<ListboxItem>(str);
   i.setId(id);
-  
+
 }
 
 void Listbox::performLayout(NVGcontext *ctx) {

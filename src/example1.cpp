@@ -979,7 +979,7 @@ public:
     bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override {
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
-        if(down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
+        if (down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
             auto menu = new nanogui::ContextMenu(this, "", true);
             menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
 

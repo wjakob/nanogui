@@ -31,11 +31,11 @@ class BoxLayout;
  * .. code-block:: cpp
  *
  *    auto wmenu = new WindowMenu(window, true);
- *    wmenu->addItem("Item 1", [](){
+ *    wmenu->addItem("Item 1", []() {
  *      std::cout << "Item 1 clicked!" << std::endl;
  *    });
  *    auto submenu = wmenu->addSubMenu("Submenu 1");
- *    submenu->addItem("Subitem 1", [](){
+ *    submenu->addItem("Subitem 1", []() {
  *      std::cout << "Subitem 1 clicked!"
  *    });
  *

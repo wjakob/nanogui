@@ -314,7 +314,7 @@ void Table::removeRow(uint32_t rowIndex)
   if ( rowIndex > _rows.size() )
     return;
 
-  for( uint32_t colNum=0; colNum < _columns.size(); colNum++ )
+  for ( uint32_t colNum=0; colNum < _columns.size(); colNum++ )
     removeCellElement( rowIndex, colNum );
 
   _rows.erase(_rows.begin() + rowIndex );
@@ -379,7 +379,7 @@ void Table::clear()
   _selectedRow = -1;
   clearRows();
 
-  for(auto& col: _columns)
+  for (auto& col: _columns)
     col->remove();
 
   _rows.clear();
@@ -394,8 +394,8 @@ void Table::clear()
 
 void Table::clearContent()
 {
-    for( uint32_t rowNum=0; rowNum < _rows.size(); rowNum++ )
-        for( uint32_t colNum=0; colNum < _columns.size(); colNum++ )
+    for ( uint32_t rowNum=0; rowNum < _rows.size(); rowNum++ )
+        for ( uint32_t colNum=0; colNum < _columns.size(); colNum++ )
             removeCellElement( rowNum, colNum );
 
     _recalculateCells();
@@ -406,7 +406,7 @@ void Table::clearRows()
   _selectedRow = -1;
 
   const auto& tableAreaChilds = _itemsArea->children();
-  for(auto& w: tableAreaChilds )
+  for (auto& w: tableAreaChilds )
     w->remove();
 
   _rows.clear();
@@ -468,7 +468,7 @@ void Table::_recalculateScrollBars()
   Vector4i tableRect(taPos.x(), taPos.y(), _itemsArea->width(), _itemsArea->height());
 
   // needs horizontal scroll be visible?
-  if( _totalItemWidth > _itemsArea->width() )
+  if ( _totalItemWidth > _itemsArea->width() )
   {
     tableRect.w() -= _horizontalScrollBar->height();
     _horizontalScrollBar->setVisible( true );
@@ -476,7 +476,7 @@ void Table::_recalculateScrollBars()
   }
 
   // needs vertical scroll be visible?
-  if( _totalItemHeight > tableRect.w() )
+  if ( _totalItemHeight > tableRect.w() )
   {
     tableRect.z() -= _verticalScrollBar->width();
     _verticalScrollBar->setVisible( true );
@@ -485,7 +485,7 @@ void Table::_recalculateScrollBars()
     // check horizontal again because we have now smaller clientClip
     if ( !_horizontalScrollBar->visible() )
     {
-      if( _totalItemWidth > tableRect.z() )
+      if ( _totalItemWidth > tableRect.z() )
       {
         tableRect.w() -= _horizontalScrollBar->height();
         _horizontalScrollBar->setVisible(true);
@@ -641,7 +641,7 @@ void Table::swapRows(uint32_t rowIndexA, uint32_t rowIndexB)
 
   if ( _selectedRow == int(rowIndexA) )
     _selectedRow = rowIndexB;
-  else if( _selectedRow == int(rowIndexB) )
+  else if ( _selectedRow == int(rowIndexB) )
     _selectedRow = rowIndexA;
 }
 
@@ -724,7 +724,7 @@ bool Table::_selectColumnHeader(int xpos, int ypos)
     return false;
 
     _selectedColumn = _getCurrentColumn( xpos, ypos );
-    if( _selectedColumn >= 0 )
+    if ( _selectedColumn >= 0 )
     {
         setActiveColumn( _selectedColumn, true );
         return true;
@@ -761,7 +761,7 @@ void Table::orderRows(int columnIndex, RowOrder mode)
 
           if ( _selectedRow == j )
             _selectedRow = j+1;
-          else if( _selectedRow == j+1 )
+          else if ( _selectedRow == j+1 )
             _selectedRow = j;
         }
       }
@@ -781,7 +781,7 @@ void Table::orderRows(int columnIndex, RowOrder mode)
 
           if ( _selectedRow == j )
             _selectedRow = j+1;
-          else if( _selectedRow == j+1 )
+          else if ( _selectedRow == j+1 )
             _selectedRow = j;
         }
       }
@@ -809,13 +809,13 @@ void Table::_selectNew( int xpos, int ypos, bool lmb, bool onlyHover)
     _selectedRow = 0;
 
   // post the news
-  if( !onlyHover )
+  if ( !onlyHover )
   {
     bool selectedAgain = (_selectedRow != oldSelectedRow || _selectedColumn != oldSelectedColumn )
                                         ? false
                                         : true;
 
-    if( lmb && selectedAgain && ( getTimeFromStart() - _cellLastTimeClick ) < 200 )
+    if ( lmb && selectedAgain && ( getTimeFromStart() - _cellLastTimeClick ) < 200 )
     {
       _finishEditCell();
       _startEditCell(_selectedColumn, _selectedRow);
@@ -869,7 +869,7 @@ void Table::_finishEditCell()
 
 void Table::beforePaint(NVGcontext* ctx)
 {
-  if( _needRefreshCellsGeometry )
+  if ( _needRefreshCellsGeometry )
   {
     _recalculateCells();
     _needRefreshCellsGeometry = false;
@@ -978,7 +978,7 @@ void Table::removeChild(Widget* child)
         for ( uint32_t columnIndex = 0 ; columnIndex < _columns.size() ; ++columnIndex )
         {
             Cell* cell = _rows[rowIndex].items[columnIndex];
-            if( cell && cell->element == child )
+            if ( cell && cell->element == child )
             {
                 cell->element = nullptr;
                 break;
@@ -994,11 +994,11 @@ void Table::setCellElement( uint32_t rowIndex, uint32_t columnIndex, Widget* elm
     {
       Cell* cell = _rows[rowIndex].items[columnIndex];
 
-      if( elm != getCellElement( rowIndex, columnIndex ) )
+      if ( elm != getCellElement( rowIndex, columnIndex ) )
       {
         removeCellElement( rowIndex, columnIndex );
 
-        if( elm )
+        if ( elm )
         {
           cell->addChild( elm );
           cell->element = elm;
@@ -1016,7 +1016,7 @@ void Table::removeCellElement( uint32_t rowIndex, uint32_t columnIndex )
     {
         Cell* cell = _rows[rowIndex].items[columnIndex];
 
-        if( cell->element )
+        if ( cell->element )
             cell->element->remove();
 
         cell->element = nullptr;

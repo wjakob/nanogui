@@ -34,8 +34,8 @@ public:
   ContextMenuLabel* l = nullptr;
   ContextItemAsMenu() : ContextMenu(nullptr, "", false) {}
 
-  void setEnabled(bool en) override { if(l) l->setEnabled(en); }
-  void setShortcut(const std::string& text) override { if(l) l->setShortcut(text); }
+  void setEnabled(bool en) override { if (l) l->setEnabled(en); }
+  void setShortcut(const std::string& text) override { if (l) l->setShortcut(text); }
 };
 
 class NANOGUI_EXPORT ContextMenuArea : public Widget
@@ -446,7 +446,7 @@ bool ContextMenu::isRowSelected_(const std::string& name, const Vector2i& p) con
 }
 
 void ContextMenu::activateSubmenu(const std::string &name) {
-    if(mActiveSubmenu) {
+    if (mActiveSubmenu) {
         deactivateSubmenu();
     }
     mActiveSubmenu = mSubmenus[name];

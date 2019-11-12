@@ -60,23 +60,23 @@ EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
       Vector2i offset = getOffsetToChild(_selectedElement, this);
       if (_selectedElement)
       {
-        if( isPointInsideRect( p, editArea.topleft) )
+        if ( isPointInsideRect( p, editArea.topleft) )
           return EditMode::ResizeTopLeft;
-        else if( isPointInsideRect( p, editArea.topright) )
+        else if ( isPointInsideRect( p, editArea.topright) )
           return EditMode::ResizeTopRight;
-        else if( isPointInsideRect( p, editArea.bottomleft) )
+        else if ( isPointInsideRect( p, editArea.bottomleft) )
           return EditMode::ResizeBottomLeft;
-        else if(isPointInsideRect( p, editArea.bottomright) )
+        else if (isPointInsideRect( p, editArea.bottomright) )
           return EditMode::ResizeBottpmRight;
-        else if( isPointInsideRect( p, editArea.top) )
+        else if ( isPointInsideRect( p, editArea.top) )
           return EditMode::ResizeTop;
-        else if( isPointInsideRect( p, editArea.bottom) )
+        else if ( isPointInsideRect( p, editArea.bottom) )
           return EditMode::ResizeBottom;
-        else if( isPointInsideRect( p, editArea.left) )
+        else if ( isPointInsideRect( p, editArea.left) )
           return EditMode::ResizeLeft;
-        else if( isPointInsideRect( p, editArea.right) )
+        else if ( isPointInsideRect( p, editArea.right) )
           return EditMode::ResizeRight;
-        else if( getEditableElementFromPoint( _selectedElement, p - offset) == _selectedElement )
+        else if ( getEditableElementFromPoint( _selectedElement, p - offset) == _selectedElement )
           return EditMode::Move;
         else
           return EditMode::Select;
@@ -84,7 +84,7 @@ EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
 
       return EditMode::Select;
     }
-    catch( ... )
+    catch ( ... )
     {
         setSelectedElement(nullptr);
         return EditMode::Select;
@@ -98,7 +98,7 @@ Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector
     // we have to search from back to front.
 
     auto rev_it = start->children().rbegin();
-    while(rev_it != start->children().rend())
+    while (rev_it != start->children().rend())
     {
       target = getEditableElementFromPoint((*rev_it),point - start->position());
       if (target)
@@ -127,7 +127,7 @@ void EditorWorkspace::setSelectedElement(Widget *sel)
   bool needUpdateSelectedElm = false;
   if (_selectedElement != this)
   {
-    if( _selectedElement != sel)// && _editorWindow )
+    if ( _selectedElement != sel)// && _editorWindow )
     {
       //_editorWindow->setSelectedElement(sel);
       _selectedElement = sel;
@@ -210,15 +210,15 @@ void EditorWorkspace::selectPreviousSibling()
 void EditorWorkspace::_createElementsMap( Widget* start, std::map< std::string, Widget* >& mapa )
 {
   auto pIter = start->children().begin();
-  for( ; pIter != children().end(); pIter++ )
+  for ( ; pIter != children().end(); pIter++ )
   {
-    if( Widget* nrpElm = *pIter )
+    if ( Widget* nrpElm = *pIter )
     {
-      if( nrpElm->id().size() > 0 )
+      if ( nrpElm->id().size() > 0 )
           mapa[ nrpElm->id() ] = *pIter;
     }
 
-    if( (*pIter)->children().size() > 0 )
+    if ( (*pIter)->children().size() > 0 )
       _createElementsMap( *pIter, mapa );
   }
 }
@@ -231,12 +231,12 @@ void EditorWorkspace::setElementName( Widget* elm, bool setText, std::string& wa
   _createElementsMap( this, elmMap );
 
   std::string checkName = wantName;
-  if( elmMap.find( checkName ) != elmMap.end() || !checkName.size() )
+  if ( elmMap.find( checkName ) != elmMap.end() || !checkName.size() )
   {
-    for( int index=0; ; index++ )
+    for ( int index=0; ; index++ )
     {
       checkName = typeName + std::string( "_" ) + std::to_string( index );
-      if( elmMap.find( checkName ) == elmMap.end() )
+      if ( elmMap.find( checkName ) == elmMap.end() )
           break;
     }
   }
@@ -244,7 +244,7 @@ void EditorWorkspace::setElementName( Widget* elm, bool setText, std::string& wa
   if (elm)
     elm->setId( checkName );
 
-  //if( setText )
+  //if ( setText )
   //    elm->setValue("text", checkName);
   wantName = checkName;
 }
@@ -557,21 +557,21 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
   switch(e.EventType)
   {
     /*case NRP_DRAGDROP_EVENT:
-        if( e.DragDropEvent.EventType == NRP_DROP_ELEMENT && e.DragDropEvent.Element == _factoryView )
+        if ( e.DragDropEvent.EventType == NRP_DROP_ELEMENT && e.DragDropEvent.Element == _factoryView )
         {
             Point mousePos = e.MouseEvent.getPosition();
             Widget* parentElm = getEditableElementFromPoint(this, mousePos );
 
             s32 fIndex = _factoryView->GetFactoryIndex();
             s32 elmIndex = _factoryView->GetElementIndex();
-            if(  fIndex >= 0 && elmIndex >= 0 )
+            if (  fIndex >= 0 && elmIndex >= 0 )
             {
                 AbstractWidgetsFactory* factory = WidgetsFactoriesManager::instance().getFactory( fIndex );
                 String name = factory->getWidgetTypeName( elmIndex );
 
                 // add it
                 Widget *newElement = factory->createWidget( name, parentElm );
-                if( newElement )
+                if ( newElement )
                 {
                     Point p = mousePos - parentElm->getAbsoluteRect().UpperLeftCorner;
           newElement->setGeometry( RectI( p, core::NSizeU(100,100) ) );
@@ -581,7 +581,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
                     setSelectedElement(0);
                     setSelectedElement( newElement );
 
-                    if( _changesManager )
+                    if ( _changesManager )
                         _changesManager->Update();
                 }
             }
@@ -600,7 +600,7 @@ void EditorWorkspace::preview()
 {
     Vector2i scrSize = screen()->size();
     Widget* elm = children().size() > 0 ? ( children().front() ) : nullptr;
-    if( !elm )
+    if (!elm)
     {
       new MessageDialog(this, MessageDialog::Type::Information, "Warning", "Have no element to preview");
     }
@@ -630,7 +630,7 @@ void EditorWorkspace::draw(NVGcontext* ctx)
   nvgStrokeColor(ctx, nvgRGBA(0, 0, 0, 255));
   nvgStroke(ctx);
 
-  if( _drawGrid )
+  if ( _drawGrid )
   {
     // draw the grid
     int cy = _gridSize.x();
@@ -703,7 +703,7 @@ void EditorWorkspace::_drawResizePoint(NVGcontext* ctx, const Color& color, cons
 
 void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
 {
-    if( _selectedElement )
+    if ( _selectedElement )
     {
         // draw handles for moving
         EditMode m = _currentMode;
@@ -884,7 +884,7 @@ void EditorWorkspace::reset()
   setSelectedElement(nullptr);
   mElementUnderMouse = nullptr;
 
-  while( !children().empty() )
+  while ( !children().empty() )
     removeChild( children().front() );
 }
 
@@ -919,13 +919,13 @@ void EditorWorkspace::updateTree()
 
 void EditorWorkspace::undo()
 {
-    //if( _changesManager )
+    //if ( _changesManager )
       //  _changesManager->Undo();
 }
 
 void EditorWorkspace::redo()
 {
-    //if( _changesManager )
+    //if ( _changesManager )
       //  _changesManager->Redo();
 }
 
@@ -943,7 +943,7 @@ bool EditorWorkspace::isRedoEnabled() const
 
 void EditorWorkspace::update()
 {
-    //if( _changesManager )
+    //if ( _changesManager )
       //  _changesManager->Update();
 }
 
@@ -965,7 +965,7 @@ void EditorWorkspace::activateChangeParentMode()
 
 void EditorWorkspace::toggleOptionsVisible()
 {
-    /*if( _optionsWindow )
+    /*if ( _optionsWindow )
     {
         _optionsWindow->deleteLater();
         _optionsWindow = NULL;
@@ -997,9 +997,9 @@ void EditorWorkspace::saveSelectedElementToJson()
 
 void EditorWorkspace::userChangeOptions()
 {
-    /*if( _optionsWindow )
+    /*if ( _optionsWindow )
     {
-        if( AttributeEditor* editor = safety_cast<AttributeEditor*>( _optionsWindow->findChild( attrEditorName.getHash() ) ) )
+        if ( AttributeEditor* editor = safety_cast<AttributeEditor*>( _optionsWindow->findChild( attrEditorName.getHash() ) ) )
             load( editor->getAttribs() );
     }*/
 }

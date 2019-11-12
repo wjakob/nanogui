@@ -36,14 +36,14 @@ Meter::Meter(Widget *parent)
 
 void Meter::setValue(double value)
 {
-    if(value>m_maxValue)
+    if (value>m_maxValue)
     {
       m_value=m_maxValue;
       if (onError)
         onError(OutOfRange);
     }
     else
-      if(value<m_minValue)
+      if (value<m_minValue)
       {
         m_value=m_minValue;
         if (onError)
@@ -52,7 +52,7 @@ void Meter::setValue(double value)
       else
           m_value=value;
 
-    if(m_thresholdEnabled)
+    if (m_thresholdEnabled)
      thresholdManager();
 }
 
@@ -73,11 +73,11 @@ void Meter::setMinValue(int value)
 
 void Meter::setMaxValue(double value)
 {
-  if(value > m_minValue)
+  if (value > m_minValue)
   {
       m_maxValue=value;
-   }
-   else
+  }
+  else
   {
     if (onError)
       onError(MaxValueError);
@@ -92,11 +92,11 @@ void Meter::setMaxValue(int value)
 
 void Meter::setThreshold(double value)
 {
-  if(value > m_minValue && value < m_maxValue)
+  if (value > m_minValue && value < m_maxValue)
   {
       m_threshold=value;
-   }
-   else
+  }
+  else
   {
     if (onError)
        onError(ThresholdError);
@@ -187,13 +187,13 @@ void Meter::thresholdManager()
   mLastValue = m_value;
   mNeedUpdateLastValueText = true;
 
-  if(m_value > m_threshold && !m_thresholdFlag)
+  if (m_value > m_threshold && !m_thresholdFlag)
   {
     m_thresholdFlag=true;
     if (onTreshold)
       onTreshold(m_thresholdFlag);
   }
-  else if(m_value < m_threshold && m_thresholdFlag)
+  else if (m_value < m_threshold && m_thresholdFlag)
   {
     m_thresholdFlag=false;
     if (onTreshold)
@@ -362,7 +362,7 @@ void Meter::drawUnits(NVGcontext *ctx)
 
 void Meter::drawNumericValue(NVGcontext *ctx)
 {
-  if(!enableNumericIndicator())
+  if (!enableNumericIndicator())
         return;
 
   if (mNeedUpdateLastValueText)
@@ -377,7 +377,7 @@ void Meter::drawNumericValue(NVGcontext *ctx)
   }
 
   Color color;
-  if(!m_thresholdFlag)
+  if (!m_thresholdFlag)
     color=Color(0xff, 0xff, 0xff, 0xff);
   else
     color=Color(0xff, 0, 0, 0xff);
@@ -439,24 +439,24 @@ void Meter::drawNeedle(NVGcontext *ctx)
 
 void Meter::drawThresholdLine(NVGcontext *ctx)
 {
-    if(!enableThreshold())
-        return;
+  if (!enableThreshold())
+      return;
 
-    nvgBeginPath(ctx);
-    double thresholdAngle = (m_startAngle - m_endAngle)/(m_maxValue-m_minValue)*(m_threshold-m_minValue);
-    nvgStrokeWidth(ctx, 5);
-    nvgStrokeColor(ctx, Color(0, 0xff, 0, 0xff));
+  nvgBeginPath(ctx);
+  double thresholdAngle = (m_startAngle - m_endAngle)/(m_maxValue-m_minValue)*(m_threshold-m_minValue);
+  nvgStrokeWidth(ctx, 5);
+  nvgStrokeColor(ctx, Color(0, 0xff, 0, 0xff));
 
-    Vector2i c = mPos + mSize / 2;
-    float r1 = std::min(mSize.x(), mSize.y()) / 2 * 0.48;
+  Vector2i c = mPos + mSize / 2;
+  float r1 = std::min(mSize.x(), mSize.y()) / 2 * 0.48;
 
-    nvgArc(ctx, c.x(),c.y(), r1, deg2rad(m_endAngle + 90), deg2rad(m_endAngle + thresholdAngle + 90), NVG_CW);
-    nvgStroke(ctx);
+  nvgArc(ctx, c.x(),c.y(), r1, deg2rad(m_endAngle + 90), deg2rad(m_endAngle + thresholdAngle + 90), NVG_CW);
+  nvgStroke(ctx);
 
-    nvgBeginPath(ctx);
-    nvgStrokeColor(ctx, Color(0xff, 0, 0, 0xff));
-    nvgArc(ctx, c.x(), c.y(), r1, deg2rad(m_endAngle + thresholdAngle + 90), deg2rad(m_startAngle + 90), NVG_CW);
-    nvgStroke(ctx);
+  nvgBeginPath(ctx);
+  nvgStrokeColor(ctx, Color(0xff, 0, 0, 0xff));
+  nvgArc(ctx, c.x(), c.y(), r1, deg2rad(m_endAngle + thresholdAngle + 90), deg2rad(m_startAngle + 90), NVG_CW);
+  nvgStroke(ctx);
 }
 
 void Meter::drawCoverGlass(NVGcontext *ctx)
@@ -492,14 +492,14 @@ void Meter::drawLabel(NVGcontext *ctx)
 
 void Meter::drawWarningWindow(NVGcontext *ctx)
 {
-   if(enableWarningWindow())
+   if (enableWarningWindow())
    {
    }
 }
 
 void Meter::drawValidWindow(NVGcontext *ctx)
 {
-   if(enableValidWindow())
+   if (enableValidWindow())
    {
    }
 }

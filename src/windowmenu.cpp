@@ -32,7 +32,7 @@ WindowMenu::WindowMenu(Widget *parent)
 
 void WindowMenu::requestPerformLayout() {}
 
-Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const 
+Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const
 {
   int pfheight = theme()->mWindowMenuHeight;
   if (mUseCustomHeight)

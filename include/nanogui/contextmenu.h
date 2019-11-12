@@ -54,11 +54,11 @@ private:
  * .. code-block:: cpp
  *
  *    auto menu = new ContextMenu(this, true);
- *    menu->addItem("Item 1", [](){
+ *    menu->addItem("Item 1", []() {
  *      std::cout << "Item 1 clicked!" << std::endl;
  *    });
  *    auto submenu = menu->addSubMenu("Submenu 1");
- *    submenu->addItem("Subitem 1", [](){
+ *    submenu->addItem("Subitem 1", []() {
  *      std::cout << "Subitem 1 clicked!"
  *    });
  *    menu->activate();

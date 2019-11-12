@@ -8,20 +8,20 @@ NAMESPACE_BEGIN(nanogui)
 
 void Foldout::_reparseChilds()
 {
-  if( !_scrollBar )
+  if ( !_scrollBar )
     return;
 
   int maxHeigth = 0;
   for (auto& page: _pages)
   {
       maxHeigth += page->button->height();
-      if( page->page->visible()  )
+      if ( page->page->visible()  )
           maxHeigth += page->page->height();
   }
 
   bool lastVis = _scrollBar->visible();
   _scrollBar->setVisible( maxHeigth > height() );
-  if( !lastVis && _scrollBar->visible() )
+  if ( !lastVis && _scrollBar->visible() )
   {
       _scrollValue = maxHeigth - height();
       _scrollBar->setScroll( 0 );
@@ -71,10 +71,10 @@ void Foldout::_reparseChilds()
     }
   }
 
-  if( _activePageIndex >= 0 )
+  if ( _activePageIndex >= 0 )
   {
     Button* btn = _pages[ _activePageIndex ]->button;
-    if( btn->position().y() < 0 )
+    if ( btn->position().y() < 0 )
     {
       Vector4i currentRect( 0, 0, btn->width(), btn->height() );
       btn->setGeometry(currentRect);
@@ -96,9 +96,9 @@ Foldout::Foldout( Widget* parent, const std::string& id )
 
 void Foldout::removeChild(const Widget* child)
 {
-  for( uint32_t index=0; index < _pages.size(); index++ )
+  for ( uint32_t index=0; index < _pages.size(); index++ )
   {
-    if( _pages[ index ]->page == child )
+    if ( _pages[ index ]->page == child )
     {
       delete _pages[ index ];
       _pages.erase(_pages.begin() + index );
@@ -113,7 +113,7 @@ void Foldout::removeChild(const Widget* child)
 
 void Foldout::draw(NVGcontext* ctx)
 {
-  if( !mVisible )
+  if ( !mVisible )
     return;
 
   Widget::draw(ctx);
@@ -155,7 +155,7 @@ Foldout::Page* Foldout::addPage(Widget* elm)
     uint32_t curIndex = _pages.size();
     std::string pageName = std::string("Page_") + std::to_string(curIndex);
     std::string caption = pageName;
-    if( curIndex < _pageNames.size() )
+    if ( curIndex < _pageNames.size() )
     {
        pageName = _pageNames[ curIndex ].name;
        caption = _pageNames[ curIndex ].caption;
@@ -183,7 +183,7 @@ void Foldout::_updateChilds()
 {
     for (auto& c: children())
     {
-      if( !c->isSubElement() && getPage(c) == nullptr)
+      if ( !c->isSubElement() && getPage(c) == nullptr)
         addPage(c);
     }
 
@@ -209,7 +209,7 @@ void Foldout::addPage( const std::string& pageName, const std::string& pageCapti
   addChild( child );
 
   Page* page = addPage( child );
-  if( page )
+  if ( page )
   {
     page->name = pageName;
     page->button->setCaption( pageCaption );

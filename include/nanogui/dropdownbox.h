@@ -75,7 +75,7 @@ public:
     virtual bool load(Serializer &s) override;
 
     virtual void draw(NVGcontext* ctx) override;
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override; 
+    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
 
 protected:
     /// The items associated with this dropdownbox.
