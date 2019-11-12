@@ -141,7 +141,7 @@ Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) con
   const Window *window = dynamic_cast<const Window *>(widget);
   if (window && !window->title().empty()) {
     if (mOrientation == Orientation::Vertical)
-      size[1] += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+      size.y() += widget->theme()->mWindowHeaderHeight - mMargin / 2;
     else
       yOffset = widget->theme()->mWindowHeaderHeight;
   }
@@ -194,7 +194,11 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
   auto& children = widget->children();
   std::vector<Widget*> pChildrens;
-  for (auto& a : children) pChildrens.emplace_back(a);
+  for (auto& a : children)
+  {
+    if (a->visible())
+      pChildrens.emplace_back(a);
+  }
 
   if (children.size() == 0)
     return;

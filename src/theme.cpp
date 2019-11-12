@@ -226,6 +226,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mContextMenuShortcutOffset = 40;
   theme.mContextMenuMinWidth = 140;
   theme.mTooltipOpacity = 255;
+  theme.mWindowMenuHeight = 18;
 
   theme.mCheckBoxIcon = ENTYPO_ICON_CHECK;
   theme.mMessageInformationIcon = ENTYPO_ICON_INFO_WITH_CIRCLE;

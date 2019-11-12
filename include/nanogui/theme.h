@@ -264,6 +264,8 @@ public:
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
 
+    int mWindowMenuHeight;
+
     int mTooltipOpacity;
     Color mTooltipBackgroundColor;
     Color mTooltipTextColor;

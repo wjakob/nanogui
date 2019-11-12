@@ -26,7 +26,7 @@ void initGPUTimer(GPUtimer* timer)
     glGetQueryObjectui64v = (pfnGLGETQUERYOBJECTUI64V)glfwGetProcAddress("glGetQueryObjectui64v");
 #endif
 
-#endif    
+#endif
     printf("glGetQueryObjectui64v=%p\n", glGetQueryObjectui64v);
     if (!glGetQueryObjectui64v) {
       timer->supported = GL_FALSE;

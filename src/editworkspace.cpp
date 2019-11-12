@@ -15,13 +15,15 @@ EditorWorkspace::EditorWorkspace(Widget* parent, std::string id )
   _running( true )
 {
   setId(id);
-  // this element is never saved.
-  setSubElement(true);
-  //_changesManager = new core::ChangesManager( "temp", *this );
 }
 
 EditorWorkspace::~EditorWorkspace()
 {
+}
+
+void EditorWorkspace::performLayout(NVGcontext *ctx)
+{
+  Widget::performLayout(ctx);
 }
 
 Vector2i getUpperLeftCorner(const Vector4i& r)
@@ -101,7 +103,7 @@ Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector
       target = getEditableElementFromPoint((*rev_it),point - start->position());
       if (target)
       {
-        if (!target->isSubElement() && isMyChildRecursive(target) && target != this)
+        if (/*!target->isSubElement() &&*/ isMyChildRecursive(target) && target != this)
           return target;
         else
           target = nullptr;
@@ -171,8 +173,8 @@ void EditorWorkspace::selectNextSibling()
     ++it;
 
   // find next non sub-element
-  while (it != p->children().end() && (*it)->isSubElement())
-    ++it;
+  //while (it != p->children().end())
+  //  ++it;
 
   if (it != p->children().end())
     setSelectedElement(*it);
@@ -198,8 +200,8 @@ void EditorWorkspace::selectPreviousSibling()
   if (it != p->children().end())
     ++it;
   // find next non sub-element
-  while (it != p->children().end() && (*it)->isSubElement())
-    ++it;
+  //while (it != p->children().end() && (*it)->isSubElement())
+  //  ++it;
 
   if (it != p->children().end())
     setSelectedElement(*it);
@@ -264,7 +266,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       {
         _selectedElement->remove();
         setSelectedElement(nullptr);
-        _elementUnderMouse = nullptr;
+        mElementUnderMouse = nullptr;
         //_editorWindow->updateTree(this);
 
         //if (_changesManager)
@@ -280,7 +282,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
         // delete element
         _selectedElement->remove();
         setSelectedElement(nullptr);
-        _elementUnderMouse = nullptr;
+        mElementUnderMouse = nullptr;
 
         //if (_changesManager)
         //  _changesManager->Update();
@@ -363,17 +365,15 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
   if (_currentMode == EditMode::Select || _currentMode == EditMode::SelectNewParent)
   {
     // highlight the element that the mouse is over
-    _elementUnderMouse = getEditableElementFromPoint(this, pp);
-    if (_elementUnderMouse == this)
-    {
-      _elementUnderMouse = nullptr;
-    }
+    mElementUnderMouse = getEditableElementFromPoint(this, pp);
+    if (mElementUnderMouse == this)
+      mElementUnderMouse = nullptr;
 
     if (_currentMode == EditMode::Select)
     {
       _mouseOverMode = getModeFromPos(pp);
       if (_mouseOverMode > EditMode::Move)
-        _elementUnderMouse = _selectedElement;
+        mElementUnderMouse = _selectedElement;
     }
   }
   else if (_currentMode == EditMode::Move)
@@ -399,10 +399,10 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
     _selectedArea.z() += delta.x();
     _selectedArea.w() += delta.y();
 
-    if (_elementUnderMouse)
+    if (mElementUnderMouse)
     {
-      Vector2i elmpos = _elementUnderMouse->position();
-      _elementUnderMouse->setPosition(elmpos + delta);
+      Vector2i elmpos = mElementUnderMouse->position();
+      mElementUnderMouse->setPosition(elmpos + delta);
     }
   }
   else if (_currentMode > EditMode::Move)
@@ -435,14 +435,14 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
     default: break;
     }
 
-    if (_elementUnderMouse)
+    if (mElementUnderMouse)
     {
-      Vector2i parpos = _elementUnderMouse->parent()->absolutePosition();
+      Vector2i parpos = mElementUnderMouse->parent()->absolutePosition();
       Vector2i newpos = Vector2i(_selectedArea.x(), _selectedArea.y()) - parpos;
       Vector2i newsize = Vector2i(_selectedArea.z() - _selectedArea.x(), _selectedArea.w() - _selectedArea.y());
-      _elementUnderMouse->setPosition(newpos);
-      _elementUnderMouse->setFixedSize(newsize);
-      _elementUnderMouse->setSize(newsize);
+      mElementUnderMouse->setPosition(newpos);
+      mElementUnderMouse->setFixedSize(newsize);
+      mElementUnderMouse->setSize(newsize);
     }
 
     return true;
@@ -485,12 +485,12 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
       if (_currentMode < EditMode::Move)
       {
         // selecting an element...
-        _elementUnderMouse = getEditableElementFromPoint(this, p);
+        mElementUnderMouse = getEditableElementFromPoint(this, p);
 
-        if (_elementUnderMouse == this)
-          _elementUnderMouse = nullptr;
+        if (mElementUnderMouse == this)
+          mElementUnderMouse = nullptr;
 
-        setSelectedElement(_elementUnderMouse);
+        setSelectedElement(mElementUnderMouse);
       }
     }
     return true;
@@ -510,13 +510,16 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     {
       if (_selectedElement)
       {
-        _elementUnderMouse = getEditableElementFromPoint(this, pp);
-        if (_elementUnderMouse != _selectedElement)
+        mElementUnderMouse = getEditableElementFromPoint(this, pp);
+        if (mElementUnderMouse != _selectedElement)
         {
-          _elementUnderMouse->addChild(_selectedElement);
-          _selectedElement->setPosition(0, 0);
+          auto saveNewParent = mElementUnderMouse;
+          auto saveMovedElm = _selectedElement;
 
-          setSelectedElement(nullptr);
+          mElementUnderMouse->addChild(_selectedElement);
+          saveMovedElm->setPosition(0, 0);
+
+          setSelectedElement( saveMovedElm );
         }
 
         //if (_changesManager)
@@ -756,13 +759,13 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
 void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
 {
   Vector2i offset = getOffsetToChild(_selectedElement, this);
-  if (_elementUnderMouse &&
-      _elementUnderMouse != _selectedElement &&
-      _elementUnderMouse != parent() )
+  if (mElementUnderMouse &&
+      mElementUnderMouse != _selectedElement &&
+      mElementUnderMouse != parent() )
   {
     Color color(100,0,0,255);
-    Vector2i umoffset = getOffsetToChild(_elementUnderMouse, this);
-    _drawWidthRectangle(ctx, color, 2, moveRect(_elementUnderMouse->rect(), umoffset));
+    Vector2i umoffset = getOffsetToChild(mElementUnderMouse, this);
+    _drawWidthRectangle(ctx, color, 2, moveRect(mElementUnderMouse->rect(), umoffset));
   }
 
   if (_selectedElement)
@@ -873,36 +876,40 @@ std::string EditorWorkspace::wtypename() const
 
 void EditorWorkspace::setFactoryView( FactoryView* wnd )
 {
-    _factoryView = wnd;
+  _factoryView = wnd;
 }
 
 void EditorWorkspace::reset()
 {
-    setSelectedElement(nullptr);
-    _elementUnderMouse = 0;
+  setSelectedElement(nullptr);
+  mElementUnderMouse = nullptr;
 
-    while( !children().empty() )
-        removeChild( children().front() );
+  while( !children().empty() )
+    removeChild( children().front() );
 }
 
 void EditorWorkspace::cutSelectedElement()
 {
-    copySelectedElementToJson();
-
-    removeElement( _selectedElement );
+  copySelectedElementToJson();
+  removeElement( _selectedElement );
 }
 
 void EditorWorkspace::removeElement( Widget* elm )
 {
-    Widget* saveElm = elm;
+  Widget* saveElm = elm;
+
+  if (elm == _selectedElement)
     setSelectedElement(nullptr);
-    _elementUnderMouse = nullptr;
-    saveElm->remove();
+
+  if (elm == mElementUnderMouse)
+    mElementUnderMouse = nullptr;
+
+  saveElm->remove();
 }
 
 void EditorWorkspace::setMode( EditMode mode )
 {
-    _currentMode = mode;
+  _currentMode = mode;
 }
 
 void EditorWorkspace::updateTree()
@@ -942,10 +949,13 @@ void EditorWorkspace::update()
 
 void EditorWorkspace::removeChild(const Widget* child )
 {
+  if (child == _selectedElement)
     setSelectedElement( nullptr );
-    _elementUnderMouse = nullptr;
 
-    Widget::removeChild( child );
+  if (child == mElementUnderMouse)
+    mElementUnderMouse = nullptr;
+
+  Widget::removeChild( child );
 }
 
 void EditorWorkspace::activateChangeParentMode()

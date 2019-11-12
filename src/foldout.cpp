@@ -82,13 +82,12 @@ void Foldout::_reparseChilds()
   }
 }
 
-Foldout::Foldout( Widget* parent, const Vector4i& rectangle, const std::string& id )
+Foldout::Foldout( Widget* parent, const std::string& id )
   : Widget(parent)
 {
   setId(id);
-  setGeometry(rectangle);
 
-  _lastChildCount = 0;
+  mLastChildCount = 0;
   _activePageIndex = -1;
 
   _scrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);
@@ -188,17 +187,21 @@ void Foldout::_updateChilds()
         addPage(c);
     }
 
-    _lastChildCount = children().size();
+    mLastChildCount = children().size();
     _reparseChilds();
+}
+
+void Foldout::performLayout(NVGcontext *ctx)
+{
+  Widget::performLayout(ctx);
+
+  _reparseChilds();
 }
 
 Foldout::Page* Foldout::getPage(Widget* child)
 {
-  for (auto& c:_pages)
-    if(c->page == child )
-      return c;
-
-  return nullptr;
+  auto it = std::find_if(_pages.begin(), _pages.end(), [child](Page* c) { return c->page == child; });
+  return it != _pages.end() ? *it : nullptr;
 }
 
 void Foldout::addPage( const std::string& pageName, const std::string& pageCaption, Widget* child )

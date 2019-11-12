@@ -65,6 +65,7 @@ private:
 
     int mItemMargin = 2;
     int mItemSpacing = 10;
+    bool mUseCustomHeight = false;
     BoxLayout *mItemHLayout = nullptr;
 };
 

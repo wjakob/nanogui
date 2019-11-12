@@ -32,20 +32,24 @@ WindowMenu::WindowMenu(Widget *parent)
 
 void WindowMenu::requestPerformLayout() {}
 
-Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const {
-  float bounds[4];
-  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-  nvgTextBounds(ctx, 0, 0, "A", nullptr, bounds);
-  return Vector2i( parent()->width(), bounds[3] - bounds[1] + mItemMargin * 2);
+Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const 
+{
+  int pfheight = theme()->mWindowMenuHeight;
+  if (mUseCustomHeight)
+  {
+    float bounds[4];
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    nvgTextBounds(ctx, 0, 0, "A", nullptr, bounds);
+    pfheight = bounds[3] - bounds[1] + mItemMargin * 2;
+  }
+  return Vector2i( parent()->width(), pfheight );
 }
 
 void WindowMenu::performLayout(NVGcontext* ctx)
 {
   Vector2i ps = preferredSize(ctx), fs = fixedSize();
-  Vector2i targetSize(
-    fs[0] ? fs[0] : ps[0],
-    fs[1] ? fs[1] : ps[1]
-  );
+  Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
+                      fs.y() ? fs.y() : ps.y());
   setSize(targetSize);
   auto myParentWindow = parent()->cast<Window>();
   if (myParentWindow)
@@ -57,16 +61,16 @@ void WindowMenu::performLayout(NVGcontext* ctx)
 void WindowMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
 {
   mItems[name] = value;
-  auto lbl = new ContextMenuLabel(mItemContainer, name);
-  mLabels[name] = lbl;
+  auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
+  mLabels[name] = &lbl;
   int prefh = preferredSize(screen()->nvgContext()).y();
 
-  lbl->setFontSize(fontSize());
+  lbl.setFontSize(fontSize());
   int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, name.c_str(), nullptr, nullptr);
-  lbl->setPosition(mItemSpacing, mItemMargin);
-  lbl->setTextHAlign(TextHAlign::hCenter);
-  lbl->setSize(tw + mItemSpacing*2, prefh);
-  lbl->setFixedSize({ tw + mItemSpacing * 2, prefh });
+  lbl.setPosition(mItemSpacing, mItemMargin);
+  lbl.setTextHAlign(TextHAlign::hCenter);
+  lbl.setSize(tw + mItemSpacing*2, prefh);
+  lbl.setFixedSize({ tw + mItemSpacing * 2, prefh });
 
   if (nvgIsFontIcon(icon)) {
     auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });

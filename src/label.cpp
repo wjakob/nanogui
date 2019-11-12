@@ -64,7 +64,7 @@ void Label::draw(NVGcontext *ctx) {
     Color color;
     if (enabled()) color = (mColor.w() > 0) ? mColor : mTheme->mTextColor;
     else color = (mDisabledColor.w() > 0) ? mDisabledColor : mTheme->mLabelTextDisabledColor;
-    
+
     nvgFillColor(ctx, color);
 
     int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
@@ -84,9 +84,9 @@ void Label::draw(NVGcontext *ctx) {
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    if (mFixedSize.x() > 0) 
+    if (mFixedSize.x() > 0)
       nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
-    else 
+    else
       nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
 }
 

@@ -70,9 +70,13 @@ public:
 
     template<typename FF, typename none = void> void set() {}
 
+    void setId(int id) { mId = id; }
+    int getId() const { return mId; }
+
 protected:
     /// Default destructor (exists for inheritance).
     virtual ~Layout() { }
+    int mId = -1;
 };
 
 /**

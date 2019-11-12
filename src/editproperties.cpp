@@ -18,8 +18,9 @@ PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id )
 {
   setId(id);
   setSize(parent->size());
-  _nameColumnWidthPerc = 0.48f;
-  _valueColumnWidthPerc = 0.48f;
+  setMayCollapse(Theme::clNonCollapse);
+  mNameColumnWidthPerc = 0.48f;
+  mValueColumnWidthPerc = 0.48f;
   // create attributes
 
   _propholder = new VScrollPanel(this);
@@ -60,8 +61,8 @@ void PropertiesEditor::parse(Widget* w)
   {
     delete _data;
 
-    Widget* panel = new Widget(_propholder);
-    panel->setLayout(new GroupLayout(0, 0, 0, 0));
+    auto& panel = _propholder->widget();
+    panel.withLayout<GroupLayout>(0, 0, 0, 0);
     _parsedw = w;
     _data = new Json::value();
     w->save(*_data);
@@ -70,8 +71,8 @@ void PropertiesEditor::parse(Widget* w)
     for (auto& obj : objects)
     {
       Json::value& jval = obj.second;
-      auto& grid = panel->widget();
-      grid.setLayout(new GridLayout());
+      auto& grid = panel.widget();
+      grid.withLayout<GridLayout>();
 
       auto capvalue = jval.get_str("name");
       auto typevalue = jval.get_str("type");
@@ -80,8 +81,8 @@ void PropertiesEditor::parse(Widget* w)
       auto& wcaption = grid.label(Caption{ capvalue.empty() ? obj.first : capvalue });
       std::cout << capvalue << std::endl;
 
-      int wname = width() * _nameColumnWidthPerc;
-      int ww = width() * _valueColumnWidthPerc;
+      int wname = width() * mNameColumnWidthPerc;
+      int ww = width() * mValueColumnWidthPerc;
       int hh = 20;
       wcaption.setWidth(wname);
       wcaption.setFixedWidth(ww);
@@ -158,8 +159,8 @@ void PropertiesEditor::parse(Widget* w)
 
 void PropertiesEditor::setColumnWidth(float nameColWidth, float valColWidth )
 {
-  _nameColumnWidthPerc = nameColWidth;
-  _valueColumnWidthPerc = valColWidth;
+  mNameColumnWidthPerc = nameColWidth;
+  mValueColumnWidthPerc = valColWidth;
 }
 
 std::string PropertiesEditor::wtypename() const

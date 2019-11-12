@@ -68,21 +68,30 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
     }
 }
 
-void Widget::performLayout(NVGcontext *ctx) {
-    if (mLayout)
+void Widget::performLayout(NVGcontext *ctx) 
+{
+  if (mLayout)
+  {
+    mLayout->performLayout(ctx, this);
+  }
+  else
+  {
+    for (auto c : mChildren)
     {
-        mLayout->performLayout(ctx, this);
+      Vector2f relk = c->relsize();
+      Vector2i pref = c->preferredSize(ctx), 
+               rel = { relk.x() * width(), relk.y() * height() },
+               fix = c->fixedSize();
+
+      pref = { rel.x() ? rel.x() : pref.x(),
+               rel.y() ? rel.y() : pref.y() };
+      
+      c->setSize(fix.x() ? fix.x() : pref.x(),
+                 fix.y() ? fix.y() : pref.y());
+      
+      c->performLayout(ctx);
     }
-    else
-    {
-        for (auto c : mChildren)
-        {
-            Vector2i pref = c->preferredSize(ctx), fix = c->fixedSize();
-            c->setSize(fix.x() ? fix.x() : pref.x(),
-                       fix.y() ? fix.y() : pref.y());
-            c->performLayout(ctx);
-        }
-    }
+  }
 }
 
 Widget *Widget::findWidget(const Vector2i &p) {

@@ -60,6 +60,8 @@ public:
 
     void setMode( EditMode mode );
 
+    void performLayout(NVGcontext *ctx) override;
+
     //virtual void setMenuCommandIDStart(s32 id);
 
     void removeChild(const Widget* child) override;
@@ -149,7 +151,7 @@ private:
     int        _menuCommandStart;
     bool      _drawGrid, _useGrid, _running;
 
-    Widget* _elementUnderMouse = nullptr;
+    Widget* mElementUnderMouse = nullptr;
     Widget* _selectedElement = nullptr;
     Window* _previewWindow = nullptr;
     FactoryView* _factoryView = nullptr;

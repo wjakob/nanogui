@@ -31,7 +31,7 @@ protected:
   Widget* _parsedw = nullptr;
   VScrollPanel * _propholder;
 
-  float _nameColumnWidthPerc, _valueColumnWidthPerc;
+  float mNameColumnWidthPerc, mValueColumnWidthPerc;
 };
 
 NAMESPACE_END(nanogui)

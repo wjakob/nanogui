@@ -46,6 +46,7 @@ namespace Json { class value; }
 
 enum TextHAlign { hLeft = 0, hCenter, hRight };
 enum TextVAlign { vTop = 3, vMiddle, vBottom };
+enum Corner { cLeftTop = 0, cLeftBottom, cRigthTop, cRightBottom };
 
 DECLSETTER(MaxHeight, int)
 DECLSETTER(FixedHeight, int)
@@ -110,6 +111,16 @@ public:
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
+
+    Vector2i corner(Corner c) {
+      switch (c) {
+      case Corner::cLeftTop: return position();
+      case Corner::cLeftBottom: return{ left(), position().y() + size().y() };
+      case Corner::cRigthTop: return{ left() + size().x(), position().y() };
+      case Corner::cRightBottom: return Vector2i( position() + size() );
+      }
+      return { 0, 0 };
+    }
     int right() const { return mPos.x() + mSize.x(); }
     int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
@@ -435,6 +446,9 @@ public:
     inline void setSubElement(bool v) { mSubElement = v; }
     inline bool isSubElement() const { return mSubElement; }
 
+    inline void show() { setVisible(true); }
+    inline void hide() { setVisible(false); }
+
     void setDebugDraw(bool en) { mDebugDraw = en; }
 
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
@@ -460,6 +474,8 @@ public:
     Widget& withTheme(const Args&... args) { setTheme(new ThemeClass(args...)); return *this; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
+    template<typename... Args>Widget& hlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal }, args...); }
+    template<typename... Args>Widget& vlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical }, args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
     template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }

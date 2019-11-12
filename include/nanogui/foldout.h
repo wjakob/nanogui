@@ -25,7 +25,7 @@ public:
     std::string name;
     std::string caption;
   };
-  Foldout( Widget* parent, const Vector4i& rectangle, const std::string& id="" );
+  Foldout( Widget* parent, const std::string& id="" );
   virtual ~Foldout();
 
   //! draws the element and its children
@@ -42,6 +42,9 @@ public:
 
   //! return element type name for gui factory
   std::string wtypename() const override;
+
+  //! reparse childs inside
+  void performLayout(NVGcontext *ctx) override;
 
   Page* getPage(Widget* child);
 
@@ -60,7 +63,7 @@ protected:
     _Pages _pages;
     _Names _pageNames;
 
-    uint32_t _lastChildCount;
+    uint32_t mLastChildCount;
     int _activePageIndex;
 
     ScrollBar* _scrollBar = nullptr;

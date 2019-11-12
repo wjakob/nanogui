@@ -1,11 +1,5 @@
 /*
-    src/example1.cpp -- C++ version of an example application that shows
-    how to use the various widget classes. For a Python implementation, see
-    '../python/example1.py'.
-
-    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
-    The widget drawing code is based on the NanoVG demo application
-    by Mikko Mononen.
+    src/editor.cpp
 
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE.txt file.
@@ -41,6 +35,7 @@
 #include <nanogui/editproperties.h>
 #include <nanogui/foldout.h>
 #include <nanogui/scrollbar.h>
+#include <nanogui/treeview.h>
 #include <nanogui/windowmenu.h>
 #include <nanogui/common.h>
 #include <iostream>
@@ -82,84 +77,138 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::to_string;
+using namespace nanogui;
 
-class ExampleApplication : public nanogui::Screen {
+struct {
+  std::string layers = "#layers";
+  std::string assets = "#assets";
+  std::string workspace = "#workspace";
+  std::string propeditor = "#propeditor";
+  std::string mainmenu = "#mainmenu";
+  WidgetId editor{ "#editor" };
+  WidgetId mainview{ "#mainview" };
+} ID;
+
+class ExampleApplication : public Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1280, 800), "NanoGUI Test") {
-        using namespace nanogui;
+    ExampleApplication() : Screen(Eigen::Vector2i(1920, 1080), "Editor") 
+    {
+      auto& mmenu = createMainMenu();
 
-        auto& mmenu = wdg<WindowMenu>();
-        mmenu.activate({ 0, 0 });
-        mmenu.submenu("File")
-                .item("New", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-                .item("Open", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Open", "New Clicked!"); })
-                .item("Save", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+      auto& area = hlayer(ID.editor);
+      area.layout()->setId(0xfa);
+      area.setPosition(0, theme()->mWindowMenuHeight);
+      area.setFixedSize(size() - Vector2i(0, theme()->mWindowMenuHeight));
+      createControlWidgetsArea(area, 0.15);
+      createWorkspace(area, 0.7);
+      createPropertiesEditor(area, 0.15);
+      createBaseEditorWidget(area);
 
-        mmenu.submenu("Edit")
-                .item("Undo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Redo", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Redo", "New Clicked!"); })
-                .item("Cut", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Cut", "New Clicked!"); })
-                .item("Copy", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Copy", "New Clicked!"); })
-                .item("Paste", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Paste", "New Clicked!"); })
-                .item("Delete", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Delete", "New Clicked!"); });
+      performLayout();
+    }
 
-        mmenu.submenu("View")
-                .item("Code", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Widgets", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Output", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Toolbox", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Notifications", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Full screen", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Option", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+    Widget& createMainMenu()
+    {
+      auto& mmenu = wdg<WindowMenu>();
+      mmenu.setId(ID.mainmenu);
+      mmenu.activate({ 0, 0 });
+      mmenu.submenu("File")
+        .item("New", [this]() { msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
+        .item("Open", [this]() { msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
+        .item("Save", [this]() { msgdialog(MessageDialog::Type::Information, "Save", "New Clicked!"); });
 
-        mmenu.submenu("Build")
-                .item("Build solution", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+      mmenu.submenu("Edit")
+        .item("Undo", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Redo", [this]() { msgdialog(MessageDialog::Type::Information, "Redo", "New Clicked!"); })
+        .item("Cut", [this]() { msgdialog(MessageDialog::Type::Information, "Cut", "New Clicked!"); })
+        .item("Copy", [this]() { msgdialog(MessageDialog::Type::Information, "Copy", "New Clicked!"); })
+        .item("Paste", [this]() { msgdialog(MessageDialog::Type::Information, "Paste", "New Clicked!"); })
+        .item("Delete", [this]() { msgdialog(MessageDialog::Type::Information, "Delete", "New Clicked!"); });
 
-        mmenu.submenu("Samples")
-                .item("Sample 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Sample 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Sample 3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Sample 4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+      mmenu.submenu("View")
+        .item("Code", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Solution", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Widgets", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Output", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Toolbox", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Notifications", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Full screen", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Option", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        mmenu.submenu("Widgets")
-                .item("w1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("w2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("w3", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("w4", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+      mmenu.submenu("Build")
+        .item("Build solution", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        mmenu.submenu("Help")
-                .item("View help", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-                .item("Send feedback", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+      mmenu.submenu("Samples")
+        .item("Sample 1", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Sample 2", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Sample 3", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Sample 4", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto area = new Widget(this);
-        area->setPosition(0, mmenu.preferredSize(nvgContext()).y());
-        area->setSize(width(), height() - area->position().y());
+      mmenu.submenu("Widgets")
+        .item("w1", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("w2", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("w3", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("w4", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto fo = new Foldout(area, Vector4i(0, 0, width()/4, area->height()), "foldout_ed");
-        fo->addPage("page1",  "Page1", new Widget(this));
-        fo->addPage("page2", "Page2", new Widget(this));
-        fo->addPage("page3", "Page3", new Widget(this));
-        fo->addPage("page4", "Page4", new Widget(this));
+      mmenu.submenu("Help")
+        .item("View help", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
+        .item("Send feedback", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
 
-        auto editor = new EditorWorkspace(area, "workspace");
-        editor->setSize(area->width()/2, area->height());
-        editor->setPosition(area->width()/4, 0);
+      return mmenu;
+    }
 
-        auto propeditor = new PropertiesEditor(area, "propeditor");
-        propeditor->setSize(area->width() / 4, area->height());
-        propeditor->setPosition(area->width() * 0.75, 0);
-        editor->setSelectedCallback([=](Widget* w) { propeditor->parse(w); });
+    void createPropertiesEditor(Widget& area, float relw)
+    {
+      auto& propeditor = area.wdg<PropertiesEditor>(ID.propeditor);
+      propeditor.setRelativeSize(relw, 1.f);
+      propeditor.setDraggable(Theme::WindowDraggable::dgFixed);
 
-        auto* eb = new Button(editor, "Editor button");
-        eb->setCallback([] { cout << "pushed!" << endl; });
-        eb->setTooltip("short tooltip");
+      if (auto editor = findWidget<EditorWorkspace>(ID.workspace))
+        editor->setSelectedCallback([&](Widget* w) { propeditor.parse(w); });
+    }
 
-        auto* ew = new Window(editor, "Editor window");
-        ew->setSize(100, 200);
-        ew->setPosition(0, 50);
+    void createWorkspace(Widget& area, float relw)
+    {
+      auto& editor = area.wdg<EditorWorkspace>(ID.workspace);
+      editor.setRelativeSize(0.7f, 1.f);
+    }
 
-        performLayout();
+    void createControlWidgetsArea(Widget& area, float relw)
+    {
+      auto& wa = area.widget(RelativeSize{ relw, 1.f }, WidgetStretchLayout{ Orientation::Vertical } );
+      auto& waheader = wa.widget(FixedHeight{ 30 }, WidgetStretchLayout{ Orientation::Horizontal });
+      
+      auto& wawidgets = wa.widget(RelativeSize{ 1, 0 }, WidgetStretchLayout{ Orientation::Vertical });
+      auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
+      fo.show();
+      fo.addPage("page1", "Page1", new Widget(this));
+      fo.addPage("page2", "Page2", new Widget(this));
+      fo.addPage("page3", "Page3", new Widget(this));
+      fo.addPage("page4", "Page4", new Widget(this));
+
+      auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, WidgetId{ "#treeview_ed" });
+      view.setRelativeSize(1, 1);
+      view.hide();
+      
+      waheader.button(Caption{ "Assets" }, ButtonCallback{ [&] { view.hide(); fo.show(); } });
+      waheader.button(Caption{ "Layers" }, ButtonCallback{ [&] { view.show(); fo.hide(); } });
+
+    }
+
+    void createBaseEditorWidget(Widget& area)
+    {
+      auto* editor = findWidget<EditorWorkspace>(ID.workspace);
+
+      if (!editor)
+        return;
+
+      auto& eb = editor->button("Editor button");
+      eb.setCallback([] { cout << "pushed!" << endl; });
+      eb.setTooltip("short tooltip");
+
+      auto& ew = editor->wdg<Window>(Caption{ "Editor window" });
+      ew.setSize(100, 200);
+      ew.setPosition(0, 50);
     }
 
     ~ExampleApplication() {}
