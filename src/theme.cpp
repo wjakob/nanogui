@@ -192,6 +192,9 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mButtonGradientBotUnfocused = Color(58, 255);
   theme.mButtonGradientTopPushed = Color(41, 255);
   theme.mButtonGradientBotPushed = Color(29, 255);
+  theme.mToggleButtonActiveColor = Color(48, 255);
+  theme.mToggleButtonInactiveColor = Color(180, 255);
+
   theme.mTooltipBackgroundColor = Color(0, 255);
   theme.mTooltipTextColor = Color(255, 255);
 

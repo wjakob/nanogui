@@ -8,10 +8,13 @@ NAMESPACE_BEGIN(nanogui)
 
 static const std::string attrEditorName = "attributeEditor";
 
-EditorWorkspace::EditorWorkspace(Widget* parent, std::string id )
-    : Widget(parent),
-  _currentMode(EditMode::Select), _mouseOverMode(EditMode::Select),
-  _gridSize(10,10), _drawGrid( true ), _useGrid(true),
+EditorWorkspace::EditorWorkspace(Widget* parent, const std::string& id )
+  : Widget(parent),
+  _currentMode(EditMode::Select), 
+  _mouseOverMode(EditMode::Select),
+  _gridSize(10,10), 
+  _drawGrid( true ), 
+  _useGrid(true),
   _running( true )
 {
   setId(id);
@@ -640,24 +643,51 @@ void EditorWorkspace::draw(NVGcontext* ctx)
     while (cy < height())
     {
       row++;
-      nvgStrokeColor(ctx, (row % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80)
-                                         : nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+      if (row % 5 == 0)
+      {
+        nvgStroke(ctx);
+        nvgBeginPath(ctx);
+        nvgStrokeColor(ctx, nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+      }
 
       nvgMoveTo(ctx, mPos.x(), mPos.y() + cy);
       nvgLineTo(ctx, mPos.x() + width(), mPos.y() + cy);
+
+      if (row % 5 == 0)
+      {
+        nvgStroke(ctx);
+        nvgBeginPath(ctx);
+      }
+
+      nvgStrokeColor(ctx, nvgRGBA(0xB0, 0xB0, 0xB0, 0x20));
       cy += _gridSize.y();
     }
+    nvgStroke(ctx);
 
     int cx = _gridSize.x();
     int col = 0;
+
+    nvgBeginPath(ctx);
     while (cx < width())
     {
       col++;
-      nvgStrokeColor(ctx, (col % 5 == 0) ? nvgRGBA(0xE0, 0xE0, 0xE0, 0x80)
-                                         : nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+      if (col % 5 == 0)
+      {
+        nvgStroke(ctx);
+        nvgBeginPath(ctx);
+        nvgStrokeColor(ctx, nvgRGBA(0xE0, 0xE0, 0xE0, 0x20));
+      }
 
       nvgMoveTo(ctx, mPos.x() + cx, mPos.y());
       nvgLineTo(ctx, mPos.x() + cx, mPos.y() + height());
+
+      if (col % 5 == 0)
+      {
+        nvgStroke(ctx);
+        nvgBeginPath(ctx);
+      }
+
+      nvgStrokeColor(ctx, nvgRGBA(0xB0, 0xB0, 0xB0, 0x20));
       cx += _gridSize.x();
     }
     nvgStroke(ctx);
@@ -674,6 +704,9 @@ void EditorWorkspace::draw(NVGcontext* ctx)
 void EditorWorkspace::addChild(int index, Widget * widget)
 {
   Widget::addChild(index, widget);
+
+  if (mChildrenChangeCallback)
+    mChildrenChangeCallback();
 }
 
 void EditorWorkspace::_drawWidthRectangle(NVGcontext* ctx, Color& color, int ww, const Vector4i& r)

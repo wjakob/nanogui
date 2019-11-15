@@ -1,7 +1,7 @@
 /*
-    src/button.cpp -- [Normal/Toggle/Radio/Popup] Button widget
+    src/toolbutton.cpp -- [Normal/Toggle/Radio/Popup] Button widget
 
-    NanoGUI was developed by Wenzel Jakob <wenzel.jakob@epfl.ch>.
+    This file was developed by Dalerank <dalerankn8@gmail.com>.
     The widget drawing code is based on the NanoVG demo application
     by Mikko Mononen.
 
@@ -25,6 +25,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
       mTextColor(Color(0, 0))
 {
   mFlags.set(NormalButton);
+  mDrawFlags = 0xFF;
 }
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
@@ -115,51 +116,59 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
 void Button::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
-    NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
-    NVGcolor gradBot = mTheme->mButtonGradientBotUnfocused;
+    if (mDrawFlags.test(DrawBody))
+    {
+      NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
+      NVGcolor gradBot = mTheme->mButtonGradientBotUnfocused;
 
-    if (mPushed) {
+      if (mPushed) {
         gradTop = mTheme->mButtonGradientTopPushed;
         gradBot = mTheme->mButtonGradientBotPushed;
-    } else if (mMouseFocus && mEnabled) {
+      }
+      else if (mMouseFocus && mEnabled) {
         gradTop = mTheme->mButtonGradientTopFocused;
         gradBot = mTheme->mButtonGradientBotFocused;
-    }
+      }
 
-    nvgBeginPath(ctx);
+      nvgBeginPath(ctx);
 
-    nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
-                   mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
+      nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
+        mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
-    if (mBackgroundColor.w() != 0) {
+      if (mBackgroundColor.w() != 0) {
         nvgFillColor(ctx, Color(mBackgroundColor.head<3>(), 1.f));
         nvgFill(ctx);
         if (mPushed) {
-            gradTop.a = gradBot.a = 0.8f;
-        } else {
-            double v = 1 - mBackgroundColor.w();
-            gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
+          gradTop.a = gradBot.a = 0.8f;
         }
+        else {
+          double v = 1 - mBackgroundColor.w();
+          gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
+        }
+      }
+
+      NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
+        mPos.y() + mSize.y(), gradTop, gradBot);
+
+      nvgFillPaint(ctx, bg);
+      nvgFill(ctx);
     }
 
-    NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
-                                    mPos.y() + mSize.y(), gradTop, gradBot);
+    if (mDrawFlags.test(DrawBorder))
+    {
+      nvgBeginPath(ctx);
+      nvgStrokeWidth(ctx, 1.0f);
+      nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + (mPushed ? 0.5f : 1.5f), mSize.x() - 1,
+        mSize.y() - 1 - (mPushed ? 0.0f : 1.0f), mTheme->mButtonCornerRadius);
+      nvgStrokeColor(ctx, mTheme->mBorderLight);
+      nvgStroke(ctx);
 
-    nvgFillPaint(ctx, bg);
-    nvgFill(ctx);
-
-    nvgBeginPath(ctx);
-    nvgStrokeWidth(ctx, 1.0f);
-    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + (mPushed ? 0.5f : 1.5f), mSize.x() - 1,
-                   mSize.y() - 1 - (mPushed ? 0.0f : 1.0f), mTheme->mButtonCornerRadius);
-    nvgStrokeColor(ctx, mTheme->mBorderLight);
-    nvgStroke(ctx);
-
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
-                   mSize.y() - 2, mTheme->mButtonCornerRadius);
-    nvgStrokeColor(ctx, mTheme->mBorderDark);
-    nvgStroke(ctx);
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
+        mSize.y() - 2, mTheme->mButtonCornerRadius);
+      nvgStrokeColor(ctx, mTheme->mBorderDark);
+      nvgStroke(ctx);
+    }
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     nvgFontSize(ctx, fontSize);
@@ -173,7 +182,7 @@ void Button::draw(NVGcontext *ctx) {
     if (!mEnabled)
         textColor = mTheme->mDisabledTextColor;
 
-    if (mIcon) {
+    if (mIcon && mDrawFlags.test(DrawIcon)) {
         auto icon = utf8(mIcon);
 
         float iw, ih = fontSize;
@@ -218,13 +227,16 @@ void Button::draw(NVGcontext *ctx) {
         }
     }
 
-    nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
-    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgFillColor(ctx, mTheme->mTextColorShadow);
-    nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
-    nvgFillColor(ctx, textColor);
-    nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
+    if (mDrawFlags.test(DrawText))
+    {
+      nvgFontSize(ctx, fontSize);
+      nvgFontFace(ctx, "sans-bold");
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+      nvgFillColor(ctx, mTheme->mTextColorShadow);
+      nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
+      nvgFillColor(ctx, textColor);
+      nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
+    }
 }
 
 void Button::save(Serializer &s) const {

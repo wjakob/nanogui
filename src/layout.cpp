@@ -183,39 +183,47 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
   const Window *window = dynamic_cast<const Window *>(widget);
   if (window && !window->title().empty()) {
-    if (mOrientation == Orientation::Vertical) {
+    if (mOrientation == Orientation::Vertical 
+        || mOrientation == Orientation::ReverseVertical) 
+    {
       position += widget->theme()->mWindowHeaderHeight - mMargin / 2;
     }
-    else {
+    else 
+    {
       yOffset = widget->theme()->mWindowHeaderHeight;
       containerSize.y() -= yOffset;
     }
   }
 
-  auto& children = widget->children();
-  std::vector<Widget*> pChildrens;
-  for (auto& a : children)
-  {
-    if (a->visible())
-      pChildrens.emplace_back(a);
-  }
+  std::vector<Widget*> pChildren;
+  bool reversed = mOrientation == Orientation::ReverseHorizontal 
+                  || mOrientation == Orientation::ReverseVertical;
+  
+  std::function<void(Widget*)> insertf = [&](Widget* w) { if (w->visible()) pChildren.push_back(w); };
+  if (reversed)
+    insertf = [&](Widget* w) { if (w->visible()) pChildren.insert(pChildren.begin(), w); };
 
-  if (children.size() == 0)
+  for (auto& a : widget->children()) insertf(a);
+  if (pChildren.size() == 0)
     return;
 
   Vector2i baseContainerSize = containerSize;
-  if (mOrientation == Orientation::Horizontal)
+  int sign = reversed ? -1 : 1;
+
+  if (mOrientation == Orientation::Horizontal || mOrientation == Orientation::ReverseHorizontal)
   {
-    while (pChildrens.size() > 0)
+    if (reversed)
+      position = containerSize.x() - position;
+    while (pChildren.size() > 0)
     {
-      Widget* w = pChildrens.front();
-      pChildrens.erase(pChildrens.begin());
+      Widget* w = pChildren.front();
+      pChildren.erase(pChildren.begin());
 
       if (!w->visible())
         continue;
 
-      position += mSpacing;
-      Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildrens.size() + 1), containerSize.y());
+      position += mSpacing * sign;
+      Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildren.size() + 1), containerSize.y());
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();
@@ -239,7 +247,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
       if (!w->isSubElement())
       {
-        position += wSize.x();
+        position += wSize.x() * sign;
         containerSize.x() -= wSize.x();
       }
     }
@@ -247,16 +255,19 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
   else
   {
     position = yOffset;
-    while (pChildrens.size() > 0)
+    if (reversed)
+      position = containerSize.y() - position;
+
+    while (pChildren.size() > 0)
     {
-      Widget* w = pChildrens.front();
-      pChildrens.erase(pChildrens.begin());
+      Widget* w = pChildren.front();
+      pChildren.erase(pChildren.begin());
 
       if (!w->visible())
         continue;
 
-      position += mSpacing;
-      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / (pChildrens.size() + 1));
+      position += mSpacing * sign;
+      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / (pChildren.size() + 1));
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();
@@ -280,7 +291,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
       if (!w->isSubElement())
       {
-        position += wSize.y();
+        position += wSize.y() * sign;
         containerSize.y() -= wSize.y();
       }
     }

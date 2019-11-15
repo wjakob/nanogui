@@ -32,7 +32,9 @@ enum class Alignment : uint8_t {
 /// The direction of data flow for a layout.
 enum class Orientation {
     Horizontal = 0, ///< Layout expands on horizontal axis.
-    Vertical        ///< Layout expands on vertical axis.
+    Vertical,       ///< Layout expands on vertical axis.
+    ReverseHorizontal,
+    ReverseVertical
 };
 
 /**

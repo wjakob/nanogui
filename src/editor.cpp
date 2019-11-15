@@ -36,6 +36,7 @@
 #include <nanogui/foldout.h>
 #include <nanogui/scrollbar.h>
 #include <nanogui/treeview.h>
+#include <nanogui/treeviewitem.h>
 #include <nanogui/windowmenu.h>
 #include <nanogui/common.h>
 #include <iostream>
@@ -82,11 +83,12 @@ using namespace nanogui;
 struct {
   std::string layers = "#layers";
   std::string assets = "#assets";
-  std::string workspace = "#workspace";
-  std::string propeditor = "#propeditor";
-  std::string mainmenu = "#mainmenu";
+  WidgetId workspace{ "#workspace" };
+  WidgetId propeditor{ "#propeditor" };
+  WidgetId mainmenu{ "#mainmenu" };
   WidgetId editor{ "#editor" };
   WidgetId mainview{ "#mainview" };
+  WidgetId treeview{ "#treeview" };
 } ID;
 
 class ExampleApplication : public Screen {
@@ -110,7 +112,7 @@ public:
     Widget& createMainMenu()
     {
       auto& mmenu = wdg<WindowMenu>();
-      mmenu.setId(ID.mainmenu);
+      mmenu.setId(ID.mainmenu.value);
       mmenu.activate({ 0, 0 });
       mmenu.submenu("File")
         .item("New", [this]() { msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
@@ -171,14 +173,15 @@ public:
     {
       auto& editor = area.wdg<EditorWorkspace>(ID.workspace);
       editor.setRelativeSize(0.7f, 1.f);
+      editor.setChildrenChangeCallback([this]() { fillTreeView(); });
     }
 
     void createControlWidgetsArea(Widget& area, float relw)
     {
-      auto& wa = area.widget(RelativeSize{ relw, 1.f }, WidgetStretchLayout{ Orientation::Vertical } );
-      auto& waheader = wa.widget(FixedHeight{ 30 }, WidgetStretchLayout{ Orientation::Horizontal });
+      auto& wa = area.vlayer(RelativeSize{ relw, 1.f });
+      auto& waheader = wa.hlayer(FixedHeight{ 30 });
 
-      auto& wawidgets = wa.widget(RelativeSize{ 1, 0 }, WidgetStretchLayout{ Orientation::Vertical });
+      auto& wawidgets = wa.vlayer(RelativeSize{ 1, 0 });
       auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
       fo.show();
       fo.addPage("page1", "Page1", new Widget(this));
@@ -186,13 +189,43 @@ public:
       fo.addPage("page3", "Page3", new Widget(this));
       fo.addPage("page4", "Page4", new Widget(this));
 
-      auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, WidgetId{ "#treeview_ed" });
+      auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.treeview);
       view.setRelativeSize(1, 1);
       view.hide();
 
       waheader.button(Caption{ "Assets" }, ButtonCallback{ [&] { view.hide(); fo.show(); } });
       waheader.button(Caption{ "Layers" }, ButtonCallback{ [&] { view.show(); fo.hide(); } });
+    }
 
+    void addTreeViewNode(TreeViewItem* item, Widget* w)
+    {
+      auto node = item->addNode("Unknown widget");
+      node->setData(w);
+      node->withLayout<StretchLayout>(Orientation::ReverseHorizontal);
+
+      node->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
+        ButtonChangeCallback{ [this,w](bool pressed) { props[(intptr_t)w].editable = pressed; }
+      });
+
+      node->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
+        ButtonChangeCallback{ [w](bool pressed) { w->setVisible(pressed); }
+      });
+
+      for (auto& c : w->children())
+        addTreeViewNode(node, c);
+    }
+
+    void fillTreeView()
+    {
+      auto treeview = findWidget<TreeView>(ID.treeview);
+      auto editor = findWidget<EditorWorkspace>(ID.workspace);
+      if (!treeview)
+        return;
+
+      treeview->removeAllNodes();
+
+      for (auto& c : editor->children())
+        addTreeViewNode(treeview->rootNode(), c);
     }
 
     void createBaseEditorWidget(Widget& area)
@@ -224,10 +257,6 @@ public:
     }
 
     virtual void draw(NVGcontext *ctx) {
-        /* Animate the scrollbar */
-        if (mProgress)
-          mProgress->setValue(std::fmod((float) nanogui::getTimeFromStart() / 10, 1.0f));
-
         /* Draw the user interface */
         Screen::draw(ctx);
     }
@@ -258,8 +287,12 @@ public:
     }
 
 private:
-    nanogui::ProgressBar *mProgress = nullptr;
-    int mCurrentImage;
+  struct InternalProp 
+  {
+    bool editable = true;
+  };
+
+  std::map<intptr_t, InternalProp> props;
 };
 
 int main(int /* argc */, char ** /* argv */) {

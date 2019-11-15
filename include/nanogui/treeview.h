@@ -37,6 +37,7 @@ public:
     bool getImageLeftOfIcon() const;
     TreeViewItem* getLastEventNode() const;
     void updateItems();
+    void removeAllNodes();
 
     bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;

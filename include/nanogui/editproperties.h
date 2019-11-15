@@ -16,6 +16,11 @@ public:
 
   void setColumnWidth(float nameColWidth, float valColWidth );
 
+  using Window::set;
+  template<typename... Args>
+  PropertiesEditor(Widget* parent, const Args&... args)
+    : PropertiesEditor(parent, std::string("")) { set<PropertiesEditor, Args...>(args...); }
+
   //! Returns the type name of the gui element.
   std::string wtypename() const;
 

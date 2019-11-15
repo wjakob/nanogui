@@ -110,6 +110,29 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
   return nullptr;
 }
 
+void TreeViewItem::removeChild(const Widget *widget)
+{
+  removeNode(widget);
+  Label::removeChild(widget);
+}
+
+void TreeViewItem::removeAllNodes()
+{
+  for (auto& n : mNodeChildren)
+  {
+    n->removeAllNodes();
+    n->remove();
+  }
+
+  mNodeChildren.clear();
+}
+
+void TreeViewItem::removeNode(const Widget* node)
+{
+  auto it = std::find(mNodeChildren.begin(), mNodeChildren.end(), node);
+  if (it != mNodeChildren.end()) mNodeChildren.erase(it);
+}
+
 TreeViewItem* TreeViewItem::insertNodeBefore(
   TreeViewItem*  other,
   const std::string&    text,

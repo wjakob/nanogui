@@ -25,6 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
+DECLSETTER(ButtonDrawFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 
 class NANOGUI_EXPORT Button : public Widget {
@@ -43,6 +44,13 @@ public:
         LeftCentered, ///< Button icon on the left, centered (depends on caption text length).
         RightCentered,///< Button icon on the right, centered (depends on caption text length).
         Right         ///< Button icon on the far right.
+    };
+
+    enum DrawFlags {
+        DrawBody =   1,
+        DrawText =   2,
+        DrawBorder = 3,
+        DrawIcon = 4
     };
 
     /**
@@ -146,6 +154,8 @@ public:
     virtual bool load(Serializer &s) override;
     bool load(Json::value &s) override;
 
+    void setDrawFlags(int flags) { mDrawFlags = flags; }
+
 protected:
 
     virtual void beforeDoCallback() {}
@@ -173,6 +183,7 @@ protected:
 
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
     std::bitset<8> mFlags;
+    std::bitset<8> mDrawFlags;
 
     /// The background color of this Button.
     Color mBackgroundColor;
@@ -198,6 +209,7 @@ public:
     PROPSETTER(Icon, setIcon)
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(ButtonFlags,setFlags)
+    PROPSETTER(ButtonDrawFlags, setDrawFlags)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
 };
 

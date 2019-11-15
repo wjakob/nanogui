@@ -8,7 +8,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-//! constructor
 TreeView::TreeView( Widget* parent, bool clip,
   bool drawBack, bool scrollBarVertical, bool scrollBarHorizontal)
   : Widget( parent ),
@@ -43,6 +42,11 @@ TreeView::TreeView( Widget* parent, bool clip,
 }
 
 TreeView::~TreeView() {}
+
+void TreeView::removeAllNodes()
+{
+  mRoot->removeAllNodes();
+}
 
 void TreeView::_recalculateItemsRectangle(NVGcontext* ctx)
 {

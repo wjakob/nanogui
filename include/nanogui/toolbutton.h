@@ -21,10 +21,11 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple radio+toggle button with an icon.
  */
-class ToolButton : public Button {
+class NANOGUI_EXPORT ToolButton : public Button {
 public:
     explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
-        : Button(parent, caption, icon) {
+        : Button(parent, caption, icon) 
+    {
         setFlags(Flags::RadioButton | Flags::ToggleButton);
         setFixedSize(Vector2i(25, 25));
     }
@@ -32,10 +33,36 @@ public:
     using Button::set;
     template<typename... Args>
     ToolButton(Widget* parent, const Args&... args)
-      : ToolButton(parent, -1, std::string("")) { set<Button, Args...>(args...); }
+      : ToolButton(parent, -1, std::string("")) { set<ToolButton, Args...>(args...); }
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+class NANOGUI_EXPORT ToggleButton : public Button {
+public:
+  explicit ToggleButton(Widget *parent, int icon)
+    : Button(parent, std::string(""), icon) 
+  {
+    setFlags(Flags::ToggleButton);
+    mDrawFlags = 0;
+    mDrawFlags.set(DrawIcon);
+
+    setFixedSize(Vector2i(25, 25));
+  }
+
+  using Button::set;
+  template<typename... Args>
+  ToggleButton(Widget* parent, const Args&... args)
+    : ToggleButton(parent, -1) { set<ToggleButton, Args...>(args...); }
+
+  void beforeDoCallback() override;
+
+private:
+  Color mActiveColor, mInactiveColor;
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

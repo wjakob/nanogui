@@ -167,6 +167,12 @@ public:
     }
 
     template<typename RetClass>
+    RetClass *findWidget(WidgetId id, bool inchildren = true)
+    {
+      return findWidget<RetClass>(std::string(id.value), inchildren);
+    }
+
+    template<typename RetClass>
     RetClass *findWidgetGlobal(const std::string& id)
     {
       Widget* f = findWidgetGlobal(id);

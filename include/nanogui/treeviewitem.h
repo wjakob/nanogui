@@ -41,6 +41,9 @@ public:
   void clearNodes();
   bool hasNodes() const;
 
+  void removeChild(const Widget *widget) override;
+  void removeNode(const Widget* node);
+
   //! Adds a new node behind the last child node.
   //! \param text text of the new node
   //! \param icon icon text of the new node
@@ -139,6 +142,8 @@ public:
   void setColor( const Color& color );
   Color getColor() const { return mFontColor; }
   const std::string& getActiveFont() { return mActiveFont; }
+
+  void removeAllNodes();
 
   TreeView* view();
 

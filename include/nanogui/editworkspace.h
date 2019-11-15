@@ -40,7 +40,12 @@ public:
         ResizeLeft
     };
 
-    EditorWorkspace( Widget* parent, std::string id );
+    EditorWorkspace( Widget* parent, const std::string& id);
+
+    using Widget::set;
+    template<typename... Args>
+    EditorWorkspace(Widget* parent, const Args&... args)
+      : EditorWorkspace(parent, std::string("")) { set<EditorWorkspace, Args...>(args...); }
 
     virtual ~EditorWorkspace();
 
@@ -120,6 +125,7 @@ public:
     void preview();
 
     void setSelectedCallback(std::function<void(Widget*)> callback) { mWidgetSelectedCallback = callback; }
+    void setChildrenChangeCallback(std::function<void()> callback) { mChildrenChangeCallback = callback; }
 
 //slots:
     void toggleOptionsVisible();
@@ -133,6 +139,7 @@ private:
     EditMode getModeFromPos(const Vector2i &p);
 
     std::function<void(Widget*)> mWidgetSelectedCallback;
+    std::function<void()> mChildrenChangeCallback;
 
     //void _createEditorMenu();
     //void _createElementsWindow();

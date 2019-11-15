@@ -443,7 +443,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/table.h src/table.cpp
   include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
-  include/nanogui/toolbutton.h
+  include/nanogui/toolbutton.h src/toolbutton.cpp
   include/nanogui/nanogui.h
   include/nanogui/serializer/core.h    src/serializer.cpp
 
