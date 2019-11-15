@@ -37,7 +37,9 @@ TreeView::TreeView( Widget* parent, bool clip,
 
   mRoot = add<TreeViewItem>();
   mRoot->mExpanded = true;
+  *(const_cast<TreeViewItem::NodeId*>(&mRoot->mNodeId)) = TreeViewItem::RootNodeId;
   mNeedRecalculateItemsRectangle = true;
+  mNeedRecheckChildren = true;
   mSelected = nullptr;
 }
 
@@ -46,6 +48,38 @@ TreeView::~TreeView() {}
 void TreeView::removeAllNodes()
 {
   mRoot->removeAllNodes();
+}
+
+void TreeView::removeNode(TreeViewItem::NodeId id)
+{
+  auto* node = findNode(id);
+  if (node)
+    removeChild(node);
+}
+
+TreeViewItem& TreeView::addNode()
+{
+  static size_t nodeIdCounter = 1;
+  auto& node = wdg<TreeViewItem>();
+  *(const_cast<TreeViewItem::NodeId*>(&node.mNodeId)) = nodeIdCounter++;
+  return node;
+}
+
+TreeViewItem* TreeView::findNode(TreeViewItem::NodeId id)
+{
+  if (id == TreeViewItem::BadNodeId)
+    return nullptr;
+
+  for (auto& c : children())
+  {
+    if (auto twi = c->cast<TreeViewItem>())
+    {
+      if (twi->getNodeId() == id)
+        return twi;
+    }
+  }
+
+  return nullptr;
 }
 
 void TreeView::_recalculateItemsRectangle(NVGcontext* ctx)
@@ -273,10 +307,47 @@ std::string TreeView::_getCurrentNodeFont( TreeViewItem* node)
   return "sans";
 }
 
+void TreeView::recheckChildren() { mNeedRecheckChildren = true; }
+
 void TreeView::afterDraw(NVGcontext* ctx)
 {
-  if ( !visible() )
-    return;
+  if (mNeedRecheckChildren)
+  {
+    mNeedRecheckChildren = false;
+    
+    std::vector<TreeViewItem*> nodes = findAll<TreeViewItem>();
+    struct NodeExist { TreeViewItem::NodeId id; bool alive; };
+    std::vector<NodeExist> all_ids;
+    //collect all id from nodes, dont add root node, because it always present
+    for (auto& n : nodes)
+    {
+      if (n != mRoot)
+        all_ids.push_back({ n->getNodeId(), false });
+    }
+
+    //check each id, that it contain at least in once node
+    for (auto& c: all_ids)
+    {
+      for (auto& n : nodes)
+      {
+        bool exist = n->isAliveId(c.id);
+        if (exist)
+        {
+          c.alive = true;
+          break;
+        }
+      }
+    }
+
+    //now all_ids contain information about which nodes are empty
+    for (auto& c : all_ids)
+    {
+      if (!c.alive)
+      {
+        removeNode(c.id);
+      }
+    }
+  }
 
   if ( mNeedUpdateItems )
   {

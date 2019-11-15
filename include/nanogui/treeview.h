@@ -1,11 +1,10 @@
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/treeviewitem.h>
 #include <memory>
 
 NAMESPACE_BEGIN(nanogui)
 
-class TreeViewItem;
 class ScrollBar;
 
 //! Default tree view GUI element.
@@ -44,6 +43,12 @@ public:
     bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     bool focusEvent(bool focused) override;
 
+    TreeViewItem& addNode();
+    void removeNode(TreeViewItem::NodeId id);
+    TreeViewItem* findNode(TreeViewItem::NodeId id);
+
+    void recheckChildren();
+
 private:
     void _recalculateItemsRectangle(NVGcontext* ctx);
     void _mouseAction( int xpos, int ypos, bool onlyHover = false );
@@ -52,28 +57,27 @@ private:
 
     bool mNeedRecalculateItemsRectangle = false;
     TreeViewItem* mRoot;
-    TreeViewItem*  mSelected;
-    TreeViewItem*  mHoverNode;
-    int      mItemHeight;
-    int      mIndentWidth;
+    TreeViewItem* mSelected;
+    TreeViewItem* mHoverNode;
+    int           mItemHeight;
+    int           mIndentWidth;
 
     ScrollBar*    mScrollBarH;
     ScrollBar*    mScrollBarV;
 
-    TreeViewItem*  mLastEventNode;
-    bool      mLinesVisible;
-    bool      mSelecting;
-    bool      mDrawBack;
-    bool      mClip;
-    bool      mImageLeftOfIcon;
+    TreeViewItem* mLastEventNode;
+    bool          mLinesVisible;
+    bool          mSelecting;
+    bool          mDrawBack;
+    bool          mClip;
+    bool          mImageLeftOfIcon;
     std::string mFont = "sans";
 
-    //ElementState _currentDrawState;
-
-    Vector2i mTotalItemSize;
-    bool mNeedUpdateItems;
-    float mScrollBarVscale = 1.f;
-    float mScrollBarHscale = 1.f;
+    Vector2i      mTotalItemSize; 
+    bool          mNeedRecheckChildren;
+    bool          mNeedUpdateItems;
+    float         mScrollBarVscale = 1.f;
+    float         mScrollBarHscale = 1.f;
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

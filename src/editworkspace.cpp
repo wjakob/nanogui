@@ -989,6 +989,9 @@ void EditorWorkspace::removeChild(const Widget* child )
     mElementUnderMouse = nullptr;
 
   Widget::removeChild( child );
+
+  if (mChildrenChangeCallback)
+    mChildrenChangeCallback();
 }
 
 void EditorWorkspace::activateChangeParentMode()

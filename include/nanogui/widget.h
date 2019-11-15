@@ -458,6 +458,7 @@ public:
     void setDebugDraw(bool en) { mDebugDraw = en; }
 
     template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
+    template<typename RetClass> const RetClass* cast() const { return dynamic_cast<const RetClass*>(this); }
 
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(FixedWidth, setFixedWidth)

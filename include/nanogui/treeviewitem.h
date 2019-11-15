@@ -13,10 +13,12 @@ class TreeView;
 class NANOGUI_EXPORT TreeViewItem : public Label
 {
   friend class TreeView;
+  const size_t mNodeId;
 
 public:
-  using NodeList = std::list<TreeViewItem*>;
-  using TvIterator = NodeList::iterator;
+  using NodeId = size_t;
+  enum { RootNodeId = 0xfefefefe, BadNodeId = 0xffffffff };
+  using NodeList = std::list<NodeId>;
 
   explicit TreeViewItem(Widget* widget);
   ~TreeViewItem() override;
@@ -38,11 +40,14 @@ public:
   void setData( void* data ) { Data = data; }
 
   int nodesCount() const;
-  void clearNodes();
   bool hasNodes() const;
+
+  bool isAliveId(NodeId id);
 
   void removeChild(const Widget *widget) override;
   void removeNode(const Widget* node);
+
+  NodeId getNodeId() const { return mNodeId; }
 
   //! Adds a new node behind the last child node.
   //! \param text text of the new node
@@ -129,9 +134,9 @@ public:
   TreeViewItem* prevSibling() const;
   TreeViewItem* nextSibling() const;
   TreeViewItem* nextVisible() const;
-  bool deleteNode( TreeViewItem* child );
-  bool moveNodeUp( TreeViewItem* child );
-  bool moveNodeDown( TreeViewItem* child );
+  bool deleteNode(TreeViewItem* child);
+  bool moveNodeUp(TreeViewItem* child);
+  bool moveNodeDown(TreeViewItem* child);
   bool isExpanded() const;
   void setExpanded( bool expanded );
   bool isSelected() const;
@@ -148,17 +153,17 @@ public:
   TreeView* view();
 
 private:
-  void init_();
+  void _init();
 
   TreeView*  mOwner;
-  TreeViewItem*  itemParent_;
+  NodeId  mParentId;
   Color mFontColor;
   int  mIcon;
   int  mImageIndex;
   int  SelectedImageIndex;
   void*  Data;
   bool mExpanded;
-  NodeList mNodeChildren;
+  NodeList mChildrenIds;
   std::string mActiveFont;
 
 public:
