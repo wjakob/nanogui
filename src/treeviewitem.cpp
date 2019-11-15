@@ -10,6 +10,8 @@ TreeViewItem::TreeViewItem( Widget* parent )
   _init();
   if (auto p = dynamic_cast<TreeView*>(parent))
     mOwner = p;
+
+  mPreviewArea = &hlayer(WidgetStretchLayout{ Orientation::ReverseHorizontal });
 }
 
 void TreeViewItem::_init()
@@ -26,8 +28,8 @@ void TreeViewItem::_init()
 
 TreeViewItem::~TreeViewItem()
 {
-  if (mOwner && this == mOwner->selectedNode() )
-    setSelected( false );
+  if (mOwner && mNodeId == mOwner->selectedNode() )
+    setSelected(false);
 }
 
 int TreeViewItem::nodesCount() const { return mChildrenIds.size(); }
@@ -327,7 +329,7 @@ void TreeViewItem::setSelected( bool selected )
     }
     else
     {
-      if (mOwner->selectedNode() == this)
+      if (mOwner->selectedNode() == mNodeId)
       {
         mOwner->setSelected(nullptr);
       }
@@ -339,7 +341,7 @@ bool TreeViewItem::isSelected() const
 {
   if (mOwner)
   {
-    return mOwner->selectedNode() == this;
+    return mOwner->selectedNode() == mNodeId;
   }
   else
   {
@@ -374,12 +376,17 @@ void TreeViewItem::draw(NVGcontext *ctx)
   if ( !isVisible() )
     return;
 
-  Widget::draw(ctx);
   nvgFontFace(ctx, mFont.c_str());
   nvgFontSize(ctx, fontSize());
   Color color;
   if (enabled()) color = (mColor.w() > 0) ? mColor : mTheme->mTextColor;
   else color = (mDisabledColor.w() > 0) ? mDisabledColor : mTheme->mLabelTextDisabledColor;
+
+  if (source()->selectedNode() == mNodeId)
+    color = Color(0xff, 0, 0, 0xff);
+
+  if (source()->hoveredNode() == mNodeId)
+    color = Color(0, 0xff, 0, 0xff);
 
   nvgFillColor(ctx, color);
 
@@ -404,6 +411,16 @@ void TreeViewItem::draw(NVGcontext *ctx)
     nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
   else
     nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
+
+  if (mPreviewArea) mPreviewArea->setVisible(false);
+  Widget::draw(ctx);
+
+  nvgSave(ctx);
+  nvgResetScissor(ctx);
+  nvgTranslate(ctx, 0, 0);
+  if (mPreviewArea) mPreviewArea->setVisible(true);
+  mPreviewArea->draw(ctx);
+  nvgRestore(ctx);
 }
 
 NAMESPACE_END(nanogui)

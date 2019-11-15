@@ -24,13 +24,17 @@ public:
     virtual ~TreeView();
 
     TreeViewItem* rootNode() const { return mRoot; }
-    TreeViewItem* selectedNode() const { return mSelected; }
-    void setSelected(TreeViewItem* item) { mSelected = item; }
+    TreeViewItem::NodeId selectedNode() const { return mSelected; }
+    TreeViewItem::NodeId hoveredNode() const { return mHovered; }
+    
+    void setSelected(TreeViewItem* item) { mSelected = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
+
     bool getLinesVisible() const { return mLinesVisible; }
     void setLinesVisible( bool visible ) { mLinesVisible = visible; }
 
     void draw(NVGcontext* ctx) override;
     void afterDraw(NVGcontext* ctx) override;
+    void performLayout(NVGcontext *ctx) override;
 
     void setImageLeftOfIcon( bool bLeftOf );
     bool getImageLeftOfIcon() const;
@@ -57,15 +61,14 @@ private:
 
     bool mNeedRecalculateItemsRectangle = false;
     TreeViewItem* mRoot;
-    TreeViewItem* mSelected;
-    TreeViewItem* mHoverNode;
+    TreeViewItem::NodeId mSelected;
+    TreeViewItem::NodeId mHovered;
     int           mItemHeight;
     int           mIndentWidth;
 
     ScrollBar*    mScrollBarH;
     ScrollBar*    mScrollBarV;
 
-    TreeViewItem* mLastEventNode;
     bool          mLinesVisible;
     bool          mSelecting;
     bool          mDrawBack;

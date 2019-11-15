@@ -201,15 +201,16 @@ public:
     {
       auto node = item->addNode("Unknown widget");
       node->setData(w);
-      node->withLayout<StretchLayout>(Orientation::ReverseHorizontal);
+      if (auto parea = node->previewArea())
+      {
+        parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
+          ButtonChangeCallback{ [this,w](bool pressed) { props[(intptr_t)w].editable = pressed; }
+        });
 
-      node->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
-        ButtonChangeCallback{ [this,w](bool pressed) { props[(intptr_t)w].editable = pressed; }
-      });
-
-      node->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
-        ButtonChangeCallback{ [w](bool pressed) { w->setVisible(pressed); }
-      });
+        parea->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
+          ButtonChangeCallback{ [w](bool pressed) { w->setVisible(pressed); }
+        });
+      }
 
       for (auto& c : w->children())
         addTreeViewNode(node, c);

@@ -26,6 +26,8 @@ public:
   TreeView* source() const;
   TreeViewItem* baseNode() const;
 
+  Widget* previewArea() { return mPreviewArea; }
+
   Vector2i preferredSize(NVGcontext *ctx) const override;
 
   int getIcon() const { return mIcon; }
@@ -72,7 +74,6 @@ public:
     int selectedImageIndex = -1,
     void* data = nullptr)
   { return addNodeBack(text, icon, imageIndex, selectedImageIndex, data); }
-
 
   //! Adds a new node before the first child node.
   //! \param text text of the new node
@@ -156,6 +157,7 @@ private:
   void _init();
 
   TreeView*  mOwner;
+  Widget* mPreviewArea = nullptr; 
   NodeId  mParentId;
   Color mFontColor;
   int  mIcon;

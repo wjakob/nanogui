@@ -147,7 +147,8 @@ Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) con
   }
 
   bool first = true;
-  int axis1 = (int)mOrientation, axis2 = ((int)mOrientation + 1) % 2;
+  int axis1 = (int)mOrientation % 2; //because we have reverse horizontal/vertical orientation
+  int axis2 = ((int)mOrientation + 1) % 2;
   for (auto w : widget->children()) {
     if (!w->visible())
       continue;
@@ -237,6 +238,9 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
       if (targetSize.x() > 0) wSize.x() = targetSize.x();
 
+      if (reversed)
+        pos.x() -= wSize.x();
+
       if (!w->isSubElement())
       {
         w->setPosition(pos);
@@ -280,6 +284,9 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       Vector2i pos(0, position);
 
       if (targetSize.y() > 0) wSize.y() = targetSize.y();
+
+      if (reversed)
+        pos.y() -= wSize.y();
 
       if (!w->isSubElement())
       {
