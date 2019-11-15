@@ -40,6 +40,8 @@ public:
 
   void* getData() const { return Data; }
   void setData( void* data ) { Data = data; }
+  void setAnchorPosition(const Vector2i& pos) { mAnchorPotsition = pos; }
+  const Vector2i anchorPosition() const { return mAnchorPotsition; }
 
   int nodesCount() const;
   bool hasNodes() const;
@@ -131,6 +133,7 @@ public:
   TreeViewItem* back() const;
 
   void draw(NVGcontext* ctx) override;
+  void performLayout(NVGcontext* ctx) override;
 
   TreeViewItem* prevSibling() const;
   TreeViewItem* nextSibling() const;
@@ -160,6 +163,7 @@ private:
   Widget* mPreviewArea = nullptr; 
   NodeId  mParentId;
   Color mFontColor;
+  Vector2i mAnchorPotsition;
   int  mIcon;
   int  mImageIndex;
   int  SelectedImageIndex;

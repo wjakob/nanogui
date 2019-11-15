@@ -115,23 +115,13 @@ bool TreeView::mouseButtonEvent(const Vector2i &p, int button, bool down, int mo
 {
   if (isMouseButtonLeft(button) && down)
   {
-    if ( focused() && !isPointInsideRect(p, rect()) )
-    {
-      //removeFocus();
-      return false;
-    }
-
     mSelecting = true;
     requestFocus();
-    return true;
   }
-
-  if (isMouseButtonLeft(button) && !down)
+  else if (isMouseButtonLeft(button) && !down)
   {
     _mouseAction( p.x(), p.y(), false );
     mSelecting = false;
-
-    return true;
   }
 
   return Widget::mouseButtonEvent(p, button, down, modifiers);
@@ -356,15 +346,9 @@ void TreeView::afterDraw(NVGcontext* ctx)
         fontNode = "sans";
 
       Vector2i pfsize = node->preferredSize(ctx);
-      node->setPosition( pos + offset );
-      node->setSize(pfsize);
-
-      auto pa = node->previewArea();
-      if (pa)
-      {
-        pa->setPosition(0, (pos + offset).y());
-        pa->setFixedSize({ width(), pfsize.y() });
-      }
+      node->setPosition(0, (pos + offset).y() );
+      node->setAnchorPosition(pos);
+      node->setFixedSize({ width(), pfsize.y() });
 
       node = node->nextVisible();
 
@@ -399,7 +383,7 @@ void TreeView::draw(NVGcontext* ctx)
   Vector2i framePos;
   while (node)
   {
-    framePos = node->position();
+    framePos = node->anchorPosition();
     Vector2i ns = node->size();
     int centerYofs = (ns.y() - rsize.y()) / 2;
     Vector2i center = mPos + framePos + rsize / 2;

@@ -24,7 +24,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
       mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0))
 {
-  mFlags.set(NormalButton);
+  setFlags(NormalButton);
   mDrawFlags = 0xFF;
 }
 
@@ -116,7 +116,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
 void Button::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
-    if (mDrawFlags.test(DrawBody))
+    if (haveDrawFlag(DrawBody))
     {
       NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
       NVGcolor gradBot = mTheme->mButtonGradientBotUnfocused;
@@ -154,7 +154,7 @@ void Button::draw(NVGcontext *ctx) {
       nvgFill(ctx);
     }
 
-    if (mDrawFlags.test(DrawBorder))
+    if (haveDrawFlag(DrawBorder))
     {
       nvgBeginPath(ctx);
       nvgStrokeWidth(ctx, 1.0f);
@@ -182,7 +182,7 @@ void Button::draw(NVGcontext *ctx) {
     if (!mEnabled)
         textColor = mTheme->mDisabledTextColor;
 
-    if (mIcon && mDrawFlags.test(DrawIcon)) {
+    if (mIcon && haveDrawFlag(DrawIcon)) {
         auto icon = utf8(mIcon);
 
         float iw, ih = fontSize;
@@ -227,7 +227,7 @@ void Button::draw(NVGcontext *ctx) {
         }
     }
 
-    if (mDrawFlags.test(DrawText))
+    if (haveDrawFlag(DrawText))
     {
       nvgFontSize(ctx, fontSize);
       nvgFontFace(ctx, "sans-bold");
@@ -245,7 +245,7 @@ void Button::save(Serializer &s) const {
     s.set("icon", mIcon);
     s.set("iconPosition", (int) mIconPosition);
     s.set("pushed", mPushed);
-    s.set("flags", (int)mFlags.to_ullong());
+    s.set("flags", mFlags);
     s.set("backgroundColor", mBackgroundColor);
     s.set("textColor", mTextColor);
 }
@@ -275,16 +275,15 @@ bool Button::load(Json::value &save) {
 }
 
 bool Button::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("caption", mCaption)) return false;
-    if (!s.get("icon", mIcon)) return false;
-    if (!s.get("iconPosition", mIconPosition)) return false;
-    if (!s.get("pushed", mPushed)) return false;
-    int fl;  if (!s.get("flags", fl)) return false;
-    mFlags.reset(); mFlags |= fl;
-    if (!s.get("backgroundColor", mBackgroundColor)) return false;
-    if (!s.get("textColor", mTextColor)) return false;
-    return true;
+  if (!Widget::load(s)) return false;
+  if (!s.get("caption", mCaption)) return false;
+  if (!s.get("icon", mIcon)) return false;
+  if (!s.get("iconPosition", mIconPosition)) return false;
+  if (!s.get("pushed", mPushed)) return false;
+  if (!s.get("flags", mFlags)) return false;
+  if (!s.get("backgroundColor", mBackgroundColor)) return false;
+  if (!s.get("textColor", mTextColor)) return false;
+  return true;
 }
 
 void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y, float kw, float kh)

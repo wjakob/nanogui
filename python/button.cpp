@@ -39,11 +39,11 @@ void register_button(py::module &m) {
         .value("RightCentered", Button::IconPosition::RightCentered)
         .value("Right", Button::IconPosition::Right);
 
-    py::enum_<Button::Flags>(button, "Flags", D(Button, Flags))
-        .value("NormalButton", Button::Flags::NormalButton)
-        .value("RadioButton", Button::Flags::RadioButton)
-        .value("ToggleButton", Button::Flags::ToggleButton)
-        .value("PopupButton", Button::Flags::PopupButton);
+    py::enum_<Button::Flag>(button, "Flag", D(Button, Flags))
+        .value("NormalButton", Button::Flag::NormalButton)
+        .value("RadioButton", Button::Flag::RadioButton)
+        .value("ToggleButton", Button::Flag::ToggleButton)
+        .value("PopupButton", Button::Flag::PopupButton);
 
     py::class_<ToolButton, Button, ref<ToolButton>, PyToolButton>(m, "ToolButton", D(ToolButton))
         .def(py::init<Widget *,int, const std::string &>(),

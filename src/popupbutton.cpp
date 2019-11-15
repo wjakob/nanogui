@@ -21,10 +21,10 @@ PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonI
 
     mChevronIcon = mTheme->mPopupChevronRightIcon;
 
-    setFlags(Flags::ToggleButton | Flags::PopupButton);
+    setFlags(Flag::ToggleButton | Flag::PopupButton);
 
     Window *parentWindow = window();
-    mPopup = new Popup(parentWindow->parent(), window());
+    mPopup = parentWindow->parent()->add<Popup>(window());
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
 

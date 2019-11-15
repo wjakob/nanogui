@@ -26,7 +26,7 @@ public:
     explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
         : Button(parent, caption, icon) 
     {
-        setFlags(Flags::RadioButton | Flags::ToggleButton);
+        setFlags(Flag::RadioButton | Flag::ToggleButton);
         setFixedSize(Vector2i(25, 25));
     }
 
@@ -44,9 +44,8 @@ public:
   explicit ToggleButton(Widget *parent, int icon)
     : Button(parent, std::string(""), icon) 
   {
-    setFlags(Flags::ToggleButton);
-    mDrawFlags = 0;
-    mDrawFlags.set(DrawIcon);
+    setFlags(Flag::ToggleButton);
+    setDrawFlags(DrawFlag::DrawIcon);
 
     setFixedSize(Vector2i(25, 25));
   }
@@ -57,6 +56,7 @@ public:
     : ToggleButton(parent, -1) { set<ToggleButton, Args...>(args...); }
 
   void beforeDoCallback() override;
+  void draw(NVGcontext* ctx) override;
 
 private:
   Color mActiveColor, mInactiveColor;

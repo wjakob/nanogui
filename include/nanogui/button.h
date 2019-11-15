@@ -31,11 +31,11 @@ DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 class NANOGUI_EXPORT Button : public Widget {
 public:
     /// Flags to specify the button behavior (can be combined with binary OR)
-    enum Flags {
-        NormalButton = 0, ///< A normal Button.
-        RadioButton  = 1, ///< A radio Button.
-        ToggleButton = 2, ///< A toggle Button.
-        PopupButton  = 3  ///< A popup Button.
+    enum Flag {
+        NormalButton = 1<<0, ///< A normal Button.
+        RadioButton  = 1<<1, ///< A radio Button.
+        ToggleButton = 1<<2, ///< A toggle Button.
+        PopupButton  = 1<<3  ///< A popup Button.
     };
 
     /// The available icon positions.
@@ -46,11 +46,11 @@ public:
         Right         ///< Button icon on the far right.
     };
 
-    enum DrawFlags {
+    enum DrawFlag {
         DrawBody =   1,
         DrawText =   2,
         DrawBorder = 3,
-        DrawIcon = 4
+        DrawIcon =   4
     };
 
     /**
@@ -99,13 +99,14 @@ public:
     void setIcon(int icon) { mIcon = icon; }
 
     /// The current flags of this Button (see \ref nanogui::Button::Flags for options).
-    bool haveFlag(int flag) const { return mFlags.test(flag); }
+    bool haveFlag(int flag) const { return mFlags & flag; }
 
     /// Sets the flags of this Button (see \ref nanogui::Button::Flags for options).
-    void setFlags(int buttonFlags) { mFlags.reset(); mFlags != buttonFlags; }
-
-    void setToggleButton(bool en) { if (en) mFlags.set(Button::ToggleButton);
-                                    else mFlags.reset(Button::ToggleButton); }
+    void setFlags(int flags) { mFlags = flags; }
+    void setFlag(int flags) { mFlags |= flags; }
+    
+    void setToggleButton(bool en) { if (en) mFlags |= Button::ToggleButton;
+                                    else mFlags &= ~Button::ToggleButton; }
 
     /// The position of the icon for this Button.
     IconPosition iconPosition() const { return mIconPosition; }
@@ -155,6 +156,7 @@ public:
     bool load(Json::value &s) override;
 
     void setDrawFlags(int flags) { mDrawFlags = flags; }
+    bool haveDrawFlag(int flag) { return mDrawFlags & flag; }
 
 protected:
 
@@ -182,8 +184,8 @@ protected:
     bool mPushed;
 
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
-    std::bitset<8> mFlags;
-    std::bitset<8> mDrawFlags;
+    uint16_t mFlags;
+    uint16_t mDrawFlags;
 
     /// The background color of this Button.
     Color mBackgroundColor;

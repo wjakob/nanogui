@@ -12,6 +12,7 @@ TreeViewItem::TreeViewItem( Widget* parent )
     mOwner = p;
 
   mPreviewArea = &hlayer(WidgetStretchLayout{ Orientation::ReverseHorizontal });
+  mPreviewArea->setRelativeSize({ 1, 1 });
 }
 
 void TreeViewItem::_init()
@@ -371,6 +372,11 @@ bool TreeViewItem::isExpanded() const { return mExpanded; }
 
 TreeView* TreeViewItem::view() { return findParent<TreeView>(); }
 
+void TreeViewItem::performLayout(NVGcontext* ctx)
+{
+  Label::performLayout(ctx);
+}
+
 void TreeViewItem::draw(NVGcontext *ctx)
 {
   if ( !isVisible() )
@@ -407,20 +413,14 @@ void TreeViewItem::draw(NVGcontext *ctx)
   }
 
   nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+  xpos += mPos.x() + mAnchorPotsition.x();
+  ypos += mPos.y();
   if (mFixedSize.x() > 0)
-    nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
+    nvgTextBox(ctx, xpos, ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
   else
-    nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
+    nvgText(ctx, xpos, ypos, mCaption.c_str(), nullptr);
 
-  if (mPreviewArea) mPreviewArea->setVisible(false);
   Widget::draw(ctx);
-
-  nvgSave(ctx);
-  nvgResetScissor(ctx);
-  nvgTranslate(ctx, 0, 0);
-  if (mPreviewArea) mPreviewArea->setVisible(true);
-  mPreviewArea->draw(ctx);
-  nvgRestore(ctx);
 }
 
 NAMESPACE_END(nanogui)

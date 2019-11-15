@@ -346,9 +346,9 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
 
     int index = 0;
     for (const auto &str: items) {
-        DropdownListItem *button = new DropdownListItem(mPopup, str);
-        button->setFlags(Button::RadioButton);
-        button->setCallback([&, index] {
+        auto& button = mPopup->wdg<DropdownListItem>(str);
+        button.setFlags(Button::RadioButton);
+        button.setCallback([&, index] {
             mSelectedIndex = index;
             setCaption(mItemsShort[index]);
             setPushed(false);

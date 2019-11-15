@@ -824,16 +824,16 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
 
     auto& button2 = layer.button("Radio 1 (Hover for Tooltip)");
     //button2.setFont(radio_font);
-    button2.setFlags(Button::Flags::RadioButton);
+    button2.setFlags(Button::Flag::RadioButton);
     button2.setTooltip("Short tooltip!");
 
     auto& button3 = layer.button("Radio 2 (Hover for Tooltip)");
     //button3.setFont(radio_font);
-    button3.setFlags(Button::Flags::RadioButton);
+    button3.setFlags(Button::Flag::RadioButton);
     button3.setTooltip("This is a much longer tooltip that will get wrapped automatically!");
 
     auto& button4 = layer.button("ToggleButton");
-    button4.setFlags(Button::Flags::ToggleButton);
+    button4.setFlags(Button::Flag::ToggleButton);
 
     // checkbox (top level)
     layer.checkbox("A CheckBox");

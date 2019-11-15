@@ -47,12 +47,12 @@ void ComboBox::setItems(const std::vector<std::string> &items, const std::vector
         mSelectedIndex = 0;
     while (mPopup->childCount() != 0)
         mPopup->removeChild(mPopup->childCount()-1);
-    mPopup->setLayout(new GroupLayout(10));
+    mPopup->withLayout<GroupLayout>(10);
     int index = 0;
     for (const auto &str: items) {
-        Button *button = new Button(mPopup, str);
-        button->setFlags(Button::RadioButton);
-        button->setCallback([&, index] {
+        auto& button = mPopup->button(str);
+        button.setFlags(Button::RadioButton);
+        button.setCallback([&, index] {
             mSelectedIndex = index;
             setCaption(mItemsShort[index]);
             setPushed(false);
