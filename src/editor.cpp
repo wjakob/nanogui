@@ -204,7 +204,10 @@ public:
       if (auto parea = node->previewArea())
       {
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
-          ButtonChangeCallback{ [this,w](bool pressed) { props[(intptr_t)w].editable = pressed; }
+          ButtonChangeCallback{ [this,w](bool pressed) { 
+            if (auto workspace = findWidget<EditorWorkspace>(ID.workspace))
+              workspace->setWidgetEditable((intptr_t)w, pressed); 
+          }
         });
 
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
@@ -286,14 +289,6 @@ public:
         }
         return true;
     }
-
-private:
-  struct InternalProp 
-  {
-    bool editable = true;
-  };
-
-  std::map<intptr_t, InternalProp> props;
 };
 
 int main(int /* argc */, char ** /* argv */) {

@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ToolButton : public Button {
 public:
     explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
-        : Button(parent, caption, icon) 
+        : Button(parent, caption, icon)
     {
         setFlags(Flag::RadioButton | Flag::ToggleButton);
         setFixedSize(Vector2i(25, 25));
@@ -42,7 +42,7 @@ public:
 class NANOGUI_EXPORT ToggleButton : public Button {
 public:
   explicit ToggleButton(Widget *parent, int icon)
-    : Button(parent, std::string(""), icon) 
+    : Button(parent, std::string(""), icon)
   {
     setFlags(Flag::ToggleButton);
     setDrawFlags(DrawFlag::DrawIcon);
@@ -55,7 +55,7 @@ public:
   ToggleButton(Widget* parent, const Args&... args)
     : ToggleButton(parent, -1) { set<ToggleButton, Args...>(args...); }
 
-  void beforeDoCallback() override;
+  void beforeDoChangeCallback(bool pushed) override;
   void draw(NVGcontext* ctx) override;
 
 private:

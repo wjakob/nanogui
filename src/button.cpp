@@ -95,7 +95,8 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                 mPushed = !mPushed;
             else
                 mPushed = true;
-        } else if (mPushed) {
+        } 
+        else if (mPushed) {
             if (contains(p))
             {
                 beforeDoCallback();
@@ -105,8 +106,12 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             if (haveFlag(NormalButton))
                 mPushed = false;
         }
+
         if (pushedBackup != mPushed && mChangeCallback)
-            mChangeCallback(mPushed);
+        {
+          beforeDoChangeCallback(mPushed);
+          mChangeCallback(mPushed);
+        }
 
         return true;
     }

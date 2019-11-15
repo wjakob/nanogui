@@ -99,7 +99,7 @@ public:
     void setIcon(int icon) { mIcon = icon; }
 
     /// The current flags of this Button (see \ref nanogui::Button::Flags for options).
-    bool haveFlag(int flag) const { return mFlags & flag; }
+    bool haveFlag(int flag) const { return (mFlags & flag) == flag; }
 
     /// Sets the flags of this Button (see \ref nanogui::Button::Flags for options).
     void setFlags(int flags) { mFlags = flags; }
@@ -161,6 +161,7 @@ public:
 protected:
 
     virtual void beforeDoCallback() {}
+    virtual void beforeDoChangeCallback(bool) {}
     /// The caption of this Button.
     std::string mCaption;
 
@@ -184,8 +185,8 @@ protected:
     bool mPushed;
 
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
-    uint16_t mFlags;
-    uint16_t mDrawFlags;
+    int mFlags;
+    int mDrawFlags;
 
     /// The background color of this Button.
     Color mBackgroundColor;

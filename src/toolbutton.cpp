@@ -18,24 +18,16 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-void ToggleButton::beforeDoCallback()
+void ToggleButton::beforeDoChangeCallback(bool pushed)
 {
   const Color& acolor = mActiveColor.w() ? mActiveColor : theme()->mToggleButtonActiveColor;
   const Color& icolor = mInactiveColor.w() ? mInactiveColor : theme()->mToggleButtonInactiveColor;
-  mTextColor = mPushed ? icolor : acolor;
+  mTextColor = pushed ? icolor : acolor;
 }
 
 void ToggleButton::draw(NVGcontext* ctx)
 {
   Button::draw(ctx);
-  if (mFocused)
-  {
-    nvgStrokeWidth(ctx, 1.0f);
-    nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
-    nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
-    nvgStroke(ctx);
-  }
 }
 
 NAMESPACE_END(nanogui)

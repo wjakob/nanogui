@@ -3,6 +3,7 @@
 #include <nanogui/widget.h>
 #include <nanogui/common.h>
 #include <map>
+#include <set>
 #include <string>
 
 NAMESPACE_BEGIN(nanogui)
@@ -66,6 +67,7 @@ public:
     void setMode( EditMode mode );
 
     void performLayout(NVGcontext *ctx) override;
+    void setWidgetEditable(intptr_t ptr, bool canEdit);
 
     //virtual void setMenuCommandIDStart(s32 id);
 
@@ -127,7 +129,6 @@ public:
     void setSelectedCallback(std::function<void(Widget*)> callback) { mWidgetSelectedCallback = callback; }
     void setChildrenChangeCallback(std::function<void()> callback) { mChildrenChangeCallback = callback; }
 
-//slots:
     void toggleOptionsVisible();
     void activateChangeParentMode();
     void userChangeOptions();
@@ -135,19 +136,19 @@ public:
     void saveSelectedElementToJson();
 
 private:
-
     EditMode getModeFromPos(const Vector2i &p);
 
     std::function<void(Widget*)> mWidgetSelectedCallback;
     std::function<void()> mChildrenChangeCallback;
 
-    //void _createEditorMenu();
-    //void _createElementsWindow();
     void _drawSelectedElement(NVGcontext* ctx);
     void _drawResizePoints(NVGcontext* ctx);
     void _drawWidthRectangle(NVGcontext* ctx, Color& color, int width, const Vector4i& rectangle);
     void _drawResizePoint(NVGcontext* ctx, const Color& color, const Vector4i& rectangle);
     void _createElementsMap( Widget* start, std::map<std::string, Widget*>& mapa );
+    
+    std::set<intptr_t> nonEditableElms;
+
     EditMode  _currentMode;
     EditMode  _mouseOverMode;
     Vector2i  _dragStart;
@@ -159,7 +160,7 @@ private:
     bool      _drawGrid, _useGrid, _running;
 
     Widget* mElementUnderMouse = nullptr;
-    Widget* _selectedElement = nullptr;
+    Widget* mSelectedElement = nullptr;
     Window* _previewWindow = nullptr;
     FactoryView* _factoryView = nullptr;
     Window* _optionsWindow;
