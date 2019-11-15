@@ -45,7 +45,7 @@ TreeViewItem* TreeViewItem::addNodeBack(
   int    selectedImageIndex,
   void*  data)
 {
-  auto& node = source()->addNode(); 
+  auto& node = source()->addNode();
 
   mChildrenIds.push_back( node.getNodeId() );
   node.setCaption( text );

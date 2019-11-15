@@ -104,7 +104,7 @@ public:
     /// Sets the flags of this Button (see \ref nanogui::Button::Flags for options).
     void setFlags(int flags) { mFlags = flags; }
     void setFlag(int flags) { mFlags |= flags; }
-    
+
     void setToggleButton(bool en) { if (en) mFlags |= Button::ToggleButton;
                                     else mFlags &= ~Button::ToggleButton; }
 

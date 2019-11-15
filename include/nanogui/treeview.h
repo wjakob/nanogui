@@ -26,7 +26,7 @@ public:
     TreeViewItem* rootNode() const { return mRoot; }
     TreeViewItem::NodeId selectedNode() const { return mSelected; }
     TreeViewItem::NodeId hoveredNode() const { return mHovered; }
-    
+
     void setSelected(TreeViewItem* item) { mSelected = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
 
     bool getLinesVisible() const { return mLinesVisible; }
@@ -76,7 +76,7 @@ private:
     bool          mImageLeftOfIcon;
     std::string mFont = "sans";
 
-    Vector2i      mTotalItemSize; 
+    Vector2i      mTotalItemSize;
     bool          mNeedRecheckChildren;
     bool          mNeedUpdateItems;
     float         mScrollBarVscale = 1.f;

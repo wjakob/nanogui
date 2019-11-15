@@ -278,7 +278,7 @@ void TreeView::afterDraw(NVGcontext* ctx)
   if (mNeedRecheckChildren)
   {
     mNeedRecheckChildren = false;
-    
+
     std::vector<TreeViewItem*> nodes = findAll<TreeViewItem>();
     struct NodeExist { TreeViewItem::NodeId id; bool alive; };
     std::vector<NodeExist> all_ids;

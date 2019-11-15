@@ -95,7 +95,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                 mPushed = !mPushed;
             else
                 mPushed = true;
-        } 
+        }
         else if (mPushed) {
             if (contains(p))
             {

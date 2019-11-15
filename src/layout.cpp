@@ -184,12 +184,12 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
   const Window *window = dynamic_cast<const Window *>(widget);
   if (window && !window->title().empty()) {
-    if (mOrientation == Orientation::Vertical 
-        || mOrientation == Orientation::ReverseVertical) 
+    if (mOrientation == Orientation::Vertical
+        || mOrientation == Orientation::ReverseVertical)
     {
       position += widget->theme()->mWindowHeaderHeight - mMargin / 2;
     }
-    else 
+    else
     {
       yOffset = widget->theme()->mWindowHeaderHeight;
       containerSize.y() -= yOffset;
@@ -197,9 +197,9 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
   }
 
   std::vector<Widget*> pChildren;
-  bool reversed = mOrientation == Orientation::ReverseHorizontal 
+  bool reversed = mOrientation == Orientation::ReverseHorizontal
                   || mOrientation == Orientation::ReverseVertical;
-  
+
   std::function<void(Widget*)> insertf = [&](Widget* w) { if (w->visible()) pChildren.push_back(w); };
   if (reversed)
     insertf = [&](Widget* w) { if (w->visible()) pChildren.insert(pChildren.begin(), w); };

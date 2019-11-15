@@ -10,10 +10,10 @@ static const std::string attrEditorName = "attributeEditor";
 
 EditorWorkspace::EditorWorkspace(Widget* parent, const std::string& id )
   : Widget(parent),
-  _currentMode(EditMode::Select), 
+  _currentMode(EditMode::Select),
   _mouseOverMode(EditMode::Select),
-  _gridSize(10,10), 
-  _drawGrid( true ), 
+  _gridSize(10,10),
+  _drawGrid( true ),
   _useGrid(true),
   _running( true )
 {
@@ -814,7 +814,7 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
 
   if (!mSelectedElement)
     return;
-  
+
   bool avoidedElm = nonEditableElms.count((intptr_t)mSelectedElement);
   if (_currentMode == EditMode::Select)
   {

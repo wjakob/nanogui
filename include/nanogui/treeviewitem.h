@@ -160,7 +160,7 @@ private:
   void _init();
 
   TreeView*  mOwner;
-  Widget* mPreviewArea = nullptr; 
+  Widget* mPreviewArea = nullptr;
   NodeId  mParentId;
   Color mFontColor;
   Vector2i mAnchorPotsition;

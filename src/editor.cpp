@@ -204,9 +204,9 @@ public:
       if (auto parea = node->previewArea())
       {
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
-          ButtonChangeCallback{ [this,w](bool pressed) { 
+          ButtonChangeCallback{ [this,w](bool pressed) {
             if (auto workspace = findWidget<EditorWorkspace>(ID.workspace))
-              workspace->setWidgetEditable((intptr_t)w, pressed); 
+              workspace->setWidgetEditable((intptr_t)w, pressed);
           }
         });
 

@@ -146,7 +146,7 @@ private:
     void _drawWidthRectangle(NVGcontext* ctx, Color& color, int width, const Vector4i& rectangle);
     void _drawResizePoint(NVGcontext* ctx, const Color& color, const Vector4i& rectangle);
     void _createElementsMap( Widget* start, std::map<std::string, Widget*>& mapa );
-    
+
     std::set<intptr_t> nonEditableElms;
 
     EditMode  _currentMode;
