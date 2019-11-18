@@ -38,8 +38,8 @@ public:
   int selectedImageIndex() const { return SelectedImageIndex; }
   void setSelectedImageIndex( int imageIndex ) { SelectedImageIndex = imageIndex; }
 
-  void* getData() const { return Data; }
-  void setData( void* data ) { Data = data; }
+  intptr_t data() const { return mData; }
+  void setData( intptr_t data ) { mData = data; }
   void setAnchorPosition(const Vector2i& pos) { mAnchorPotsition = pos; }
   const Vector2i anchorPosition() const { return mAnchorPotsition; }
 
@@ -67,14 +67,14 @@ public:
     int icon = -1,
     int imageIndex = -1,
     int selectedImageIndex = -1,
-    void* data = nullptr);
+    intptr_t data = 0);
 
   TreeViewItem* addNode(
     const std::string& text,
     int icon = -1,
     int imageIndex = -1,
     int selectedImageIndex = -1,
-    void* data = nullptr)
+    intptr_t data = 0)
   { return addNodeBack(text, icon, imageIndex, selectedImageIndex, data); }
 
   //! Adds a new node before the first child node.
@@ -88,10 +88,10 @@ public:
   //! returns the new node
   TreeViewItem* addNodeFront(
     const std::string&    text,
-    int    icon = -1,
-    int          imageIndex = -1,
-    int          selectedImageIndex = -1,
-    void*        data = nullptr );
+    int      icon = -1,
+    int      imageIndex = -1,
+    int      selectedImageIndex = -1,
+    intptr_t data = 0 );
 
   //! Adds a new node behind the other node.
   //! The other node has also te be a child node from this node.
@@ -106,10 +106,10 @@ public:
   TreeViewItem* insertNodeAfter(
     TreeViewItem*  other,
     const std::string&    text,
-    int    icon = -1,
-    int          imageIndex = -1,
-    int          selectedImageIndex = -1,
-    void*          data = nullptr );
+    int   icon = -1,
+    int   imageIndex = -1,
+    int   selectedImageIndex = -1,
+    intptr_t data = 0);
 
   //! Adds a new node before the other node.
   //! The other node has also te be a child node from this node.
@@ -124,10 +124,10 @@ public:
   TreeViewItem* insertNodeBefore(
     TreeViewItem*  other,
     const std::string&    text,
-    int    icon = -1,
-    int          imageIndex = -1,
-    int          selectedImageIndex = -1,
-    void*          data = nullptr );
+    int   icon = -1,
+    int   imageIndex = -1,
+    int   selectedImageIndex = -1,
+    intptr_t data = 0);
 
   TreeViewItem* front() const;
   TreeViewItem* back() const;
@@ -167,7 +167,7 @@ private:
   int  mIcon;
   int  mImageIndex;
   int  SelectedImageIndex;
-  void*  Data;
+  intptr_t mData;
   bool mExpanded;
   NodeList mChildrenIds;
   std::string mActiveFont;

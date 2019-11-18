@@ -28,6 +28,7 @@ public:
     TreeViewItem::NodeId hoveredNode() const { return mHovered; }
 
     void setSelected(TreeViewItem* item) { mSelected = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
+    void setHovered(TreeViewItem* item) { mHovered = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
 
     bool getLinesVisible() const { return mLinesVisible; }
     void setLinesVisible( bool visible ) { mLinesVisible = visible; }
@@ -38,7 +39,6 @@ public:
 
     void setImageLeftOfIcon( bool bLeftOf );
     bool getImageLeftOfIcon() const;
-    TreeViewItem* getLastEventNode() const;
     void updateItems();
     void removeAllNodes();
 
@@ -47,9 +47,13 @@ public:
     bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
     bool focusEvent(bool focused) override;
 
+    void setSelectNodeCallback(std::function<void(TreeViewItem*)> f) { mSelectNodeCallback = f; }
+    void setHoverNodeCallback(std::function<void(TreeViewItem*)> f) { mHoverNodeCallback = f; }
+
     TreeViewItem& addNode();
     void removeNode(TreeViewItem::NodeId id);
     TreeViewItem* findNode(TreeViewItem::NodeId id);
+    TreeViewItem* findNode(std::function<bool(TreeViewItem*)> f);
 
     void recheckChildren();
 
@@ -58,6 +62,9 @@ private:
     void _mouseAction( int xpos, int ypos, bool onlyHover = false );
     Color _getCurrentNodeColor( TreeViewItem* node  );
     std::string _getCurrentNodeFont( TreeViewItem* node );
+
+    std::function<void(TreeViewItem*)> mSelectNodeCallback;
+    std::function<void(TreeViewItem*)> mHoverNodeCallback;
 
     bool mNeedRecalculateItemsRectangle = false;
     TreeViewItem* mRoot;

@@ -122,6 +122,11 @@ Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector
     return target;
 }
 
+void EditorWorkspace::setHoveredElement(Widget *elm)
+{
+  mElementUnderMouse = elm;
+}
+
 void EditorWorkspace::setSelectedElement(Widget *sel)
 {
   Widget* focus = findWidget([](Widget* w) -> bool { return w->focused(); });
@@ -134,7 +139,6 @@ void EditorWorkspace::setSelectedElement(Widget *sel)
   {
     if (mSelectedElement != sel)// && _editorWindow )
     {
-      //_editorWindow->setSelectedElement(sel);
       mSelectedElement = sel;
       needUpdateSelectedElm = true;
     }
@@ -150,8 +154,8 @@ void EditorWorkspace::setSelectedElement(Widget *sel)
   else
      requestFocus();
 
-  if (mWidgetSelectedCallback && needUpdateSelectedElm)
-    mWidgetSelectedCallback(sel);
+  if (needUpdateSelectedElm)
+    _sendSelectElementChangedEvent();
 }
 
 void EditorWorkspace::setWidgetEditable(intptr_t ptr, bool canEdit)
@@ -177,18 +181,19 @@ void EditorWorkspace::selectNextSibling()
   auto it = p->children().begin();
   // find selected element
   if (mSelectedElement)
+  {
     while (*it != mSelectedElement)
       ++it;
+  }
 
   if (it !=p->children().end())
     ++it;
 
-  // find next non sub-element
-  //while (it != p->children().end())
-  //  ++it;
-
   if (it != p->children().end())
+  {
     setSelectedElement(*it);
+    _sendSelectElementChangedEvent();
+  }
 }
 
 void EditorWorkspace::selectPreviousSibling()
@@ -210,12 +215,12 @@ void EditorWorkspace::selectPreviousSibling()
 
   if (it != p->children().end())
     ++it;
-  // find next non sub-element
-  //while (it != p->children().end() && (*it)->isSubElement())
-  //  ++it;
 
   if (it != p->children().end())
+  {
     setSelectedElement(*it);
+    _sendSelectElementChangedEvent();
+  }
 }
 
 void EditorWorkspace::_createElementsMap( Widget* start, std::map< std::string, Widget* >& mapa )
@@ -265,6 +270,12 @@ void EditorWorkspace::bringElementToFront( Widget* elm )
   elm->bringToFront();
 }
 
+void EditorWorkspace::_sendHoveredElementChangedEvent()
+{
+  if (mWidgetHoveredCallback)
+    mWidgetHoveredCallback(mElementUnderMouse);
+}
+
 bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modifiers)
 {
   if (isKeyboardActionRelease(action))
@@ -278,7 +289,9 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
         mSelectedElement->remove();
         setSelectedElement(nullptr);
         mElementUnderMouse = nullptr;
-        //_editorWindow->updateTree(this);
+
+        _sendSelectElementChangedEvent();
+        _sendHoveredElementChangedEvent();
 
         //if (_changesManager)
         //  _changesManager->Update();
@@ -289,11 +302,12 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       if (isKeyboardModifierCtrl(modifiers) && mSelectedElement)
       {
         // cut
-        //copySelectedElementXML();
-        // delete element
         mSelectedElement->remove();
         setSelectedElement(nullptr);
         mElementUnderMouse = nullptr;
+
+        _sendSelectElementChangedEvent();
+        _sendHoveredElementChangedEvent();
 
         //if (_changesManager)
         //  _changesManager->Update();
@@ -376,6 +390,7 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
   if (_currentMode == EditMode::Select || _currentMode == EditMode::SelectNewParent)
   {
     // highlight the element that the mouse is over
+    const auto saveelm = mElementUnderMouse;
     mElementUnderMouse = getEditableElementFromPoint(this, pp);
     if (mElementUnderMouse == this)
       mElementUnderMouse = nullptr;
@@ -386,6 +401,9 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
       if (_mouseOverMode > EditMode::Move)
         mElementUnderMouse = mSelectedElement;
     }
+
+    if (saveelm != mElementUnderMouse)
+      _sendHoveredElementChangedEvent();
   }
   else if (_currentMode == EditMode::Move)
   {
@@ -476,6 +494,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     {
       newSelection->requestFocus();
       setSelectedElement(newSelection);
+      _sendSelectElementChangedEvent();
       return true;
     }
 
@@ -496,12 +515,16 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
       if (_currentMode < EditMode::Move)
       {
         // selecting an element...
+        auto saveelm = mElementUnderMouse;
         mElementUnderMouse = getEditableElementFromPoint(this, p);
 
         if (mElementUnderMouse == this)
           mElementUnderMouse = nullptr;
 
         setSelectedElement(mElementUnderMouse);
+
+        if (saveelm != mElementUnderMouse)
+          _sendHoveredElementChangedEvent();
       }
     }
     return true;
@@ -521,6 +544,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     {
       if (mSelectedElement)
       {
+        auto saveelm = mElementUnderMouse;
         mElementUnderMouse = getEditableElementFromPoint(this, pp);
         if (mElementUnderMouse != mSelectedElement)
         {
@@ -531,7 +555,11 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
           saveMovedElm->setPosition(0, 0);
 
           setSelectedElement( saveMovedElm );
+          _sendSelectElementChangedEvent();
         }
+
+        if (saveelm != mElementUnderMouse)
+          _sendHoveredElementChangedEvent();
 
         //if (_changesManager)
         //  _changesManager->Update();
@@ -540,17 +568,15 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
     }
     else if (_currentMode >= EditMode::Move)
     {
-      Widget *sel = mSelectedElement;
-      // unselect
-      setSelectedElement(nullptr);
+      //Widget *sel = mSelectedElement;
+      //setSelectedElement(nullptr);
 
       // move
-      Vector2i p(0, 0);
-      if (sel && sel->parent())
-        p = sel->parent()->absolutePosition();
+      //Vector2i p(0, 0);
+      //if (sel && sel->parent())
+        //p = sel->parent()->absolutePosition();
 
-      // select
-      setSelectedElement(sel);
+      //setSelectedElement(sel);
       _currentMode = EditMode::Select;
 
       //if (_changesManager)
@@ -923,10 +949,19 @@ void EditorWorkspace::setFactoryView( FactoryView* wnd )
   _factoryView = wnd;
 }
 
+void EditorWorkspace::_sendSelectElementChangedEvent()
+{
+  for (auto& func : mSelectedCallbacks)
+    if (func) func(mSelectedElement);
+}
+
 void EditorWorkspace::reset()
 {
   setSelectedElement(nullptr);
   mElementUnderMouse = nullptr;
+
+  _sendSelectElementChangedEvent();
+  _sendHoveredElementChangedEvent();
 
   while ( !children().empty() )
     removeChild( children().front() );
@@ -943,10 +978,16 @@ void EditorWorkspace::removeElement( Widget* elm )
   Widget* saveElm = elm;
 
   if (elm == mSelectedElement)
+  {
     setSelectedElement(nullptr);
+    _sendSelectElementChangedEvent();
+  }
 
   if (elm == mElementUnderMouse)
+  {
     mElementUnderMouse = nullptr;
+    _sendHoveredElementChangedEvent();
+  }
 
   saveElm->remove();
 }
@@ -994,15 +1035,18 @@ void EditorWorkspace::update()
 void EditorWorkspace::removeChild(const Widget* child )
 {
   if (child == mSelectedElement)
-    setSelectedElement( nullptr );
+  {
+    setSelectedElement(nullptr);
+    _sendSelectElementChangedEvent();
+  }
 
   if (child == mElementUnderMouse)
+  {
     mElementUnderMouse = nullptr;
+    _sendHoveredElementChangedEvent();
+  }
 
   Widget::removeChild( child );
-
-  if (mChildrenChangeCallback)
-    mChildrenChangeCallback();
 }
 
 void EditorWorkspace::activateChangeParentMode()

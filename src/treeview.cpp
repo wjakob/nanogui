@@ -65,6 +65,23 @@ TreeViewItem& TreeView::addNode()
   return node;
 }
 
+TreeViewItem* TreeView::findNode(std::function<bool(TreeViewItem*)> f)
+{
+  if (!f)
+    return nullptr;
+
+  for (auto& c : children())
+  {
+    if (auto twi = c->cast<TreeViewItem>())
+    {
+      if (f(twi))
+        return twi;
+    }
+  }
+
+  return nullptr;
+}
+
 TreeViewItem* TreeView::findNode(TreeViewItem::NodeId id)
 {
   if (id == TreeViewItem::BadNodeId)
@@ -218,6 +235,8 @@ void TreeView::_mouseAction( int xpos, int ypos, bool onlyHover /*= false*/ )
   if (onlyHover)
   {
     mHovered = (hitNode ? hitNode->getNodeId() : TreeViewItem::BadNodeId);
+    if (mHoverNodeCallback)
+      mHoverNodeCallback(hitNode);
   }
   else
   {
@@ -228,9 +247,9 @@ void TreeView::_mouseAction( int xpos, int ypos, bool onlyHover /*= false*/ )
     }
 
     if (hitNode
-      && xpos < hitNode->getLevel() * mIndentWidth
-      && xpos >(hitNode->getLevel() - 1) * mIndentWidth
-      && hitNode->hasNodes())
+        && xpos < hitNode->getLevel() * mIndentWidth
+        && xpos >(hitNode->getLevel() - 1) * mIndentWidth
+        && hitNode->hasNodes())
     {
       hitNode->setExpanded(!hitNode->isExpanded());
 
@@ -243,6 +262,9 @@ void TreeView::_mouseAction( int xpos, int ypos, bool onlyHover /*= false*/ )
       selectedPtr = nullptr;
       mSelected = TreeViewItem::BadNodeId;
     }
+
+    if (mSelectNodeCallback)
+      mSelectNodeCallback(selectedPtr);
   }
 }
 

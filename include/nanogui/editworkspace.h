@@ -69,8 +69,6 @@ public:
     void performLayout(NVGcontext *ctx) override;
     void setWidgetEditable(intptr_t ptr, bool canEdit);
 
-    //virtual void setMenuCommandIDStart(s32 id);
-
     void removeChild(const Widget* child) override;
 
     //! grid drawing...
@@ -84,20 +82,16 @@ public:
 
     //! returns the first editable element under the mouse
     virtual Widget* getEditableElementFromPoint(Widget *start, const Vector2i &point);
+    void setSelectedElement(Widget *elm);
+    void setHoveredElement(Widget *elm);
+    
+    void selectNextSibling();
+    void selectPreviousSibling();
 
-    //! selecting elements
-    virtual void setSelectedElement(Widget *sel);
-    virtual void selectNextSibling();
-    virtual void selectPreviousSibling();
+    Widget* getSelectedElement();
 
-    //! returns the selected element
-    virtual Widget* getSelectedElement();
-
-    //! copies the xml of the selected element and all children to the clipboard
-    virtual void copySelectedElementToJson();
-
-    //! copies the xml of the selected element and all children to the clipboard
-    virtual void pasteJsonToSelectedElement();
+    void copySelectedElementToJson();
+    void pasteJsonToSelectedElement();
 
     std::string wtypename() const override;
 
@@ -126,8 +120,10 @@ public:
     void update();
     void preview();
 
-    void setSelectedCallback(std::function<void(Widget*)> callback) { mWidgetSelectedCallback = callback; }
+    using WidgetCallback = std::function<void(Widget*)>;
+    void addSelectedCallback(WidgetCallback callback) { mSelectedCallbacks.push_back(callback); }
     void setChildrenChangeCallback(std::function<void()> callback) { mChildrenChangeCallback = callback; }
+    void setHoveredCallback(WidgetCallback callback) { mWidgetHoveredCallback = callback; }
 
     void toggleOptionsVisible();
     void activateChangeParentMode();
@@ -138,7 +134,9 @@ public:
 private:
     EditMode getModeFromPos(const Vector2i &p);
 
-    std::function<void(Widget*)> mWidgetSelectedCallback;
+
+    std::vector<WidgetCallback> mSelectedCallbacks;
+    std::function<void(Widget*)> mWidgetHoveredCallback;
     std::function<void()> mChildrenChangeCallback;
 
     void _drawSelectedElement(NVGcontext* ctx);
@@ -146,6 +144,8 @@ private:
     void _drawWidthRectangle(NVGcontext* ctx, Color& color, int width, const Vector4i& rectangle);
     void _drawResizePoint(NVGcontext* ctx, const Color& color, const Vector4i& rectangle);
     void _createElementsMap( Widget* start, std::map<std::string, Widget*>& mapa );
+    void _sendSelectElementChangedEvent();
+    void _sendHoveredElementChangedEvent();
 
     std::set<intptr_t> nonEditableElms;
 
@@ -161,9 +161,8 @@ private:
 
     Widget* mElementUnderMouse = nullptr;
     Widget* mSelectedElement = nullptr;
-    Window* _previewWindow = nullptr;
     FactoryView* _factoryView = nullptr;
-    Window* _optionsWindow;
+    Window* _optionsWindow = nullptr;
     //ChangesManager* _changesManager;
 
     struct {

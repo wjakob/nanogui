@@ -81,14 +81,13 @@ using std::to_string;
 using namespace nanogui;
 
 struct {
-  std::string layers = "#layers";
   std::string assets = "#assets";
   WidgetId workspace{ "#workspace" };
   WidgetId propeditor{ "#propeditor" };
   WidgetId mainmenu{ "#mainmenu" };
   WidgetId editor{ "#editor" };
   WidgetId mainview{ "#mainview" };
-  WidgetId treeview{ "#treeview" };
+  WidgetId layers{ "#layers" };
 } ID;
 
 class ExampleApplication : public Screen {
@@ -166,7 +165,7 @@ public:
       propeditor.setDraggable(Theme::WindowDraggable::dgFixed);
 
       if (auto editor = findWidget<EditorWorkspace>(ID.workspace))
-        editor->setSelectedCallback([&](Widget* w) { propeditor.parse(w); });
+        editor->addSelectedCallback([&](Widget* w) { propeditor.parse(w); });
     }
 
     void createWorkspace(Widget& area, float relw)
@@ -174,6 +173,16 @@ public:
       auto& editor = area.wdg<EditorWorkspace>(ID.workspace);
       editor.setRelativeSize(0.7f, 1.f);
       editor.setChildrenChangeCallback([this]() { fillTreeView(); });
+      editor.setHoveredCallback([this](Widget* w) {
+        auto treeview = findWidget<TreeView>(ID.layers);
+        auto node = treeview->findNode([w](TreeViewItem* i) -> bool { return i->data() == (intptr_t)w; });
+        treeview->setHovered(node);
+      });
+      editor.addSelectedCallback([this](Widget* w) {
+        auto treeview = findWidget<TreeView>(ID.layers);
+        auto node = treeview->findNode([w](TreeViewItem* i) -> bool { return i->data() == (intptr_t)w; });
+        treeview->setSelected(node);
+      });
     }
 
     void createControlWidgetsArea(Widget& area, float relw)
@@ -183,15 +192,27 @@ public:
 
       auto& wawidgets = wa.vlayer(RelativeSize{ 1, 0 });
       auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
-      fo.show();
+      fo.hide();
       fo.addPage("page1", "Page1", new Widget(this));
       fo.addPage("page2", "Page2", new Widget(this));
       fo.addPage("page3", "Page3", new Widget(this));
       fo.addPage("page4", "Page4", new Widget(this));
 
-      auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.treeview);
+      auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.layers);
       view.setRelativeSize(1, 1);
-      view.hide();
+      view.show();
+
+      view.setSelectNodeCallback([this](TreeViewItem* w) {
+        if (!w) return;
+        auto editor = findWidget<EditorWorkspace>(ID.workspace);
+        editor->setSelectedElement((Widget*)w->data());
+      });
+
+      view.setHoverNodeCallback([this](TreeViewItem* w) {
+        if (!w) return;
+        auto editor = findWidget<EditorWorkspace>(ID.workspace);
+        editor->setHoveredElement((Widget*)w->data());
+      });
 
       waheader.button(Caption{ "Assets" }, ButtonCallback{ [&] { view.hide(); fo.show(); } });
       waheader.button(Caption{ "Layers" }, ButtonCallback{ [&] { view.show(); fo.hide(); } });
@@ -200,7 +221,7 @@ public:
     void addTreeViewNode(TreeViewItem* item, Widget* w)
     {
       auto node = item->addNode("Unknown widget");
-      node->setData(w);
+      node->setData((intptr_t)w);
       if (auto parea = node->previewArea())
       {
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
@@ -221,7 +242,7 @@ public:
 
     void fillTreeView()
     {
-      auto treeview = findWidget<TreeView>(ID.treeview);
+      auto treeview = findWidget<TreeView>(ID.layers);
       auto editor = findWidget<EditorWorkspace>(ID.workspace);
       if (!treeview)
         return;

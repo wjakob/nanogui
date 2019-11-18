@@ -20,7 +20,7 @@ void TreeViewItem::_init()
   mParentId = BadNodeId;
   mImageIndex = -1;
   SelectedImageIndex = -1;
-  Data = 0;
+  mData = 0;
   mExpanded = false;
   mFontColor = Color();
 
@@ -43,7 +43,7 @@ TreeViewItem* TreeViewItem::addNodeBack(
   int    icon,
   int    imageIndex,
   int    selectedImageIndex,
-  void*  data)
+  intptr_t  data)
 {
   auto& node = source()->addNode();
 
@@ -53,7 +53,7 @@ TreeViewItem* TreeViewItem::addNodeBack(
   node.mImageIndex = imageIndex;
   node.mParentId = mNodeId;
   node.SelectedImageIndex = selectedImageIndex;
-  node.Data = data;
+  node.mData = data;
 
   return &node;
 }
@@ -63,7 +63,7 @@ TreeViewItem* TreeViewItem::addNodeFront(
   int    icon /*= 0*/,
   int          imageIndex /*= -1*/,
   int          selectedImageIndex /*= -1*/,
-  void*          data /*= 0*/)
+  intptr_t          data /*= 0*/)
 {
   auto& node = source()->addNode();
 
@@ -73,7 +73,7 @@ TreeViewItem* TreeViewItem::addNodeFront(
   node.mImageIndex = imageIndex;
   node.mParentId = mNodeId;
   node.SelectedImageIndex = selectedImageIndex;
-  node.Data = data;
+  node.mData = data;
 
   return &node;
 }
@@ -84,7 +84,7 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
   int    icon /*= 0*/,
   int          imageIndex /*= -1*/,
   int          selectedImageIndex /*= -1*/,
-  void*          data /*= 0*/)
+  intptr_t          data /*= 0*/)
 {
   NodeId insertId = other->getNodeId();
   for (auto it = mChildrenIds.begin(); it != mChildrenIds.end(); it++ )
@@ -96,7 +96,7 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
       node.mIcon = icon;
       node.mImageIndex = imageIndex;
       node.SelectedImageIndex = selectedImageIndex;
-      node.Data = data;
+      node.mData = data;
       node.mParentId = mNodeId;
       mChildrenIds.insert( it, node.getNodeId() );
       return &node;
@@ -144,7 +144,7 @@ TreeViewItem* TreeViewItem::insertNodeBefore(
   int    icon /*= 0*/,
   int    imageIndex /*= -1*/,
   int    selectedImageIndex /*= -1*/,
-  void*  data /*= 0*/)
+  intptr_t  data /*= 0*/)
 {
   for (auto it = mChildrenIds.begin(); it != mChildrenIds.end(); it++ )
   {
@@ -155,7 +155,7 @@ TreeViewItem* TreeViewItem::insertNodeBefore(
       node.mIcon = icon;
       node.mImageIndex = imageIndex;
       node.SelectedImageIndex = selectedImageIndex;
-      node.Data = data;
+      node.mData = data;
       node.mParentId = mNodeId;
       mChildrenIds.insert( it, node.getNodeId() );
       return &node;

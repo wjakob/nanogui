@@ -95,28 +95,34 @@ void Widget::performLayout(NVGcontext *ctx)
 }
 
 Widget *Widget::findWidget(const Vector2i &p) {
-    for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
-        Widget *child = *it;
-        if (child->visible() && child->contains(p - mPos))
-        {
-          if (child->prefferContains(p - mPos))
-            return child;
-          return child->findWidget(p - mPos);
-        }
-    }
-    return contains(p) ? this : nullptr;
+  if (mChildren.empty())
+    return nullptr;
+
+  for (int i=mChildren.size()-1; i >= 0; i--) {
+      Widget *child = mChildren[i];
+      if (child->visible() && child->contains(p - mPos))
+      {
+        if (child->prefferContains(p - mPos))
+          return child;
+        return child->findWidget(p - mPos);
+      }
+  }
+  return contains(p) ? this : nullptr;
 }
 
 bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
-    for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
-        Widget *child = *it;
-        if (child->visible() && child->contains(p - mPos) &&
-            child->mouseButtonEvent(p - mPos, button, down, modifiers))
-            return true;
-    }
-    if ( isMouseButtonLeft(button) && down && !mFocused)
-        requestFocus();
+  if (mChildren.empty())
     return false;
+  
+  for (int i=mChildren.size()-1; i >= 0; i--) {
+      Widget *child = mChildren[i];
+      if (child->visible() && child->contains(p - mPos) &&
+          child->mouseButtonEvent(p - mPos, button, down, modifiers))
+          return true;
+  }
+  if ( isMouseButtonLeft(button) && down && !mFocused)
+      requestFocus();
+  return false;
 }
 
 bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
