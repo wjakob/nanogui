@@ -1,6 +1,6 @@
 NanoGUI
 ========================================================================================
-|docs| |travis| |appveyor|
+|docs| |travis| |appveyor| |discord|
 
 .. |docs| image:: https://readthedocs.org/projects/nanogui/badge/?version=latest
     :target: http://nanogui.readthedocs.org/en/latest/?badge=latest
@@ -13,6 +13,10 @@ NanoGUI
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/m8h3uyvdb4ej2i02/branch/master?svg=true
    :target: https://ci.appveyor.com/project/dalerank/nanogui/branch/master
    :alt: Appveyor Build Status
+   
+.. |discord| image:: https://img.shields.io/discord/645931749360009216.svg?color=7389D8&label=%20&logo=discord&logoColor=ffffff
+   :target: https://discord.gg/GAj37v
+   :alt: Discord channel
 
 .. begin_brief_description
 
