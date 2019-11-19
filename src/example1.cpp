@@ -949,18 +949,6 @@ public:
           progress->setValue(value);
         if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
           progress->setValue( std::fmod(value * 2, 1.0f));
-        if (auto led = findWidget<LedMatrix>("#led"))
-        {
-          static int ledcounter = 0;
-          ledcounter++;
-          Color r(0xff0000ff), g(LedMatrix::NoColor);
-          for (int i = 0; i < 32; i++)
-          {
-            int l = (int)(ledcounter / pow(8, i)) % 8;
-            for (int k=0; k < 8; k++)
-              led->setColorAt(k, i, (l == k) ? r : g);
-          }
-        }
         
         startGPUTimer(&gpuTimer);
 
@@ -990,6 +978,29 @@ public:
           for (int i = 0; i < n; i++)
             gpuGraph->update(gpuTimes[i]);
         }
+
+        if (auto led = findWidget<LedMatrix>("#led"))
+        {
+          static std::list<int> ledvalues;
+          int value = 1.f / dt;
+
+          ledvalues.push_back(value);
+          if (ledvalues.size() > led->columnCount())
+            ledvalues.pop_front();
+          int k = 0;
+          for (auto& c : ledvalues)
+          {
+            led->clearColumn(k);
+            int t = led->rowCount() * c / 50;
+            for (int i = 0; i <= t; i++)
+            {
+              int rk = 0xff * (i / (float)led->rowCount());
+              led->setColorAt(led->rowCount() - i, k, Color(0xff, 0, 0, rk));
+            }
+            k++;
+          }
+        }
+
     }
 
     virtual void drawContents() {

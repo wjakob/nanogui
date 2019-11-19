@@ -53,6 +53,7 @@ public:
       
   Color colorAt(int row, int col) const;
   void setColorAt(int row, int col, const Color& rgb);
+  void clearColumn(int col);
   
   int rowCount() const;
   void setRowCount(int rows);

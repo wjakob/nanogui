@@ -11,6 +11,15 @@ bool LedMatrix::isValid(int row, int col) const
              (col < mColumnCount) );
 }
 
+void LedMatrix::clearColumn(int col)
+{
+  if (isValid(0, col))
+  {
+    for (auto& c: colorTable[col])
+      c = NoColor;
+  }
+}
+
 void LedMatrix::setColorAt(int row, int col, const Color& rgb)
 {
     if(isValid(row, col))
