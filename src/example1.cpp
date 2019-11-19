@@ -452,6 +452,7 @@ void createMiscWidgets(Screen* screen)
                               }});
 
   auto& led = mw.wdg<LedMatrix>();
+  led.setId("#led");
   led.setFixedSize({ mw.width(), 40 });
   led.setRowCount(8);
 }
@@ -948,7 +949,19 @@ public:
           progress->setValue(value);
         if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
           progress->setValue( std::fmod(value * 2, 1.0f));
-
+        if (auto led = findWidget<LedMatrix>("#led"))
+        {
+          static int ledcounter = 0;
+          ledcounter++;
+          Color r(0xff0000ff), g(LedMatrix::NoColor);
+          for (int i = 0; i < 32; i++)
+          {
+            int l = (int)(ledcounter / pow(8, i)) % 8;
+            for (int k=0; k < 8; k++)
+              led->setColorAt(k, i, (l == k) ? r : g);
+          }
+        }
+        
         startGPUTimer(&gpuTimer);
 
         double t = getTimeFromStart();

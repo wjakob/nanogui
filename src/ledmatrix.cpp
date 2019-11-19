@@ -28,6 +28,11 @@ void LedMatrix::performLayout(NVGcontext* ctx)
   setColumnCount(columns);
 }
 
+void LedMatrix::setText(const std::string& text)
+{
+  
+}
+
 void LedMatrix::drawLEDs(NVGcontext* ctx)
 {
   float wside = width() / mColumnCount;
