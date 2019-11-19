@@ -35,6 +35,7 @@
 #include <nanogui/colorpicker.h>
 #include <nanogui/table.h>
 #include <nanogui/graph.h>
+#include <nanogui/ledmatrix.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/switchbox.h>
 #include <nanogui/spinner.h>
@@ -370,10 +371,11 @@ void createBasicWidgets(Screen* parent)
 void createMiscWidgets(Screen* screen)
 {
   auto& mw = screen->window(Caption{ "Misc. widgets" },
-    Position{ 425, 15 });
+                            Position{ 425, 15 });
   mw.withLayout<GroupLayout>();
 
   auto& tabWidget = mw.tabs();
+  tabWidget.setId("#tabs");
 
   auto& layer = *tabWidget.createTab("Color Wheel");
   layer.withLayout<GroupLayout>();
@@ -401,11 +403,12 @@ void createMiscWidgets(Screen* screen)
 
   // A simple counter.
   int counter = 1;
-  tabWidget.setCallback([&](int index) mutable {
-    if (index == (tabWidget.tabCount() - 1)) {
+  tabWidget.setCallback([screen, &counter](int index) mutable {
+    auto& tabs = *screen->findWidget<TabWidget>("#tabs");
+    if (index == (tabs.tabCount() - 1)) {
       // When the "+" tab has been clicked, simply add a new tab.
       string tabName = "Dynamic " + to_string(counter);
-      auto& layerDyn = *tabWidget.createTab(index, tabName);
+      auto& layerDyn = *tabs.createTab(index, tabName);
       layerDyn.withLayout<GroupLayout>();
       layerDyn.label("Function graph widget", "sans-bold");
 
@@ -424,7 +427,7 @@ void createMiscWidgets(Screen* screen)
       // This is essential when creating tabs dynamically.
       screen->performLayout();
       // Ensure that the newly added header is visible on screen
-      tabWidget.ensureTabVisible(index);
+      tabs.ensureTabVisible(index);
     }
   });
   tabWidget.setActiveTab(0);
@@ -434,19 +437,23 @@ void createMiscWidgets(Screen* screen)
   panelJump.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
   panelJump.label("Jump to tab: ");
 
-  auto& ib = panelJump.intbox<int>();
-  ib.setEditable(true);
+  auto& ib = panelJump.intbox<int>(IsEditable{ true },
+                                   FixedHeight{ 22 });
 
-  auto& bf = panelJump.button(Caption{ "" }, Icon{ ENTYPO_ICON_FORWARD });
-  bf.setFixedSize({ 22, 22 });
-  ib.setFixedHeight(22);
-  bf.setCallback([&] {
-    int value = ib.value();
-    if (value >= 0 && value < tabWidget.tabCount()) {
-      tabWidget.setActiveTab(value);
-      tabWidget.ensureTabVisible(value);
-    }
-  });
+  auto& bf = panelJump.button(Caption{ "" }, 
+                              Icon{ ENTYPO_ICON_FORWARD },
+                              FixedSize{ 22, 22 },
+                              ButtonCallback{ [&] {
+                                int value = ib.value();
+                                if (value >= 0 && value < tabWidget.tabCount()) {
+                                  tabWidget.setActiveTab(value);
+                                  tabWidget.ensureTabVisible(value);
+                                }
+                              }});
+
+  auto& led = mw.wdg<LedMatrix>();
+  led.setFixedSize({ mw.width(), 40 });
+  led.setRowCount(8);
 }
 
 void createGridSmallObjects(Screen* screen)
