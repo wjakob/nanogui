@@ -39,6 +39,7 @@
 #include <nanogui/treeviewitem.h>
 #include <nanogui/windowmenu.h>
 #include <nanogui/common.h>
+#include <nanogui/widgetsfactory.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -192,11 +193,15 @@ public:
 
       auto& wawidgets = wa.vlayer(RelativeSize{ 1, 0 });
       auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
+      auto& wfactory = WidgetFactory::instance();
+      for (auto f : wfactory.factories())
+      {
+        auto& layer = this->vlayer();
+        for (auto wt : f->types())
+          layer.button(Caption{ wt }, FixedHeight{ 22 });
+        fo.addPage(f->name(), f->name(), &layer);
+      }
       fo.hide();
-      fo.addPage("page1", "Page1", new Widget(this));
-      fo.addPage("page2", "Page2", new Widget(this));
-      fo.addPage("page3", "Page3", new Widget(this));
-      fo.addPage("page4", "Page4", new Widget(this));
 
       auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.layers);
       view.setRelativeSize(1, 1);
