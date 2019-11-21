@@ -15,7 +15,7 @@ NanoGUI
    :alt: Appveyor Build Status
    
 .. |discord| image:: https://img.shields.io/discord/645931749360009216.svg?color=7389D8&label=%20&logo=discord&logoColor=ffffff
-   :target: https://discord.gg/GAj37v
+   :target: https://discordapp.com/channels/645931749360009216/645931749360009219
    :alt: Discord channel
 
 .. begin_brief_description
