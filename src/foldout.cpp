@@ -6,78 +6,91 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-void Foldout::_reparseChilds()
+void Foldout::_reparseChilds(NVGcontext* ctx)
 {
-  if ( !_scrollBar )
+  if ( !mScrollBar )
     return;
 
   int maxHeigth = 0;
-  for (auto& page: _pages)
+  for (auto& page: mPages)
   {
-      maxHeigth += page->button->height();
-      if ( page->page->visible()  )
-          maxHeigth += page->page->height();
+      maxHeigth += page.button->height();
+      if ( page.page->visible()  )
+          maxHeigth += page.page->height();
   }
 
-  bool lastVis = _scrollBar->visible();
-  _scrollBar->setVisible( maxHeigth > height() );
-  if ( !lastVis && _scrollBar->visible() )
+  bool lastVis = mScrollBar->visible();
+  mScrollBar->setVisible( maxHeigth > height() );
+  if ( !lastVis && mScrollBar->visible() )
   {
-      _scrollValue = maxHeigth - height();
-      _scrollBar->setScroll( 0 );
-      _scrollBar->bringToFront();
+      mScrollValue = maxHeigth - height();
+      mScrollBar->setScroll( 0 );
+      mScrollBar->bringToFront();
   }
 
-  auto it = std::find_if(_pages.begin(), _pages.end(), [](Page* p) { return p->page->visible(); });
-  bool haveActivePage = it != _pages.end();
+  auto it = std::find_if(mPages.begin(), mPages.end(), [](const Page& p) { return p.page->visible(); });
+  bool haveActivePage = it != mPages.end();
 
-  _activePageIndex = -1;
+  mActivePageIndex = -1;
   int pageButtonH = 20;
   if (haveActivePage)
   {
     Vector4i lastRect(0, 0, width(), pageButtonH);
 
     bool nextPageAtBottom = false;
-    for (uint32_t index = 0; index < _pages.size(); index++)
+    for (uint32_t index = 0; index < mPages.size(); index++)
     {
-      Page* page = _pages[index];
-      page->button->setGeometry(lastRect);
-      page->number = index;
+      Page& page = mPages[index];
+      page.button->setGeometry(lastRect);
+      page.number = index;
 
       if (nextPageAtBottom)
-        page->button->sendToBack();
+        page.button->sendToBack();
 
-      if (page->page->visible())
+      if (page.page->visible())
       {
         lastRect.y() = height() - pageButtonH;
         lastRect.w() = lastRect.y() + pageButtonH;
-        _activePageIndex = index;
+        mActivePageIndex = index;
         nextPageAtBottom = true;
-        page->button->bringToFront();
+        page.button->bringToFront();
       }
     }
   }
   else
   {
     Vector4i lastRect(0, 0, width(), pageButtonH);
-    for (uint32_t index = 0; index < _pages.size(); index++)
+    for (uint32_t index = 0; index < mPages.size(); index++)
     {
-      Page* page = _pages[index];
+      Page& page = mPages[index];
       lastRect.y() = index * pageButtonH;
       lastRect.w() = lastRect.y() + pageButtonH;
-      page->button->setGeometry(lastRect);
-      page->button->setFixedSize({ lastRect.z(), lastRect.w() });
-      page->number = index;
+      page.button->setGeometry(lastRect);
+      page.button->setFixedSize({ lastRect.z(), lastRect.w() });
+      page.number = index;
     }
   }
 
-  if ( _activePageIndex >= 0 )
+  if ( mActivePageIndex >= 0 )
   {
-    Button* btn = _pages[ _activePageIndex ]->button;
-    if ( btn->position().y() < 0 )
+    Page& p = mPages[ mActivePageIndex ];
+    Vector4i currentRect(0, 0, p.button->width(), p.button->height());
+
+    if (p.button->position().y() < 0)
     {
-      Vector4i currentRect( 0, 0, btn->width(), btn->height() );
-      btn->setGeometry(currentRect);
+      p.button->setGeometry(currentRect);
+    }
+
+    if (p.page)
+    {
+      currentRect.y() = p.button->height();
+      currentRect.w() = height();
+      //if we have pages after current
+      if (mPages.size() > 1 && mActivePageIndex < mPages.size() - 1)
+        currentRect.w() -= p.button->height();
+
+      p.page->setGeometry(currentRect);
+      p.page->performLayout(ctx);
     }
   }
 }
@@ -87,28 +100,26 @@ Foldout::Foldout( Widget* parent, const std::string& id )
 {
   setId(id);
 
-  mLastChildCount = 0;
-  _activePageIndex = -1;
+  mActivePageIndex = -1;
 
-  _scrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);
-  _scrollBar->setSubElement( true );
+  mScrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);
+  mScrollBar->setSubElement( true );
 }
 
 void Foldout::removeChild(const Widget* child)
 {
-  for ( uint32_t index=0; index < _pages.size(); index++ )
+  for ( uint32_t index=0; index < mPages.size(); index++ )
   {
-    if ( _pages[ index ]->page == child )
+    if (mPages[ index ].page == child )
     {
-      delete _pages[ index ];
-      _pages.erase(_pages.begin() + index );
-      _pageNames.erase(_pageNames.begin() + index );
+      mPages.erase(mPages.begin() + index );
+      mPageNames.erase(mPageNames.begin() + index );
       break;
     }
   }
 
   Widget::removeChild(child);
-  _reparseChilds();
+  mNeedReparseChilds = true;
 }
 
 void Foldout::draw(NVGcontext* ctx)
@@ -128,10 +139,10 @@ void Foldout::selectButton(Widget* w)
 {
   Button* elm = dynamic_cast<Button*>(w);
 
-  for (auto& p: _pages)
+  for (auto& p: mPages)
   {
-    Widget* page = p->page;
-    if (p->button == elm)
+    Widget* page = p.page;
+    if (p.button == elm)
     {
       page->setVisible(!page->visible());
       elm->setPushed(page->visible());
@@ -143,77 +154,87 @@ void Foldout::selectButton(Widget* w)
     }
   }
 
-  _reparseChilds();
+  mNeedReparseChilds = true;
 }
 
 Foldout::~Foldout() {}
 
-Foldout::Page* Foldout::addPage(Widget* elm)
+Foldout::Page& Foldout::addPage(Widget* elm)
 {
-    Page* descr = new Page();
+    Page descr;
 
-    uint32_t curIndex = _pages.size();
+    uint32_t curIndex = mPages.size();
     std::string pageName = std::string("Page_") + std::to_string(curIndex);
     std::string caption = pageName;
-    if ( curIndex < _pageNames.size() )
+    if ( curIndex < mPageNames.size() )
     {
-       pageName = _pageNames[ curIndex ].name;
-       caption = _pageNames[ curIndex ].caption;
+       pageName = mPageNames[ curIndex ].name;
+       caption = mPageNames[ curIndex ].caption;
     }
 
-    descr->name = pageName;
-    descr->button = new Button(this);
-    descr->button->setPosition(0, 0);
-    descr->button->setWidth(width());
-    descr->button->setCaption( pageName );
-    descr->button->setToggleButton( true );
-    descr->button->setSubElement( true );
-    descr->button->setCallback([b = descr->button, this]() { selectButton(b); });
+    descr.name = pageName;
+    descr.button = add<Button>();
+    descr.button->setPosition(0, 0);
+    descr.button->setWidth(width());
+    descr.button->setCaption( pageName );
+    descr.button->setToggleButton( true );
+    descr.button->setSubElement( true );
+    descr.button->setCallback([b = descr.button, this]() { selectButton(b); });
     elm->setVisible( false );
-    descr->page = elm;
+    descr.page = elm;
 
     Desc info = { pageName, caption };
-    _pageNames.push_back( info );
-    _pages.push_back( descr );
+    mPageNames.push_back( info );
+    mPages.push_back( descr );
 
     return descr;
 }
 
+void Foldout::afterDraw(NVGcontext* ctx)
+{
+  Widget::afterDraw(ctx);
+
+  if (mNeedReparseChilds)
+  {
+    mNeedReparseChilds = false;
+    _reparseChilds(ctx);
+  }
+}
+
 void Foldout::_updateChilds()
 {
-    for (auto& c: children())
-    {
-      if ( !c->isSubElement() && getPage(c) == nullptr)
-        addPage(c);
-    }
+  for (auto& c: children())
+  {
+    if ( !c->isSubElement() && getPage(c).button == nullptr)
+      addPage(c);
+  }
 
-    mLastChildCount = children().size();
-    _reparseChilds();
+  mNeedReparseChilds = true;
 }
 
 void Foldout::performLayout(NVGcontext *ctx)
 {
   Widget::performLayout(ctx);
 
-  _reparseChilds();
+  mNeedReparseChilds = true;
 }
 
-Foldout::Page* Foldout::getPage(Widget* child)
+Foldout::Page& Foldout::getPage(Widget* child)
 {
-  auto it = std::find_if(_pages.begin(), _pages.end(), [child](Page* c) { return c->page == child; });
-  return it != _pages.end() ? *it : nullptr;
+  auto it = std::find_if(mPages.begin(), mPages.end(), [child](const Page& c) { return c.page == child; });
+  return it != mPages.end() ? *it : Page{};
 }
 
 void Foldout::addPage( const std::string& pageName, const std::string& pageCaption, Widget* child )
 {
   addChild( child );
 
-  Page* page = addPage( child );
-  if ( page )
+  Page& page = addPage( child );
+  if ( page.button )
   {
-    page->name = pageName;
-    page->button->setCaption( pageCaption );
-    _reparseChilds();
+    page.name = pageName;
+    page.button->setCaption( pageCaption );
+    mNeedReparseChilds = true;
   }
 }
 

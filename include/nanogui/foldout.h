@@ -14,10 +14,10 @@ class NANOGUI_EXPORT Foldout : public Widget
 public:
   struct Page
   {
-    Button* button;
-    Widget* page;
+    Button* button = nullptr;
+    Widget* page = nullptr;
     std::string name;
-    int number;
+    int number = -1;
   };
 
   struct Desc
@@ -42,34 +42,33 @@ public:
 
   //! return element type name for gui factory
   std::string wtypename() const override;
+  void afterDraw(NVGcontext* ctx) override;
 
   //! reparse childs inside
   void performLayout(NVGcontext *ctx) override;
 
-  Page* getPage(Widget* child);
-
-  Page* addPage(Widget* elemnt);
+  Page& getPage(Widget* child);
+  Page& addPage(Widget* elemnt);
 
   //virtual void save(* out ) const;
   //virtual void load(* in );
 protected:
 
-    void _reparseChilds();
+    void _reparseChilds(NVGcontext* ctx);
     void _updateChilds();
-    void _resizeEvent();
 
-    typedef std::vector<Page*> _Pages;
+    typedef std::vector<Page> _Pages;
     typedef std::vector<Desc> _Names;
-    _Pages _pages;
-    _Names _pageNames;
+    _Pages mPages;
+    _Names mPageNames;
 
-    uint32_t mLastChildCount;
-    int _activePageIndex;
+    int mActivePageIndex;
 
-    ScrollBar* _scrollBar = nullptr;
+    ScrollBar* mScrollBar = nullptr;
 
-    std::bitset<16> _flags;
-    int _scrollValue = 0;
+    std::bitset<16> mFlags;
+    int mScrollValue = 0;
+    bool mNeedReparseChilds = false;
 };
 
 NAMESPACE_END(gui)
