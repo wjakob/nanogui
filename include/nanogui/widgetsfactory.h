@@ -14,10 +14,12 @@ public:
 
   void registerFactory(WidgetFactory* anotherFactory);
   void registerCreator(std::string wtypename, creatorFunc creator);
-  size_t factoriesCount() const;
-  WidgetFactory* getFactory(size_t index) const;
-
+  
+  virtual WidgetFactory* factory(size_t index) const;
+  virtual std::vector<WidgetFactory*> factories() const;
   virtual Widget* createWidget(const std::string& wtypename, Widget* parent);
+  virtual std::vector<std::string> types() const { return {}; }
+  virtual std::string name() const { return "global"; }
 
 protected:
   WidgetFactory();
