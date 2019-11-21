@@ -138,6 +138,8 @@ public:
     /// The current button group (for radio buttons).
     const std::vector<Button *> &buttonGroup() const { return mButtonGroup; }
 
+    std::string wtypename() const override { return "button"; }
+
     /// The preferred size of this Button.
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
 

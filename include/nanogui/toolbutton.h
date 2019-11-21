@@ -30,6 +30,8 @@ public:
         setFixedSize(Vector2i(25, 25));
     }
 
+    std::string wtypename() const override { return "toolbutton"; }
+
     using Button::set;
     template<typename... Args>
     ToolButton(Widget* parent, const Args&... args)
@@ -49,6 +51,8 @@ public:
 
     setFixedSize(Vector2i(25, 25));
   }
+
+  std::string wtypename() const override { return "togglebutton"; }
 
   using Button::set;
   template<typename... Args>
