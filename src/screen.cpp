@@ -14,6 +14,7 @@
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
+#include <set>
 #include <nanovg.h>
 #include <iostream>
 
@@ -24,9 +25,35 @@ void Screen::addChild(int index, Widget * widget)
   Widget::addChild(index, widget);
 }
 
+void Screen::needPerformLayout(Widget* w)
+{
+  widgetsNeedUpdate.emplace_back(w);
+}
+
 void Screen::drawWidgets() {
     if (!mVisible)
         return;
+
+    if (!widgetsNeedUpdate.empty())
+    {
+      std::set<Widget*> ws;
+      for (auto w : widgetsNeedUpdate)
+        ws.insert(w);
+
+      for (auto c: widgetsNeedUpdate)
+      {
+        for (auto it = ws.begin(); it != ws.end(); )
+        {
+          if (c->areParentsContain(*it))
+            it = ws.erase(it);
+          else it++;
+        }
+      }
+      
+      widgetsNeedUpdate.clear();
+      for (auto& c : ws)
+        c->performLayout(mNVGContext);
+    }
 
     _drawWidgetsBefore();
 

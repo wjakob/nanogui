@@ -335,6 +335,16 @@ void Widget::draw(NVGcontext *ctx) {
     nvgRestore(ctx);
 }
 
+void Widget::setVisible(bool visible) 
+{
+  if (mVisible != visible)
+  {
+    auto scr = screen();
+    if (scr) scr->needPerformLayout(mParent);
+  }
+  mVisible = visible; 
+}
+
 void Widget::afterDraw(NVGcontext *ctx) {
   if (mChildren.empty())
     return;
@@ -344,15 +354,15 @@ void Widget::afterDraw(NVGcontext *ctx) {
 }
 
 void Widget::save(Serializer &s) const {
-  s.set("position", mPos); //s.set("$position_type", std::string("vec2")); s.set("$position_name", std::string("Position"));
-    s.set("size", mSize);
-    s.set("fixedSize", mFixedSize);
-    s.set("visible", mVisible);
-    s.set("enabled", mEnabled);
-    s.set("focused", mFocused);
-    s.set("tooltip", mTooltip);
-    s.set("fontSize", mFontSize);
-    s.set("cursor", (int) mCursor);
+  s.set("position", mPos); 
+  s.set("size", mSize);
+  s.set("fixedSize", mFixedSize);
+  s.set("visible", mVisible);
+  s.set("enabled", mEnabled);
+  s.set("focused", mFocused);
+  s.set("tooltip", mTooltip);
+  s.set("fontSize", mFontSize);
+  s.set("cursor", (int) mCursor);
 }
 
 void Widget::save(Json::value &save) const {

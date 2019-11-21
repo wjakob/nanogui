@@ -155,6 +155,8 @@ public:
     void setClipboardString(const std::string& text);
     std::string getClipboardString();
 
+    void needPerformLayout(Widget* w);
+
     template<typename... Args>Window& window(const Args&... args) { return wdg<Window>(args...); }
 
 public:
@@ -214,6 +216,7 @@ protected:
     std::string mCaption;
     bool mShutdownOnDestruct;
     bool mFullscreen;
+    std::vector<Widget*> widgetsNeedUpdate;
     std::function<void(Vector2i)> mResizeCallback;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
