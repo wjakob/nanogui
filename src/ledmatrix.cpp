@@ -24,7 +24,7 @@ void LedMatrix::setColorAt(int row, int col, const Color& rgb)
 {
     if(isValid(row, col))
     {
-      colorTable[col][row] = rgb;
+      colorTable[col][row] = rgb.toInt();
     }
 }
 
@@ -81,7 +81,7 @@ void LedMatrix::clear()
     {
         for(int j=0; j < mColumnCount; ++j)
         {
-            colorTable[j][i] = mDarkLedColor;
+            colorTable[j][i] = mDarkLedColor.toInt();
         }
     }
 }
@@ -105,9 +105,9 @@ void LedMatrix::setDarkLedColor(const Color& color)
     {
         for(int j=0; j < mColumnCount; ++j)
         {
-            if(colorTable[j][i] == oldColor)
+            if(colorTable[j][i] == oldColor.toInt())
             {
-                colorTable[j][i] = mDarkLedColor;
+                colorTable[j][i] = mDarkLedColor.toInt();
             }
         }
     }

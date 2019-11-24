@@ -76,7 +76,7 @@ protected:
 
   Color mBackgroundColor;
   Color mDarkLedColor;
-  std::vector<std::vector<Color>> colorTable;
+  std::vector<std::vector<int>> colorTable;
   int mRowCount;
   int mColumnCount;
   bool mNeedRecalcParams = false;
