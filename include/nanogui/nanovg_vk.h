@@ -407,7 +407,7 @@ static int vknvg_convertPaint(VKNVGcontext *vk, VKNVGfragUniforms *frag, NVGpain
       frag->texType = (tex->flags & NVG_IMAGE_PREMULTIPLIED) ? 0 : 1;
     else
       frag->texType = 2;
-    //		printf("frag->texType = %d\n", frag->texType);
+    //    printf("frag->texType = %d\n", frag->texType);
   } else {
     frag->type = NSVG_SHADER_FILLGRAD;
     frag->radius = paint->radius;

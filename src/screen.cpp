@@ -49,7 +49,7 @@ void Screen::drawWidgets() {
           else it++;
         }
       }
-      
+
       widgetsNeedUpdate.clear();
       for (auto& c : ws)
         c->performLayout(mNVGContext);

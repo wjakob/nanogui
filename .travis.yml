@@ -27,6 +27,9 @@ matrix:
       before_install:
         - choco install python3
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+        - curl -L --progress-bar --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.126.0/windows/VulkanSDK-1.1.126.0-Installer.exe?Human=true
+        - start VulkanSDK.exe /S
+        - export VULKAN_SDK="/c/VulkanSDK/1.1.126.0"
       script:     
         - mkdir -p build
         - cd build

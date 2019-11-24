@@ -113,7 +113,7 @@ Widget *Widget::findWidget(const Vector2i &p) {
 bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
   if (mChildren.empty())
     return false;
-  
+
   for (int i=mChildren.size()-1; i >= 0; i--) {
       Widget *child = mChildren[i];
       if (child->visible() && child->contains(p - mPos) &&
@@ -335,14 +335,14 @@ void Widget::draw(NVGcontext *ctx) {
     nvgRestore(ctx);
 }
 
-void Widget::setVisible(bool visible) 
+void Widget::setVisible(bool visible)
 {
   if (mVisible != visible)
   {
     auto scr = screen();
     if (scr) scr->needPerformLayout(mParent);
   }
-  mVisible = visible; 
+  mVisible = visible;
 }
 
 void Widget::afterDraw(NVGcontext *ctx) {
@@ -354,7 +354,7 @@ void Widget::afterDraw(NVGcontext *ctx) {
 }
 
 void Widget::save(Serializer &s) const {
-  s.set("position", mPos); 
+  s.set("position", mPos);
   s.set("size", mSize);
   s.set("fixedSize", mFixedSize);
   s.set("visible", mVisible);

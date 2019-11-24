@@ -166,7 +166,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
                                      (caption + " (OpenGL)").c_str(), monitor, nullptr);
     } else {
         mHwWindow = glfwCreateWindow(size.x(), size.y(),
-                                     (caption " (OpenGL)").c_str(), nullptr, nullptr);
+                                     (caption + " (OpenGL)").c_str(), nullptr, nullptr);
     }
 
     if (!mHwWindow)
