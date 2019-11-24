@@ -187,7 +187,7 @@ Foldout::Page& Foldout::addPage(Widget* elm)
     mPageNames.push_back( info );
     mPages.push_back( descr );
 
-    return descr;
+    return mPages.back();
 }
 
 void Foldout::afterDraw(NVGcontext* ctx)
