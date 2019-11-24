@@ -245,10 +245,12 @@ PYBIND11_MODULE(nanogui, m) {
     register_tabs(m);
     register_textbox(m);
     register_theme(m);
+#if defined(NANOVG_OPENGL)
     register_glcanvas(m);
+    register_glutil(m);
+#endif
     register_formhelper(m);
     register_misc(m);
-    register_glutil(m);
     register_nanovg(m);
 }
 
