@@ -396,7 +396,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         rcWin.right += -rcWin.left;
         rcWin.bottom += -rcWin.top;
 
-        mHwWindow = (void*)CreateWindowEx(0, pszWindowClass, (caption + " (DX11)").c_str(), WS_OVERLAPPEDWINDOW,
+        mHwWindow = (void*)CreateWindowEx(0, pszWindowClass, (mCaption + " (DX11)").c_str(), WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, (int)rcWin.right, (int)rcWin.bottom, NULL, NULL, hInstance, NULL);
     }
 

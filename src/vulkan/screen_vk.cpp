@@ -210,10 +210,10 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
         mHwWindow = glfwCreateWindow(mode->width, mode->height,
-                                       caption.c_str(), monitor, nullptr);
+                                     (caption + "(Vulkan)").c_str(), monitor, nullptr);
     } else {
         mHwWindow = glfwCreateWindow(size.x(), size.y(),
-                                       caption.c_str(), nullptr, nullptr);
+                                     (caption + "(Vulkan)").c_str(), nullptr, nullptr);
     }
 
     if (!mHwWindow)
