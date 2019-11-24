@@ -31,38 +31,38 @@ class NANOGUI_EXPORT LedMatrix : public Widget
 public:
   LedMatrix(Widget* parent);
   virtual ~LedMatrix();
-  
+
   enum LEDColor
   {
       NoColor   = 0x222222FF,
-  
+
       Red       = 0xFF0000FF,
       Green     = 0x00FF00FF,
       Blue      = 0x0000FFFF,
-  
+
       White     = 0xFFFFFFFF,
       Orange    = 0xFF8800FF,
       OrangeRed = 0xFF2200FF,
       Yellow    = 0xFFFF00FF
   };
-  
+
   void clear();
-  
+
   Color backgroundColor() const;
   void setBackgroundColor(const Color& color);
-      
+
   Color colorAt(int row, int col) const;
   void setColorAt(int row, int col, const Color& rgb);
   void clearColumn(int col);
-  
+
   int rowCount() const;
   void setRowCount(int rows);
-  
+
   int columnCount() const;
 
   void setImage(int imageIndex);
   void setText(const std::string& text);
-  
+
   Vector2i preferredSize(NVGcontext* ctx) const override;
   void performLayout(NVGcontext* ctx) override;
 

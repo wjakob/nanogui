@@ -14,7 +14,7 @@ public:
 
   void registerFactory(WidgetFactory* anotherFactory);
   void registerCreator(std::string wtypename, creatorFunc creator);
-  
+
   virtual WidgetFactory* factory(size_t index) const;
   virtual std::vector<WidgetFactory*> factories() const;
   virtual Widget* createWidget(const std::string& wtypename, Widget* parent);

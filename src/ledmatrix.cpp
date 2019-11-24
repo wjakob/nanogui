@@ -22,7 +22,7 @@ void LedMatrix::clearColumn(int col)
 
 void LedMatrix::setColorAt(int row, int col, const Color& rgb)
 {
-    if(isValid(row, col))
+    if (isValid(row, col))
     {
       colorTable[col][row] = rgb.toInt();
     }
@@ -39,7 +39,7 @@ void LedMatrix::performLayout(NVGcontext* ctx)
 
 void LedMatrix::setText(const std::string& text)
 {
-  
+
 }
 
 void LedMatrix::drawLEDs(NVGcontext* ctx)
@@ -50,9 +50,9 @@ void LedMatrix::drawLEDs(NVGcontext* ctx)
   float side = std::min(wside, hside);
   float x = mPos.x() + side/2, y = mPos.y() + side/2;
 
-  for(int row=0; row < mRowCount; ++row)
+  for (int row=0; row < mRowCount; ++row)
   {
-      for(int col=0; col < mColumnCount; ++col)
+      for (int col=0; col < mColumnCount; ++col)
       {
           nvgBeginPath(ctx);
           nvgFillColor(ctx, colorAt(row, col));
@@ -77,9 +77,9 @@ LedMatrix::LedMatrix(Widget* parent)
 LedMatrix::~LedMatrix() {}
 void LedMatrix::clear()
 {
-    for(int i=0; i < mRowCount; ++i)
+    for (int i=0; i < mRowCount; ++i)
     {
-        for(int j=0; j < mColumnCount; ++j)
+        for (int j=0; j < mColumnCount; ++j)
         {
             colorTable[j][i] = mDarkLedColor.toInt();
         }
@@ -101,11 +101,11 @@ void LedMatrix::setDarkLedColor(const Color& color)
     auto oldColor = mDarkLedColor;
     mDarkLedColor = color;
 
-    for(int i=0; i < mRowCount; ++i)
+    for (int i=0; i < mRowCount; ++i)
     {
-        for(int j=0; j < mColumnCount; ++j)
+        for (int j=0; j < mColumnCount; ++j)
         {
-            if(colorTable[j][i] == oldColor.toInt())
+            if (colorTable[j][i] == oldColor.toInt())
             {
                 colorTable[j][i] = mDarkLedColor.toInt();
             }
@@ -115,7 +115,7 @@ void LedMatrix::setDarkLedColor(const Color& color)
 
 Color LedMatrix::colorAt(int row, int col) const
 {
-    if(isValid(row, col))
+    if (isValid(row, col))
     {
       return colorTable[col][row];
     }
@@ -127,17 +127,17 @@ int LedMatrix::rowCount() const { return mRowCount; }
 void LedMatrix::setRowCount(int rows)
 {
   mNeedRecalcParams = true;
-    if((rows >= 0) && (rows != mRowCount))
+    if ((rows >= 0) && (rows != mRowCount))
     {
         int previousRowCount = mRowCount;
         mRowCount = rows;
 
-        for(int i=0; i < mColumnCount; ++i)
+        for (int i=0; i < mColumnCount; ++i)
         {
             colorTable[i].resize(rows);
-            if(rows > previousRowCount)
+            if (rows > previousRowCount)
             {
-                for(int j=previousRowCount; j < rows; ++j)
+                for (int j=previousRowCount; j < rows; ++j)
                 {
                     setColorAt(j, i, mDarkLedColor);
                 }
@@ -150,18 +150,18 @@ int LedMatrix::columnCount() const { return mColumnCount; }
 
 void LedMatrix::setColumnCount(int columns)
 {
-    if((columns >= 0) && (columns != mColumnCount))
+    if ((columns >= 0) && (columns != mColumnCount))
     {
         int previousColumnsCount = mColumnCount;
         mColumnCount = columns;
 
         colorTable.resize(columns);
-        if(columns > previousColumnsCount)
+        if (columns > previousColumnsCount)
         {
-            for(int i=previousColumnsCount; i<columns; ++i)
+            for (int i=previousColumnsCount; i<columns; ++i)
             {
                 colorTable[i].resize(mRowCount);
-                for(int j=0; j < mRowCount; ++j)
+                for (int j=0; j < mRowCount; ++j)
                 {
                     setColorAt(j, i, mDarkLedColor);
                 }

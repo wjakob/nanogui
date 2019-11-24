@@ -405,14 +405,14 @@ void Screen::initialize(void *window, bool shutdownGLFWOnDestruct) {
     nvgEndFrame(mNVGContext);
 }
 
-Screen::~Screen() 
+Screen::~Screen()
 {
     __nanogui_screens.erase((GLFWwindow*)mHwWindow);
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
         if (mCursors[i])
             glfwDestroyCursor((GLFWcursor*)mCursors[i]);
     }
-    
+
     if (mNVGContext)
     {
         nvgDeleteVk(mNVGContext);
@@ -453,7 +453,7 @@ void Screen::_drawWidgetsBefore()
     }
 }
 
-void Screen::drawAll() 
+void Screen::drawAll()
 {
     prepareFrame(internal::device->device, internal::cmd_buffer, &internal::fb);
 

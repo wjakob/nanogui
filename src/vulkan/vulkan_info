@@ -24,21 +24,21 @@ nanovg/example/demo.h
 nanovg/example/perf.c
 
 
-1. shaders is from nanovg_gl.h to files 
+1. shaders is from nanovg_gl.h to files
 shader/fill.frag
 shader/fill_edge_aa.frag (this come from using NVG_ANTIALIAS flag in nanovg_gl.h)
 
 2. fill.frag.inc is compile shaders to spirv
 glslangValidator -V -x -o fill.frag.inc fill.frag
-replace code in fill.frag.inc to 
-	``` const uint32_t g_VkPixelShader_Main[] = { data } ```
+replace code in fill.frag.inc to
+  ``` const uint32_t g_VkPixelShader_Main[] = { data } ```
 
 3. fill.vert.inc is compile shaders to spirv
 glslangValidator -V -x -o fill.vert.inc fill.vert
 replace code in fill.vert.inc to
-	``` const uint32_t g_VkVertexShader_Main[] = { data } ```
+  ``` const uint32_t g_VkVertexShader_Main[] = { data } ```
 
 4. fill_edge_aa.frag.inc is compile shaders to spirv
 glslangValidator -V -x -o fill_edge_aa.frag.inc fill_edge_aa.frag
-replace code in fill_edge_aa.frag.inc to 
-	``` const uint32_t g_VkPixelShaderAA_Main[] = { data } ```
+replace code in fill_edge_aa.frag.inc to
+  ``` const uint32_t g_VkPixelShaderAA_Main[] = { data } ```

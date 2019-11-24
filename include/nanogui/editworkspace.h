@@ -84,7 +84,7 @@ public:
     virtual Widget* getEditableElementFromPoint(Widget *start, const Vector2i &point);
     void setSelectedElement(Widget *elm);
     void setHoveredElement(Widget *elm);
-    
+
     void selectNextSibling();
     void selectPreviousSibling();
 

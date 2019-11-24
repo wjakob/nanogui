@@ -440,7 +440,7 @@ void createMiscWidgets(Screen* screen)
   auto& ib = panelJump.intbox<int>(IsEditable{ true },
                                    FixedHeight{ 22 });
 
-  auto& bf = panelJump.button(Caption{ "" }, 
+  auto& bf = panelJump.button(Caption{ "" },
                               Icon{ ENTYPO_ICON_FORWARD },
                               FixedSize{ 22, 22 },
                               ButtonCallback{ [&] {
@@ -949,7 +949,7 @@ public:
           progress->setValue(value);
         if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
           progress->setValue( std::fmod(value * 2, 1.0f));
-        
+
         startGPUTimer(&gpuTimer);
 
         double t = getTimeFromStart();

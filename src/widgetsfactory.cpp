@@ -25,7 +25,7 @@ struct DummyFactory : public WidgetFactory
 
   DummyFactory(std::string name) : _name(name) {}
 
-  DummyFactory& func(std::string wtype, creatorFunc f) 
+  DummyFactory& func(std::string wtype, creatorFunc f)
   {
     auto it = std::find_if(_creators.begin(), _creators.end(), [&wtype](const CreatorInfo& i) { return i.name == wtype; });
     if (it == _creators.end())
