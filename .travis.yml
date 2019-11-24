@@ -18,7 +18,7 @@ matrix:
         - mkdir -p build
         - cd build
         - cmake --version 
-        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_PYTHON_VERSION=3.8 -DPYTHON_INCLUDE_DIRS:PATH="C:/Python38/include" -DPYTHON_LIBRARY:FILEPATH="C:/Python38/libs/python38.lib" ..
+        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_PYTHON_VERSION=3.8 -DPYTHON_INCLUDE_DIRS:PATH="C:/Python38/include" -DPYTHON_LIBRARY:FILEPATH="C:/Python38/libs/python38.lib" ..
         - cmake --build .
     - os: linux
       compiler: gcc-4.9

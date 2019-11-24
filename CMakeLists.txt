@@ -18,7 +18,7 @@ else()
 endif()
 
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI glfw example application?" ON)
-option(NANOGUI_VULKAN_BACKEND  "Use Vulkan backend?" ON)
+option(NANOGUI_VULKAN_BACKEND  "Use Vulkan backend?" OFF)
 option(NANOGUI_GLFW_BACKEND  "Use GLFW backend?" OFF)
 option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
 option(NANOGUI_DX12_BACKEND  "Use DX12 backend?" OFF)
@@ -50,13 +50,13 @@ if (NANOGUI_DX11_BACKEND OR NANOGUI_GLFW_BACKEND OR NANOGUI_DX12_BACKEND OR NANO
   list(LENGTH BACKENDS_SELECTED BACKENDS_SELECTED_SIZE)
   if (NOT ${BACKENDS_SELECTED_SIZE} EQUAL "1")
     message(FATAL_ERROR "Multiple backends selected! "
-      "Select one of backends: glfw, dx11, dx12, vulkan"
+      "Select one of backends: opengl, dx11, dx12, vulkan"
       "Current selected: ${BACKENDS_SELECTED}"
     )	
   endif()    
 else()
   message(FATAL_ERROR "No backends selected! "
-     "Select one of backends: glfw, dx11, dx12, vulkan"
+     "Select one of backends: opengl, dx11, dx12, vulkan"
   )	  
 endif()
 
