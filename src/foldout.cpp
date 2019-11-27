@@ -222,7 +222,8 @@ void Foldout::performLayout(NVGcontext *ctx)
 Foldout::Page& Foldout::getPage(Widget* child)
 {
   auto it = std::find_if(mPages.begin(), mPages.end(), [child](const Page& c) { return c.page == child; });
-  return it != mPages.end() ? *it : Page{};
+  static auto invalidPage = Page{};
+  return it != mPages.end() ? *it : invalidPage;
 }
 
 void Foldout::addPage( const std::string& pageName, const std::string& pageCaption, Widget* child )
