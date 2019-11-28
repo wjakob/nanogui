@@ -561,26 +561,23 @@ endif()
 
 # Build example application if desired
 if(NANOGUI_BUILD_EDITOR)
-  add_executable(editor      src/editor.cpp)
+  add_executable(editor      editor/editor.cpp)
   target_link_libraries(editor      nanogui ${NANOGUI_EXTRA_LIBS})
 
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if(NANOGUI_BUILD_EXAMPLE)
-  if (NANOGUI_GLFW_BACKEND)
-    add_executable(example2      src/example2.cpp)
-    add_executable(example3      src/example3.cpp)
-    add_executable(example4      src/example4.cpp)
-    add_executable(example_icons src/example_icons.cpp)
-    target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
-    target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
-    target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
-    target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
-  endif()
-
-  add_executable(example1      src/example1.cpp)
+  add_executable(example1      examples/example1.cpp)
+  add_executable(example2      examples/example2.cpp)
+  add_executable(example3      examples/example3.cpp)
+  add_executable(example4      examples/example4.cpp)
+  add_executable(example_icons examples/example_icons.cpp)
   target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

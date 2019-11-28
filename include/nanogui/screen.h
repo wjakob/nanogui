@@ -198,6 +198,7 @@ public:
 protected:
     void _drawWidgetsBefore();
     void _internalSetCursor(int cursor);
+    void _setupStartParams();
 
     void *mHwWindow;
     NVGcontext *mNVGContext;

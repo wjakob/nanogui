@@ -68,7 +68,7 @@ using std::vector;
 using std::pair;
 using std::to_string;
 
-
+#ifdef NANOGUI_GLFW_BACKEND
 class MyGLCanvas : public nanogui::GLCanvas {
 public:
     MyGLCanvas(Widget *parent) : nanogui::GLCanvas(parent), mRotation(nanogui::Vector3f(0.25f, 0.5f, 0.33f)) {
@@ -175,17 +175,22 @@ private:
     nanogui::GLShader mShader;
     Eigen::Vector3f mRotation;
 };
-
+#endif
 
 class ExampleApplication : public nanogui::Screen {
 public:
     ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", false) {
         using namespace nanogui;
 
+#ifdef NANOGUI_GLFW_BACKEND
         Window *window = new Window(this, "GLCanvas Demo");
+#else
+        Window *window = new Window(this, "GLCanvas Demo (Wrong backend!!!!!)");
+#endif
         window->setPosition(Vector2i(15, 15));
         window->setLayout(new GroupLayout());
 
+#ifdef NANOGUI_GLFW_BACKEND
         mCanvas = new MyGLCanvas(window);
         mCanvas->setBackgroundColor({100, 100, 100, 255});
         mCanvas->setSize({400, 400});
@@ -199,7 +204,7 @@ public:
 
         Button *b1 = new Button(tools, "Random Rotation");
         b1->setCallback([this]() { mCanvas->setRotation(nanogui::Vector3f((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f)); });
-
+#endif
         performLayout();
     }
 
@@ -218,7 +223,9 @@ public:
         Screen::draw(ctx);
     }
 private:
+#ifdef NANOGUI_GLFW_BACKEND
     MyGLCanvas *mCanvas;
+#endif
 };
 
 int main(int /* argc */, char ** /* argv */) {
