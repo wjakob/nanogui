@@ -30,6 +30,24 @@ void Screen::needPerformLayout(Widget* w)
   widgetsNeedUpdate.emplace_back(w);
 }
 
+void Screen::_setupStartParams()
+{
+    mVisible = true;
+    setTheme(new Theme(mNVGContext));
+    mMousePos = Vector2i::Zero();
+    mMouseState = mModifiers = 0;
+    mDragActive = false;
+    mLastInteraction = getTimeFromStart();
+    mProcessEvents = true;
+
+    for (int i=0; i < (int) Cursor::CursorCount; ++i)
+      mCursors[i] = createStandardCursor(i);
+
+    /// Fixes retina display-related font rendering issue (#185)
+    nvgBeginFrame(mNVGContext, mSize.x(), mSize.y(), mPixelRatio);
+    nvgEndFrame(mNVGContext);    
+}
+
 void Screen::drawWidgets() {
     if (!mVisible)
         return;
@@ -49,7 +67,7 @@ void Screen::drawWidgets() {
           else it++;
         }
       }
-
+      
       widgetsNeedUpdate.clear();
       for (auto& c : ws)
         c->performLayout(mNVGContext);

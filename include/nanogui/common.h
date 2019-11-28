@@ -590,12 +590,15 @@ extern NANOGUI_EXPORT std::array<char, 8> utf8(int c);
 
 /// Load a directory of PNG images and upload them to the GPU (suitable for use with ImagePanel)
 extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
-    loadImageDirectory(NVGcontext *ctx, const std::string &path);
+    loadImageDirectory(NVGcontext *ctx, const std::string &path,
+                       std::function<bool(const std::string&)> f = nullptr);
 
 /// Convenience function for instanting a PNG icon from the application's data segment (via bin2c)
-#define nvgImageIcon(ctx, name) nanogui::__nanogui_get_image(ctx, #name, name##_png, name##_png_size)
+#define nvgImageIcon(ctx, name) __nanogui_get_image(ctx, #name, name##_png, name##_png_size)
 template<typename T> T
 clamp(const T& val, const T& min, const T& max) { return val < min ? min : (val > max ? max : val); }
+
+extern NANOGUI_EXPORT void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
 
 inline Vector2i NANOGUI_EXPORT rect_center(const Vector4i& r) { return Vector2i((r.z() + r.x()) / 2, (r.w() + r.y()) / 2); }
 

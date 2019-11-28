@@ -388,21 +388,14 @@ void Screen::initialize(void *window, bool shutdownGLFWOnDestruct) {
     if (mNVGContext == nullptr)
         throw std::runtime_error("Could not initialize NanoVG!");
 
-    mVisible = glfwGetWindowAttrib((GLFWwindow*)window, GLFW_VISIBLE) != 0;
-    setTheme(new Theme(mNVGContext));
-    mMousePos = Vector2i::Zero();
-    mMouseState = mModifiers = 0;
-    mDragActive = false;
-    mLastInteraction = glfwGetTime();
-    mProcessEvents = true;
     __nanogui_screens[(GLFWwindow*)mHwWindow] = this;
+    _setupStartParams();
+    mVisible = glfwGetWindowAttrib((GLFWwindow*)window, GLFW_VISIBLE) != 0;
+}
 
-    for (int i=0; i < (int) Cursor::CursorCount; ++i)
-        mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
-
-    /// Fixes retina display-related font rendering issue (#185)
-    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
-    nvgEndFrame(mNVGContext);
+intptr_t Scree::createStandardCursor(int shape)
+{
+    return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape);
 }
 
 Screen::~Screen()

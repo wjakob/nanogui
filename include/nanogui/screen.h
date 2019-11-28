@@ -177,7 +177,7 @@ public:
     Screen();
 
     /// Initialize the \ref Screen
-    void initialize(void *window, bool shutdownOnDestruct);
+    void initialize(void *handle, bool shutdownOnDestruct);
 
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
@@ -194,6 +194,7 @@ public:
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
     void drawWidgets();
+    intptr_t createStandardCursor(int shape);
 
 protected:
     void _drawWidgetsBefore();
@@ -202,7 +203,7 @@ protected:
 
     void *mHwWindow;
     NVGcontext *mNVGContext;
-    void *mCursors[(int) Cursor::CursorCount];
+    intptr_t mCursors[(int)Cursor::CursorCount];
     Cursor mCursor;
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;

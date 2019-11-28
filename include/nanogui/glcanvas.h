@@ -19,8 +19,6 @@
 
 #include <nanogui/widget.h>
 #include <nanogui/common.h>
-#include <nanovg.h>
-//#include <nanogui/glutil.h>
 
 NAMESPACE_BEGIN(nanogui)
 

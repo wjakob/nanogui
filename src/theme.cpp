@@ -14,7 +14,6 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/entypo.h>
-#include <nanogui_resources.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -245,15 +244,21 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mTextBoxDownIcon = ENTYPO_ICON_CHEVRON_DOWN;
 }
 
+void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
+
 Theme::Theme(NVGcontext *ctx) {
     fillThemeDefaultValues(*this);
 
-    mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
-                                   roboto_regular_ttf_size, 0);
-    mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
-                                 roboto_bold_ttf_size, 0);
-    mFontIcons = nvgCreateFontMem(ctx, "icons", entypo_ttf,
-                                  entypo_ttf_size, 0);
+    void* data = nullptr; uint32_t datasize;
+    __nanogui_get_fontdata("sans", data, datasize);
+    mFontNormal = nvgCreateFontMem(ctx, "sans", (unsigned char*)data, datasize, 0);
+
+    __nanogui_get_fontdata("sans-bold", data, datasize);
+    mFontBold = nvgCreateFontMem(ctx, "sans-bold", (unsigned char*)data, datasize, 0);
+
+    __nanogui_get_fontdata("icons", data, datasize);
+    mFontIcons = nvgCreateFontMem(ctx, "icons", (unsigned char*)data, datasize, 0);
+
     if (mFontNormal == -1 || mFontBold == -1 || mFontIcons == -1)
         throw std::runtime_error("Could not load fonts!");
 }

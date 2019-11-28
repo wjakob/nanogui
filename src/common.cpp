@@ -27,7 +27,35 @@
 #  include <dirent.h>
 #endif
 
+#ifndef NANOGUI_CUSTOM_FONT_FUNCTION
+#include "nanogui_resources.h" 
+#endif
+
+extern int nvgCreateImageMem(NVGcontext*, int, unsigned char*, int);
+extern int nvgCreateImage(NVGcontext*, const char*, int);
+
 NAMESPACE_BEGIN(nanogui)
+
+#ifndef NANOGUI_CUSTOM_FONT_FUNCTION
+void __nanogui_get_fontdata(const char* name, void*& data, int &datasize)
+{
+  if (!strcmp(name, "sans"))
+  {
+    data = roboto_regular_ttf;
+    datasize = roboto_regular_ttf_size;
+  }
+  else if (!strcmp(name, "sans-bold"))
+  {
+    data = roboto_bold_ttf;
+    datasize = roboto_bold_ttf_size;
+  }
+  else if (!strcmp(name, "icons"))
+  {
+    data = entypo_ttf;
+    datasize = entypo_ttf_size;
+  }
+}
+#endif
 
 bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
 {
@@ -136,7 +164,9 @@ int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data,
 }
 
 std::vector<std::pair<int, std::string>>
-loadImageDirectory(NVGcontext *ctx, const std::string &path) {
+loadImageDirectory(NVGcontext *ctx, const std::string &path, 
+                   std::function<bool (const std::string&)> filter)
+{
     std::vector<std::pair<int, std::string> > result;
 #if !defined(_WIN32)
     DIR *dp = opendir(path.c_str());
@@ -151,17 +181,22 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     HANDLE handle = FindFirstFileA(searchPath.c_str(), &ffd);
     if (handle == INVALID_HANDLE_VALUE)
         throw std::runtime_error("Could not open image directory!");
-    do {
+    do 
+    {
         const char *fname = ffd.cFileName;
 #endif
-        if (strstr(fname, "png") == nullptr)
+        if (filter != nullptr)
+        {
+          if (!filter(fname))
+            continue;
+        }
+        if (strstr(fname, "png") == nullptr && strstr(fname, "jpg") == nullptr)
             continue;
         std::string fullName = path + "/" + std::string(fname);
         int img = nvgCreateImage(ctx, fullName.c_str(), 0);
         if (img == 0)
             throw std::runtime_error("Could not open image data!");
-        result.push_back(
-            std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
+        result.push_back(std::make_pair(img, fullName));
 #if !defined(_WIN32)
     }
     closedir(dp);
