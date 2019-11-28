@@ -393,7 +393,7 @@ void Screen::initialize(void *window, bool shutdownGLFWOnDestruct) {
     mVisible = glfwGetWindowAttrib((GLFWwindow*)window, GLFW_VISIBLE) != 0;
 }
 
-intptr_t Scree::createStandardCursor(int shape)
+intptr_t Screen::createStandardCursor(int shape)
 {
     return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape);
 }

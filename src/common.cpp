@@ -37,7 +37,7 @@ extern int nvgCreateImage(NVGcontext*, const char*, int);
 NAMESPACE_BEGIN(nanogui)
 
 #ifndef NANOGUI_CUSTOM_FONT_FUNCTION
-void __nanogui_get_fontdata(const char* name, void*& data, int &datasize)
+void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
 {
   if (!strcmp(name, "sans"))
   {
@@ -363,7 +363,7 @@ float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const
     bounds = _bounds;
 
   nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-  nvgTextBounds(ctx, x, y, string, NULL, bounds);
+  nvgTextBounds(ctx, x, y, string, end, bounds);
   return bounds[3] - bounds[1];
 }
 

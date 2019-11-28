@@ -158,7 +158,7 @@ public:
     bool load(Json::value &s) override;
 
     void setDrawFlags(int flags) { mDrawFlags = flags; }
-    bool haveDrawFlag(int flag) { return mDrawFlags & flag; }
+    bool haveDrawFlag(int flag) { return (mDrawFlags & flag)==flag; }
 
 protected:
 
