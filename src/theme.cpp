@@ -222,6 +222,11 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mScrollBarActiveColor = Color(220, 180);
   theme.mScrollBarInactiveColor = Color(220, 100);
 
+  theme.mToleranceBarBorderColor = Color(220, 255);
+  theme.mToleranceBarBgColor = Color(70, 100);
+  theme.mToleranceBarLowColor = Color(70, 255);
+  theme.mToleranceBarHighColor = Color(200, 255);
+
   theme.mSliderValueColor = Color(0, 129, 255, 128);
 
   theme.mContextMenuShortcutTextColor = Color(180, 255);

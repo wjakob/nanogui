@@ -113,6 +113,12 @@ public:
 
     Color mScrollBarActiveColor;
     Color mScrollBarInactiveColor;
+
+    Color mToleranceBarBorderColor; ///< Color of border
+    Color mToleranceBarBgColor; ///< Color of background
+    Color mToleranceBarLowColor; ///< Color of minimum value
+    Color mToleranceBarHighColor; ///< Color of maximum value
+
     /* Generic colors */
     /**
      * The color of the drop shadow drawn behind widgets
