@@ -562,8 +562,8 @@ endif()
 
 # Build example application if desired
 if(NANOGUI_BUILD_EDITOR)
-  add_executable(editor      editor/editor.cpp)
-  target_link_libraries(editor      nanogui ${NANOGUI_EXTRA_LIBS})
+  add_executable(editorl      editor/editor.cpp)
+  target_link_libraries(editorl   nanogui ${NANOGUI_EXTRA_LIBS})
 
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
