@@ -272,7 +272,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     auto& submenu = parent()->wdg<ContextMenu>(name, false);
     submenu.mRootMenu = mRootMenu ? mRootMenu : this;
     auto& lbl1 = mItemContainer->wdg<ContextMenuLabel>(name);
-    auto& lbl2 = mItemContainer->wdg<Label>(Caption{ utf8(ENTYPO_ICON_CHEVRON_THIN_RIGHT).data() }, CaptionFont{ "icons" });
+    auto& lbl2 = mItemContainer->wdg<Label>(Caption{ utf8(mTheme->mContextSubmenu).data() }, CaptionFont{ "icons" });
 
     lbl1.setFontSize(fontSize());
     lbl1.setHeight(lbl1.fontSize() * 2);

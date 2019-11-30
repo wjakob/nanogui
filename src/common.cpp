@@ -27,7 +27,7 @@
 #  include <dirent.h>
 #endif
 
-#ifndef NANOGUI_CUSTOM_FONT_FUNCTION
+#if !NANOGUI_CUSTOM_FONT_FUNCTION
 #include "nanogui_resources.h" 
 #endif
 
@@ -36,7 +36,7 @@ extern int nvgCreateImage(NVGcontext*, const char*, int);
 
 NAMESPACE_BEGIN(nanogui)
 
-#ifndef NANOGUI_CUSTOM_FONT_FUNCTION
+#if !NANOGUI_CUSTOM_FONT_FUNCTION
 void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
 {
   if (!strcmp(name, "sans"))

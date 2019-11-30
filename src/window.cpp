@@ -217,7 +217,7 @@ void Window::draw(NVGcontext *ctx) {
     }
 
     if (collapsable) {
-      auto icon = utf8(mCollapsed ? ENTYPO_ICON_CHEVRON_SMALL_RIGHT : ENTYPO_ICON_CHEVRON_SMALL_DOWN);
+      auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
 
       mCollapseIconSize.y() = fontSize();
       mCollapseIconSize.y() *= mCollapseIconScale;

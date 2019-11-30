@@ -131,8 +131,8 @@ void createButtonDemoWindow(Screen* screen)
   auto& tools = w.widget();
   tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
   tools.toolbutton(Icon{ ENTYPO_ICON_CLOUD });
-  tools.toolbutton(Icon{ ENTYPO_ICON_CONTROLLER_FAST_FORWARD });
-  tools.toolbutton(Icon{ ENTYPO_ICON_COMPASS });
+  tools.toolbutton(Icon{ ENTYPO_ICON_FAST_FORWARD });
+  tools.toolbutton(Icon{ ENTYPO_ICON_VOLUME_UP });
   tools.toolbutton(Icon{ ENTYPO_ICON_INSTALL });
 
   w.label("Popup buttons", "sans-bold");
@@ -209,20 +209,20 @@ void createBasicWidgets(Screen* parent)
   auto& tools = w.widget();
   tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
   tools.button(Caption{ "Info" },
-               ButtonCallback { [&] {
+               ButtonCallback { [=] {
                  auto& dlg = parent->msgdialog(MessageDialog::Type::Information, "Title", "This is an information message");
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
                }});
 
   tools.button(Caption{ "Warn" },
-               ButtonCallback{ [&] {
+               ButtonCallback{ [=] {
                  auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a warning message");
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
                }});
 
 
   tools.button(Caption{ "Ask" },
-               ButtonCallback{ [&] {
+               ButtonCallback{ [=] {
                  auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
                }});

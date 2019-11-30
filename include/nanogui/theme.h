@@ -244,6 +244,8 @@ public:
 
     /// Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).
     int mCheckBoxIcon;
+
+    int mContextSubmenu;
     /// Icon to use for informational MessageDialog widgets (default: ``ENTYPO_ICON_INFO_WITH_CIRCLE``).
     int mMessageInformationIcon;
     /// Icon to use for interrogative MessageDialog widgets (default: ``ENTYPO_ICON_HELP_WITH_CIRCLE``).
@@ -266,6 +268,9 @@ public:
     int mTextBoxUpIcon;
     /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
     int mTextBoxDownIcon;
+
+    int mWindowExpandedIcon;
+    int mWindowCollapsedIcon;
 
     int mWindowMenuHeight;
 

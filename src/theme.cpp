@@ -230,18 +230,21 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mTooltipOpacity = 255;
   theme.mWindowMenuHeight = 18;
 
-  theme.mCheckBoxIcon = ENTYPO_ICON_CHECK;
-  theme.mMessageInformationIcon = ENTYPO_ICON_INFO_WITH_CIRCLE;
-  theme.mMessageQuestionIcon = ENTYPO_ICON_HELP_WITH_CIRCLE;
+  theme.mCheckBoxIcon = ENTYPO_ICON_OK;
+  theme.mContextSubmenu = ENTYPO_ICON_RIGHT_OPEN;
+  theme.mMessageInformationIcon = ENTYPO_ICON_INFO_CIRCLED;
+  theme.mMessageQuestionIcon = ENTYPO_ICON_HELP_CIRCLED;
   theme.mMessageWarningIcon = ENTYPO_ICON_WARNING;
-  theme.mMessageAltButtonIcon = ENTYPO_ICON_CIRCLE_WITH_CROSS;
+  theme.mMessageAltButtonIcon = ENTYPO_ICON_CANCEL_2;
   theme.mMessagePrimaryButtonIcon = ENTYPO_ICON_CHECK;
-  theme.mPopupChevronRightIcon = ENTYPO_ICON_CHEVRON_RIGHT;
-  theme.mPopupChevronLeftIcon = ENTYPO_ICON_CHEVRON_LEFT;
-  theme.mTabHeaderLeftIcon = ENTYPO_ICON_ARROW_BOLD_LEFT;
-  theme.mTabHeaderRightIcon = ENTYPO_ICON_ARROW_BOLD_RIGHT;
-  theme.mTextBoxUpIcon = ENTYPO_ICON_CHEVRON_UP;
-  theme.mTextBoxDownIcon = ENTYPO_ICON_CHEVRON_DOWN;
+  theme.mPopupChevronRightIcon = ENTYPO_ICON_RIGHT_OPEN;
+  theme.mPopupChevronLeftIcon = ENTYPO_ICON_LEFT_OPEN;
+  theme.mTabHeaderLeftIcon = ENTYPO_ICON_LEFT_1;
+  theme.mTabHeaderRightIcon = ENTYPO_ICON_RIGHT_1;
+  theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;
+  theme.mTextBoxDownIcon = ENTYPO_ICON_DOWN_1;
+  theme.mWindowExpandedIcon = ENTYPO_ICON_DOWN_OPEN_1;
+  theme.mWindowCollapsedIcon = ENTYPO_ICON_RIGHT_OPEN_1;
 }
 
 void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
@@ -287,21 +290,21 @@ WhiteTheme::WhiteTheme(NVGcontext* ctx)
   fillThemeDefaultValues(*this);
   // overriding some default icons as demonstration
   // default: ``ENTYPO_ICON_CHECK``
-  mCheckBoxIcon = ENTYPO_ICON_CROSS;
+  mCheckBoxIcon = ENTYPO_ICON_CHECK_1;
   //mCheckBoxIconExtraScale = 1.3f;
   // default: ``ENTYPO_ICON_CHEVRON_RIGHT``
-  mPopupChevronRightIcon = ENTYPO_ICON_TRIANGLE_RIGHT;
+  mPopupChevronRightIcon = ENTYPO_ICON_RIGHT_DIR;
   // default: ``ENTYPO_ICON_CHEVRON_LEFT``
-  mPopupChevronLeftIcon = ENTYPO_ICON_TRIANGLE_LEFT;
+  mPopupChevronLeftIcon = ENTYPO_ICON_LEFT_DIR;
   //mPopupIconExtraScale = 0.8f;
   // default: ``ENTYPO_ICON_ARROW_BOLD_LEFT``
-  mTabHeaderLeftIcon = ENTYPO_ICON_ARROW_WITH_CIRCLE_LEFT;
+  mTabHeaderLeftIcon = ENTYPO_ICON_LEFT_CIRCLED_1;
   // default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``
-  mTabHeaderRightIcon = ENTYPO_ICON_ARROW_WITH_CIRCLE_RIGHT;
+  mTabHeaderRightIcon = ENTYPO_ICON_RIGHT_CIRCLED_1;
   // default: ``ENTYPO_ICON_CHEVRON_UP``
-  mTextBoxUpIcon = ENTYPO_ICON_TRIANGLE_UP;
+  mTextBoxUpIcon = ENTYPO_ICON_UP_DIR;
   // default: ``ENTYPO_ICON_CHEVRON_DOWN``
-  mTextBoxDownIcon = ENTYPO_ICON_TRIANGLE_DOWN;
+  mTextBoxDownIcon = ENTYPO_ICON_DOWN_DIR;
   //mTextBoxIconExtraScale = 0.6f;
 
   mDropShadow = Color(0.0f, 0.17f, 0.21f, 1.0f);
