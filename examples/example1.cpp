@@ -48,6 +48,7 @@
 #include <nanogui/common.h>
 #include <nanogui/listbox.h>
 #include <nanogui/themebuilder.h>
+#include <nanogui/tolerancebar.h>
 #include <nanogui/treeview.h>
 #include <nanogui/treeviewitem.h>
 #include <iostream>
@@ -750,6 +751,9 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     wrapper.intbox<int>(IsSpinnable{ true });
     wrapper.label("FloatBox : ");
     wrapper.floatbox<float>(IsSpinnable{ true });
+
+    wrapper.label("Volume : ");
+    wrapper.tolerancebar().setFixedSize(Vector2i(120, 30));
   }
 
   /* Message dialogs */

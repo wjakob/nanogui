@@ -19,7 +19,7 @@ endif()
 
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI glfw example application?" ON)
 option(NANOGUI_VULKAN_BACKEND  "Use Vulkan backend?" OFF)
-option(NANOGUI_GLFW_BACKEND  "Use GLFW backend?" OFF)
+option(NANOGUI_GLFW_BACKEND  "Use OpenGL backend?" OFF)
 option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
 option(NANOGUI_DX12_BACKEND  "Use DX12 backend?" OFF)
 OPTION(NANOGUI_BGFX_BACKEND  "Use BGFX backend?" OFF)
@@ -35,6 +35,7 @@ set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling 
 if (NANOGUI_DX11_BACKEND OR NANOGUI_GLFW_BACKEND OR NANOGUI_DX12_BACKEND OR NANOGUI_VULKAN_BACKEND)  
   set(BACKENDS_SELECTED "")
   if (NANOGUI_GLFW_BACKEND) 
+    add_definitions(-DNANOGUI_OPENGL_BACKEND)
     list(APPEND BACKENDS_SELECTED "OpenGl") 
   endif()
   if (NANOGUI_DX11_BACKEND) 
@@ -142,7 +143,7 @@ endif()
 
 if (MSVC)
   # Disable annoying MSVC warnings (all targets)
-  add_definitions(/D "_CRT_SECURE_NO_WARNINGS")
+  add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 
   # Parallel build on MSVC (all targets)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -323,8 +324,8 @@ include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_
 if (NANOGUI_GLFW_BACKEND OR NANOGUI_VULKAN_BACKEND)
   include_directories(ext/glfw/include)
 
-  message( "Vulkan include header found: ${Vulkan_INCLUDE_DIR}")
   if (NANOGUI_VULKAN_BACKEND)
+    message( "Vulkan include header found: ${Vulkan_INCLUDE_DIR}")
     include_directories(${Vulkan_INCLUDE_DIR})
   endif()  
 endif()
@@ -586,36 +587,39 @@ if(NANOGUI_BUILD_EXAMPLE)
 endif()
 
 if (NANOGUI_BUILD_PYTHON)
+  message(STATUS "NanoGUI: building with Python plugin")
   # Detect Python
 
-  # Try to autodetect Python (can be overridden manually if needed)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
+  if (NOT ${NANOGUI_PYTHON_VERSION} EQUAL "")
+    message(STATUS "NanoGUI: building with Python plugin, manual options set")
+  else()  
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
 
-  if (NOT ${NANOGUI_PYTHON_VERSION})
     set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
     find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
+  
+    message(STATUS "PYTHON_VALUES: " "${_PYTHON_VALUES}")
 
     if (NOT PYTHONLIBS_FOUND)
       # Python not found -- disable the plugin
       # set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)
       message(WARNING "NanoGUI: not building the Python plugin!")
     else()
-      message(STATUS "NanoGUI: building the Python plugin.")
-    endif()
-  else()
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    message(STATUS "NanoGUI: building with Python plugin, manual options set")
-  endif()  
-endif()
+      set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR})
+    endif()    
+  endif()
+  # Try to autodetect Python (can be overridden manually if needed)
 
-if (NANOGUI_BUILD_PYTHON)
+  include_directories(${PYTHON_INCLUDE_DIRS})
+  message(STATUS "Python include dir: " ${PYTHON_INCLUDE_DIR})
+  message(STATUS "Python library: " ${PYTHON_LIBRARIES})
+
   # Need PIC code in libnanogui even when compiled as a static library
   set_target_properties(nanogui-obj PROPERTIES POSITION_INDEPENDENT_CODE ON)
   
   set(PYTHON_BACKEND_SOURCES "")  
   if (NANOGUI_VULKAN_BACKEND)
     set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
   endif()  
 
   if (NANOGUI_GLFW_BACKEND)  
@@ -627,7 +631,7 @@ if (NANOGUI_BUILD_PYTHON)
   endif()
  
 
-  include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIR})
+  include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIRS})
   add_library(nanogui-python-obj OBJECT
     python/main.cpp
     python/constants_glfw.cpp
@@ -652,7 +656,7 @@ if (NANOGUI_BUILD_PYTHON)
   add_library(nanogui-python SHARED $<TARGET_OBJECTS:nanogui-python-obj>)
   set_property(TARGET nanogui-python-obj PROPERTY POSITION_INDEPENDENT_CODE ON)
   set_target_properties(nanogui-python PROPERTIES OUTPUT_NAME "nanogui")
-  target_link_libraries(nanogui-python nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(nanogui-python nanogui ${NANOGUI_EXTRA_LIBS} ${Python_LIBRARIES})
 
   # Quench warnings on GCC
   if (CMAKE_COMPILER_IS_GNUCC)

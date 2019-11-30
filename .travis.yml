@@ -69,7 +69,7 @@ matrix:
         - python3 --version
       script:
         - cmake --version
-        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_PYTHON_VERSION=3.5
+        - cmake -DNANOGUI_GLFW_BACKEND=ON
         - make -j 2
     - os: linux
       language: docs
