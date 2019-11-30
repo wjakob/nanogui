@@ -53,16 +53,20 @@ public:
 
 protected:
     int mValue = 0;
+    bool mBtnPressed = false;
 
     float path = 0.f;
     Color mBackgroundColor;
     std::function<void(bool)> mCallback;
 
-    int valueForPosition(const Vector2i& pos);
-
 private:
     void drawFrame(NVGcontext* ctx, float x, float y, float w, float h);
     void drawContent(NVGcontext* ctx, float x, float y, float w, float h);
+
+    int valueForPosition(const Vector2i& pos) const;
+    bool inFigure(const Vector2i& pos) const;
+
+    void updateValue(int value);
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

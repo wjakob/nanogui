@@ -40,7 +40,6 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowFontSize)
   CHECK(mTooltipOpacity)
   std::runtime_error(std::string("No get prop for name") + name);
-  return 0;
 }
 
 void Theme::set(const std::string& name, const int& value)
@@ -94,20 +93,23 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mWindowHeaderSepBot)
   CHECK(mWindowPopup)
   CHECK(mWindowPopupTransparent)
-  CHECK(mCheckboxUncheckedColor);
-  CHECK(mCheckboxCheckedColor);
-  CHECK(mCheckboxPushedColor);
-  CHECK(mSwitchboxBackgroundColor);
-  CHECK(mSwitchboxCheckedColor);
-  CHECK(mSwitchboxUncheckedColor);
-  CHECK(mScrollBarActiveColor);
-  CHECK(mScrollBarInactiveColor);
-  CHECK(mSliderValueColor);
-  CHECK(mContextMenuShortcutTextColor);
+  CHECK(mCheckboxUncheckedColor)
+  CHECK(mCheckboxCheckedColor)
+  CHECK(mCheckboxPushedColor)
+  CHECK(mSwitchboxBackgroundColor)
+  CHECK(mSwitchboxCheckedColor)
+  CHECK(mSwitchboxUncheckedColor)
+  CHECK(mScrollBarActiveColor)
+  CHECK(mScrollBarInactiveColor)
+  CHECK(mSliderValueColor)
+  CHECK(mContextMenuShortcutTextColor)
   CHECK(mTooltipBackgroundColor)
   CHECK(mTooltipTextColor)
+  CHECK(mToleranceBarBorderColor)
+  CHECK(mToleranceBarBgColor)
+  CHECK(mToleranceBarLowColor)
+  CHECK(mToleranceBarHighColor)
   std::runtime_error(std::string("No get prop for name") + name);
-  return Color(0xff, 0, 0, 0xff);
 }
 
 void Theme::set(const std::string& name, const Color& value)
@@ -138,18 +140,22 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mWindowHeaderSepBot)
   CHECKSET(mWindowPopup)
   CHECKSET(mWindowPopupTransparent)
-  CHECKSET(mCheckboxUncheckedColor);
-  CHECKSET(mCheckboxCheckedColor);
-  CHECKSET(mCheckboxPushedColor);
-  CHECKSET(mSwitchboxBackgroundColor);
-  CHECKSET(mSwitchboxCheckedColor);
-  CHECKSET(mSwitchboxUncheckedColor);
-  CHECKSET(mScrollBarActiveColor);
-  CHECKSET(mScrollBarInactiveColor);
-  CHECKSET(mSliderValueColor);
-  CHECKSET(mContextMenuShortcutTextColor);
+  CHECKSET(mCheckboxUncheckedColor)
+  CHECKSET(mCheckboxCheckedColor)
+  CHECKSET(mCheckboxPushedColor)
+  CHECKSET(mSwitchboxBackgroundColor)
+  CHECKSET(mSwitchboxCheckedColor)
+  CHECKSET(mSwitchboxUncheckedColor)
+  CHECKSET(mScrollBarActiveColor)
+  CHECKSET(mScrollBarInactiveColor)
+  CHECKSET(mSliderValueColor)
+  CHECKSET(mContextMenuShortcutTextColor)
   CHECKSET(mTooltipBackgroundColor)
   CHECKSET(mTooltipTextColor)
+  CHECKSET(mToleranceBarBorderColor)
+  CHECKSET(mToleranceBarBgColor)
+  CHECKSET(mToleranceBarLowColor)
+  CHECKSET(mToleranceBarHighColor)
   std::runtime_error(std::string("No set prop for name") + name);
 }
 
@@ -331,6 +337,11 @@ WhiteTheme::WhiteTheme(NVGcontext* ctx)
 
   mTooltipBackgroundColor = Color(0.03f, 0.21f, 0.25f, 0.90f);
   mTooltipTextColor = Color(0.76f, 0.79f, 0.79f, 1.0f);
+
+  mToleranceBarBorderColor = Color(0.46f, 0.53f, 0.56f, 0.90f);
+  mToleranceBarBgColor = Color(0, 50);
+  mToleranceBarLowColor = Color(0.f, 1.f, 0.f, 1.f);
+  mToleranceBarHighColor = Color(1.f, 0.f, 0.f, 1.f);
 
   /* Window-related */
   mWindowFillUnfocused = Color(0.88f, 0.86f, 0.79f, 0.90f);
