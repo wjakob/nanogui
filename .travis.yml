@@ -25,8 +25,6 @@ matrix:
     - os: windows
       python: "3.7"
       before_install:
-        - choco install python3
-        - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
         - curl -L --progress-bar --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.126.0/windows/VulkanSDK-1.1.126.0-Installer.exe?Human=true
         - start VulkanSDK.exe /S
         - export VULKAN_SDK="/c/VulkanSDK/1.1.126.0"
@@ -34,7 +32,7 @@ matrix:
         - mkdir -p build
         - cd build
         - cmake --version 
-        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_PYTHON_VERSION=3.8 -DPYTHON_INCLUDE_DIRS:PATH="C:/Python38/include" -DPYTHON_LIBRARY:FILEPATH="C:/Python38/libs/python38.lib" ..
+        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_BUILD_PYTHON=OFF ..
         - cmake --build .  
     # build opengl render linux   
     - os: linux

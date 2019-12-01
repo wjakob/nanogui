@@ -28,13 +28,16 @@
 #endif
 
 #if !NANOGUI_CUSTOM_FONT_FUNCTION
-#include "nanogui_resources.h" 
+#include "nanogui_resources.h"
 #endif
 
 extern int nvgCreateImageMem(NVGcontext*, int, unsigned char*, int);
 extern int nvgCreateImage(NVGcontext*, const char*, int);
 
 NAMESPACE_BEGIN(nanogui)
+
+//const struct RttiClass Object::rttiInfoObject = { "Object", sizeof(Object), nullptr, 0 };
+//RttiClass* Object::rttiClass() const { return RTTI_CLASS_INFO(Object); }
 
 #if !NANOGUI_CUSTOM_FONT_FUNCTION
 void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
@@ -87,7 +90,9 @@ void mainloop(int refresh) {
         );
     }
 
+#if NANOGUI_USING_EXCEPTION
     try {
+#endif
         while (mainloop_active) {
             int numScreens = 0;
             appForEachScreen([&](Screen* screen) {
@@ -113,10 +118,12 @@ void mainloop(int refresh) {
 
         /* Process events once more */
         appPollEvents();
+#if NANOGUI_USING_EXCEPTION
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         leave();
     }
+#endif
 
     if (refresh > 0)
         refresh_thread.join();
@@ -146,7 +153,7 @@ std::array<char, 8> utf8(int c) {
         case 4: seq[3] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x10000;
         case 3: seq[2] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x800;
         case 2: seq[1] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0xc0;
-        case 1: seq[0] = c;
+        case 1: seq[0] = (char)c ;
     }
     return seq;
 }
@@ -164,7 +171,7 @@ int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data,
 }
 
 std::vector<std::pair<int, std::string>>
-loadImageDirectory(NVGcontext *ctx, const std::string &path, 
+loadImageDirectory(NVGcontext *ctx, const std::string &path,
                    std::function<bool (const std::string&)> filter)
 {
     std::vector<std::pair<int, std::string> > result;
@@ -181,7 +188,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path,
     HANDLE handle = FindFirstFileA(searchPath.c_str(), &ffd);
     if (handle == INVALID_HANDLE_VALUE)
         throw std::runtime_error("Could not open image directory!");
-    do 
+    do
     {
         const char *fname = ffd.cFileName;
 #endif
@@ -207,6 +214,11 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path,
     return result;
 }
 
+void logic_error(const char* err, const char* file, int line)
+{
+  std::cout << err << " FILE:" << file << "  LINE:" << line;
+}
+
 std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
     auto result = file_dialog(filetypes, save, false);
     return result.empty() ? "" : result.front();
@@ -216,7 +228,8 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save, bool multiple) {
     static const int FILE_DIALOG_MAX_BUFFER = 16384;
     if (save && multiple) {
-        throw std::invalid_argument("save and multiple must not both be true.");
+      logic_error("save and multiple must not both be true.", __FILE__, __LINE__);
+      return{};
     }
 
 #if defined(_WIN32)
@@ -320,7 +333,10 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
     cmd += "\"";
     FILE *output = popen(cmd.c_str(), "r");
     if (output == nullptr)
-        throw std::runtime_error("popen() failed -- could not launch zenity!");
+    {
+      logic_error("popen() failed -- could not launch zenity!", __FILE__, __LINE__);
+      return;
+    }
     while (fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
         ;
     pclose(output);
@@ -344,7 +360,7 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
 }
 #endif
 
-void Object::decRef(bool dealloc) const noexcept {
+void Object::decRef(bool dealloc) const {
     --m_refCount;
     if (m_refCount == 0 && dealloc) {
         delete this;

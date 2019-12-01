@@ -32,7 +32,7 @@ Screen::~Screen() {
     __nanogui_screens.erase(mHwWindow);
 }
 
-intptr_t Screen::createStandardCursor(int shape) { return 0; }
+intptr_t Screen::createStandardCursor(int) { return 0; }
 
 Screen::Screen()
     : Widget(nullptr), mHwWindow(nullptr), mNVGContext(nullptr),
