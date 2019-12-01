@@ -224,10 +224,11 @@ public:
     /// Set the active \ref Window instance.
     void setWindow(Window *window) {
         mWindow = window;
-        mLayout = dynamic_cast<AdvancedGridLayout *>(window->layout());
-        if (mLayout == nullptr)
-            throw std::runtime_error(
-                "Internal error: window has an incompatible layout!");
+        auto newLayout = window->layout()->cast<AdvancedGridLayout>();
+        if (newLayout)
+          mLayout = newLayout;
+        else
+          logic_error("Internal error: window has an incompatible layout!", __FILE__, __LINE__);
     }
 
     /// Specify a fixed size for newly added widgets.

@@ -46,7 +46,7 @@ void register_misc(py::module &m) {
         .def("setValues", &Graph::setValues, D(Graph, setValues));
 
     py::class_<ImageView, Widget, ref<ImageView>, PyImageView>(m, "ImageView", D(ImageView))
-        .def(py::init<Widget *, GLuint>(), D(ImageView, ImageView))
+        .def(py::init<Widget *, uint32_t>(), D(ImageView, ImageView))
         .def("bindImage", &ImageView::bindImage, D(ImageView, bindImage))
         //.def("imageShader", &ImageView::imageShader, D(ImageView, imageShader))
         .def("scaledImageSize", &ImageView::scaledImageSize, D(ImageView, scaledImageSize))

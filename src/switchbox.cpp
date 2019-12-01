@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(SwitchBox, CheckBox)
+
 SwitchBox::SwitchBox(Widget *parent, Alignment align, const std::string &caption,
                    const std::function<void(bool) > &callback)
     : CheckBox(parent, caption, callback), mAlign(align) {

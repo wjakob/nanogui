@@ -36,8 +36,8 @@ extern int nvgCreateImage(NVGcontext*, const char*, int);
 
 NAMESPACE_BEGIN(nanogui)
 
-//const struct RttiClass Object::rttiInfoObject = { "Object", sizeof(Object), nullptr, 0 };
-//RttiClass* Object::rttiClass() const { return RTTI_CLASS_INFO(Object); }
+const struct RttiClass Object::rttiInfoObject = { "Object", sizeof(Object), nullptr, 0 };
+RttiClass* Object::rttiClass() const { return RTTI_CLASS_INFO(Object); }
 
 #if !NANOGUI_CUSTOM_FONT_FUNCTION
 void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
@@ -335,7 +335,7 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
     if (output == nullptr)
     {
       logic_error("popen() failed -- could not launch zenity!", __FILE__, __LINE__);
-      return;
+      return {};
     }
     while (fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
         ;

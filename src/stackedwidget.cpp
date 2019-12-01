@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(StackedWidget, Widget)
+
 StackedWidget::StackedWidget(nanogui::Widget *parent)
     : Widget(parent) { }
 

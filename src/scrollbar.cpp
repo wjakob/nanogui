@@ -17,6 +17,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ScrollBar, Widget)
+
 ScrollBar::ScrollBar(Widget *parent, Alignment align)
     : Widget(parent),
       mSliderPreferredSide(1),

@@ -4,6 +4,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Spinner, Widget)
+
 Spinner::Spinner(Widget* parent)
   : Widget(parent)
 {

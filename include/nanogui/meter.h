@@ -7,6 +7,9 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT Meter : public Widget
 {
 public:
+  RTTI_CLASS_UID("METR")
+  RTTI_DECLARE_INFO(Meter)
+
   enum ErrorCode {MaxValueError=1,MinValueError,ThresholdError,TargetError,PrecisionError,ColorError,UnitsEmpty,OutOfRange};
   Meter(Widget *parent);
   double value() const { return m_value; }

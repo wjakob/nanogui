@@ -17,6 +17,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Theme, Object)
+
 #define CHECK(a) if (name == #a) return (a);
 #define CHECKSET(a) if (name == #a) { (a) = value; return; }
 int Theme::get(const std::string& name, const int&)

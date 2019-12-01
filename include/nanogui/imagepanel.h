@@ -26,6 +26,9 @@ class NANOGUI_EXPORT ImagePanel : public Widget {
 public:
     typedef std::vector<std::pair<int, std::string>> Images;
 public:
+    RTTI_CLASS_UID("IMPN")
+    RTTI_DECLARE_INFO(ImagePanel)
+
     ImagePanel(Widget *parent);
 
     void setImages(const Images &data) { mImages = data; }

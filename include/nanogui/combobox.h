@@ -26,6 +26,9 @@ NAMESPACE_BEGIN(nanogui)
 using ComboBoxItems = std::vector<std::string>;
 class NANOGUI_EXPORT ComboBox : public PopupButton {
 public:
+    RTTI_CLASS_UID("CMBX")
+    RTTI_DECLARE_INFO(ComboBox)
+
     /// Create an empty combo box
     ComboBox(Widget *parent);
 

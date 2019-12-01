@@ -29,6 +29,9 @@ DECLSETTER(SpinnerSpeed,float)
 
 class NANOGUI_EXPORT Spinner : public Widget {
 public:
+   RTTI_CLASS_UID("SPNR")
+   RTTI_DECLARE_INFO(Spinner)
+
    Spinner(Widget* parent);
    void draw(NVGcontext* ctx) override;
    /// Compute the size needed to fully display the label

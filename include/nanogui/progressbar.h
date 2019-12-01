@@ -24,6 +24,9 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT ProgressBar : public Widget {
 public:
+    RTTI_CLASS_UID("PRGB")
+    RTTI_DECLARE_INFO(ProgressBar)
+
     explicit ProgressBar(Widget *parent);
 
     using Widget::set;

@@ -30,6 +30,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT SwitchBox : public CheckBox {
 public:
+    RTTI_CLASS_UID("SWBX")
+    RTTI_DECLARE_INFO(SwitchBox)
+
     enum class Alignment {
       Horizontal,
       Vertical

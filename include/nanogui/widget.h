@@ -80,6 +80,9 @@ DECLSETTER(CaptionHAlign, TextHAlign)
  */
 class NANOGUI_EXPORT Widget : public Object {
 public:
+    RTTI_CLASS_UID("WDGT")
+    RTTI_DECLARE_INFO(Widget)
+
     /// Construct a new widget with the given parent widget
     Widget(Widget *parent);
     Widget(Widget&) = delete;
@@ -330,7 +333,7 @@ public:
     WidgetClass *findParent() {
       Widget *widget = this;
       while (widget) {
-        WidgetClass *parentw = dynamic_cast<WidgetClass*>(widget);
+        WidgetClass *parentw = widget->cast<WidgetClass>();
         if (parentw)
           return parentw;
         widget = widget->parent();
@@ -469,9 +472,6 @@ public:
     inline void hide() { setVisible(false); }
 
     void setDebugDraw(bool en) { mDebugDraw = en; }
-
-    template<typename RetClass> RetClass* cast() { return dynamic_cast<RetClass*>(this); }
-    template<typename RetClass> const RetClass* cast() const { return dynamic_cast<const RetClass*>(this); }
 
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(FixedWidth, setFixedWidth)

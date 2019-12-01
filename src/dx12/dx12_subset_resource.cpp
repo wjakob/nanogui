@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset_resource.h"
 
 dx12_subset_resource::dx12_subset_resource(dx12_subset * parent)
@@ -398,3 +400,5 @@ intptr_t dx12_subset_resource::DPtrOffset(UINT64 offset)
 
   return (intptr_t)mappedPtr + offset;
 }
+
+#endif //NANOGUI_DX12_BACKEND

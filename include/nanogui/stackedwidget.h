@@ -26,6 +26,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT StackedWidget : public Widget {
 public:
+    RTTI_CLASS_UID("STCK")
+    RTTI_DECLARE_INFO(StackedWidget)
+
     StackedWidget(Widget* parent);
 
     void setSelectedIndex(int index);

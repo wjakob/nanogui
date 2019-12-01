@@ -8,6 +8,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(TreeView, Widget)
+
 TreeView::TreeView( Widget* parent, bool clip,
   bool drawBack, bool scrollBarVertical, bool scrollBarHorizontal)
   : Widget( parent ),

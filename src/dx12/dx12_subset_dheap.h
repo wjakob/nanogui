@@ -24,6 +24,9 @@ SOFTWARE.
 */
 #ifndef DX12_SUBSET_DHEAP_H
 #define DX12_SUBSET_DHEAP_H
+
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset.h"
 
 #define dx12_subset_dheap_slot_type UINT32
@@ -104,5 +107,7 @@ private:
 
   dx12_subset* dx12;
 };
+
+#endif //NANOGUI_DX12_BACKEND
 
 #endif

@@ -37,6 +37,9 @@ DECLSETTER(TextValue,std::string)
 
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
+    RTTI_CLASS_UID("TXTB")
+    RTTI_DECLARE_INFO(TextBox)
+
     /// How to align the text in the text box.
     enum class Alignment {
         Left,

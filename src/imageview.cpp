@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ImageView, Widget)
+
 ImageView::ImageView(Widget* parent, uint32_t imageID)
     : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
     mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {

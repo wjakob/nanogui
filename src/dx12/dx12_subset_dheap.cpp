@@ -22,6 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
+
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset_dheap.h"
 
 static const D3D12_DESCRIPTOR_HEAP_DESC dx12_heap_config[DX12_SUBSET_DHEAP_MAX] = {
@@ -277,3 +280,5 @@ dx12_subset_dheap_slot_type dx12_subset_dheap_slot_stack::Pop()
 
   return ret;
 }
+
+#endif //NANOGUI_DX12_BACKEND

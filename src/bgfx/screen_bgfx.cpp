@@ -68,11 +68,11 @@ std::string Screen::getClipboardString(void) { return ""; }
 
 void Screen::initialize(void *handle, bool shutdownOnDestruct)
 {
-	mNVGContext = (NVGcontext*)handle;
-	mHwWindow = handle;
-	__nanogui_screens[handle] = this;
+  mNVGContext = (NVGcontext*)handle;
+  mHwWindow = handle;
+  __nanogui_screens[handle] = this;
 
-	mShutdownOnDestruct = shutdownOnDestruct;
+  mShutdownOnDestruct = shutdownOnDestruct;
   mPixelRatio = mSize.x() / mSize.y();
   _setupStartParams();
 }

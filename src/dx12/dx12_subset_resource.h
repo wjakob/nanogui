@@ -25,6 +25,8 @@ SOFTWARE.
 #ifndef DX12_SUBSET_RESOURCE_H
 #define DX12_SUBSET_RESOURCE_H
 
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset.h"
 #include "dx12_subset_dheap.h"
 
@@ -87,5 +89,7 @@ private:
 
   int refs;
 };
+
+#endif //NANOGUI_DX12_BACKEND
 
 #endif

@@ -30,6 +30,9 @@ class NANOGUI_EXPORT Screen : public Widget {
     friend class Widget;
     friend class Window;
 public:
+    RTTI_CLASS_UID("SCRN")
+    RTTI_DECLARE_INFO(Screen)
+
     /**
      * Create a new Screen instance
      *

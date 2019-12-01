@@ -19,6 +19,8 @@
 #include <map>
 #include <iostream>
 
+#if NANOGUI_OPENGL_BACKEND
+
 #if defined(_WIN32)
 #  ifndef NOMINMAX
 #    define NOMINMAX
@@ -471,3 +473,5 @@ bool Screen::resizeCallbackEvent(int, int) {
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

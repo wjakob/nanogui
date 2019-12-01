@@ -5,6 +5,8 @@ Port to dx12 by megai2
 */
 #include <nanogui/perfchart.h>
 
+#if NANOGUI_DX12_BACKEND
+
 NAMESPACE_BEGIN(nanogui)
 
 void initGPUTimer(GPUtimer* timer)
@@ -18,9 +20,11 @@ void startGPUTimer(GPUtimer* timer)
     return;
 }
 
-int stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
+int stopGPUTimer(GPUtimer*, float*, int)
 {
   return 0;
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_DX12_BACKEND

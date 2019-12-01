@@ -17,8 +17,10 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 //
-#include "../../include/nanogui/nanovg_d3d12.h"
+#include <nanogui/nanovg_d3d12.h>
 #include "dx12_subset_resource.h"
+
+#if NANOGUI_DX12_BACKEND
 
 int D3Dnvg__renderCreate(D3DNVGcontext * D3D)
 {
@@ -463,3 +465,4 @@ void D3Dnvg__renderViewport(D3DNVGcontext * D3D, float width, float height, floa
   vc->viewSize[1] = (float)height;
 }
 
+#endif //NANOGUI_DX12_BACKEND

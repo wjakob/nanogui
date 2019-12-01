@@ -8,6 +8,8 @@ NAMESPACE_BEGIN(nanogui)
 
 static const std::string attrEditorName = "attributeEditor";
 
+RTTI_IMPLEMENT_INFO(EditorWorkspace, Widget)
+
 EditorWorkspace::EditorWorkspace(Widget* parent, const std::string& id )
   : Widget(parent),
   _currentMode(EditMode::Select),
@@ -58,42 +60,34 @@ Vector2i getOffsetToChild(Widget* w, Widget* parent)
 
 EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
 {
-    try
-    {
-      Vector2i offset = getOffsetToChild(mSelectedElement, this);
-      if (mSelectedElement)
-      {
-        bool canResize = nonEditableElms.count((intptr_t)mSelectedElement) == 0;
+  Vector2i offset = getOffsetToChild(mSelectedElement, this);
+  if (mSelectedElement)
+  {
+    bool canResize = nonEditableElms.count((intptr_t)mSelectedElement) == 0;
 
-        if (canResize && isPointInsideRect( p, editArea.topleft) )
-          return EditMode::ResizeTopLeft;
-        else if (canResize && isPointInsideRect( p, editArea.topright) )
-          return EditMode::ResizeTopRight;
-        else if (canResize && isPointInsideRect( p, editArea.bottomleft) )
-          return EditMode::ResizeBottomLeft;
-        else if (canResize && isPointInsideRect( p, editArea.bottomright) )
-          return EditMode::ResizeBottpmRight;
-        else if (canResize && isPointInsideRect( p, editArea.top) )
-          return EditMode::ResizeTop;
-        else if (canResize && isPointInsideRect( p, editArea.bottom) )
-          return EditMode::ResizeBottom;
-        else if (canResize && isPointInsideRect( p, editArea.left) )
-          return EditMode::ResizeLeft;
-        else if (canResize && isPointInsideRect( p, editArea.right) )
-          return EditMode::ResizeRight;
-        else if ( getEditableElementFromPoint(mSelectedElement, p - offset) == mSelectedElement)
-          return EditMode::Move;
-        else
-          return EditMode::Select;
-      }
-
+    if (canResize && isPointInsideRect( p, editArea.topleft) )
+      return EditMode::ResizeTopLeft;
+    else if (canResize && isPointInsideRect( p, editArea.topright) )
+      return EditMode::ResizeTopRight;
+    else if (canResize && isPointInsideRect( p, editArea.bottomleft) )
+      return EditMode::ResizeBottomLeft;
+    else if (canResize && isPointInsideRect( p, editArea.bottomright) )
+      return EditMode::ResizeBottpmRight;
+    else if (canResize && isPointInsideRect( p, editArea.top) )
+      return EditMode::ResizeTop;
+    else if (canResize && isPointInsideRect( p, editArea.bottom) )
+      return EditMode::ResizeBottom;
+    else if (canResize && isPointInsideRect( p, editArea.left) )
+      return EditMode::ResizeLeft;
+    else if (canResize && isPointInsideRect( p, editArea.right) )
+      return EditMode::ResizeRight;
+    else if ( getEditableElementFromPoint(mSelectedElement, p - offset) == mSelectedElement)
+      return EditMode::Move;
+    else
       return EditMode::Select;
-    }
-    catch ( ... )
-    {
-        setSelectedElement(nullptr);
-        return EditMode::Select;
-    }
+  }
+
+  return EditMode::Select;
 }
 
 Widget* EditorWorkspace::getEditableElementFromPoint(Widget* start, const Vector2i &point)

@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(MessageDialog, Window)
+
 MessageDialog::MessageDialog(Widget *parent, Type type, const std::string &title,
               const std::string &message,
               const std::string &buttonText,

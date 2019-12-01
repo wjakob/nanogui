@@ -23,6 +23,9 @@ SOFTWARE.
 
 */
 #include "dx12_subset.h"
+
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset_resource.h"
 #include "dx12_subset_dheap.h"
 #include <wrl.h>
@@ -748,3 +751,5 @@ D3D12_HEAP_PROPERTIES dx12_subset::GetResourceHeap(D3D12_HEAP_TYPE Type)
 
   return ret;
 }
+
+#endif // NANOGUI_DX12_BACKEND

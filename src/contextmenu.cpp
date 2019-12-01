@@ -25,12 +25,18 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ContextMenuDummy : public ContextMenu
 {
 public:
+  RTTI_CLASS_UID("CMDM")
+  RTTI_DECLARE_INFO(ContextMenuDummy)
+
   ContextMenuDummy() : ContextMenu(nullptr, "", false) {}
 };
 
 class NANOGUI_EXPORT ContextItemAsMenu : public ContextMenu
 {
 public:
+  RTTI_CLASS_UID("CIMN")
+  RTTI_DECLARE_INFO(ContextItemAsMenu)
+
   ContextMenuLabel* l = nullptr;
   ContextItemAsMenu() : ContextMenu(nullptr, "", false) {}
 
@@ -41,6 +47,9 @@ public:
 class NANOGUI_EXPORT ContextMenuArea : public Widget
 {
 public:
+  RTTI_CLASS_UID("CMNA")
+  RTTI_DECLARE_INFO(ContextMenuArea)
+
   ContextMenuArea(Widget* w) : Widget(w) {}
   Vector2i minSize() const override { return parent()->minSize(); }
 };
@@ -474,5 +483,11 @@ void ContextMenu::dispose() {
 Vector2i ContextMenu::submenuPosition(const std::string &name) const {
     return mItemContainer->position() + Vector2i{ mItemContainer->width() - 1, mLabels.at(name)->position().y() + 1 } + mPos;
 }
+
+RTTI_IMPLEMENT_INFO(ContextMenuDummy, ContextMenu)
+RTTI_IMPLEMENT_INFO(ContextItemAsMenu, ContextMenu)
+RTTI_IMPLEMENT_INFO(ContextMenuArea, Widget)
+RTTI_IMPLEMENT_INFO(ContextMenu, Widget)
+RTTI_IMPLEMENT_INFO(ContextMenuLabel, Label)
 
 NAMESPACE_END(nanogui)

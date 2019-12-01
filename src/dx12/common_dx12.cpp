@@ -5,6 +5,8 @@ Port to dx12 by megai2
 */
 #include "common_dx12.h"
 
+#if NANOGUI_DX12_BACKEND
+
 #include <windowsx.h>
 #include <winerror.h>
 
@@ -500,3 +502,5 @@ float getTimeFromStart(void)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_DX12_BACKEND

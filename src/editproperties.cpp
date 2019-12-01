@@ -13,6 +13,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(PropertiesEditor, Window)
+
 PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id )
   :  Window(parent, "Properties")
 {

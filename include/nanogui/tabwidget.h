@@ -64,6 +64,9 @@ using TabNames = std::vector<std::string>;
 
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
+    RTTI_CLASS_UID("TBWD")
+    RTTI_DECLARE_INFO(TabWidget)
+
     TabWidget(Widget *parent);
     TabWidget(Widget *parent, const TabNames& tabs);
 

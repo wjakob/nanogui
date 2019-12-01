@@ -27,6 +27,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Popup : public Window {
 public:
+    RTTI_CLASS_UID("POPP")
+    RTTI_DECLARE_INFO(Popup)
+
     enum Side { Left = 0, Right };
 
     /// Create a new popup parented to a screen (first argument) and a parent window

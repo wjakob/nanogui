@@ -6,6 +6,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(PerfGraph, Widget)
+
 PerfGraph::PerfGraph(Widget* parent, int style, const std::string& name, const Vector2i& pos)
   : Widget(parent)
 {

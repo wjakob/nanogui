@@ -12,6 +12,9 @@ class TextBox;
 class NANOGUI_EXPORT Table : public Widget
 {
 public:
+  RTTI_CLASS_UID("TABL")
+  RTTI_DECLARE_INFO(Table)
+
   //! modes for ordering used when a column header is clicked
   enum ColumnOrder
   {

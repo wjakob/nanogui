@@ -1,5 +1,7 @@
 #include <nanogui/common.h>
 
+#if NANOGUI_OPENGL_BACKEND
+
 #include <nanogui/screen.h>
 #include <GLFW/glfw3.h>
 #include <cstdio>
@@ -93,3 +95,5 @@ uint32_t key2fourcc(int key)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif

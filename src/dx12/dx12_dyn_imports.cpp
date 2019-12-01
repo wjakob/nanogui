@@ -24,6 +24,8 @@ SOFTWARE.
 */
 #include "dx12_dyn_imports.h"
 
+#if NANOGUI_DX12_BACKEND
+
 dx12_dynamic_imports::dx12_dynamic_imports()
 {
 }
@@ -76,3 +78,5 @@ UINT dx12_dynamic_imports::LoadDynLib(dx12_dynamic_import_lib lib, UINT set)
 
   return 1;
 }
+
+#endif //NANOGUI_DX12_BACKEND

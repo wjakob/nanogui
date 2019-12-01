@@ -21,6 +21,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(WindowMenu, ContextMenu)
+
 WindowMenu::WindowMenu(Widget *parent)
     : ContextMenu(parent, "", false)
 {

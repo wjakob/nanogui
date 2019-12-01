@@ -11,6 +11,8 @@ Port to dx12 by megai2
 #include <map>
 #include <iostream>
 
+#if NANOGUI_DX12_BACKEND
+
 #include "common_dx12.h"
 #include "dx12_subset.h"
 
@@ -425,3 +427,5 @@ bool Screen::resizeCallbackEvent(int, int) {
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_DX12_BACKEND

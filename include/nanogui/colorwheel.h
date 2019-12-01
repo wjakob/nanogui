@@ -27,6 +27,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ColorWheel : public Widget {
 public:
+    RTTI_CLASS_UID("CLWH")
+    RTTI_DECLARE_INFO(ColorWheel)
+
     /**
      * Adds a ColorWheel to the specified parent.
      *

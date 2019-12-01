@@ -1,5 +1,7 @@
 #include <nanogui/common.h>
 
+#if NANOGUI_VULKAN_BACKEND
+
 #include <nanogui/screen.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -94,3 +96,5 @@ uint32_t key2fourcc(int key)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_VULKAN_BACKEND

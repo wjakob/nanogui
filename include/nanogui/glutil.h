@@ -12,6 +12,8 @@
 
 #pragma once
 
+#if NANOGUI_OPENGL_BACKEND
+
 #include <nanogui/opengl.h>
 #include <Eigen/Geometry>
 #include <map>
@@ -945,3 +947,5 @@ extern NANOGUI_EXPORT Matrix4f scale(const Vector3f &v);
 extern NANOGUI_EXPORT Matrix4f translate(const Vector3f &v);
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

@@ -4,12 +4,17 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(TreeViewItem, Widget)
+
 TreeViewItem::TreeViewItem( Widget* parent )
   : Label(parent, ""), mNodeId(BadNodeId)
 {
   _init();
-  if (auto p = dynamic_cast<TreeView*>(parent))
-    mOwner = p;
+  if (parent)
+  {
+    if (auto p = parent->cast<TreeView>())
+      mOwner = p;
+  }
 
   mPreviewArea = &hlayer(WidgetStretchLayout{ Orientation::ReverseHorizontal });
   mPreviewArea->setRelativeSize({ 1, 1 });

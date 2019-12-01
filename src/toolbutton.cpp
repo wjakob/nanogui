@@ -18,6 +18,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ToolButton, Button)
+RTTI_IMPLEMENT_INFO(ToggleButton, Button)
+
 void ToggleButton::beforeDoChangeCallback(bool pushed)
 {
   const Color& acolor = mActiveColor.w() ? mActiveColor : theme()->mToggleButtonActiveColor;

@@ -20,6 +20,8 @@
 #ifndef NANOVG_D3D12_H
 #define NANOVG_D3D12_H
 
+#if NANOGUI_DX12_BACKEND
+
 // Hide nameless struct/union warning for D3D headers
 #pragma warning (disable : 4201)
 #include "dx12_subset.h"
@@ -278,5 +280,7 @@ void nvd3dImageFlags(struct NVGcontext* ctx, int image, int flags)
     */
 }
 #endif
+
+#endif //NANOGUI_DX12_BACKEND
 
 #endif //NANOVG_D3D12_H

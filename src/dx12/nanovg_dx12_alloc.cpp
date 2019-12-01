@@ -17,7 +17,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 //
-#include "../../include/nanogui/nanovg_d3d12.h"
+#include <nanogui/nanovg_d3d12.h>
+
+#if NANOGUI_DX12_BACKEND
 
 D3DNVGtexture * D3Dnvg__allocTexture(D3DNVGcontext * D3D)
 {
@@ -126,3 +128,4 @@ D3DNVGtexture* D3Dnvg__findTexture(D3DNVGcontext* D3D, int id)
   return NULL;
 }
 
+#endif //NANOGUI_DX12_BACKEND

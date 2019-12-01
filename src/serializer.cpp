@@ -27,12 +27,8 @@ Serializer::~Serializer() {
 }
 
 bool Serializer::isSerializedFile(const std::string &filename) {
-    try {
-        Serializer s(filename, false);
-        return true;
-    } catch (const std::exception &) {
-        return false;
-    }
+    Serializer s(filename, false);
+    return true;
 }
 
 size_t Serializer::size() {

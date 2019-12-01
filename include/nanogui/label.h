@@ -27,6 +27,9 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT Label : public Widget {
 public:
+    RTTI_CLASS_UID("LABL")
+    RTTI_DECLARE_INFO(Label)
+
     enum TextState { tEnabled=0, tDisabled };
     Label(Widget* parent);
 

@@ -11,6 +11,9 @@ class ScrollBar;
 class NANOGUI_EXPORT TreeView : public Widget
 {
 public:
+    RTTI_CLASS_UID("TRVW")
+    RTTI_DECLARE_INFO(TreeView)
+
     explicit TreeView( Widget* parent,
         bool clip = true,
         bool drawBack = true, bool scrollBarVertical = true,

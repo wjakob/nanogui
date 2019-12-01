@@ -17,7 +17,9 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 //
-#include "../../include/nanogui/nanovg_d3d12.h"
+#include <nanogui/nanovg_d3d12.h>
+
+#if NANOGUI_DX12_BACKEND
 
 NVGcontext * nvgCreateD3D12(dx12_subset * pDX12subset, int flags)
 {
@@ -301,3 +303,5 @@ int D3Dnvg__maxVertCount(const struct NVGpath* paths, int npaths)
   }
   return count;
 }
+
+#endif //NANOGUI_DX12_BACKEND

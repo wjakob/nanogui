@@ -6,6 +6,8 @@
 #include <map>
 #include <iostream>
 
+#if NANOGUI_DX11_BACKEND
+
 #include "common_dx11.h"
 
 #  ifndef NOMINMAX
@@ -665,3 +667,5 @@ bool Screen::resizeCallbackEvent(int, int) {
 }
 
 NAMESPACE_END(nanogui)
+
+#endif // NANOGUI_DX11_BACKEND

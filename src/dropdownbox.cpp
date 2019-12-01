@@ -21,6 +21,9 @@ NAMESPACE_BEGIN(nanogui)
 class DropdownListItem : public Button
 {
 public:
+  RTTI_CLASS_UID("DLSI")
+  RTTI_DECLARE_INFO(DropdownListItem)
+
   bool mInlist = true;
 
   DropdownListItem(Widget* parent, const std::string& str, bool inlist=true)
@@ -204,7 +207,7 @@ public:
   {
     if (mChildren.size() > 0)
     {
-      auto* btn = dynamic_cast<Button*>(mChildren[0]);
+      auto* btn = mChildren[0]->cast<Button>();
       btn->setCaption(caption);
     }
   }
@@ -307,7 +310,7 @@ DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items, 
 void DropdownBox::performLayout(NVGcontext *ctx) {
   PopupButton::performLayout(ctx);
 
-  auto* dpopup = dynamic_cast<DropdownPopup*>(mPopup);
+  auto* dpopup = mPopup->cast<DropdownPopup>();
   if (dpopup)
   {
     dpopup->setAnchorPos(position());
@@ -365,7 +368,7 @@ bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int
   if (isMouseButtonLeft(button) && mEnabled) {
     if (!mItems.empty())
     {
-      auto* item = dynamic_cast<DropdownListItem*>(mPopup->childAt(0));
+      auto* item = mPopup->childAt(0)->cast<DropdownListItem>();
       if (item)
         item->setCaption(mItems[mSelectedIndex]);
     }
@@ -432,5 +435,9 @@ bool DropdownBox::load(Serializer &s) {
     if (!s.get("selectedIndex", mSelectedIndex)) return false;
     return true;
 }
+
+RTTI_IMPLEMENT_INFO(DropdownBox, PopupButton)
+RTTI_IMPLEMENT_INFO(DropdownListItem, Button)
+
 
 NAMESPACE_END(nanogui)

@@ -17,6 +17,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(VScrollPanel, Widget)
+
 VScrollPanel::VScrollPanel(Widget *parent)
     : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f),
       mUpdateLayout(false), mSliderWidth(8), mSliderMargin(2)

@@ -15,6 +15,8 @@
 
 #include <nanogui/common.h>
 
+#if NANOGUI_OPENGL_BACKEND
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #if defined(NANOGUI_GLAD)
     #if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
@@ -45,6 +47,6 @@
 #endif
 
 NAMESPACE_BEGIN(nanogui)
-
-
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

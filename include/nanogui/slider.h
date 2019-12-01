@@ -23,6 +23,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Slider : public Widget {
 public:
+    RTTI_CLASS_UID("SLDR")
+    RTTI_DECLARE_INFO(Slider)
+
     Slider(Widget *parent);
 
     float value() const { return mValue; }

@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ColorWheel, Widget)
+
 ColorWheel::ColorWheel(Widget *parent, const Color& rgb)
     : Widget(parent), mDragRegion(None) {
     setColor(rgb);

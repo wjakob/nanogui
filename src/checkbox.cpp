@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(CheckBox, Widget)
+
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
                    const std::function<void(bool) > &callback)
     : Widget(parent), mCaption(caption), mPushed(false), mChecked(false),
@@ -47,7 +49,7 @@ bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
 }
 
 Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
-    nvgFontSize(ctx, fontSize());
+    nvgFontSize(ctx, (float)fontSize());
     nvgFontFace(ctx, "sans");
     Vector2i prefSize( nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 1.8f * fontSize(),
                        fontSize() * 1.3f);
@@ -63,7 +65,7 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
 void CheckBox::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
-    nvgFontSize(ctx, fontSize());
+    nvgFontSize(ctx, (float)fontSize());
     nvgFontFace(ctx, "sans");
     nvgFillColor(ctx,
                  mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);

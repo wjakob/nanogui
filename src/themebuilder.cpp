@@ -18,6 +18,9 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ExplicitColorPicker : public ColorPicker
 {
 public:
+  RTTI_CLASS_UID("ECPK")
+  RTTI_DECLARE_INFO(ExplicitColorPicker)
+
   Color MARKED_COLOR = Color(0, 0, 0, 0);
   static std::vector<ExplicitColorPicker*> ALL_PICKERS;
   bool marked = false;
@@ -52,7 +55,7 @@ public:
 
       // really dirty hack to fix the sizes of the buttons created by the parent
     mpopup->forEachChild([](Widget* w) {
-      if (auto* child = dynamic_cast<Button*>(w))
+      if (auto* child = w->cast<Button>())
         child->setFixedWidth(180);
     });
 
@@ -112,7 +115,7 @@ public:
         master_callback(next_color);
 
         popup()->forEachChild([&](Widget* child) {
-          if (Button *btn = dynamic_cast<Button*>(child))
+          if (Button *btn = child->cast<Button>())
           {
             if (btn->caption() == "Pick")
             {
@@ -120,7 +123,7 @@ public:
               btn->setTextColor(next_color.contrastingColor());
             }
           }
-          else if (ColorWheel* wheel = dynamic_cast<ColorWheel*>(child))
+          else if (ColorWheel* wheel = child->cast<ColorWheel>())
           {
             wheel->setColor(next_color);
           }
@@ -141,7 +144,7 @@ public:
         master_callback(next_color);
 
         popup()->forEachChild([&](Widget* child) {
-          if (Button* btn = dynamic_cast<Button*>(child))
+          if (Button* btn = child->cast<Button>())
           {
             if (btn->caption() == "Pick")
             {
@@ -149,7 +152,7 @@ public:
               btn->setTextColor(next_color.contrastingColor());
             }
           }
-          else if (ColorWheel* wheel = dynamic_cast<ColorWheel*>(child))
+          else if (ColorWheel* wheel = child->cast<ColorWheel>())
           {
             wheel->setColor(next_color);
           }
@@ -191,7 +194,7 @@ public:
     setBackgroundColor(color);
     setTextColor(fg);
     popup()->forEachChild([&](Widget* child) {
-      if (Button* btn = dynamic_cast<Button*>(child))
+      if (Button* btn = child->cast<Button>())
       {
         bool change = true;
         if (fromTextBox && btn->caption() == "Reset")
@@ -202,7 +205,7 @@ public:
           btn->setTextColor(fg);
         }
       }
-      else if (ColorWheel* wheel = dynamic_cast<ColorWheel*>(child))
+      else if (ColorWheel* wheel = child->cast<ColorWheel>())
       {
         wheel->setColor(color);
       }
@@ -261,6 +264,8 @@ public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
+
+RTTI_IMPLEMENT_INFO(ExplicitColorPicker, ColorPicker)
 
 std::vector<ExplicitColorPicker*> ExplicitColorPicker::ALL_PICKERS;
 namespace {

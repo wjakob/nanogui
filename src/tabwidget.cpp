@@ -23,6 +23,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(TabWidget, Object)
+
 TabWidget::TabWidget(Widget* parent)
     : Widget(parent)
     , mHeader(new TabHeader(nullptr)) // create using nullptr, add children below

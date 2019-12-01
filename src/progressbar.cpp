@@ -15,6 +15,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ProgressBar, Widget)
+
 ProgressBar::ProgressBar(Widget *parent)
     : Widget(parent), mValue(0.0f) {}
 

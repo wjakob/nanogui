@@ -1,5 +1,7 @@
 #include <nanogui/perfchart.h>
 
+#if NANOGUI_DX11_BACKEND
+
 NAMESPACE_BEGIN(nanogui)
 
 void initGPUTimer(GPUtimer* timer)
@@ -19,3 +21,5 @@ int stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_DX11_BACKEND

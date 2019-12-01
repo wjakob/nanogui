@@ -31,6 +31,9 @@ DECLSETTER(WindowMovable, Theme::WindowDraggable)
 class NANOGUI_EXPORT Window : public Widget {
     friend class Popup;
 public:
+    RTTI_CLASS_UID("WNDW")
+    RTTI_DECLARE_INFO(Window)
+
     explicit Window(Widget *parent, const std::string &title = "Untitled");
     explicit Window(Widget *parent, const std::string &title, Orientation orientation);
 

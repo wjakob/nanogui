@@ -11,6 +11,8 @@
 
 #include <nanogui/glutil.h>
 
+#if NANOGUI_OPENGL_BACKEND
+
 #if defined(WIN32)
 #  if !defined(__clang__)
 #    include <malloc.h>
@@ -548,3 +550,5 @@ Eigen::Matrix4f translate(const Eigen::Vector3f &v) {
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

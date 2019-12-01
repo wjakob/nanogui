@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Slider, Widget)
+
 Slider::Slider(Widget *parent)
     : Widget(parent), mValue(0.0f), mRange(0.f, 1.f),
       mHighlightedRange(0.f, 0.f) {

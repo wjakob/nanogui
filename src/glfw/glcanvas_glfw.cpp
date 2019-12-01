@@ -13,6 +13,9 @@
 */
 
 #include <nanogui/window.h>
+
+#if NANOGUI_OPENGL_BACKEND
+
 #include <nanogui/screen.h>
 #include <nanogui/glcanvas.h>
 #include <nanogui/theme.h>
@@ -90,3 +93,5 @@ bool GLCanvas::load(Serializer &s) {
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

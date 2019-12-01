@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ComboBox, PopupButton)
+
 ComboBox::ComboBox(Widget *parent) : PopupButton(parent), mSelectedIndex(0) {
 }
 

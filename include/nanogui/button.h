@@ -30,6 +30,9 @@ DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 
 class NANOGUI_EXPORT Button : public Widget {
 public:
+    RTTI_CLASS_UID("BTTN")
+    RTTI_DECLARE_INFO(Button)
+
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flag {
         NormalButton = 1<<0, ///< A normal Button.

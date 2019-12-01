@@ -21,6 +21,9 @@ class FactoryView;
 class NANOGUI_EXPORT EditorWorkspace : public Widget
 {
 public:
+    RTTI_CLASS_UID("EDWS")
+    RTTI_DECLARE_INFO(EditorWorkspace)
+
     enum EditMode
     {
         // when we are currently selecting an element

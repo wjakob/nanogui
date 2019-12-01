@@ -17,6 +17,37 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+struct RttiClass
+{
+  const char *mRttiName;
+  int mRttiObjSize;
+  RttiClass* mRttiBase;
+  int mRttiUid;
+
+  //RttiClass* createObject();
+  bool inherited(const RttiClass* base) const
+  {
+    assert(this != nullptr);
+    assert(base != nullptr);
+    if (base == nullptr)
+      return false;
+
+    const RttiClass* self = this;
+    while (self != nullptr)
+    {
+      if (self == base)
+        return true;
+      self = self->mRttiBase;
+    }
+    return false;
+  }
+
+  //static RttiClass* createObjectFromName(const char *name);
+  //static RttiClass* createObjectFromUid(int rttid);
+  //static void rttidump();
+};
+
+
 /**
  * \class Object object.h nanogui/object.h
  *
@@ -42,7 +73,29 @@ public:
      * The object will automatically be deallocated once
      * the reference count reaches zero.
      */
-    void decRef(bool dealloc = true) const noexcept;
+    void decRef(bool dealloc = true) const;
+
+    virtual RttiClass* rttiClass() const;
+    inline bool isKindOf(const RttiClass* info) const
+    {
+      RttiClass* self = rttiClass();
+      return self->inherited(info);
+    }
+
+    template<typename RetClass> RetClass* cast()
+    {
+      if (isKindOf(RetClass::staticRttiClass()))
+        return static_cast<RetClass*>(this);
+      return nullptr;
+    }
+    template<typename RetClass> const RetClass* cast() const
+    {
+      if (isKindOf(RetClass::staticRttiClass()))
+        return static_cast<RetClass*>(this);
+      return nullptr;
+    }
+
+    static const RttiClass rttiInfoObject;
 protected:
     /** \brief Virtual protected deconstructor.
      * (Will only be called by \ref ref)
@@ -51,6 +104,22 @@ protected:
 private:
     mutable std::atomic<int> m_refCount { 0 };
 };
+
+#define RTTI_CLASS_UID(s) static const int RTTI_CLASS_UID = (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0]));
+
+#define RTTI_CLASS_INFO(class_name) ((RttiClass*)(&class_name::rttiInfo##class_name))
+#define RTTI_CLASS(class_name) RTTI_CLASS_INFO(class_name)
+
+#define RTTI_DECLARE_INFO(class_name) \
+  static const RttiClass rttiInfo##class_name; \
+  static const RttiClass* staticRttiClass(); \
+  virtual RttiClass* rttiClass() const;
+
+#define RTTI_IMPLEMENT_INFO(class_name, base_class_name) \
+  const RttiClass class_name::rttiInfo##class_name = { #class_name, sizeof(class class_name), RTTI_CLASS(base_class_name), class_name::RTTI_CLASS_UID }; \
+  RttiClass* class_name::rttiClass() const \
+{ return RTTI_CLASS(class_name); } \
+const RttiClass* class_name::staticRttiClass() { return &class_name::rttiInfo##class_name; }
 
 /**
  * \class ref object.h nanogui/object.h
@@ -106,7 +175,7 @@ public:
     }
 
     /// Overwrite this reference with another reference
-    ref& operator=(const ref& r) noexcept {
+    ref& operator=(const ref& r) {
         if (m_ptr != r.m_ptr) {
             if (r.m_ptr)
                 ((Object *) r.m_ptr)->incRef();
@@ -118,7 +187,7 @@ public:
     }
 
     /// Overwrite this reference with a pointer to another object
-    ref& operator=(T *ptr) noexcept {
+    ref& operator=(T *ptr) {
         if (m_ptr != ptr) {
             if (ptr)
                 ((Object *) ptr)->incRef();

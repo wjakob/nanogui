@@ -21,6 +21,8 @@ BSD-style license that can be found in the LICENSE.txt file.
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Table, Widget)
+
 const std::string TableOrderingModeNames[] =
 {
   "none",
@@ -848,7 +850,7 @@ void Table::_startEditCell(int col, int row)
     _edit->setEditable(true);
     _edit->requestFocus();
     _edit->setComitCallback([cell, this](Widget* w) {
-      if (TextBox* ed = dynamic_cast<TextBox*>(w))
+      if (TextBox* ed = w->cast<TextBox>())
       {
         cell->setCaption(ed->value());
         cell->requestFocus();

@@ -5,6 +5,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Meter, Widget)
+
 Meter::Meter(Widget *parent)
     : Widget(parent)
 {
@@ -248,7 +250,7 @@ Vector2i Meter::preferredSize(NVGcontext *ctx) const
 
 float deg2rad(float angle)
 {
-  return angle / 180. * 3.1415;
+  return angle / 180.f * 3.1415f;
 }
 
 void Meter::drawCrown(NVGcontext *ctx)

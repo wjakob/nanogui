@@ -25,6 +25,8 @@ SOFTWARE.
 #ifndef DX12_SUBSET_H
 #define DX12_SUBSET_H
 
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_dyn_imports.h"
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -212,5 +214,7 @@ private:
   void InitRootSigs();
   ID3D12RootSignature * ConstructRootSignature(D3D12_ROOT_SIGNATURE_DESC* rootSignatureDesc);
 };
+
+#endif //NANOGUI_DX12_BACKEND
 
 #endif

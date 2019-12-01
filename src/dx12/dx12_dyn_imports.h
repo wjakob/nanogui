@@ -25,6 +25,8 @@ SOFTWARE.
 #ifndef DX12_DYN_IMPORTS
 #define DX12_DYN_IMPORTS
 
+#if NANOGUI_DX12_BACKEND
+
 #include <d3d12.h>
 #include <dxgi.h>
 #include <windows.h>
@@ -140,5 +142,7 @@ private:
   HMODULE libHandles[DYNIMP_COUNT];
 
 };
+
+#endif //NANOGUI_DX12_BACKEND
 
 #endif

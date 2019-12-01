@@ -25,6 +25,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT VScrollPanel : public Widget {
 public:
+    RTTI_CLASS_UID("VSPN")
+    RTTI_DECLARE_INFO(VScrollPanel)
+
     VScrollPanel(Widget *parent);
 
     /// Return the current scroll amount as a value between 0 and 1. 0 means scrolled to the top and 1 to the bottom.

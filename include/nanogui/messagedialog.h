@@ -23,6 +23,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT MessageDialog : public Window {
 public:
+    RTTI_CLASS_UID("MDLG")
+    RTTI_DECLARE_INFO(MessageDialog)
+
     /// Classification of the type of message this MessageDialog represents.
     enum class Type {
         Information,

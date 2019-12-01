@@ -6,6 +6,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Foldout, Widget)
+
 void Foldout::_reparseChilds(NVGcontext* ctx)
 {
   if ( !mScrollBar )
@@ -137,7 +139,7 @@ bool Foldout::mouseButtonEvent(const Vector2i &p, int button, bool down, int mod
 
 void Foldout::selectButton(Widget* w)
 {
-  Button* elm = dynamic_cast<Button*>(w);
+  Button* elm = w->cast<Button>();
 
   for (auto& p: mPages)
   {
@@ -163,7 +165,7 @@ Foldout::Page& Foldout::addPage(Widget* elm)
 {
     Page descr;
 
-    uint32_t curIndex = mPages.size();
+    size_t curIndex = mPages.size();
     std::string pageName = std::string("Page_") + std::to_string(curIndex);
     std::string caption = pageName;
     if ( curIndex < mPageNames.size() )
@@ -239,7 +241,7 @@ void Foldout::addPage( const std::string& pageName, const std::string& pageCapti
   }
 }
 
-void Foldout::setPageOpened( const std::string& pageName, bool opened )
+void Foldout::setPageOpened( const std::string& /*pageName*/, bool /*opened*/ )
 {
 
 }

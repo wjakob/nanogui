@@ -13,7 +13,7 @@ void startGPUTimer(GPUtimer* timer)
     return;
 }
 
-int stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
+int stopGPUTimer(GPUtimer*, float*, int)
 {
   return 0;
 }

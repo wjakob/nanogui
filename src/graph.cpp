@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Graph, Widget)
+
 Graph::Graph(Widget *parent, const std::string &caption)
     : Widget(parent), mCaption(caption) {
     mBackgroundColor = Color(20, 128);

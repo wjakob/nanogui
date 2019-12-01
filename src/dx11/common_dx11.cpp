@@ -1,5 +1,7 @@
 #include "common_dx11.h"
 
+#if NANOGUI_DX11_BACKEND
+
 #include <windowsx.h>
 #include <winerror.h>
 
@@ -497,3 +499,5 @@ float getTimeFromStart(void)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_DX11_BACKEND

@@ -27,6 +27,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ColorPicker : public PopupButton {
 public:
+    RTTI_CLASS_UID("CLPC")
+    RTTI_DECLARE_INFO(ColorPicker)
+
     /**
      * Attaches a ColorPicker to the specified parent.
      *

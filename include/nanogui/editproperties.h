@@ -11,6 +11,9 @@ namespace Json { class value; }
 class NANOGUI_EXPORT PropertiesEditor : public Window
 {
 public:
+  RTTI_CLASS_UID("PRED")
+  RTTI_DECLARE_INFO(PropertiesEditor)
+
   PropertiesEditor(Widget* parent, const std::string& id="");
   virtual ~PropertiesEditor();
 

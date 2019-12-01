@@ -29,6 +29,9 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT LedMatrix : public Widget
 {
 public:
+  RTTI_CLASS_UID("LDMX")
+  RTTI_DECLARE_INFO(LedMatrix)
+
   LedMatrix(Widget* parent);
   virtual ~LedMatrix();
 

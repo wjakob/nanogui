@@ -20,6 +20,9 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ContextMenuLabel : public Label
 {
 public:
+  RTTI_CLASS_UID("CMLB")
+  RTTI_DECLARE_INFO(ContextMenuLabel)
+
   ContextMenuLabel(Widget* parent, const std::string& caption)
     : Label(parent, Caption{ caption }) {}
   void draw(NVGcontext* ctx) override;
@@ -67,6 +70,9 @@ private:
  */
 class NANOGUI_EXPORT ContextMenu : public Widget {
 public:
+    RTTI_CLASS_UID("CTMN")
+    RTTI_DECLARE_INFO(ContextMenu)
+
     /**
      * \brief Construct a new ContextMenu.
      * \param parent Parent widget.

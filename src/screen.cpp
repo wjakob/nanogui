@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Screen, Object)
+
 void Screen::addChild(int index, Widget * widget)
 {
   Widget::addChild(index, widget);
@@ -45,7 +47,7 @@ void Screen::_setupStartParams()
 
     /// Fixes retina display-related font rendering issue (#185)
     nvgBeginFrame(mNVGContext, mSize.x(), mSize.y(), mPixelRatio);
-    nvgEndFrame(mNVGContext);    
+    nvgEndFrame(mNVGContext);
 }
 
 void Screen::drawWidgets() {
@@ -67,7 +69,7 @@ void Screen::drawWidgets() {
           else it++;
         }
       }
-      
+
       widgetsNeedUpdate.clear();
       for (auto& c : ws)
         c->performLayout(mNVGContext);
@@ -167,7 +169,9 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
 
     bool ret = false;
     mLastInteraction = getTimeFromStart();
+#if NANOGUI_USING_EXCEPTIONS
     try {
+#endif
         p -= Vector2i(1, 2);
 
         if (!mDragActive) {
@@ -188,19 +192,22 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
         mMousePos = p;
 
         return ret;
+#if NANOGUI_USING_EXCEPTIONS
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
         return false;
     }
+#endif
 }
 
 bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     mModifiers = modifiers;
     mLastInteraction = getTimeFromStart();
+#if NANOGUI_USING_EXCEPTIONS
     try {
+#endif
         if (mFocusPath.size() > 1) {
-            const Window *dwindow =
-                dynamic_cast<Window*>(mFocusPath[mFocusPath.size() - 2]);
+            const Window *dwindow = mFocusPath[mFocusPath.size() - 2]->cast<Window>();
             if (dwindow && dwindow->modal()) {
                 if (!dwindow->contains(mMousePos))
                     return false;
@@ -237,31 +244,22 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
         }
 
         return mouseButtonEvent(mMousePos, button, isMouseActionPress(action), mModifiers);
+#if NANOGUI_USING_EXCEPTIONS
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
         return false;
     }
+#endif
 }
 
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
     mLastInteraction = getTimeFromStart();
-    try {
-        return keyboardEvent(key, scancode, action, mods);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what() << std::endl;
-        return false;
-    }
+    return keyboardEvent(key, scancode, action, mods);
 }
 
 bool Screen::charCallbackEvent(unsigned int codepoint) {
     mLastInteraction = getTimeFromStart();
-    try {
-        return keyboardCharacterEvent(codepoint);
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what()
-                  << std::endl;
-        return false;
-    }
+    return keyboardCharacterEvent(codepoint);
 }
 
 bool Screen::dropCallbackEvent(int count, const char **filenames) {
@@ -273,21 +271,14 @@ bool Screen::dropCallbackEvent(int count, const char **filenames) {
 
 bool Screen::scrollCallbackEvent(double x, double y) {
     mLastInteraction = getTimeFromStart();
-    try {
         if (mFocusPath.size() > 1) {
-            const Window *window =
-                dynamic_cast<Window *>(mFocusPath[mFocusPath.size() - 2]);
+            const Window *window = mFocusPath[mFocusPath.size() - 2]->cast<Window>();
             if (window && window->modal()) {
                 if (!window->contains(mMousePos))
                     return false;
             }
         }
         return scrollEvent(mMousePos, Vector2f(x, y));
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in event handler: " << e.what()
-                  << std::endl;
-        return false;
-    }
 }
 
 void Screen::updateFocus(Widget *widget) {
@@ -298,7 +289,7 @@ void Screen::updateFocus(Widget *widget) {
     Widget *window = nullptr;
     while (widget) {
         mFocusPath.push_back(widget);
-        if (dynamic_cast<Window *>(widget))
+        if (widget->cast<Window>())
             window = widget;
         widget = widget->parent();
     }
@@ -347,7 +338,7 @@ void Screen::moveWindowToFront(Window *window) {
               baseIndex = index;
       changed = false;
       for (size_t index = 0; index < mChildren.size(); ++index) {
-          Popup *pw = dynamic_cast<Popup *>(mChildren[index]);
+          Popup *pw = mChildren[index]->cast<Popup>();
           if (pw && pw->parentWindow() == window && index < baseIndex) {
               moveWindowToFront(pw);
               changed = true;

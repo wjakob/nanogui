@@ -7,6 +7,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ListboxItem, Button)
+RTTI_IMPLEMENT_INFO(Listbox, Widget)
+
 ListboxItem::ListboxItem(Widget* parent, const std::string& str, bool inlist)
     : Button(parent, str) {}
 
@@ -140,7 +143,7 @@ public:
   WidgetsArea(Widget* parent) : Widget(parent) {}
   void performLayout(NVGcontext *ctx) override
   {
-    VScrollPanel* vpanel = dynamic_cast<VScrollPanel*>(parent());
+    VScrollPanel* vpanel = parent()->cast<VScrollPanel>();
     int xoffset = 0;
     if (vpanel)
       xoffset = vpanel->getSliderAreaWidth();

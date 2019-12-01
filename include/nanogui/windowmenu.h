@@ -43,6 +43,9 @@ class BoxLayout;
  */
 class NANOGUI_EXPORT WindowMenu : public ContextMenu {
 public:
+    RTTI_CLASS_UID("WNDM")
+    RTTI_DECLARE_INFO(WindowMenu)
+
     /**
      * \brief Construct a new WindowtMenu.
      * \param parent Parent widget.

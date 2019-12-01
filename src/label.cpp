@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Label, Widget)
+
 Label::Label(Widget *parent)
     : Widget(parent), mCaption(""), mFont("sans") {
     if (mTheme) {

@@ -44,6 +44,8 @@ enum class Orientation {
  */
 class NANOGUI_EXPORT Layout : public Object {
 public:
+    RTTI_CLASS_UID("LAYT")
+    RTTI_DECLARE_INFO(Layout)
     /**
      * Performs any and all resizing applicable.
      *
@@ -71,8 +73,8 @@ public:
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
 
     template<typename FF, typename none = void> void set() {}
-
     void setId(int id) { mId = id; }
+
     int getId() const { return mId; }
 
 protected:
@@ -416,6 +418,8 @@ public:
  */
 class NANOGUI_EXPORT AdvancedGridLayout : public Layout {
 public:
+    RTTI_CLASS_UID("AGLT")
+    RTTI_DECLARE_INFO(AdvancedGridLayout)
     /**
      * \struct Anchor layout.h nanogui/layout.h
      *

@@ -17,8 +17,10 @@
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 //
-#include "../../include/nanogui/nanovg_d3d12.h"
+#include <nanogui/nanovg_d3d12.h>
 #include "dx12_subset_resource.h"
+
+#if NANOGUI_DX12_BACKEND
 
 struct NVGvertex* D3Dnvg_beginVertexBuffer(D3DNVGcontext* D3D, unsigned int maxCount, unsigned int* baseOffset)
 {
@@ -160,3 +162,5 @@ int D3Dnvg__deleteTexture(D3DNVGcontext* D3D, int id)
   }
   return 0;
 }
+
+#endif //NANOGUI_DX12_BACKEND

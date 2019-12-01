@@ -1,6 +1,8 @@
 #include "nanogui/opengl.h"
 #include <nanogui/perfchart.h>
 
+#if NANOGUI_OPENGL_BACKEND
+
 #ifndef __APPLE__
 #include <glad/glad.h>
 
@@ -71,3 +73,5 @@ int stopGPUTimer(GPUtimer* timer, float* times, int maxTimes)
 }
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

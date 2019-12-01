@@ -17,6 +17,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Popup, Window)
+
 Popup::Popup(Widget *parent, Window *parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
       mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {

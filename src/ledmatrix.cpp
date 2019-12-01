@@ -3,6 +3,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(LedMatrix, Widget)
+
 bool LedMatrix::isValid(int row, int col) const
 {
     return ( (row >= 0) &&

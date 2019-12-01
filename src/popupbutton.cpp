@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(PopupButton, Button)
+
 PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
     : Button(parent, caption, buttonIcon) {
 

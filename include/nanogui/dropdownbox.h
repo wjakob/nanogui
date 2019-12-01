@@ -26,6 +26,9 @@ NAMESPACE_BEGIN(nanogui)
 using DropdownBoxItems = std::vector<std::string>;
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
+    RTTI_CLASS_UID("DNBX")
+    RTTI_DECLARE_INFO(DropdownBox)
+
     /// Create an empty combo box
     DropdownBox(Widget *parent);
 

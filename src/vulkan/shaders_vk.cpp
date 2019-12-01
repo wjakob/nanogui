@@ -1,6 +1,8 @@
 #include <nanovg.h>
 #include <memory>
 
+#if NANOGUI_VULKAN_BACKEND
+
 #include "fill.vert.inc"
 #include "fill.frag.inc"
 #include "fill_edge_aa.frag.inc"
@@ -30,3 +32,4 @@ void vknvg_destroy_vertshader(uint32_t* data) { delete [] data; }
 void vknvg_destroy_fragshader(uint32_t* data) { delete [] data; }
 void vknvg_destroy_fragshader_aa(uint32_t* data) { delete [] data; }
 
+#endif //NANOGUI_VULKAN_BACKEND

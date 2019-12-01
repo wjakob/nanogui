@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Window, Widget)
+
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr),
       mModal(false), mDrag(false), mDragCorner(false)

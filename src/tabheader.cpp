@@ -18,6 +18,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(TabHeader, Widget)
+
 TabHeader::TabButton::TabButton(TabHeader &header, const std::string &label)
     : mHeader(&header), mLabel(label) { }
 

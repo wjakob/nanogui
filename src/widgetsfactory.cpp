@@ -42,13 +42,14 @@ struct DummyFactory : public WidgetFactory
       result.emplace_back(c.name);
     return result;
   }
-  WidgetFactory* factory(size_t index) const override { return nullptr; }
+  WidgetFactory* factory(size_t) const override { return nullptr; }
   std::string name() const override { return _name; }
   Widget* createWidget(const std::string& wtype, Widget* parent) override
   {
     auto it = std::find_if(_creators.begin(), _creators.end(), [&wtype](const CreatorInfo& i) { return i.name == wtype; });
     if (it != _creators.end())
       return it->creator(parent);
+    return nullptr;
   }
 };
 

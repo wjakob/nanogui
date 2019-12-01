@@ -23,7 +23,9 @@ SOFTWARE.
 
 */
 #include "dx12_subset.h"
-#include "dx12_subset.h"
+
+#if NANOGUI_DX12_BACKEND
+
 #include "dx12_subset_resource.h"
 #include "dx12_subset_dheap.h"
 #include <wrl.h>
@@ -333,3 +335,5 @@ ID3D12RootSignature * dx12_subset::ConstructRootSignature(D3D12_ROOT_SIGNATURE_D
 
   return rsObj;
 }
+
+#endif //NANOGUI_DX12_BACKEND

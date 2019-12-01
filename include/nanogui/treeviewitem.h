@@ -16,6 +16,9 @@ class NANOGUI_EXPORT TreeViewItem : public Label
   const size_t mNodeId;
 
 public:
+  RTTI_CLASS_UID("TRVI")
+  RTTI_DECLARE_INFO(TreeViewItem)
+
   using NodeId = size_t;
   enum { RootNodeId = 0xfefefefe, BadNodeId = 0xffffffff };
   using NodeList = std::list<NodeId>;

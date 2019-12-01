@@ -15,6 +15,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(ImagePanel, Widget)
+
 ImagePanel::ImagePanel(Widget *parent)
     : Widget(parent), mThumbSize(64), mSpacing(10), mMargin(10),
       mMouseIndex(-1) {}
