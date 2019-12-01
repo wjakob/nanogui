@@ -27,8 +27,6 @@
     #endif
 #endif
 
-#include <GLFW/glfw3.h>
-
 #include <nanogui/nanogui.h>
 #include <iostream>
 
@@ -52,56 +50,15 @@ Screen *screen = nullptr;
 
 int main(int /* argc */, char ** /* argv */) {
 
-    glfwInit();
+  nanogui::init();
 
-    glfwSetTime(0);
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    glfwWindowHint(GLFW_SAMPLES, 0);
-    glfwWindowHint(GLFW_RED_BITS, 8);
-    glfwWindowHint(GLFW_GREEN_BITS, 8);
-    glfwWindowHint(GLFW_BLUE_BITS, 8);
-    glfwWindowHint(GLFW_ALPHA_BITS, 8);
-    glfwWindowHint(GLFW_STENCIL_BITS, 8);
-    glfwWindowHint(GLFW_DEPTH_BITS, 24);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-    // Create a GLFWwindow object
-    GLFWwindow* window = glfwCreateWindow(800, 800, "example3", nullptr, nullptr);
-    if (window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-#if defined(NANOGUI_GLAD)
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-        throw std::runtime_error("Could not initialize GLAD!");
-    glGetError(); // pull and ignore unhandled errors like GL_INVALID_ENUM
-#endif
-
-    glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
+  {
     // Create a nanogui screen and pass the glfw pointer to initialize
-    screen = new Screen();
-    screen->initialize(window, true);
-
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
-    glfwSwapInterval(0);
-    glfwSwapBuffers(window);
-
+    screen = new Screen({ 1600, 900 }, "NanoGUI Test");
     // Create nanogui gui
     bool enabled = true;
     FormHelper *gui = new FormHelper(screen);
-    ref<Window> nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
+    ref<Window> nanoguiWindow = gui->addWindow({ 10, 10 }, "Form helper example");
     gui->addGroup("Basic types");
     gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
     gui->addVariable("string", strval);
@@ -114,80 +71,26 @@ int main(int /* argc */, char ** /* argv */) {
     gui->addGroup("Complex types");
     gui->addVariable("Enumeration", enumval, enabled)->setItems({ "Item 1", "Item 2", "Item 3" });
     gui->addVariable("Color", colval)
-       ->setFinalCallback([](const Color &c) {
-             std::cout << "ColorPicker Final Callback: ["
-                       << c.r() << ", "
-                       << c.g() << ", "
-                       << c.b() << ", "
-                       << c.w() << "]" << std::endl;
-         });
+      ->setFinalCallback([](const Color &c) {
+      std::cout << "ColorPicker Final Callback: ["
+        << c.r() << ", "
+        << c.g() << ", "
+        << c.b() << ", "
+        << c.w() << "]" << std::endl;
+    });
 
     gui->addGroup("Other widgets");
     gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
 
     screen->setVisible(true);
     screen->performLayout();
-    nanoguiWindow->center();
 
-    glfwSetCursorPosCallback(window,
-            [](GLFWwindow *, double x, double y) {
-            screen->cursorPosCallbackEvent(x, y);
-        }
-    );
+    screen->drawAll();
+    nanogui::mainloop();
+  }
 
-    glfwSetMouseButtonCallback(window,
-        [](GLFWwindow *, int button, int action, int modifiers) {
-            screen->mouseButtonCallbackEvent(button, action, modifiers);
-        }
-    );
+  nanogui::shutdown();
 
-    glfwSetKeyCallback(window,
-        [](GLFWwindow *, int key, int scancode, int action, int mods) {
-            screen->keyCallbackEvent(key, scancode, action, mods);
-        }
-    );
 
-    glfwSetCharCallback(window,
-        [](GLFWwindow *, unsigned int codepoint) {
-            screen->charCallbackEvent(codepoint);
-        }
-    );
-
-    glfwSetDropCallback(window,
-        [](GLFWwindow *, int count, const char **filenames) {
-            screen->dropCallbackEvent(count, filenames);
-        }
-    );
-
-    glfwSetScrollCallback(window,
-        [](GLFWwindow *, double x, double y) {
-            screen->scrollCallbackEvent(x, y);
-       }
-    );
-
-    glfwSetFramebufferSizeCallback(window,
-        [](GLFWwindow *, int width, int height) {
-            screen->resizeCallbackEvent(width, height);
-        }
-    );
-
-    // Game loop
-    while (!glfwWindowShouldClose(window)) {
-        // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
-        glfwPollEvents();
-
-        glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Draw nanogui
-        screen->drawContents();
-        screen->drawWidgets();
-
-        glfwSwapBuffers(window);
-    }
-
-    // Terminate GLFW, clearing any resources allocated by GLFW.
-    glfwTerminate();
-
-    return 0;
+  return 0;
 }
