@@ -37,7 +37,7 @@ namespace {
 }
 #endif
 
-extern void register_constants_glfw(py::module &m);
+extern void register_constants_ui(py::module &m);
 extern void register_constants_entypo(py::module &m);
 extern void register_eigen(py::module &m);
 extern void register_widget(py::module &m);
@@ -235,7 +235,7 @@ PYBIND11_MODULE(nanogui, m) {
         .value("Horizontal", Orientation::Horizontal)
         .value("Vertical", Orientation::Vertical);
 
-    register_constants_glfw(m);
+    register_constants_ui(m);
     register_constants_entypo(m);
     register_eigen(m);
     register_widget(m);

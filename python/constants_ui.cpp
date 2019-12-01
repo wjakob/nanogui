@@ -2,11 +2,13 @@
 
 #include "python.h"
 
-void register_constants_glfw(py::module &m) {
+void register_constants_ui(py::module &m) {
     /* GLFW constants */
     {
-        #define C(name) g.attr(#name) = py::int_(GLFW_##name);
-        py::module g = m.def_submodule("glfw");
+        py::module g = m.def_submodule("uiconst");
+        
+        #define C(name) g.attr(#name) = py::int_(UICONST_##name);
+        /*
         C(KEY_UNKNOWN); C(KEY_SPACE); C(KEY_APOSTROPHE); C(KEY_COMMA);
         C(KEY_MINUS); C(KEY_PERIOD); C(KEY_SLASH); C(KEY_0); C(KEY_1);
         C(KEY_2); C(KEY_3); C(KEY_4); C(KEY_5); C(KEY_6); C(KEY_7); C(KEY_8);
@@ -38,6 +40,7 @@ void register_constants_glfw(py::module &m) {
         C(MOUSE_BUTTON_7); C(MOUSE_BUTTON_8); C(MOUSE_BUTTON_LAST);
         C(MOUSE_BUTTON_LEFT); C(MOUSE_BUTTON_RIGHT); C(MOUSE_BUTTON_MIDDLE);
         C(RELEASE); C(PRESS); C(REPEAT);
+        */
         #undef C
     }
 }

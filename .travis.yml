@@ -27,7 +27,9 @@ matrix:
       before_install:
         - curl -L --progress-bar --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.126.0/windows/VulkanSDK-1.1.126.0-Installer.exe?Human=true
         - start VulkanSDK.exe /S
-        - export VULKAN_SDK="/c/VulkanSDK/1.1.126.0"
+        - export VULKAN_SDK="$TRAVIS_BUILD_DIR/VulkanSDK/1.1.126.0"
+        - cd "$VULKAN_SDK"
+        - dir
       script:     
         - mkdir -p build
         - cd build

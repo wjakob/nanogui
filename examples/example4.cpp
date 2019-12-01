@@ -211,7 +211,7 @@ public:
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        if (nanogui::isKeyboardKeyEscape(key) && nanogui::isKeyboardActionPress(action)) {
             setVisible(false);
             return true;
         }

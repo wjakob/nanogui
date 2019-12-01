@@ -35,16 +35,18 @@ set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling 
 if (NANOGUI_DX11_BACKEND OR NANOGUI_GLFW_BACKEND OR NANOGUI_DX12_BACKEND OR NANOGUI_VULKAN_BACKEND)  
   set(BACKENDS_SELECTED "")
   if (NANOGUI_GLFW_BACKEND) 
-    add_definitions(-DNANOGUI_OPENGL_BACKEND)
+    add_definitions(-DNANOGUI_OPENGL_BACKEND=1)
     list(APPEND BACKENDS_SELECTED "OpenGl") 
   endif()
   if (NANOGUI_DX11_BACKEND) 
+    add_definitions(-DNANOGUI_DX11_BACKEND=1)
     list(APPEND BACKENDS_SELECTED "DX11") 
   endif()
   if (NANOGUI_DX12_BACKEND) 
     list(APPEND BACKENDS_SELECTED "DX12") 
   endif() 
   if (NANOGUI_VULKAN_BACKEND) 
+    add_definitions(-DNANOGUI_VULKAN_BACKEND=1)
     list(APPEND BACKENDS_SELECTED "Vulkan") 
   endif()
 
@@ -634,7 +636,7 @@ if (NANOGUI_BUILD_PYTHON)
   include_directories("ext/pybind11/include" ${PYTHON_INCLUDE_DIRS})
   add_library(nanogui-python-obj OBJECT
     python/main.cpp
-    python/constants_glfw.cpp
+    python/constants_ui.cpp
     python/constants_entypo.cpp
     python/eigen.cpp
     python/widget.cpp
