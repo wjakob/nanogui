@@ -73,7 +73,7 @@ Creating widgets
 NanoGUI makes it easy to instantiate widgets, set layout constraints, and
 register event callbacks using high-level C++11 code. For instance, the
 following two lines from the included example application add a new button to
-an existing window `window` and register an event callback.
+an existing `window` and register an event callback.
 
 .. code-block:: cpp
 
