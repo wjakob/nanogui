@@ -28,6 +28,7 @@ option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
 option(NANOGUI_INSTALL       "Install NanoGUI on `make install`?" ON)
+option(NANOGUI_VULKAN_NOSDK  "Build vulkan with headers from ext folder. Travis-ci builds only" OFF)
 
 set(NANOGUI_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the Python plugin")
 
@@ -309,11 +310,18 @@ if (NANOGUI_GLFW_BACKEND)
     endif()
   endif()
 elseif (NANOGUI_VULKAN_BACKEND)
-  find_package(Vulkan REQUIRED)
-  if(NOT Vulkan_FOUND)
+  if (NANOGUI_VULKAN_NOSDK)
+    set(Vulkan_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/vulkan/Include")
+    set(Vulkan_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/blob/vulkan-1.lib")
+  else()
+    find_package(Vulkan REQUIRED)
+    if(NOT Vulkan_FOUND)
       message("ERROR: Vulkan not found")
-  endif(NOT Vulkan_FOUND)
+    endif(NOT Vulkan_FOUND)
 
+  endif()
+  message( "Vulkan include header found: ${Vulkan_INCLUDE_DIR}")
+  include_directories(${Vulkan_INCLUDE_DIR})
   list(APPEND NANOGUI_EXTRA_LIBS ${Vulkan_LIBRARY}) 
 elseif (NANOGUI_DX11_BACKEND)
   list(APPEND NANOGUI_EXTRA_LIBS d3d11 dxguid)
@@ -325,11 +333,6 @@ include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_
 
 if (NANOGUI_GLFW_BACKEND OR NANOGUI_VULKAN_BACKEND)
   include_directories(ext/glfw/include)
-
-  if (NANOGUI_VULKAN_BACKEND)
-    message( "Vulkan include header found: ${Vulkan_INCLUDE_DIR}")
-    include_directories(${Vulkan_INCLUDE_DIR})
-  endif()  
 endif()
 
 # Run simple cmake converter to put font files into the data segment
