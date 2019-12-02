@@ -18,6 +18,8 @@ typedef struct VKNVGCreateInfo {
   VkDevice device;
   VkRenderPass renderpass;
   VkCommandBuffer cmdBuffer;
+  VkQueue graphicsQueue;
+  VkCommandPool cmdPool;
 
   const VkAllocationCallbacks *allocator; //Allocator for vulkan. can be null
 } VKNVGCreateInfo;
@@ -1271,7 +1273,60 @@ static int vknvg_renderCreateTexture(void *uptr, int type, int w, int h, int ima
   if (data) {
     vknvg_UpdateTexture(device, tex, 0, 0, w, h, data);
   }
-
+  
+  // Proper layout transition so texture can be read from shader
+  
+  VkCommandBufferAllocateInfo cbAI{};
+  cbAI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  cbAI.commandPool = vk->createInfo.cmdPool;
+  cbAI.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  cbAI.commandBufferCount = 1;
+  
+  VkCommandBuffer cmdBuffer;
+  NVGVK_CHECK_RESULT(vkAllocateCommandBuffers(vk->createInfo.device, &cbAI, &cmdBuffer));
+  VkCommandBufferBeginInfo cbBI{};
+  cbBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  NVGVK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cbBI));
+  
+  VkImageSubresourceRange subresourceRange{};
+  subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  subresourceRange.baseMipLevel = 0;
+  subresourceRange.levelCount = 1;
+  subresourceRange.layerCount = 1;
+  
+  // Transition the texture image layout to shader read, so it can be sampled from
+  VkImageMemoryBarrier imageMemoryBarrier = {};
+  imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  imageMemoryBarrier.image = tex->image;
+  imageMemoryBarrier.subresourceRange = subresourceRange;
+  imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+  imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+  imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+  imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  
+  vkCmdPipelineBarrier(
+    cmdBuffer,
+    VK_PIPELINE_STAGE_HOST_BIT,
+    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+    0,
+    0, nullptr,
+    0, nullptr,
+    1, &imageMemoryBarrier);
+  
+  NVGVK_CHECK_RESULT(vkEndCommandBuffer(cmdBuffer));
+  VkSubmitInfo SI{};
+  SI.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  SI.commandBufferCount = 1;
+  SI.pCommandBuffers = &cmdBuffer;
+  VkFenceCreateInfo fenceCI{};
+  fenceCI.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  VkFence fence;
+  NVGVK_CHECK_RESULT(vkCreateFence(vk->createInfo.device, &fenceCI, nullptr, &fence));
+  NVGVK_CHECK_RESULT(vkQueueSubmit(vk->createInfo.graphicsQueue, 1, &SI, fence));
+  NVGVK_CHECK_RESULT(vkWaitForFences(vk->createInfo.device, 1, &fence, VK_TRUE, 100000000000));
+  vkDestroyFence(vk->createInfo.device, fence, nullptr);
+  vkFreeCommandBuffers(vk->createInfo.device, vk->createInfo.cmdPool, 1, &cmdBuffer);
+  
   return vknvg_textureId(vk, tex);
 }
 static int vknvg_renderDeleteTexture(void *uptr, int image) {

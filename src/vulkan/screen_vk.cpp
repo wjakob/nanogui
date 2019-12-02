@@ -380,6 +380,8 @@ void Screen::initialize(void *window, bool shutdownGLFWOnDestruct) {
     create_info.gpu = internal::device->gpu;
     create_info.renderpass = internal::fb.render_pass;
     create_info.cmdBuffer = internal::cmd_buffer;
+	create_info.graphicsQueue = internal::queue;
+	create_info.cmdPool = internal::device->commandPool;
 
     int flags = 0;
 #if !defined(NDEBUG)
