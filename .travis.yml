@@ -34,7 +34,7 @@ matrix:
         - cmake --version 
         - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_VULKAN_NOSDK=ON -DNANOGUI_BUILD_PYTHON=OFF ..
         - cmake --build .  
-    # build opengl render linux   
+    # build opengl render linux  gcc-4.9
     - os: linux
       compiler: gcc-4.9
       addons:
@@ -58,8 +58,34 @@ matrix:
             - cmake
       script:
         - cmake --version
-        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8
+        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-4.9 -DCMAKE_C_COMPILER=gcc-4.9
         - make -j 2
+    # build opengl render linux gcc-5.0  
+    - os: linux
+      compiler: gcc-5     
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - deadsnakes
+            - kubuntu-backports
+          packages:
+            - g++-5
+            - python3.5
+            - python3.5-dev
+            - python3.5-venv
+            - libglu1-mesa-dev
+            - libxxf86vm-dev
+            - libxrandr-dev
+            - libxinerama-dev
+            - libxcursor-dev
+            - libxi-dev
+            - libx11-dev
+            - cmake
+      script:
+        - cmake --version
+        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5
+        - make -j 2        
     # build opengl render osx       
     - os: osx
       compiler: clang
