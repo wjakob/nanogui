@@ -6,7 +6,7 @@ void register_constants_ui(py::module &m) {
     /* GLFW constants */
     {
         py::module g = m.def_submodule("uiconst");
-        
+
         #define C(name) g.attr(#name) = py::int_(UICONST_##name);
         /*
         C(KEY_UNKNOWN); C(KEY_SPACE); C(KEY_APOSTROPHE); C(KEY_COMMA);
