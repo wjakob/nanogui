@@ -21,7 +21,7 @@ matrix:
         - cmake --version 
         - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_PYTHON_VERSION=3.8 -DPYTHON_INCLUDE_DIRS:PATH="C:/Python38/include" -DPYTHON_LIBRARY:FILEPATH="C:/Python38/libs/python38.lib" ..
         - cmake --build .
-    # build vulkan render    
+    # build vulkan render windows x64   
     - os: windows
       python: "3.7"
       before_install:
@@ -30,7 +30,7 @@ matrix:
         - mkdir -p build
         - cd build
         - mkdir blob
-        - wget http://github.com/SaschaWillems/Vulkan/blob/master/libs/vulkan/vulkan-1.lib -outfile blob/vulkan-1.lib
+        - curl -L --progress-bar --show-error --output blob/vulkan-1.lib http://github.com/dalerank/nanogui-stuff-libs/raw/master/vulkan/x64/vulkan-1.lib
         - cmake --version 
         - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_VULKAN_NOSDK=ON -DNANOGUI_BUILD_PYTHON=OFF ..
         - cmake --build .  
