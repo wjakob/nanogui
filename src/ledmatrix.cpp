@@ -15,6 +15,7 @@ bool LedMatrix::isValid(int row, int col) const
 
 void LedMatrix::clearColumn(int col)
 {
+  mCacheDirty = true;
   if (isValid(0, col))
   {
     for (auto& c: colorTable[col])
@@ -24,10 +25,9 @@ void LedMatrix::clearColumn(int col)
 
 void LedMatrix::setColorAt(int row, int col, const Color& rgb)
 {
-    if (isValid(row, col))
-    {
-      colorTable[col][row] = rgb.toInt();
-    }
+  mCacheDirty = true;
+  if (isValid(row, col))
+    colorTable[col][row] = rgb.toInt();
 }
 
 void LedMatrix::performLayout(NVGcontext* ctx)
@@ -50,21 +50,40 @@ void LedMatrix::drawLEDs(NVGcontext* ctx)
   float hside = height() / mRowCount;
 
   float side = std::min(wside, hside);
-  float x = mPos.x() + side/2, y = mPos.y() + side/2;
-
-  nvgBeginPath(ctx);
-  for (int row=0; row < mRowCount; ++row)
+  
+  if (mCacheDirty)
   {
-      for (int col=0; col < mColumnCount; ++col)
+    mCacheDirty = false;
+    mCache.clear();
+    for (int row = 0; row < mRowCount; ++row)
+    {
+      for (int col = 0; col < mColumnCount; ++col)
       {
-          nvgFillColor(ctx, colorAt(row, col));
-          nvgEllipse(ctx, x, y, side/2, side/2);
-          x += side;
+        int color = colorAt(row, col).toInt();
+        mCache[color].emplace_back(((row & 0xffff) << 16) + (col & 0xffff));
       }
-      y += side;
-      x = mPos.x() + side/2;
+    }
   }
-  nvgFill(ctx);
+
+  if (!mCache.empty())
+  {
+    for (auto& c : mCache)
+    {
+      nvgBeginPath(ctx);
+      nvgFillColor(ctx, Color(c.first));
+      for (auto& p: c.second)
+      {
+        int row = (p >> 16) & 0xffff;
+        int col = (p & 0xffff);
+
+        float x = mPos.x() + side / 2;
+        float y = mPos.y() + side / 2;
+        
+        nvgEllipse(ctx, x + col * side, y + row * side, side / 2, side / 2);
+      }
+      nvgFill(ctx);
+    }
+  }
 }
 
 LedMatrix::LedMatrix(Widget* parent)
@@ -102,6 +121,7 @@ void LedMatrix::setDarkLedColor(const Color& color)
 {
     auto oldColor = mDarkLedColor;
     mDarkLedColor = color;
+    mCacheDirty = true;
 
     for (int i=0; i < mRowCount; ++i)
     {
@@ -129,55 +149,49 @@ int LedMatrix::rowCount() const { return mRowCount; }
 void LedMatrix::setRowCount(int rows)
 {
   mNeedRecalcParams = true;
-    if ((rows >= 0) && (rows != mRowCount))
-    {
-        int previousRowCount = mRowCount;
-        mRowCount = rows;
+  mCacheDirty = true;
+  if ((rows >= 0) && (rows != mRowCount))
+  {
+    int previousRowCount = mRowCount;
+    mRowCount = rows;
 
-        for (int i=0; i < mColumnCount; ++i)
-        {
-            colorTable[i].resize(rows);
-            if (rows > previousRowCount)
-            {
-                for (int j=previousRowCount; j < rows; ++j)
-                {
-                    setColorAt(j, i, mDarkLedColor);
-                }
-            }
-        }
+    for (int i=0; i < mColumnCount; ++i)
+    {
+      colorTable[i].resize(rows);
+      if (rows > previousRowCount)
+        for (int j=previousRowCount; j < rows; ++j)
+          setColorAt(j, i, mDarkLedColor);
     }
+  }
 }
 
 int LedMatrix::columnCount() const { return mColumnCount; }
 
 void LedMatrix::setColumnCount(int columns)
 {
-    if ((columns >= 0) && (columns != mColumnCount))
-    {
-        int previousColumnsCount = mColumnCount;
-        mColumnCount = columns;
+  mCacheDirty = true;
+  if ((columns >= 0) && (columns != mColumnCount))
+  {
+    int previousColumnsCount = mColumnCount;
+    mColumnCount = columns;
 
-        colorTable.resize(columns);
-        if (columns > previousColumnsCount)
-        {
-            for (int i=previousColumnsCount; i<columns; ++i)
-            {
-                colorTable[i].resize(mRowCount);
-                for (int j=0; j < mRowCount; ++j)
-                {
-                    setColorAt(j, i, mDarkLedColor);
-                }
-            }
-        }
+    colorTable.resize(columns);
+    if (columns > previousColumnsCount)
+    {
+      for (int i=previousColumnsCount; i<columns; ++i)
+      {
+        colorTable[i].resize(mRowCount);
+        for (int j=0; j < mRowCount; ++j)
+          setColorAt(j, i, mDarkLedColor);
+      }
     }
+  }
 }
 
 Vector2i LedMatrix::preferredSize(NVGcontext* ctx) const
 {
     return Widget::preferredSize(ctx);
 }
-
-
 
 void LedMatrix::draw(NVGcontext *ctx)
 {

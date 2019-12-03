@@ -23,6 +23,7 @@
 
 #include <nanogui/widget.h>
 #include <vector>
+#include <map>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -80,6 +81,10 @@ protected:
   Color mBackgroundColor;
   Color mDarkLedColor;
   std::vector<std::vector<int>> colorTable;
+  
+  std::map<int, std::vector<int>> mCache;
+  bool mCacheDirty = true;
+
   int mRowCount;
   int mColumnCount;
   bool mNeedRecalcParams = false;
