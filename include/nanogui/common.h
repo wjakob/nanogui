@@ -189,182 +189,122 @@ using MatrixXu = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;
  * You can and should still use the various convenience methods such as ``any()``,
  * ``all()``, ``head<index>()``, etc provided by Eigen.
  */
-class Color : public Eigen::Vector4f {
-    typedef Eigen::Vector4f Base;
+class Color
+{
 public:
-    /// Default constructor: represents black (``r, g, b, a = 0``)
-    Color() : Color(0, 0, 0, 0) {}
+  Color() : Color(0, 0, 0, 0) {}
 
-    /**
-     * Makes an exact copy of the data represented by the input parameter.
-     *
-     * \param color
-     * The four dimensional float vector being copied.
-     */
-    Color(const Eigen::Vector4f &color) : Eigen::Vector4f(color) { }
+  Color(float intensity, float alpha)
+  {
+    r() = intensity; g() = intensity;
+    b() = intensity; a() = alpha;
+  }
 
-    /**
-     * Copies (x, y, z) from the input vector, and uses the value specified by
-     * the ``alpha`` parameter for this Color object's alpha component.
-     *
-     * \param color
-     * The three dimensional float vector being copied.
-     *
-     * \param alpha
-     * The value to set this object's alpha component to.
-     */
-    Color(const Eigen::Vector3f &color, float alpha)
-        : Color(color(0), color(1), color(2), alpha) { }
+  Color(int intensity, int alpha)
+  {
+    r() = (intensity / 255.f); g() = (intensity / 255.f);
+    b() = (intensity / 255.f); a() = alpha / 255.f;
+  }
 
-    /**
-     * Copies (x, y, z) from the input vector, casted as floats first and then
-     * divided by ``255.0``, and uses the value specified by the ``alpha``
-     * parameter, casted to a float and divided by ``255.0`` as well, for this
-     * Color object's alpha component.
-     *
-     * \param color
-     * The three dimensional integer vector being copied, will be divided by ``255.0``.
-     *
-     * \param alpha
-     * The value to set this object's alpha component to, will be divided by ``255.0``.
-     */
-    Color(const Eigen::Vector3i &color, int alpha)
-        : Color(color.cast<float>() / 255.f, alpha / 255.f) { }
+  Color(float _r, float _g, float _b, float _a)
+  {
+    r() = _r; g() = _g; b() = _b; a() = _a;
+  }
 
-    /**
-     * Copies (x, y, z) from the input vector, and sets the alpha of this color
-     * to be ``1.0``.
-     *
-     * \param color
-     * The three dimensional float vector being copied.
-     */
-    Color(const Eigen::Vector3f &color) : Color(color, 1.0f) {}
+  Color(int _r, int _g, int _b, int _a)
+  {
+    r() = _r / 255.f; g() = _g / 255.f; b() = _b / 255.f; a() = _a / 255.f;
+  }
 
-    /**
-     * Copies (x, y, z) from the input vector, casting to floats and dividing by
-     * ``255.0``.  The alpha of this color will be set to ``1.0``.
-     *
-     * \param color
-     * The three dimensional integer vector being copied, will be divided by ``255.0``.
-     */
-    Color(const Eigen::Vector3i &color)
-        : Color((Vector3f)(color.cast<float>() / 255.f)) { }
+  Color(int v)
+  {
+    r() = ((v >> 24) & 0xff)/255.f;
+    g() = ((v >> 16) & 0xff) / 255.f;
+    b() = ((v >> 8) & 0xff) / 255.f;
+    a() = (v & 0xff) / 255.f;
+  }
 
-    /**
-     * Copies (x, y, z, w) from the input vector, casting to floats and dividing
-     * by ``255.0``.
-     *
-     * \param color
-     * The three dimensional integer vector being copied, will be divided by ``255.0``.
-     */
-    Color(const Eigen::Vector4i &color)
-        : Color((Vector4f)(color.cast<float>() / 255.f)) { }
+  Color(const Color& rgb, float _a)
+  {
+    *this = rgb;
+    a() = _a;
+  }
 
-    /**
-     * Creates the Color ``(intensity, intensity, intensity, alpha)``.
-     *
-     * \param intensity
-     * The value to be used for red, green, and blue.
-     *
-     * \param alpha
-     * The alpha component of the color.
-     */
-    Color(float intensity, float alpha)
-        : Color(Vector3f::Constant(intensity), alpha) { }
+  Color& operator/=(float v) { 
+    Color out = *this; 
+    for (auto& a : out.rgba) a /= v;
+    return out;
+  }
+  /// Return a reference to the red channel
+  float &r() { return rgba[0]; }
+  /// Return a reference to the red channel (const version)
+  const float &r() const { return rgba[0]; }
+  /// Return a reference to the green channel
+  float &g() { return rgba[1]; }
+  /// Return a reference to the green channel (const version)
+  const float &g() const { return rgba[1]; }
+  /// Return a reference to the blue channel
+  float &b() { return rgba[2]; }
+  /// Return a reference to the blue channel (const version)
+  const float &b() const { return rgba[2]; }
 
-    /**
-     * Creates the Color ``(intensity, intensity, intensity, alpha) / 255.0``.
-     * Values are casted to floats before division.
-     *
-     * \param intensity
-     * The value to be used for red, green, and blue, will be divided by ``255.0``.
-     *
-     * \param alpha
-     * The alpha component of the color, will be divided by ``255.0``.
-     */
-    Color(int intensity, int alpha)
-        : Color(Vector3i::Constant(intensity), alpha) { }
+  float &a() { return rgba[3]; }
+  const float &a() const { return rgba[3]; }
 
-    /**
-     * Explicit constructor: creates the Color ``(r, g, b, a)``.
-     *
-     * \param r
-     * The red component of the color.
-     *
-     * \param g
-     * The green component of the color.
-     *
-     * \param b
-     * The blue component of the color.
-     *
-     * \param a
-     * The alpha component of the color.
-     */
-    Color(float r, float g, float b, float a) : Color(Vector4f(r, g, b, a)) { }
+  float &w() { return rgba[3]; }
+  const float &w() const { return rgba[3]; }
 
-    Color(int rgba)
-      : Color((rgba >> 24) & 0xff, (rgba >> 16) & 0xff, (rgba >> 8) & 0xff, rgba & 0xff) {}
+  Color rgb() const { return Color(rgba[0], rgba[1], rgba[2], 0.f); }
 
-    /**
-     * Explicit constructor: creates the Color ``(r, g, b, a) / 255.0``.
-     * Values are casted to floats before division.
-     *
-     * \param r
-     * The red component of the color, will be divided by ``255.0``.
-     *
-     * \param g
-     * The green component of the color, will be divided by ``255.0``.
-     *
-     * \param b
-     * The blue component of the color, will be divided by ``255.0``.
-     *
-     * \param a
-     * The alpha component of the color, will be divided by ``255.0``.
-     */
-    Color(int r, int g, int b, int a) : Color(Vector4i(r, g, b, a)) { }
+  void setAlpha(float a) { rgba[3] = a; }
 
-    /// Construct a color vector from MatrixBase (needed to play nice with Eigen)
-    template <typename Derived> Color(const Eigen::MatrixBase<Derived>& p)
-        : Base(p) { }
+  Color withAlpha(float a) const { Color c = *this; c.rgba[3] = a; return c; }
 
-    /// Assign a color vector from MatrixBase (needed to play nice with Eigen)
-    template <typename Derived> Color &operator=(const Eigen::MatrixBase<Derived>& p) {
-        this->Base::operator=(p);
-        return *this;
-    }
+  bool operator!=(const Color& c)
+  {
+    return !(c.a() == a() && c.r() == r() && c.g() == g() && c.b() == b());
+  }
 
-    /// Return a reference to the red channel
-    float &r() { return x(); }
-    /// Return a reference to the red channel (const version)
-    const float &r() const { return x(); }
-    /// Return a reference to the green channel
-    float &g() { return y(); }
-    /// Return a reference to the green channel (const version)
-    const float &g() const { return y(); }
-    /// Return a reference to the blue channel
-    float &b() { return z(); }
-    /// Return a reference to the blue channel (const version)
-    const float &b() const { return z(); }
+  Color contrastingColor() const {
+    float luminance = r() * 0.299f + g() * 0.587f + b() * 0.144f;
+    return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
+  }
 
-    /**
-     * Computes the luminance as ``l = 0.299r + 0.587g + 0.144b + 0.0a``.  If
-     * the luminance is less than 0.5, white is returned.  If the luminance is
-     * greater than or equal to 0.5, black is returned.  Both returns will have
-     * an alpha component of 1.0.
-     */
-    Color contrastingColor() const {
-        float luminance = cwiseProduct(Color(0.299f, 0.587f, 0.144f, 0.f)).sum();
-        return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
-    }
+  Color operator*(float m) const
+  {
+    return Color(r()*m, g()*m, b()*m, a()*m);
+  }
 
-    Color mul_a(float mul) { Color ret = *this; ret.w() *= mul; return ret; }
+  Color operator+(const Color& c) const
+  {
+    return Color(r() + c.r(), g() + c.g(), b() + c.b(), a() + c.a());
+  }
 
-    /// Allows for conversion between this Color and NanoVG's representation.
-    inline operator const NVGcolor &() const;
-    inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  inline operator const NVGcolor &() const { return reinterpret_cast<const NVGcolor &>(rgba); }
+  inline Color mul_a(float mul) { Color ret = *this; ret.w() *= mul; return ret; }
+  inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }
+
+  inline const float* data() const { return rgba; }
+  inline float* data() { return rgba; }
+
+  Color transpose() const
+  {
+    Color out;
+    for (int i = 0; i < 2; i++)
+      for (int j = 0; j < 2; j++)
+        out.rgba[j*2+i] = rgba[i*2+j];
+    return out;
+  }
+
+private:
+  float rgba[4];
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Color& c)
+{
+  os << c.r() << '.' << c.g() << '.' << c.b() << '.' << c.a();
+  return os;
+}
 
 // skip the forward declarations for the docs
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -507,11 +447,6 @@ NANOGUI_EXPORT bool isKeyboardActionPress(int action);
 NANOGUI_EXPORT bool isKeyboardActionRepeat(int action);
 NANOGUI_EXPORT bool isKeyboardKeyEscape(int key);
 inline bool isKeyboardKey(int key, const std::string& fourcc) { return key2fourcc(key) == FOURCCS(fourcc); }
-
-/// Allows for conversion between nanogui::Color and the NanoVG NVGcolor class.
-inline Color::operator const NVGcolor &() const {
-  return reinterpret_cast<const NVGcolor &>(*this->data());
-}
 
 /**
 * \brief Determine whether an icon ID is a texture loaded via ``nvgImageIcon``.

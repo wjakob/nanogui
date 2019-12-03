@@ -135,9 +135,6 @@ public:
 private:
     // Helper image methods.
     void updateImageParameters();
-    void _initShader();
-    void _bindShader();
-    void _deleteShader();
     void _internalDraw(NVGcontext* ctx);
 
     // Helper drawing methods.

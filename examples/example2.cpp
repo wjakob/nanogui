@@ -77,7 +77,6 @@ int main(int /* argc */, char ** /* argv */) {
 
         screen->setVisible(true);
         screen->performLayout();
-        window->center();
 
         nanogui::mainloop();
     }

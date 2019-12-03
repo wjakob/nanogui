@@ -42,6 +42,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowFontSize)
   CHECK(mTooltipOpacity)
   std::runtime_error(std::string("No get prop for name") + name);
+  return 0;
 }
 
 void Theme::set(const std::string& name, const int& value)
@@ -112,6 +113,7 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mToleranceBarLowColor)
   CHECK(mToleranceBarHighColor)
   std::runtime_error(std::string("No get prop for name") + name);
+  return Color(0x800080ff);
 }
 
 void Theme::set(const std::string& name, const Color& value)
@@ -291,13 +293,13 @@ void Theme::update(const Theme& newtheme)
   if (mFontIcons == -1) mFontIcons = oldFontIcons;
 }
 
-DefaultTheme::DefaultTheme(NVGcontext* ctx)
+DefaultTheme::DefaultTheme(NVGcontext*)
   : Theme()
 {
   fillThemeDefaultValues(*this);
 }
 
-WhiteTheme::WhiteTheme(NVGcontext* ctx)
+WhiteTheme::WhiteTheme(NVGcontext*)
   : Theme()
 {
   fillThemeDefaultValues(*this);

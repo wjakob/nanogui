@@ -38,7 +38,7 @@ public:
      *     If provided, the callback to execute when the ToleranceBar is changed.
      *     Default parameter function does nothing.
      */
-    explicit ToleranceBar(Widget* parent, const std::function<void(int)>& callback = std::function<void(bool)>());
+    explicit ToleranceBar(Widget* parent, const std::function<void(int)>& callback = nullptr);
 
     bool mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int button, int modifiers) override;
     bool mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) override;
@@ -57,7 +57,7 @@ protected:
 
     float path = 0.f;
     Color mBackgroundColor;
-    std::function<void(bool)> mCallback;
+    std::function<void(int)> mCallback;
 
 private:
     void drawFrame(NVGcontext* ctx, float x, float y, float w, float h);

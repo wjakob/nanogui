@@ -233,7 +233,7 @@ void EditorWorkspace::_createElementsMap( Widget* start, std::map< std::string, 
   }
 }
 
-void EditorWorkspace::setElementName( Widget* elm, bool setText, std::string& wantName )
+void EditorWorkspace::setElementName( Widget* elm, bool /*setText*/, std::string& wantName )
 {
   std::string typeName = elm->wtypename();
 

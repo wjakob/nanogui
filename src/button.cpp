@@ -143,7 +143,7 @@ void Button::draw(NVGcontext *ctx) {
         mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
       if (mBackgroundColor.w() != 0) {
-        nvgFillColor(ctx, Color(mBackgroundColor.head<3>(), 1.f));
+        nvgFillColor(ctx, Color(mBackgroundColor.rgb(), 1.f));
         nvgFill(ctx);
         if (mPushed) {
           gradTop.a = gradBot.a = 0.8f;

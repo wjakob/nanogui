@@ -23,7 +23,7 @@ void PerfGraph::update(float frameTime)
   mValues[mHead] = frameTime;
 }
 
-Vector2i PerfGraph::preferredSize(NVGcontext *ctx) const
+Vector2i PerfGraph::preferredSize(NVGcontext * /* ctx */ ) const
 {
   return Vector2i(200, 35);
 }

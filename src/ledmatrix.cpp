@@ -39,7 +39,7 @@ void LedMatrix::performLayout(NVGcontext* ctx)
   setColumnCount(columns);
 }
 
-void LedMatrix::setText(const std::string& text)
+void LedMatrix::setText(const std::string& /*text*/)
 {
 
 }

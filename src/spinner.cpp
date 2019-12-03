@@ -12,7 +12,7 @@ Spinner::Spinner(Widget* parent)
 
 }
 
-Vector2i Spinner::preferredSize(NVGcontext *ctx) const
+Vector2i Spinner::preferredSize(NVGcontext *) const
 {
   const Vector2i& ps = parent()->size();
   const Vector2i& fs = fixedSize();
@@ -44,7 +44,7 @@ void Spinner::draw(NVGcontext* ctx)
                       mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
   NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
-                                  mPos.y() + mSize.y(), gradTop.mul_a(0.3), gradBot.mul_a(0.3));
+                                  mPos.y() + mSize.y(), gradTop.mul_a(0.3f), gradBot.mul_a(0.3f));
 
   nvgFillPaint(ctx, bg);
   nvgFill(ctx);

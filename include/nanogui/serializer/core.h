@@ -323,8 +323,22 @@ struct serialization_helper<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, 
     }
 };
 
-template <> struct serialization_helper<nanogui::Color>
-    : public serialization_helper<Eigen::Matrix<float, 4, 1>> { };
+template <> struct serialization_helper<nanogui::Color> {
+  static std::string type_id() { return "Clr"; }
+
+  static void write(Serializer &s, const Color *value, size_t count) {
+    for (size_t i = 0; i<count; ++i) {
+      s.write(value->data(), sizeof(float) * 4);
+    }
+  }
+
+  static void read(Serializer &s, Color *value, size_t count) {
+    for (size_t i = 0; i<count; ++i) {
+      s.read((void*)value->data(), sizeof(float) * 4);
+    }
+  }
+};
+
 
 template <typename Scalar, int Options>
 struct serialization_helper<Eigen::Quaternion<Scalar, Options>>

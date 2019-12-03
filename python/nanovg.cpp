@@ -1,4 +1,5 @@
 #include "python.h"
+#include <nanovg.h>
 
 using namespace pybind11::literals;
 

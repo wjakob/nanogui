@@ -13,18 +13,18 @@ class TreeView;
 class NANOGUI_EXPORT TreeViewItem : public Label
 {
   friend class TreeView;
-  const size_t mNodeId;
+  const int mNodeId;
 
 public:
   RTTI_CLASS_UID("TRVI")
   RTTI_DECLARE_INFO(TreeViewItem)
 
-  using NodeId = size_t;
+  using NodeId = int;
   enum { RootNodeId = 0xfefefefe, BadNodeId = 0xffffffff };
   using NodeList = std::list<NodeId>;
 
   explicit TreeViewItem(Widget* widget);
-  ~TreeViewItem() override;
+  virtual ~TreeViewItem();
 
   TreeView* source() const;
   TreeViewItem* baseNode() const;

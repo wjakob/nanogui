@@ -26,25 +26,9 @@ ImageView::ImageView(Widget* parent, uint32_t imageID)
     : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
     mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {
     updateImageParameters();
-
-    _initShader();
-
-    MatrixXu indices(3, 2);
-    indices.col(0) << 0, 1, 2;
-    indices.col(1) << 2, 3, 1;
-
-    MatrixXf vertices(2, 4);
-    vertices.col(0) << 0, 0;
-    vertices.col(1) << 1, 0;
-    vertices.col(2) << 0, 1;
-    vertices.col(3) << 1, 1;
-
-    _bindShader();
 }
 
-ImageView::~ImageView() {
-    _deleteShader();
-}
+ImageView::~ImageView() {}
 
 void ImageView::bindImage(uint32_t imageId) {
     mImageID = imageId;
@@ -53,8 +37,6 @@ void ImageView::bindImage(uint32_t imageId) {
 }
 
 void ImageView::updateImageParameters() {
-    // Query the width of the OpenGL texture.
-    //glBindTexture(GL_TEXTURE_2D, mImageID);
     int32_t w, h;
     nvgImageSize(screen()->nvgContext(), mImageID, &w, &h);
     mImageSize = Vector2i(w, h);
@@ -76,18 +58,6 @@ void ImageView::_internalDraw(NVGcontext* ctx)
                         5);
     nvgFillPaint(ctx, imgPaint);
     nvgFill(ctx);
-}
-
-void ImageView::_deleteShader()
-{
-}
-
-void ImageView::_bindShader()
-{
-}
-
-void ImageView::_initShader()
-{
 }
 
 Vector2f ImageView::imageCoordinateAt(const Vector2f& position) const {

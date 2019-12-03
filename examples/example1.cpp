@@ -197,7 +197,7 @@ void createBasicWidgets(Screen* parent)
 
   // Load all of the images by creating a GLTexture object and saving the pixel data.
   for (auto& icon : icons) {
-    auto fullpath = resourcesFolderPath + icon.second + ".png";
+    auto fullpath = resourcesFolderPath + icon.second;
     auto data = nvgCreateImage(parent->nvgContext(), fullpath.c_str(), 0);
     mImagesData.emplace_back(data, fullpath);
   }
@@ -241,7 +241,7 @@ void createBasicWidgets(Screen* parent)
 
   auto& imgPanel = vscroll.wdg<ImagePanel>();
   imgPanel.setImages(icons);
-  imgPanel.setCallback([&](int i) {
+  imgPanel.setCallback([=](int i) {
     if (auto* imageView = parent->findWidget<ImageView>("#image_view"))
     {
       imageView->bindImage(mImagesData[i].first);
@@ -257,6 +257,8 @@ void createBasicWidgets(Screen* parent)
   // Set the first texture
   auto& imageView = imageWindow.wdg<ImageView>(mImagesData[0].first);
   imageView.setGridThreshold(20);
+  imageView.setFixedSize({220,220});
+  imageView.setId("#image_view");
   imageView.setPixelInfoThreshold(20);
   imageView.setPixelInfoCallback(
     [&](const Vector2i& index) -> pair<string, Color> {

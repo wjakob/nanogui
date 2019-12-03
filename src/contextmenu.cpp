@@ -300,7 +300,7 @@ ContextMenu* ContextMenu::addSubMenu(const std::string& name, int icon) {
     return &submenu;
 }
 
-void ContextMenu::setShortcut(const std::string& text)
+void ContextMenu::setShortcut(const std::string& /*text*/)
 {
 
 }
@@ -347,7 +347,7 @@ bool ContextMenu::mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int b
     return true;
 }
 
-bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) {
+bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int /*modifiers*/) {
     Vector2i mousePos = p - mPos;
     if (isMouseButtonLeft(button) && !down) {
         // Preserve our existence in case the click destroys us.

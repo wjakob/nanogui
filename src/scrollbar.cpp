@@ -52,7 +52,7 @@ void ScrollBar::performLayout(NVGcontext *ctx) {
     }
 }
 
-Vector2i ScrollBar::preferredSize(NVGcontext *ctx) const {
+Vector2i ScrollBar::preferredSize(NVGcontext * /* ctx */ ) const {
   if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight)
   {
     return Vector2i(12, parent()->height());
@@ -85,10 +85,8 @@ bool ScrollBar::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
       return true;
     }
   }
-  else
-  {
-    return Widget::mouseDragEvent(p, rel, button, modifiers);
-  }
+ 
+  return Widget::mouseDragEvent(p, rel, button, modifiers);
 }
 
 bool ScrollBar::scrollEvent(const Vector2i &p, const Vector2f &rel) {
@@ -118,10 +116,8 @@ bool ScrollBar::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     }
     return true;
   }
-  else
-  {
-    return Widget::scrollEvent(p, rel);
-  }
+
+  return Widget::scrollEvent(p, rel);
 }
 
 void ScrollBar::draw(NVGcontext *ctx) {

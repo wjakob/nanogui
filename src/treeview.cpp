@@ -206,7 +206,7 @@ void TreeView::_mouseAction( int xpos, int ypos, bool onlyHover /*= false*/ )
   auto oldSelected = mSelected;
   TreeViewItem* selectedPtr = nullptr;
   TreeViewItem* hitNode;
-  int   selIdx;
+  TreeViewItem::NodeId selIdx = TreeViewItem::BadNodeId;
   int   n;
   TreeViewItem*  node;
 

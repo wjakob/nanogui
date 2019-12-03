@@ -10,7 +10,7 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(ListboxItem, Button)
 RTTI_IMPLEMENT_INFO(Listbox, Widget)
 
-ListboxItem::ListboxItem(Widget* parent, const std::string& str, bool inlist)
+ListboxItem::ListboxItem(Widget* parent, const std::string& str)
     : Button(parent, str) {}
 
 void ListboxItem::performLayout(NVGcontext *ctx)
@@ -40,7 +40,7 @@ void ListboxItem::draw(NVGcontext *ctx)
       mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
     if (mBackgroundColor.w() != 0) {
-      nvgFillColor(ctx, Color(mBackgroundColor.head<3>(), 1.f));
+      nvgFillColor(ctx, Color(mBackgroundColor.rgb(), 1.f));
       nvgFill(ctx);
       if (mPushed) {
         gradTop.a = gradBot.a = 0.8f;
@@ -157,7 +157,7 @@ public:
   }
 };
 
-Vector2i Listbox::preferredSize(NVGcontext *ctx) const {
+Vector2i Listbox::preferredSize(NVGcontext * /* ctx */) const {
   Vector2i ret = mSize;
   if (minWidth() > ret.x()) ret.x() = minWidth();
   if (minHeight() > ret.y()) ret.y() = minHeight();

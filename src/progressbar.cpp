@@ -92,7 +92,7 @@ void CircleProgressBar::draw(NVGcontext* ctx) {
 
   NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
                                        mPos.y() + mSize.y(),
-                                       gradTop.mul_a(0.3), gradBot.mul_a(0.3));
+                                       gradTop.mul_a(0.3f), gradBot.mul_a(0.3f));
 
   nvgFillPaint(ctx, bg);
   nvgFill(ctx);

@@ -194,7 +194,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
 
     glfwGetFramebufferSize((GLFWwindow*)mHwWindow, &mFBSize[0], &mFBSize[1]);
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
-    glClearColor(mBackground[0], mBackground[1], mBackground[2], mBackground[3]);
+    glClearColor(mBackground.r(), mBackground.g(), mBackground.b(), mBackground.a());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glfwSwapInterval(0);
     glfwSwapBuffers((GLFWwindow*)mHwWindow);
@@ -402,7 +402,7 @@ void Screen::setSize(const Vector2i &size) {
 }
 
 void Screen::drawAll() {
-    glClearColor(mBackground[0], mBackground[1], mBackground[2], mBackground[3]);
+    glClearColor(mBackground.r(), mBackground.g(), mBackground.b(), mBackground.a());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     drawContents();

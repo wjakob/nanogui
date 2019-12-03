@@ -97,10 +97,7 @@ void Widget::performLayout(NVGcontext *ctx)
 }
 
 Widget *Widget::findWidget(const Vector2i &p) {
-  if (mChildren.empty())
-    return nullptr;
-
-  for (int i=mChildren.size()-1; i >= 0; i--) {
+  for (int i=(int)mChildren.size()-1; i >= 0; i--) {
       Widget *child = mChildren[i];
       if (child->visible() && child->contains(p - mPos))
       {
@@ -113,10 +110,7 @@ Widget *Widget::findWidget(const Vector2i &p) {
 }
 
 bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
-  if (mChildren.empty())
-    return false;
-
-  for (int i=mChildren.size()-1; i >= 0; i--) {
+  for (int i=(int)mChildren.size()-1; i >= 0; i--) {
       Widget *child = mChildren[i];
       if (child->visible() && child->contains(p - mPos) &&
           child->mouseButtonEvent(p - mPos, button, down, modifiers))

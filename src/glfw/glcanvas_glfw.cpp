@@ -25,7 +25,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 GLCanvas::GLCanvas(Widget *parent)
-  : Widget(parent), mBackgroundColor(Vector4i(128, 128, 128, 255)),
+  : Widget(parent), mBackgroundColor({ 128, 128, 128, 255 }),
     mDrawBorder(true) {
     mSize = Vector2i(250, 250);
 }
@@ -68,8 +68,8 @@ void GLCanvas::draw(NVGcontext *ctx) {
 
     glEnable(GL_SCISSOR_TEST);
     glScissor(imagePosition[0], imagePosition[1], size[0], size[1]);
-    glClearColor(mBackgroundColor[0], mBackgroundColor[1],
-                 mBackgroundColor[2], mBackgroundColor[3]);
+    glClearColor(mBackgroundColor.r(), mBackgroundColor.g(),
+                 mBackgroundColor.b(), mBackgroundColor.a());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     this->drawGL();

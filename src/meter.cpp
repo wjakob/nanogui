@@ -134,7 +134,7 @@ void Meter::setLabel(std::string label)
 
 void Meter::draw(NVGcontext *ctx)
 {
-    int side = std::min(width(), height());
+    //int side = std::min(width(), height());
 
     thresholdManager();
 
@@ -317,8 +317,8 @@ void Meter::drawTicks(NVGcontext *ctx)
 void Meter::drawScale(NVGcontext *ctx)
 {
   nvgFillColor(ctx, m_foreground);
-  double sina,cosa;
-  int r = std::min(width(), height());
+  //double sina,cosa;
+  //int r = std::min(width(), height());
   Vector2i center = mPos + mSize / 2;
 
   double angleStep = (m_endAngle - m_startAngle) / m_steps;
@@ -492,14 +492,14 @@ void Meter::drawLabel(NVGcontext *ctx)
   nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos + 0.3 * height(), m_label.c_str(), nullptr);
 }
 
-void Meter::drawWarningWindow(NVGcontext *ctx)
+void Meter::drawWarningWindow(NVGcontext *)
 {
    if (enableWarningWindow())
    {
    }
 }
 
-void Meter::drawValidWindow(NVGcontext *ctx)
+void Meter::drawValidWindow(NVGcontext *)
 {
    if (enableValidWindow())
    {

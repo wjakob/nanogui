@@ -10,7 +10,7 @@ public:
   RTTI_CLASS_UID("LBIT")
   RTTI_DECLARE_INFO(ListboxItem)
 
-  ListboxItem(Widget* parent, const std::string& str, bool inlist = true);
+  ListboxItem(Widget* parent, const std::string& str);
   void performLayout(NVGcontext *ctx) override;
 
   void draw(NVGcontext *ctx) override;
