@@ -85,7 +85,7 @@ bool ScrollBar::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
       return true;
     }
   }
- 
+
   return Widget::mouseDragEvent(p, rel, button, modifiers);
 }
 

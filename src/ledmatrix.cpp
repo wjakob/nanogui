@@ -52,19 +52,19 @@ void LedMatrix::drawLEDs(NVGcontext* ctx)
   float side = std::min(wside, hside);
   float x = mPos.x() + side/2, y = mPos.y() + side/2;
 
+  nvgBeginPath(ctx);
   for (int row=0; row < mRowCount; ++row)
   {
       for (int col=0; col < mColumnCount; ++col)
       {
-          nvgBeginPath(ctx);
           nvgFillColor(ctx, colorAt(row, col));
           nvgEllipse(ctx, x, y, side/2, side/2);
-          nvgFill(ctx);
           x += side;
       }
       y += side;
       x = mPos.x() + side/2;
   }
+  nvgFill(ctx);
 }
 
 LedMatrix::LedMatrix(Widget* parent)

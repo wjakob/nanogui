@@ -230,8 +230,8 @@ public:
     a() = _a;
   }
 
-  Color& operator/=(float v) { 
-    Color out = *this; 
+  Color& operator/=(float v) {
+    Color out = *this;
     for (auto& a : out.rgba) a /= v;
     return out;
   }
