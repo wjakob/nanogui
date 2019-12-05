@@ -10,6 +10,7 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <nanogui/screen.h>
 #include <nanogui/popup.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
@@ -37,7 +38,12 @@ void Popup::performLayout(NVGcontext *ctx) {
 void Popup::refreshRelativePlacement() {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
-    mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+    pPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+
+    const Screen* screen = this->screen();
+    assert(screen);
+    mPos = pPos.cwiseMax(Vector2i::Zero());
+    mPos = mPos.cwiseMin(screen->size() - mSize);
 }
 
 void Popup::draw(NVGcontext* ctx) {
@@ -67,7 +73,7 @@ void Popup::draw(NVGcontext* ctx) {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
 
-    Vector2i base = mPos + Vector2i(0, mAnchorHeight);
+    Vector2i base = pPos + Vector2i(0, mAnchorHeight);
     int sign = -1;
     if (mSide == Side::Left) {
         base.x() += mSize.x();
