@@ -209,8 +209,6 @@ protected:
     std::vector<Button *> mButtonGroup;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(ButtonCallback, setCallback)
     PROPSETTER(Caption, setCaption)
     PROPSETTER(TooltipText, setTooltip)

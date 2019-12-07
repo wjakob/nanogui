@@ -174,9 +174,6 @@ private:
   bool mExpanded;
   NodeList mChildrenIds;
   std::string mActiveFont;
-
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

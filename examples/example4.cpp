@@ -177,11 +177,10 @@ private:
 };
 #endif
 
-class ExampleApplication : public nanogui::Screen {
+using namespace nanogui;
+class ExampleApplication : public Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", false) {
-        using namespace nanogui;
-
+    ExampleApplication() : Screen(Vector2i(800, 600), "NanoGUI Test", false) {
 #ifdef NANOGUI_GLFW_BACKEND
         Window *window = new Window(this, "GLCanvas Demo");
 #else

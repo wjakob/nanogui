@@ -84,9 +84,6 @@ protected:
 
     /// Whether to draw the widget border or not.
     bool mDrawBorder;
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

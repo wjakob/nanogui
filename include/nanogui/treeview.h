@@ -91,8 +91,6 @@ private:
     bool          mNeedUpdateItems;
     float         mScrollBarVscale = 1.f;
     float         mScrollBarHscale = 1.f;
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -788,7 +788,7 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
         // top left
         Color bg(180,0, 0, 255);
         Color select(180, 255, 0, 255);
-        bool avoidedElm = nonEditableElms.count((intptr_t)mSelectedElement);
+        bool avoidedElm = nonEditableElms.count((intptr_t)mSelectedElement)>0;
         if (_currentMode == EditMode::Move || avoidedElm)
           bg = select = Color(64, 64);
 
@@ -825,7 +825,7 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
       mElementUnderMouse != mSelectedElement &&
       mElementUnderMouse != parent() )
   {
-    bool underMouseNotEditable = nonEditableElms.count((intptr_t)mElementUnderMouse);
+    bool underMouseNotEditable = nonEditableElms.count((intptr_t)mElementUnderMouse)>0;
     auto color = underMouseNotEditable ? Color(0, 0, 64, 255) : Color(100,0,0,255);
 
     Vector2i umoffset = getOffsetToChild(mElementUnderMouse, this);
@@ -835,7 +835,7 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
   if (!mSelectedElement)
     return;
 
-  bool avoidedElm = nonEditableElms.count((intptr_t)mSelectedElement);
+  bool avoidedElm = nonEditableElms.count((intptr_t)mSelectedElement)>0;
   if (_currentMode == EditMode::Select)
   {
     auto color = avoidedElm ? Color(0, 0, 64, 255) : Color(100, 0, 0, 255);

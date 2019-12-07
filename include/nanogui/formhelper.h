@@ -308,7 +308,6 @@ protected:
     int mVariableSpacing = 5;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_BEGIN(detail)
@@ -329,9 +328,6 @@ public:
 
     /// Returns the value of \ref nanogui::CheckBox::checked.
     bool value() const { return checked(); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -358,9 +354,6 @@ public:
 
     /// Pass-through function for \ref nanogui::Widget::setEnabled.
     void setEditable(bool e) { setEnabled(e); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -373,9 +366,6 @@ template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : 
 public:
     /// Creates a new FormWidget with underlying type IntBox.
     FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -388,9 +378,6 @@ template <typename T> class FormWidget<T, typename std::is_floating_point<T>::ty
 public:
     /// Creates a new FormWidget with underlying type FloatBox.
     FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -405,9 +392,6 @@ public:
     void setCallback(const std::function<void(const std::string&)> &cb) {
         TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
     }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -426,9 +410,6 @@ public:
 
     /// Returns the value of \ref nanogui::ColorPicker::color.
     Color value() const { return color(); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(detail)

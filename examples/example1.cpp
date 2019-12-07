@@ -202,9 +202,10 @@ void createBasicWidgets(Screen* parent)
     mImagesData.emplace_back(data, fullpath);
   }
 
-  auto& w = parent->window("Basic widgets");
-  w.setPosition(Vector2i(200, 15));
-  w.withLayout<GroupLayout>();
+  auto& w = parent->window(Caption{ "Basic widgets" },
+                           Position{ 200, 15 },
+                           WidgetId{ "#basic_widgets_wnd"},
+                           WidgetLayout{ new GroupLayout() });
 
   w.label("Message dialog", "sans-bold");
   auto& tools = w.widget();
@@ -298,8 +299,8 @@ void createBasicWidgets(Screen* parent)
                  }});
 
   w.label("Combo box", "sans-bold");
-  w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" });
-  w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" });
+  w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"});
+  w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" });
   w.label("Check box", "sans-bold");
   auto& cb = w.checkbox("Flag 1", [](bool state) { cout << "Check box 1 state: " << state << endl; });
   cb.setChecked(true);
@@ -670,7 +671,7 @@ void toggleTreeView(Screen* screen, bool show)
                                MinimumSize{ 400, 400 },
                                WidgetId{ "#tree_view_wnd" });
 
-    auto& view = wnd.treeview(RelativeSize{ 0.5, 0 });
+    auto& view = wnd.treeview(RelativeSize{ 0.5, 0 }, WidgetId{"#treeview"});
     auto n1 = view.rootNode()->addNode("Node1");
     auto n1_c1 = n1->addNode("Node1_C1");
     n1_c1->addNode("NodeC1_c1");
@@ -1013,20 +1014,20 @@ public:
         using namespace nanogui;
     }
 
-    bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override {
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
-        if (down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
-            auto menu = new nanogui::ContextMenu(this, "", true);
-            menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
+        if (down && isMouseButtonRight(button) && findWidget(p)==this) {
+            auto menu = new ContextMenu(this, "", true);
+            menu->addItem("Item 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
 
             auto submenu = menu->addSubMenu("Submenu");
-            submenu->addItem("Subitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
+            submenu->addItem("Subitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
             auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
-            submenu->addItem("Subitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
+            submenu->addItem("Subitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
 
-            subsubmenu->addItem("Subsubitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
-            subsubmenu->addItem("Subsubitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
+            subsubmenu->addItem("Subsubitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
+            subsubmenu->addItem("Subsubitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
 
             menu->activate(p-mPos);
             performLayout();

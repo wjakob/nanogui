@@ -293,31 +293,24 @@ template <typename T> struct serialization_helper<std::set<T>> {
     }
 };
 
-template <typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
-struct serialization_helper<Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>> {
-    typedef Eigen::Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols> Matrix;
+template <typename Scalar>
+struct serialization_helper<Vector2<Scalar>> {
+    typedef Vector2<Scalar> Vector2;
 
     static std::string type_id() {
-        return "M" + serialization_helper<Scalar>::type_id();
+        return "V" + serialization_helper<Scalar>::type_id();
     }
 
-    static void write(Serializer &s, const Matrix *value, size_t count) {
+    static void write(Serializer &s, const Vector2 *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
-            uint32_t rows = value->rows(), cols = value->cols();
-            s.write(&rows, sizeof(uint32_t));
-            s.write(&cols, sizeof(uint32_t));
-            serialization_helper<Scalar>::write(s, value->data(), rows*cols);
+            serialization_helper<Scalar>::write(s, value->data(), 2);
             value++;
         }
     }
 
-    static void read(Serializer &s, Matrix *value, size_t count) {
+    static void read(Serializer &s, Vector2 *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
-            uint32_t rows = 0, cols = 0;
-            s.read(&rows, sizeof(uint32_t));
-            s.read(&cols, sizeof(uint32_t));
-            value->resize(rows, cols);
-            serialization_helper<Scalar>::read(s, value->data(), rows*cols);
+            serialization_helper<Scalar>::read(s, value->data(), 2);
             value++;
         }
     }
@@ -337,31 +330,6 @@ template <> struct serialization_helper<nanogui::Color> {
       s.read((void*)value->data(), sizeof(float) * 4);
     }
   }
-};
-
-
-template <typename Scalar, int Options>
-struct serialization_helper<Eigen::Quaternion<Scalar, Options>>
-    : public serialization_helper<Eigen::Matrix<Scalar, 4, 1>> {
-    typedef Eigen::Quaternion<Scalar, Options> Quat;
-
-    static std::string type_id() {
-        return "Q" + serialization_helper<Scalar>::type_id();
-    }
-
-    static void write(Serializer &s, const Quat *value, size_t count) {
-        for (size_t i = 0; i<count; ++i) {
-            serialization_helper<Scalar>::write(s, value->coeffs().data(), 4);
-            value++;
-        }
-    }
-
-    static void read(Serializer &s, Quat *value, size_t count) {
-        for (size_t i = 0; i<count; ++i) {
-            serialization_helper<Scalar>::read(s, value->coeffs().data(), 4);
-            value++;
-        }
-    }
 };
 
 template <>

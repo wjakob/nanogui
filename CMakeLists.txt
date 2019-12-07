@@ -155,8 +155,6 @@ if (MSVC)
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 
-    # Disable Eigen vectorization for Windows 32 bit builds (issues with unaligned access segfaults)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNANOGUI_EIGEN_DONT_ALIGN")
   endif()
 endif()
 
@@ -276,11 +274,6 @@ elseif (NANOGUI_DX11_BACKEND)
   add_definitions(-DNANOVG_D3D12)  
 endif()
 
-if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
-  set(NANOGUI_EIGEN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen")
-  list(APPEND NANOGUI_EXTRA_INCS "${NANOGUI_EIGEN_INCLUDE_DIR}")
-endif()
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "BSD")
   include_directories(/usr/local/include)
   link_directories(/usr/local/lib)
@@ -330,7 +323,7 @@ elseif (NANOGUI_DX12_BACKEND)
   list(APPEND NANOGUI_EXTRA_LIBS dxgi)
 endif()
 
-include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 if (NANOGUI_GLFW_BACKEND OR NANOGUI_VULKAN_BACKEND)
   include_directories(ext/glfw/include)
@@ -642,7 +635,6 @@ if (NANOGUI_BUILD_PYTHON)
     python/main.cpp
     python/constants_ui.cpp
     python/constants_entypo.cpp
-    python/eigen.cpp
     python/widget.cpp
     python/layout.cpp
     python/basics.cpp

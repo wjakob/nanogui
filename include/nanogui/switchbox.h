@@ -69,9 +69,6 @@ protected:
     float path = 0.f;
 
     Color mBackgroundColor;
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

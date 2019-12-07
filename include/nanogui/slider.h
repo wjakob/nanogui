@@ -65,8 +65,6 @@ protected:
     Color mHighlightColor;
     Color mValueColor;
     bool mShowValueWithColor = true;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -223,8 +223,6 @@ protected:
     bool mFullscreen;
     std::vector<Widget*> widgetsNeedUpdate;
     std::function<void(Vector2i)> mResizeCallback;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

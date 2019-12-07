@@ -451,7 +451,7 @@ void TreeView::draw(NVGcontext* ctx)
       auto baseNode = node->baseNode();
       if (baseNode != mRoot )
       {
-        Vector2i prevCenter = mPos + baseNode->position();
+        Vector2i prevCenter = mPos + baseNode->anchorPosition();
         prevCenter += Vector2i( rsize.x() / 2, baseNode->height());
 
         int nodeh = baseNode->height();

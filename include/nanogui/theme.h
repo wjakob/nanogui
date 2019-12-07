@@ -293,25 +293,18 @@ protected:
     /// Default destructor does nothing; allows for inheritance.
     virtual ~Theme() { }
     Theme() {}
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 class NANOGUI_EXPORT DefaultTheme : public Theme
 {
 public:
   DefaultTheme(NVGcontext* ctx);
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 class NANOGUI_EXPORT WhiteTheme : public Theme
 {
 public:
   WhiteTheme(NVGcontext* ctx);
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

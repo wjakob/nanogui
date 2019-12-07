@@ -39,7 +39,6 @@ namespace {
 
 extern void register_constants_ui(py::module &m);
 extern void register_constants_entypo(py::module &m);
-extern void register_eigen(py::module &m);
 extern void register_widget(py::module &m);
 extern void register_layout(py::module &m);
 extern void register_basics(py::module &m);
@@ -237,7 +236,6 @@ PYBIND11_MODULE(nanogui, m) {
 
     register_constants_ui(m);
     register_constants_entypo(m);
-    register_eigen(m);
     register_widget(m);
     register_layout(m);
     register_basics(m);

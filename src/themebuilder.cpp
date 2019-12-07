@@ -239,7 +239,7 @@ public:
     picker->setMarked(!picker->marked);
   }
 
-  bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override
+  bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override
   {
     if (down && isMouseButtonLeft(button))
     {
@@ -261,8 +261,6 @@ public:
 
     return ColorPicker::mouseButtonEvent(p, button, down, modifiers);
   }
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 RTTI_IMPLEMENT_INFO(ExplicitColorPicker, ColorPicker)

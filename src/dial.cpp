@@ -13,9 +13,6 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/serializer/core.h>
-#include <Eigen/Geometry>
-
-using Eigen::Rotation2Df;
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -117,9 +114,9 @@ void Dial::draw(NVGcontext* ctx) {
     Vector2f notchPos(0.0f, 0.8f*(kr - 1.5f*kshadow));
     float value = (mValue - mRange.first)/(mRange.second - mRange.first);
     float theta = 2.0f*NVG_PI*(0.1f + 0.8f*value);
-    Rotation2Df t(theta);
-    notchPos = t*notchPos;
-    notchPos += dialPos;
+
+    notchPos.rotateBy(nvgRadToDeg(theta), Vector2f::Zero());
+    notchPos += dialPos + mPos.cast<float>();
 
     nvgBeginPath(ctx);
     nvgCircle(ctx, notchPos.x(), notchPos.y(), 0.15f*kr);

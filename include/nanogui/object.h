@@ -14,6 +14,7 @@
 
 #include <nanogui/common.h>
 #include <atomic>
+#include <assert.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -241,6 +242,7 @@ private:
 #define DECLSETTER(name,type) struct NANOGUI_EXPORT name { type value; };
 #define DECLSETTERDEF(name,type,def) struct NANOGUI_EXPORT name { type value = def; };
 #define DECLSETTERARGS(name,type) struct NANOGUI_EXPORT name { type value; template<typename... Args> name(const Args&... args) { value = type(args...); }; };
+#define DECLSETTERILIST(name,type) struct NANOGUI_EXPORT name { type value; template<typename... Args> name(const Args&... args) { value = type{args...}; }; };
 #define DECLSETTERARGSNEW(name,type) struct NANOGUI_EXPORT name { type* value; template<typename... Args> name(const Args&... args) { value = new type(args...); }; };
 
 NAMESPACE_END(nanogui)

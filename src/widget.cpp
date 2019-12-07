@@ -18,6 +18,9 @@
 #include <nanogui/serializer/core.h>
 #include <nanogui/serializer/json.h>
 
+#include <Windows.h>
+#include <debugapi.h>
+
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Widget, Object)
@@ -82,7 +85,7 @@ void Widget::performLayout(NVGcontext *ctx)
     {
       Vector2f relk = c->relsize();
       Vector2i pref = c->preferredSize(ctx),
-               rel = { relk.x() * width(), relk.y() * height() },
+               rel = Vector2i(relk.x() * width(), relk.y() * height()),
                fix = c->fixedSize();
 
       pref = { rel.x() ? rel.x() : pref.x(),
@@ -127,11 +130,19 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
         if (!child->visible())
             continue;
         bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
+        bool found = contained;
         if (contained != prevContained)
-            child->mouseEnterEvent(p, contained);
+        {
+          child->mouseEnterEvent(p, contained);
+          found = true;
+        }
         if ((contained || prevContained) &&
-            child->mouseMotionEvent(p - mPos, rel, button, modifiers))
-            return true;
+          child->mouseMotionEvent(p - mPos, rel, button, modifiers))
+        {
+          found |= true;
+        }
+        if (found)
+          return true;
     }
     return false;
 }

@@ -68,7 +68,7 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
     if (mUnitsImage > 0) {
         int w, h;
         nvgImageSize(ctx, mUnitsImage, &w, &h);
-        float uh = size(1) * 0.4f;
+        float uh = size.y() * 0.4f;
         uw = w * uh / h;
     } else if (!mUnits.empty()) {
         uw = nvgTextBounds(ctx, 0, 0, mUnits.c_str(), nullptr, nullptr);
@@ -79,7 +79,7 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
     }
 
     float ts = nvgTextBounds(ctx, 0, 0, mValue.c_str(), nullptr, nullptr);
-    size(0) = size(1) + ts + uw + sw;
+    size.x() = size.y() + ts + uw + sw;
     if (mFixedSize.x() > 0)
       size.x() = mFixedSize.x();
     if (mFixedSize.y() > 0)

@@ -149,8 +149,6 @@ protected:
     float mTextOffset;
     double mLastClick;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(IsSpinnable,setSpinnable)
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)
@@ -287,8 +285,6 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(InitialValue,setValue)
     PROPSETTER(MinValue,setMinValue)
     PROPSETTER(MaxValue,setMaxValue)
@@ -410,8 +406,6 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(InitialValue, setValue)
     PROPSETTER(MinValue, setMinValue)
     PROPSETTER(MaxValue, setMaxValue)

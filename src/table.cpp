@@ -158,8 +158,8 @@ void Table::addColumn(const std::string& caption, uint32_t columnIndex)
   columnHeader->setCaption( caption );
   columnHeader->setPosition(0, 0);
   float tw = nvgTextBounds(screen()->nvgContext(), 0, 0, caption.c_str(), nullptr, nullptr);
-  columnHeader->setSize({ tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height() });
-  columnHeader->setFixedSize({ tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height() });
+  columnHeader->setSize(tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height());
+  columnHeader->setFixedSize(tw + (_cellWidthPadding * 2) + ARROW_PAD, _header->height());
 
   columnHeader->orderingMode = ColumnOrder::coNone;
 

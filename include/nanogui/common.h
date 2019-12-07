@@ -25,9 +25,9 @@
 #  pragma warning(disable : 4127) // warning C4127: conditional expression is constant
 #endif
 
-#include <Eigen/Core>
 #include <stdint.h>
 #include <array>
+#include <functional>
 #include <vector>
 
 /* Set to 1 to draw boxes around widgets */
@@ -132,35 +132,7 @@ enum class Cursor {
     CursorCount ///< Not a cursor --- should always be last: enables a loop over the cursor types.
 };
 
-/* Import some common Eigen types */
-/// Type alias to allow ``Eigen::Vector2f`` to be used as ``nanogui::Vector2f``.
-using Vector2f = Eigen::Vector2f;
-/// Type alias to allow ``Eigen::Vector3f`` to be used as ``nanogui::Vector3f``.
-using Vector3f = Eigen::Vector3f;
-/// Type alias to allow ``Eigen::Vector4f`` to be used as ``nanogui::Vector4f``.
-using Vector4f = Eigen::Vector4f;
-/// Type alias to allow ``Eigen::Vector2i`` to be used as ``nanogui::Vector2i``.
-using Vector2i = Eigen::Vector2i;
-/// Type alias to allow ``Eigen::Vector3i`` to be used as ``nanogui::Vector3i``.
-using Vector3i = Eigen::Vector3i;
-/// Type alias to allow ``Eigen::Vector4i`` to be used as ``nanogui::Vector4i``.
-using Vector4i = Eigen::Vector4i;
-/// Type alias to allow ``Eigen::Matrix3f`` to be used as ``nanogui::Matrix3f``.
-using Matrix3f = Eigen::Matrix3f;
-/// Type alias to allow ``Eigen::Matrix4f`` to be used as ``nanogui::Matrix4f``.
-using Matrix4f = Eigen::Matrix4f;
-/// Type alias to allow ``Eigen::VectorXf`` to be used as ``nanogui::VectorXf``.
-using VectorXf = Eigen::VectorXf;
-/// Type alias to allow ``Eigen::MatrixXf`` to be used as ``nanogui::MatrixXf``.
-using MatrixXf = Eigen::MatrixXf;
-
-/**
- * Convenience typedef for things like index buffers.  You would use it the same
- * as ``Eigen::MatrixXf``, only it is storing ``uint32_t`` instead of ``float``.
- */
-using MatrixXu = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;
-
-/**
+/*
  * \class Color common.h nanogui/common.h
  *
  * \brief Stores an RGBA floating point color value.
@@ -170,25 +142,386 @@ using MatrixXu = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;
  * same way as ``Eigen::Vector4f``, and the following values are identical:
  *
  * \rst
- * +---------+-------------+-----------------------+-------------+
- * | Channel | Array Index | Eigen::Vector4f Value | Color Value |
- * +=========+=============+=======================+=============+
- * | Red     | ``0``       | x()                   | r()         |
- * +---------+-------------+-----------------------+-------------+
- * | Green   | ``1``       | y()                   | g()         |
- * +---------+-------------+-----------------------+-------------+
- * | Blue    | ``2``       | z()                   | b()         |
- * +---------+-------------+-----------------------+-------------+
- * | Alpha   | ``3``       | w()                   | w()         |
- * +---------+-------------+-----------------------+-------------+
+ * +---------+-------------+-------------+
+ * | Channel | Array Index | Color Value |
+ * +=========+=============+=============+
+ * | Red     | ``0``       | r()         |
+ * +---------+-------------+-------------+
+ * | Green   | ``1``       | g()         |
+ * +---------+-------------+-------------+
+ * | Blue    | ``2``       | b()         |
+ * +---------+-------------+-------------+
+ * | Alpha   | ``3``       | w()         |
+ * +---------+-------------+-------------+
  *
- * .. note::
- *    The method for the alpha component is **always** ``w()``.
- * \endrst
- *
- * You can and should still use the various convenience methods such as ``any()``,
- * ``all()``, ``head<index>()``, etc provided by Eigen.
  */
+
+namespace math
+{
+    //! Constant for PI.
+    const double PI64       = 3.1415926535897932384626433832795028841971693993751;
+
+    const float ROUNDING_ERROR_f32 = 0.000001f;
+    //! 64bit constant for converting from degrees to radians (formally known as GRAD_PI2)
+    const double DEGTORAD64 = PI64 / 180.0;
+    const double ROUNDING_ERROR_f64 = 0.00000001;
+    const double RADTODEG64 = 180.0 / PI64;
+
+    template<class T>
+    inline bool isEqual(const T a, const T b, const T tolerance = ROUNDING_ERROR_f32)
+    { return (a + tolerance >= b) && (a - tolerance <= b); }
+
+    template<class T>
+    inline bool lessOrEqual(const T a, const T b) { return (a < b) || isEqual(a, b); }
+
+    template<class T>
+    inline bool greatOrEqual(const T a, const T b) { return (a > b) || isEqual(a, b); }
+};
+
+template <class T>
+class Vector2
+{
+public:
+  T& x() { return _d[0]; }
+  T& y() { return _d[1]; }
+
+  const T& x() const { return _d[0]; }
+  const T& y() const { return _d[1]; }
+
+  //! Default constructor (null vector)
+  Vector2() : Vector2(0, 0) {}
+  //! Constructor with two different values
+  Vector2(T nx, T ny) { x() = nx; y() = ny; }
+  //! Constructor with the same value for both members
+  explicit Vector2(T n) : Vector2(n, n) {}
+  //! Copy constructor
+  Vector2(const Vector2<T>& o) { _d[0] = o._d[0]; _d[1] = o._d[1]; }
+
+  static Vector2 Constant(T v) { return Vector2(v, v); }
+  static Vector2 Zero() { return Vector2(0, 0); }
+
+  // operators
+  Vector2 operator-() const { return Vector2(-x(), -y()); }
+  Vector2& operator=(const Vector2& o) { x() = o.x(); y() = o.y(); return *this; }
+
+  Vector2 operator+(const Vector2& o) const { return Vector2(x() + o.x(), y() + o.y()); }
+  Vector2& operator+=(const Vector2& o) { x() += o.x(); y() += o.y(); return *this; }
+  Vector2 operator+(const T v) const { return Vector2(x() + v, y() + v); }
+  Vector2& operator+=(const T v) { x() += v; y() += v; return *this; }
+
+  Vector2 operator-(const Vector2& o) const { return Vector2(x() - o.x(), y() - o.y()); }
+  Vector2& operator-=(const Vector2& o) { x() -= o.x(); y() -= o.y(); return *this; }
+  Vector2 operator-(const T v) const { return Vector2<T>(x() - v, y() - v); }
+  Vector2& operator-=(const T v) { x() -= v; y() -= v; return *this; }
+
+  Vector2 operator*(const Vector2& o) const { return Vector2(x() * o.x(), y() * o.y()); }
+  Vector2& operator*=(const Vector2& o) { x() *= o.x(); y() *= o.y(); return *this; }
+  Vector2 operator*(const T v) const { return Vector2(x() * v, y() * v); }
+  Vector2& operator*=(const T v) { x() *= v; y() *= v; return *this; }
+
+  Vector2 operator/(const Vector2& o) const { return Vector2(x() / o.x(), y() / o.y()); }
+  Vector2& operator/=(const Vector2& o) { x() /= o.x(); y() /= o.y(); return *this; }
+  Vector2 operator/(const T v) const { return Vector2(x() / v, y() / v); }
+  Vector2& operator/=(const T v) { x() /= v; y() /= v; return *this; }
+
+  //! sort in order X, Y. Equality with rounding tolerance.
+  bool operator<=(const Vector2& o) const
+  { return (math::lessOrEqual(x(), o.x()) && math::lessOrEqual(y(), o.y())); }
+
+  bool positive() const { return x() >= 0 && y() >= 0; }
+
+  bool lessOrEq(const Vector2& o) const
+  { return (math::lessOrEqual(x(), o.x()) && math::lessOrEqual(y(), o.y())); }
+
+  //! sort in order X, Y. Equality with rounding tolerance.
+  bool operator>=(const Vector2&o) const
+  { return (math::greatOrEqual(x(), o.x()) && math::greatOrEqual(y(), o.y())); }
+
+  //! sort in order X, Y. Difference must be above rounding tolerance.
+  bool operator<(const Vector2&o) const
+  { return (x() < o.x()) && (y() < o.y()); }
+
+  //! sort in order X, Y. Difference must be above rounding tolerance.
+  bool operator>(const Vector2&o) const
+  { return (x() > o.x()) && (y() > o.y()); }
+
+  bool operator==(const Vector2& o) const { return isEqual(o, math::ROUNDING_ERROR_f32); }
+  bool operator!=(const Vector2& o) const { return !isEqual(o, math::ROUNDING_ERROR_f32); }
+
+  Vector2 cquotient(const Vector2& o) const { return Vector2(x() / (float)o.x(), y() / (float)o.y()); }
+
+  T minCoeff() const { return x() > y() ? y() : x(); }
+
+  // functions
+
+  //! Checks if this vector equals the o one.
+  /** Takes floating point rounding errors into account.
+  \param o Vector to compare with.
+  \return True if the two vector are (almost) equal, else false. */
+  bool isEqual(const Vector2& o, float tolerance) const
+  { return math::isEqual<T>(x(), o.x(), tolerance) && math::isEqual<T>(y(), o.y(), tolerance); }
+
+  Vector2& set(T nx, T ny) { x() = nx; y() = ny; return *this; }
+  Vector2& set(const Vector2& p) { x() = p.x(); y() = p.y(); return *this; }
+
+  //! Gets the length of the vector.
+  /** \return The length of the vector. */
+  float getLength() const { return sqrt(x()*x() + y()*y()); }
+
+  //! Get the squared length of this vector
+  /** This is useful because it is much faster than getLength().
+  \return The squared length of the vector. */
+  T getLengthSQ() const { return x()*x() + y()*y(); }
+
+  //! Get the dot product of this vector with ano.
+  /** \param o o vector to take dot product with.
+  \return The dot product of the two vectors. */
+  T dotProduct(const Vector2& o) const { return x()*o.x() + y()*o.y();  }
+
+  template< class A > Vector2<A> As() { return Vector2<A>((A)x(), (A)y()); }
+  template< class A > Vector2<A> As() const { return Vector2<A>((A)x(), (A)y()); }
+
+  //! Gets distance from ano point.
+  /** Here, the vector is interpreted as a point in 2-dimensional space.
+  \param o o vector to measure from.
+  \return Distance from o point. */
+  float getDistanceFrom(const Vector2& o) const
+  { return Vector2(x() - o.x(), y() - o.y()).getLength();}
+
+  //! Returns squared distance from ano point.
+  /** Here, the vector is interpreted as a point in 2-dimensional space.
+  \param o o vector to measure from.
+  \return Squared distance from o point. */
+  T getDistanceFromSQ(const Vector2<T>& o) const
+  { return Vector2(x() - o.x(), y() - o.y()).getLengthSQ(); }
+
+  //! rotates the point anticlockwise around a center by an amount of degrees.
+  /** \param degrees Amount of degrees to rotate by, anticlockwise.
+  \param center Rotation center.
+  \return This vector after transformation. */
+  Vector2<T>& rotateBy(float degrees, const Vector2<T>& center = Vector2<T>())
+  {
+    degrees = nvgDegToRad(degrees);
+    const float cs = cos(degrees);
+    const float sn = sin(degrees);
+
+    x() -= center.x();
+    y() -= center.y();
+
+    set((T)(x()*cs - y()*sn), (T)(x()*sn + y()*cs));
+
+    x() += center.x();
+    y() += center.y();
+    return *this;
+  }
+
+  //! Normalize the vector.
+  /** The null vector is left untouched.
+  \return Reference to this vector, after normalization. */
+  Vector2& normalize()
+  {
+    float length = (float)(x()*x() + y()*y());
+
+    if (math::isEqual(length, 0.f))
+      return *this;
+    length = 1.f / sqrt(length);
+    x() = (T)(x() * length);
+    y() = (T)(y() * length);
+    return *this;
+  }
+
+  //! Calculates the angle of this vector in degrees in the trigonometric sense.
+  /** 0 is to the right (3 o'clock), values increase counter-clockwise.
+  This method has been suggested by Pr3t3nd3r.
+  \return Returns a value between 0 and 360. */
+  float getAngleTrig() const
+  {
+    if (y() == 0)
+      return x() < 0 ? 180 : 0;
+    else if (x() == 0)
+      return y() < 0 ? 270 : 90;
+
+    if (y() > 0)
+    {
+      if (x() > 0)
+        return atanf((float)y() / (float)x()) * math::RADTODEG64;
+      else
+        return 180.0f - atanf((float)y() / -(float)x()) * math::RADTODEG64;
+    }
+    else
+    {
+      if (x > 0)
+        return 360.0f - atanf(-(float)y() / (float)x()) * math::RADTODEG64;
+      else
+        return 180.0f + atanf(-(float)y() / -(float)x()) * math::RADTODEG64;
+    }
+  }
+
+  //! Calculates the angle of this vector in degrees in the counter trigonometric sense.
+  /** 0 is to the right (3 o'clock), values increase clockwise.
+  \return Returns a value between 0 and 360. */
+  inline float getAngle() const
+  {
+    if (y() == 0) // corrected thanks to a suggestion by Jox
+            return x() < 0 ? 180 : 0;
+    else if (x() == 0)
+            return y() < 0 ? 90 : 270;
+
+    // don't use getLength here to avoid precision loss with s32 vectors
+    float tmp = y() / sqrt((float)(x()*x() + y()*yv));
+    tmp = atanf( sqrt(1.f - tmp*tmp) / tmp) * math::RADTODEG64;
+
+    if (x()>0 && y()>0)
+      return tmp + 270;
+    else if (x()>0 && y()<0)
+      return tmp + 90;
+    else if (x()<0 && y()<0)
+      return 90 - tmp;
+    else if (x()<0 && y()>0)
+      return 270 - tmp;
+
+    return tmp;
+  }
+
+  //! Calculates the angle between this vector and ano one in degree.
+  /** \param b o vector to test with.
+  \return Returns a value between 0 and 90. */
+  inline float getAngleWith(const Vector2& b) const
+  {
+    double tmp = x()*b.x() + y()*b.y();
+
+    if (tmp == 0.0)
+      return 90.0f;
+
+    tmp = tmp / sqrtf((float)((x()*x() + y()*y()) * (b.x()*b.x() + b.y()*b.y())));
+    if (tmp < 0.0)
+      tmp = -tmp;
+
+    return atanf(sqrtf(1 - tmp*tmp) / tmp) * math::RADTODEG64;
+  }
+
+  //! Returns if this vector interpreted as a point is on a line between two o points.
+  /** It is assumed that the point is on the line.
+  \param begin Beginning vector to compare between.
+  \param end Ending vector to compare between.
+  \return True if this vector is between begin and end, false if not. */
+  bool isBetweenPoints(const Vector2& begin, const Vector2& end) const
+  {
+    if (begin.x != end.x)
+    {
+      return ((begin.x() <= x() && x() <= end.x()) ||
+              (begin.x() >= x() && x() >= end.x()));
+    }
+    else
+    {
+      return ((begin.y() <= y() && y() <= end.y()) ||
+              (begin.y() >= y() && y() >= end.y()));
+    }
+  }
+
+  T& operator[](int index) { return _d[index]; }
+  const T& operator[](int index) const { return _d[index]; }
+
+  //! Creates an interpolated vector between this vector and ano vector.
+  /** \param o The o vector to interpolate with.
+  \param d Interpolation value between 0.0f (all the o vector) and 1.0f (all this vector).
+  Note that this is the opposite direction of interpolation to getInterpolated_quadratic()
+  \return An interpolated vector.  This vector is not modified. */
+  Vector2 getInterpolated(const Vector2& o, T d) const
+  {
+    float inv = 1.0f - (float)d;
+    return Vector2((T)(o.x()*inv + x()*d), (T)(o.y()*inv + y()*d));
+  }
+
+  //! Creates a quadratically interpolated vector between this and two o vectors.
+  /** \param v2 Second vector to interpolate with.
+  \param v3 Third vector to interpolate with (maximum at 1.0f)
+  \param d Interpolation value between 0.0f (all this vector) and 1.0f (all the 3rd vector).
+  Note that this is the opposite direction of interpolation to getInterpolated() and interpolate()
+  \return An interpolated vector. This vector is not modified. */
+  Vector2 getInterpolated_quadratic(const Vector2& v2, const Vector2& v3, const T d) const
+  {
+    // this*(1-d)*(1-d) + 2 * v2 * (1-d) + v3 * d * d;
+    const float inv = 1.0f - d;
+    const float mul0 = inv * inv;
+    const float mul1 = 2.0f * d * inv;
+    const float mul2 = d * d;
+
+    return Vector2 ( (T)(x() * mul0 + v2.x() * mul1 + v3.x() * mul2),
+                     (T)(y() * mul0 + v2.y() * mul1 + v3.y() * mul2));
+  }
+
+  Vector2 cwiseMax(T rx, T ry) const { return Vector2(std::max(x(), rx), std::max(y(), ry)); }
+  Vector2 cwiseMax(const Vector2& o) const { return Vector2(std::max(x(), o.x()), std::max(y(), o.y())); }
+  Vector2 cwiseMin(const Vector2& o) const { return Vector2(std::min(x(), o.x()), std::min(y(), o.y())); }
+
+  //! Sets this vector to the linearly interpolated vector between a and b.
+  /** \param a first vector to interpolate with, maximum at 1.0f
+  \param b second vector to interpolate with, maximum at 0.0f
+  \param d Interpolation value between 0.0f (all vector b) and 1.0f (all vector a)
+  Note that this is the opposite direction of interpolation to getInterpolated_quadratic()
+  */
+  Vector2& interpolate(const Vector2& a, const Vector2& b, const T d)
+  {
+    x = (T)((float)b.x() + ( ( a.x() - b.x() ) * d ));
+    y = (T)((float)b.y() + ( ( a.y() - b.y() ) * d ));
+    return *this;
+  }
+
+  template <class B>
+  inline Vector2<B> cast() const { return Vector2<B>(static_cast<B>(x()), static_cast<B>(y())); }
+
+  inline Vector2<float> tofloat() const { return cast<float>(); }
+  inline Vector2<int> toint() const { return cast<int>(); }
+
+  inline Vector2<float> floor() const { return Vector2<float>(std::floor(x()), std::floor(y())); }
+  inline Vector2<float> ceil() const { return Vector2<float>(std::ceil(x()), std::ceil(y())); }
+  inline T squaredNorm() const { return x() * x() + y() * y(); }
+
+  const T* data() const { return _d; }
+  T* data() { return _d; }
+
+  Vector2 unaryExpr(const std::function<T(T)>& f) { return Vector2(f(x()), f(y())); }
+  Vector2 cwiseQuotient(const Vector2& divisor) { return Vector2(x() / divisor.x(), y() / divisor.y()); }
+
+  T _d[2] = { 0 };
+};
+
+template <class T>
+class Vector4
+{
+public:
+  T& x() { return _d[0]; }
+  T& y() { return _d[1]; }
+  T& z() { return _d[2]; }
+  T& w() { return _d[3]; }
+
+  const T& x() const { return _d[0]; }
+  const T& y() const { return _d[1]; }
+  const T& z() const { return _d[2]; }
+  const T& w() const { return _d[3]; }
+
+  //! Default constructor (null vector)
+  Vector4() : Vector4(0) {}
+  //! Constructor with two different values
+  Vector4(T nx, T ny, T nz, T nw) { x() = nx; y() = ny; z() = nz; w() = nw; }
+  //! Constructor with the same value for both members
+  explicit Vector4(T n) : Vector4(n, n, n, n) {}
+  //! Copy constructor
+  Vector4(const Vector2<T>& o) { memcpy(_d, o._d, sizeof(float)*4); }
+
+  const T* data() const { return _d; }
+  T* data() { return _d; }
+
+  T _d[4] = { 0 };
+};
+
+using Vector2i = Vector2<int>;
+using Vector2f = Vector2<float>;
+using Vector4f = Vector4<float>;
+using Vector4i = Vector4<int>;
+using VectorXf = std::vector<float>;
+
 class Color
 {
 public:
@@ -224,16 +557,11 @@ public:
     a() = (v & 0xff) / 255.f;
   }
 
-  Color(const Color& rgb, float _a)
-  {
-    *this = rgb;
-    a() = _a;
-  }
+  Color(const Color& rgb, float _a) { *this = rgb; a() = _a; }
 
   Color& operator/=(float v) {
-    Color out = *this;
-    for (auto& a : out.rgba) a /= v;
-    return out;
+    for (auto& a : rgba) a /= v;
+    return *this;
   }
   /// Return a reference to the red channel
   float &r() { return rgba[0]; }
@@ -299,12 +627,6 @@ public:
 private:
   float rgba[4];
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Color& c)
-{
-  os << c.r() << '.' << c.g() << '.' << c.b() << '.' << c.a();
-  return os;
-}
 
 // skip the forward declarations for the docs
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -418,7 +740,7 @@ NANOGUI_EXPORT bool active();
  *     Set to ``true`` if you would like subsequent file dialogs to open
  *     at whatever folder they were in when they close this one.
  */
-extern NANOGUI_EXPORT std::string
+NANOGUI_EXPORT std::string
 file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
             bool save);
 
@@ -548,3 +870,12 @@ extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string
 extern NANOGUI_EXPORT float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
 
 NAMESPACE_END(nanogui)
+
+inline nanogui::Vector2i operator*(float v, const nanogui::Vector2i& t) { return (t.cast<float>() * v).cast<int>(); }
+inline nanogui::Vector2f operator*(float v, const nanogui::Vector2f& t) { return t * v; }
+
+inline std::ostream& operator<<(std::ostream& os, const nanogui::Color& c)
+{
+  os << c.r() << '.' << c.g() << '.' << c.b() << '.' << c.a();
+  return os;
+}

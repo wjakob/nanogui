@@ -2,6 +2,7 @@
 #include <nanogui/theme.h>
 #include <math.h>
 #include <nanovg.h>
+#include <string>
 
 NAMESPACE_BEGIN(nanogui)
 

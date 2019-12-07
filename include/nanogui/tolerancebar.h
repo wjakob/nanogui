@@ -67,9 +67,6 @@ private:
     bool inFigure(const Vector2i& pos) const;
 
     void updateValue(int value);
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -236,6 +236,7 @@ public:
      * in the parent widget.
      */
     void setFixedSize(const Vector2i &fixedSize) { mFixedSize = fixedSize; }
+    void setFixedSize(int w, int h) { setFixedSize(Vector2i(w, h)); }
 
     void setMinSize(const Vector2i &minSize) { mMinSize = minSize; }
     void setMinWidth(int ww) { mMinSize.x() = ww; }
@@ -391,8 +392,8 @@ public:
 
     /// Check if the widget contains a certain position
     bool contains(const Vector2i &p) const {
-        auto d = (p-mPos).array();
-        return (d >= 0).all() && (d < mSize.array()).all();
+        auto d = (p-mPos);
+        return (d >= Vector2i::Zero()) && (d < mSize);
     }
 
     virtual bool prefferContains(const Vector2i&) const { return false; }
@@ -600,8 +601,6 @@ protected:
      */
     float mIconExtraScale;
     Cursor mCursor;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

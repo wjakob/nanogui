@@ -87,8 +87,6 @@ protected:
     Vector2i mTextRealSize;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(Caption,setCaption)
     PROPSETTER(CaptionFont,setFont)
     PROPSETTER(FontSize,setFontSize)

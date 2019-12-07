@@ -39,9 +39,6 @@ public:
     template<typename... Args>
     ToolButton(Widget* parent, const Args&... args)
       : ToolButton(parent, -1, std::string("")) { set<ToolButton, Args...>(args...); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 class NANOGUI_EXPORT ToggleButton : public Button {
@@ -70,9 +67,6 @@ public:
 
 private:
   Color mActiveColor, mInactiveColor;
-
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

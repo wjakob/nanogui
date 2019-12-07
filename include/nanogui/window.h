@@ -116,8 +116,6 @@ protected:
     Vector2f mCollapseIconPos;
     Vector2f mCollapseIconSize;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(WindowMovable,setDraggable)
     PROPSETTER(Caption, setTitle)
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)

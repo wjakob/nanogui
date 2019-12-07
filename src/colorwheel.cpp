@@ -15,8 +15,6 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/serializer/core.h>
-#include <Eigen/QR>
-#include <Eigen/Geometry>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -28,7 +26,7 @@ ColorWheel::ColorWheel(Widget *parent, const Color& rgb)
 }
 
 Vector2i ColorWheel::preferredSize(NVGcontext *) const {
-    return { 100, 100. };
+    return { 100, 100 };
 }
 
 void ColorWheel::draw(NVGcontext *ctx) {

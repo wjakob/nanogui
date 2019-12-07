@@ -69,8 +69,8 @@ void Label::draw(NVGcontext *ctx) {
 
     nvgFillColor(ctx, color);
 
-    int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
-    int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
+    //int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
+    //int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
 
     int xpos = 0, ypos = 0;
     switch (mTextHAlign)

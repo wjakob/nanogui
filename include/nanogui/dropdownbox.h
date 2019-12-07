@@ -23,24 +23,32 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple dropdownbox box widget based on a popup button.
  */
-using DropdownBoxItems = std::vector<std::string>;
+DECLSETTERILIST(DropdownBoxItems, std::vector<std::string>)
+
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
     RTTI_CLASS_UID("DNBX")
     RTTI_DECLARE_INFO(DropdownBox)
 
+    using Items = std::vector<std::string>;
+    using ShortItems = std::vector<std::string>;
+
     /// Create an empty combo box
-    DropdownBox(Widget *parent);
+    explicit DropdownBox(Widget *parent);
 
     /// Create a new combo box with the given items
-    DropdownBox(Widget *parent, const DropdownBoxItems &items);
+    explicit DropdownBox(Widget *parent, const Items &items);
 
     /**
      * \brief Create a new dropdownbox with the given items, providing both short and
      * long descriptive labels for each item
      */
-    DropdownBox(Widget *parent, const DropdownBoxItems &items,
-             const DropdownBoxItems &itemsShort);
+    explicit DropdownBox(Widget *parent, const Items &items, const ShortItems &itemsShort);
+
+    using PopupButton::set;
+    template<typename... Args>
+    DropdownBox(Widget* parent, const Args&... args)
+      : DropdownBox(parent) { set<DropdownBox, Args...>(args...); }
 
     /// The callback to execute for this widget.
     std::function<void(int)> callback() const { return mCallback; }
@@ -57,16 +65,16 @@ public:
     void setSelectedIndex(int idx);
 
     /// Sets the items for this dropdownbox, providing both short and long descriptive lables for each item.
-    void setItems(const DropdownBoxItems &items, const DropdownBoxItems &itemsShort);
+    void setItems(const Items &items, const ShortItems &itemsShort);
 
     /// Sets the items for this dropdownbox.
-    void setItems(const DropdownBoxItems &items) { setItems(items, items); }
+    void setItems(const Items &items) { setItems(items, items); }
 
     /// The items associated with this dropdownbox.
-    const DropdownBoxItems &items() const { return mItems; }
+    const Items &items() const { return mItems; }
 
     /// The short descriptions associated with this dropdownbox.
-    const DropdownBoxItems &itemsShort() const { return mItemsShort; }
+    const ShortItems &itemsShort() const { return mItemsShort; }
 
     /// Handles mouse scrolling events for this dropdownbox.
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
@@ -82,10 +90,10 @@ public:
 
 protected:
     /// The items associated with this dropdownbox.
-    DropdownBoxItems mItems;
+    Items mItems;
 
     /// The short descriptions of items associated with this dropdownbox.
-    DropdownBoxItems mItemsShort;
+    ShortItems mItemsShort;
 
     /// The callback for this dropdownbox.
     std::function<void(int)> mCallback;
@@ -94,7 +102,7 @@ protected:
     int mSelectedIndex;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(DropdownBoxItems, setItems)
 };
 
 NAMESPACE_END(nanogui)

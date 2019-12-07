@@ -93,7 +93,7 @@ struct {
 
 class ExampleApplication : public Screen {
 public:
-    ExampleApplication() : Screen(Eigen::Vector2i(1920, 1080), "Editor")
+    ExampleApplication() : Screen(Vector2i(1920, 1080), "Editor")
     {
       auto& mmenu = createMainMenu();
 
@@ -295,7 +295,7 @@ public:
         using namespace nanogui;
     }
 
-    bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) override {
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
             return true;
         if (down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {

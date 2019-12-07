@@ -45,8 +45,6 @@ public:
 protected:
     float mValue;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PROPSETTER(FloatValue,setValue)
 };
 
@@ -68,9 +66,6 @@ private:
 
   Color mColorStart = Color(0, 0xff, 0, 0x80);
   Color mColorEnd = Color(0, 0xff, 0, 0xff);
-
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

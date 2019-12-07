@@ -452,12 +452,12 @@ void TabHeader::drawControls(NVGcontext* ctx) {
 }
 
 TabHeader::ClickLocation TabHeader::locateClick(const Vector2i& p) {
-    auto leftDistance = (p - mPos).array();
-    bool hitLeft = (leftDistance >= 0).all() && (leftDistance < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
+    Vector2i leftDistance = (p - mPos);
+    bool hitLeft = leftDistance.positive() && leftDistance < Vector2i(theme()->mTabControlWidth, mSize.y());
     if (hitLeft)
         return ClickLocation::LeftControls;
-    auto rightDistance = (p - (mPos + Vector2i(mSize.x() - theme()->mTabControlWidth, 0))).array();
-    bool hitRight = (rightDistance >= 0).all() && (rightDistance < Vector2i(theme()->mTabControlWidth, mSize.y()).array()).all();
+    Vector2i rightDistance = p - (mPos + Vector2i(mSize.x() - theme()->mTabControlWidth, 0));
+    bool hitRight = rightDistance.positive() && rightDistance < Vector2i(theme()->mTabControlWidth, mSize.y());
     if (hitRight)
         return ClickLocation::RightControls;
     return ClickLocation::TabButtons;

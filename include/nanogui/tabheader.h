@@ -177,8 +177,6 @@ private:
     bool mOverflowing = false;
 
     std::string mFont;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)
