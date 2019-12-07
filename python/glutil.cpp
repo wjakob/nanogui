@@ -148,7 +148,7 @@ void register_glutil(py::module &m) {
         .def_readonly("size", &GLShader::Buffer::size, D(GLShader, Buffer, size))
         .def_readonly("version", &GLShader::Buffer::version, D(GLShader, Buffer, version));
 
-    py::class_<Arcball>(m, "Arcball", D(Arcball))
+    /*py::class_<Arcball>(m, "Arcball", D(Arcball))
         .def(py::init<float>(), py::arg("speedFactor") = 2.f, D(Arcball, Arcball))
         .def(py::init<const Quaternionf &>(), D(Arcball, Arcball, 2))
         .def("state", (Quaternionf& (Arcball::*)()) &Arcball::state, D(Arcball, state))
@@ -181,7 +181,7 @@ void register_glutil(py::module &m) {
 
     m.def("scale", &scale, py::arg("v"), D(scale));
 
-    m.def("translate", &translate, py::arg("v"), D(translate));
+    m.def("translate", &translate, py::arg("v"), D(translate)); */
 
     /* Very basic OpenGL coverage */
 

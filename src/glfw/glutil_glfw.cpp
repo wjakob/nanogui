@@ -21,14 +21,16 @@
 
 #include <iostream>
 #include <fstream>
-#include <Eigen/Geometry>
+#include <ostream>
+#include <string.h>
+//#include <Eigen/Geometry>
 
 NAMESPACE_BEGIN(nanogui)
 
 static GLuint createShader_helper(GLint type, const std::string &name,
                                   const std::string &defines,
                                   std::string shader_string) {
-    if (shader_string.empty())
+   /* if (shader_string.empty())
         return (GLuint) 0;
 
     if (!defines.empty()) {
@@ -70,8 +72,9 @@ static GLuint createShader_helper(GLint type, const std::string &name,
         std::cerr << "Error: " << std::endl << buffer << std::endl;
         throw std::runtime_error("Shader compilation failed!");
     }
-
     return id;
+    */
+    return 0;
 }
 
 bool GLShader::initFromFiles(
@@ -409,7 +412,7 @@ void GLFramebuffer::blit() {
 }
 
 void GLFramebuffer::downloadTGA(const std::string &filename) {
-    uint8_t *temp = new uint8_t[mSize.prod() * 4];
+   /* uint8_t *temp = new uint8_t[mSize.prod() * 4];
 
     std::cout << "Writing \"" << filename  << "\" (" << mSize.x() << "x" << mSize.y() << ") .. ";
     std::cout.flush();
@@ -432,30 +435,30 @@ void GLFramebuffer::downloadTGA(const std::string &filename) {
     FILE *tga = fopen(filename.c_str(), "wb");
     if (tga == nullptr)
         throw std::runtime_error("GLFramebuffer::downloadTGA(): Could not open output file");
-    fputc(0, tga); /* ID */
-    fputc(0, tga); /* Color map */
-    fputc(2, tga); /* Image type */
-    fputc(0, tga); fputc(0, tga); /* First entry of color map (unused) */
-    fputc(0, tga); fputc(0, tga); /* Length of color map (unused) */
-    fputc(0, tga); /* Color map entry size (unused) */
-    fputc(0, tga); fputc(0, tga);  /* X offset */
-    fputc(0, tga); fputc(0, tga);  /* Y offset */
-    fputc(mSize.x() % 256, tga); /* Width */
-    fputc(mSize.x() / 256, tga); /* continued */
-    fputc(mSize.y() % 256, tga); /* Height */
-    fputc(mSize.y() / 256, tga); /* continued */
-    fputc(32, tga);   /* Bits per pixel */
-    fputc(0x20, tga); /* Scan from top left */
-    fwrite(temp, mSize.prod() * 4, 1, tga);
-    fclose(tga);
+    //fputc(0, tga); /* ID */
+    //fputc(0, tga); /* Color map */
+    //fputc(2, tga); /* Image type */
+    //fputc(0, tga); fputc(0, tga); /* First entry of color map (unused) */
+    //fputc(0, tga); fputc(0, tga); /* Length of color map (unused) */
+    //fputc(0, tga); /* Color map entry size (unused) */
+    //fputc(0, tga); fputc(0, tga);  /* X offset */
+    //fputc(0, tga); fputc(0, tga);  /* Y offset */
+    //fputc(mSize.x() % 256, tga); /* Width */
+    //fputc(mSize.x() / 256, tga); /* continued */
+    //fputc(mSize.y() % 256, tga); /* Height */
+    //fputc(mSize.y() / 256, tga); /* continued */
+    //fputc(32, tga);   /* Bits per pixel */
+    //fputc(0x20, tga); /* Scan from top left */
+    //fwrite(temp, mSize.prod() * 4, 1, tga);
+    //fclose(tga);
 
-    delete[] temp;
-    std::cout << "done." << std::endl;
+    //delete[] temp;
+    //std::cout << "done." << std::endl;
 }
 
 //  ----------------------------------------------------
 
-Eigen::Vector3f project(const Eigen::Vector3f &obj,
+/*Eigen::Vector3f project(const Eigen::Vector3f &obj,
                         const Eigen::Matrix4f &model,
                         const Eigen::Matrix4f &proj,
                         const Vector2i &viewportSize) {
@@ -547,7 +550,7 @@ Eigen::Matrix4f scale(const Eigen::Vector3f &v) {
 
 Eigen::Matrix4f translate(const Eigen::Vector3f &v) {
     return Eigen::Affine3f(Eigen::Translation<float, 3>(v)).matrix();
-}
+}*/
 
 NAMESPACE_END(nanogui)
 

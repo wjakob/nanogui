@@ -27,6 +27,9 @@
 
 #include <stdint.h>
 #include <array>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cmath>
 #include <functional>
 #include <vector>
 
@@ -158,14 +161,10 @@ enum class Cursor {
 
 namespace math
 {
-    //! Constant for PI.
-    const double PI64       = 3.1415926535897932384626433832795028841971693993751;
-
     const float ROUNDING_ERROR_f32 = 0.000001f;
     //! 64bit constant for converting from degrees to radians (formally known as GRAD_PI2)
-    const double DEGTORAD64 = PI64 / 180.0;
-    const double ROUNDING_ERROR_f64 = 0.00000001;
-    const double RADTODEG64 = 180.0 / PI64;
+    const float DEGTORADFLT = (float)M_PI / 180.0f;
+    const float RADTODEGFLT = 180.0f / (float)M_PI;
 
     template<class T>
     inline bool isEqual(const T a, const T b, const T tolerance = ROUNDING_ERROR_f32)
@@ -266,7 +265,7 @@ public:
 
   //! Gets the length of the vector.
   /** \return The length of the vector. */
-  float getLength() const { return sqrt(x()*x() + y()*y()); }
+  float getLength() const { return std::sqrt(x()*x() + y()*y()); }
 
   //! Get the squared length of this vector
   /** This is useful because it is much faster than getLength().
@@ -299,19 +298,16 @@ public:
   /** \param degrees Amount of degrees to rotate by, anticlockwise.
   \param center Rotation center.
   \return This vector after transformation. */
-  Vector2<T>& rotateBy(float degrees, const Vector2<T>& center = Vector2<T>())
+  Vector2& rotateBy(float degrees, const Vector2& center)
   {
-    degrees = nvgDegToRad(degrees);
-    const float cs = cos(degrees);
-    const float sn = sin(degrees);
+    degrees = (degrees);
+    const float cs = std::cos(degrees);
+    const float sn = std::sin(degrees);
 
-    x() -= center.x();
-    y() -= center.y();
-
+    *this -= center;
     set((T)(x()*cs - y()*sn), (T)(x()*sn + y()*cs));
 
-    x() += center.x();
-    y() += center.y();
+    *this += center;
     return *this;
   }
 
@@ -324,37 +320,10 @@ public:
 
     if (math::isEqual(length, 0.f))
       return *this;
-    length = 1.f / sqrt(length);
+    length = 1.f / std::sqrt(length);
     x() = (T)(x() * length);
     y() = (T)(y() * length);
     return *this;
-  }
-
-  //! Calculates the angle of this vector in degrees in the trigonometric sense.
-  /** 0 is to the right (3 o'clock), values increase counter-clockwise.
-  This method has been suggested by Pr3t3nd3r.
-  \return Returns a value between 0 and 360. */
-  float getAngleTrig() const
-  {
-    if (y() == 0)
-      return x() < 0 ? 180 : 0;
-    else if (x() == 0)
-      return y() < 0 ? 270 : 90;
-
-    if (y() > 0)
-    {
-      if (x() > 0)
-        return atanf((float)y() / (float)x()) * math::RADTODEG64;
-      else
-        return 180.0f - atanf((float)y() / -(float)x()) * math::RADTODEG64;
-    }
-    else
-    {
-      if (x > 0)
-        return 360.0f - atanf(-(float)y() / (float)x()) * math::RADTODEG64;
-      else
-        return 180.0f + atanf(-(float)y() / -(float)x()) * math::RADTODEG64;
-    }
   }
 
   //! Calculates the angle of this vector in degrees in the counter trigonometric sense.
@@ -363,13 +332,13 @@ public:
   inline float getAngle() const
   {
     if (y() == 0) // corrected thanks to a suggestion by Jox
-            return x() < 0 ? 180 : 0;
+            return x() < 0 ? 180.f : 0.f;
     else if (x() == 0)
-            return y() < 0 ? 90 : 270;
+            return y() < 0 ? 90.f : 270.f;
 
     // don't use getLength here to avoid precision loss with s32 vectors
-    float tmp = y() / sqrt((float)(x()*x() + y()*yv));
-    tmp = atanf( sqrt(1.f - tmp*tmp) / tmp) * math::RADTODEG64;
+    float tmp = y() / std::sqrt((float)(x()*x() + y()*y()));
+    tmp = std::atan( std::sqrt(1.f - tmp*tmp) / tmp) * math::RADTODEGFLT;
 
     if (x()>0 && y()>0)
       return tmp + 270;
@@ -393,11 +362,11 @@ public:
     if (tmp == 0.0)
       return 90.0f;
 
-    tmp = tmp / sqrtf((float)((x()*x() + y()*y()) * (b.x()*b.x() + b.y()*b.y())));
+    tmp = tmp / std::sqrt((float)((x()*x() + y()*y()) * (b.x()*b.x() + b.y()*b.y())));
     if (tmp < 0.0)
       tmp = -tmp;
 
-    return atanf(sqrtf(1 - tmp*tmp) / tmp) * math::RADTODEG64;
+    return std::atan(std::sqrt(1 - tmp*tmp) / tmp) * math::RADTODEGFLT;
   }
 
   //! Returns if this vector interpreted as a point is on a line between two o points.
@@ -501,6 +470,9 @@ public:
   const T& z() const { return _d[2]; }
   const T& w() const { return _d[3]; }
 
+  T width() const { return z() - x(); }
+  T height() const { return w() - y(); }
+
   //! Default constructor (null vector)
   Vector4() : Vector4(0) {}
   //! Constructor with two different values
@@ -508,10 +480,44 @@ public:
   //! Constructor with the same value for both members
   explicit Vector4(T n) : Vector4(n, n, n, n) {}
   //! Copy constructor
-  Vector4(const Vector2<T>& o) { memcpy(_d, o._d, sizeof(float)*4); }
+  Vector4(const Vector4& o) { memcpy(_d, o._d, sizeof(T)*4); }
+
+  Vector2<T> lowerright() const { return Vector2<T>(z(), w()); }
+  Vector2<T> center() const { return Vector2<T>((x() + z())/2, (y() + w())/2); }
+  Vector4 operator+(const Vector2<T>& p) const
+  {
+    Vector4 r = *this;
+    r.x() += p.x(); r.y() += p.y();
+    r.z() += p.x(); r.w() += p.y();
+    return r;
+  }
+
+  Vector4& operator+=(const Vector2<T>& p)
+  {
+    x() += p.x(); y() += p.y();
+    z() += p.x(); w() += p.y();
+    return *this;
+  }
+
+  Vector4 operator-(const Vector2<T>& p) const
+  {
+    Vector4 ret = *this;
+    ret.x() -= p.x(); ret.y() -= p.y();
+    ret.z() -= p.x(); ret.w() -= p.y();
+    return ret;
+  }
+
+  template <class B>
+  inline Vector4<B> cast() const { return Vector4<B>(static_cast<B>(x()), static_cast<B>(y()),
+                                                     static_cast<B>(z()), static_cast<B>(w())); }
 
   const T* data() const { return _d; }
   T* data() { return _d; }
+
+  bool isPointInside(const Vector2<T>& p) const
+  {
+    return (p.x() >= x() && p.y() >= y() && p.x() <= z() && p.y() <= w());
+  }
 
   T _d[4] = { 0 };
 };
@@ -521,6 +527,33 @@ using Vector2f = Vector2<float>;
 using Vector4f = Vector4<float>;
 using Vector4i = Vector4<int>;
 using VectorXf = std::vector<float>;
+
+//! Calculates the angle of this vector in degrees in the trigonometric sense.
+/** 0 is to the right (3 o'clock), values increase counter-clockwise.
+This method has been suggested by Pr3t3nd3r.
+\return Returns a value between 0 and 360. */
+inline float getAnglePointToAxis(const Vector2f& p)
+{
+  if (p.y() == 0)
+    return p.x() < 0 ? 180.f : 0.f;
+  else if (p.x() == 0)
+    return p.y() < 0 ? 270.f : 90.f;
+
+  if (p.y() > 0)
+  {
+    if (p.x() > 0)
+      return std::atan((float)p.y() / (float)p.x()) * math::RADTODEGFLT;
+    else
+      return 180.0f - std::atan((float)p.y() / -(float)p.x()) * math::RADTODEGFLT;
+  }
+  else
+  {
+    if (p.x() > 0)
+      return 360.0f - std::atan(-(float)p.y() / (float)p.x()) * math::RADTODEGFLT;
+    else
+      return 180.0f + std::atan(-(float)p.y() / -(float)p.x()) * math::RADTODEGFLT;
+  }
+}
 
 class Color
 {

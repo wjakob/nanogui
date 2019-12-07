@@ -16,6 +16,7 @@
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
 #include <nanogui/opengl.h>
+#include <string>
 #include <map>
 #include <iostream>
 

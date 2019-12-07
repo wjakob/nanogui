@@ -3542,7 +3542,7 @@ static const char *__doc_nanogui_ToolButton_operator_new_4 = R"doc()doc";
 
 static const char *__doc_nanogui_ToolButton_operator_new_5 = R"doc()doc";
 
-static const char *__doc_nanogui_UniformBufferStd140 =
+/*static const char *__doc_nanogui_UniformBufferStd140 =
 R"doc(Helper class for accumulating uniform buffer data following the
 'std140' packing format.)doc";
 
@@ -3550,7 +3550,7 @@ static const char *__doc_nanogui_UniformBufferStd140_push_back = R"doc()doc";
 
 static const char *__doc_nanogui_UniformBufferStd140_push_back_2 = R"doc()doc";
 
-static const char *__doc_nanogui_UniformBufferStd140_push_back_3 = R"doc()doc";
+static const char *__doc_nanogui_UniformBufferStd140_push_back_3 = R"doc()doc";*/
 
 static const char *__doc_nanogui_VScrollPanel =
 R"doc(Adds a vertical scrollbar around a widget that is too big to fit into
