@@ -5,6 +5,7 @@
 #include <nanogui/window.h>
 #include <nanogui/switchbox.h>
 #include <nanogui/entypo.h>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 

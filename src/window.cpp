@@ -17,6 +17,7 @@
 #include <nanogui/windowmenu.h>
 #include <nanogui/layout.h>
 #include <nanogui/serializer/core.h>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 

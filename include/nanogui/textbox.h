@@ -18,6 +18,7 @@
 #include <nanogui/widget.h>
 #include <cstdio>
 #include <sstream>
+#include <limits>
 
 NAMESPACE_BEGIN(nanogui)
 

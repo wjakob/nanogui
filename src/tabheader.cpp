@@ -15,6 +15,7 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <numeric>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 

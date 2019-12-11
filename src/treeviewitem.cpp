@@ -1,6 +1,7 @@
 #include <nanogui/treeviewitem.h>
 #include <nanogui/treeview.h>
 #include <nanovg.h>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 

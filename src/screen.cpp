@@ -16,6 +16,7 @@
 #include <nanogui/popup.h>
 #include <set>
 #include <nanovg.h>
+#include <algorithm>
 #include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
@@ -295,7 +296,7 @@ void Screen::updateFocus(Widget *widget) {
     }
     // Send unfocus events to widgets losing focus.
     for (auto w : oldFocusPath) {
-        if (!w->focused() || find(mFocusPath.begin(), mFocusPath.end(), w) != mFocusPath.end())
+        if (!w->focused() || std::find(mFocusPath.begin(), mFocusPath.end(), w) != mFocusPath.end())
             continue;
         w->focusEvent(false);
     }

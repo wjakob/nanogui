@@ -295,20 +295,18 @@ template <typename T> struct serialization_helper<std::set<T>> {
 
 template <typename Scalar>
 struct serialization_helper<Vector2<Scalar>> {
-    typedef Vector2<Scalar> Vector2;
-
     static std::string type_id() {
         return "V" + serialization_helper<Scalar>::type_id();
     }
 
-    static void write(Serializer &s, const Vector2 *value, size_t count) {
+    static void write(Serializer &s, const Vector2<Scalar> *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
             serialization_helper<Scalar>::write(s, value->data(), 2);
             value++;
         }
     }
 
-    static void read(Serializer &s, Vector2 *value, size_t count) {
+    static void read(Serializer &s, Vector2<Scalar> *value, size_t count) {
         for (size_t i = 0; i<count; ++i) {
             serialization_helper<Scalar>::read(s, value->data(), 2);
             value++;

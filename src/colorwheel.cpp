@@ -15,6 +15,7 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/serializer/core.h>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 

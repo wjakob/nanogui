@@ -18,9 +18,6 @@
 #include <nanogui/serializer/core.h>
 #include <nanogui/serializer/json.h>
 
-#include <Windows.h>
-#include <debugapi.h>
-
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Widget, Object)

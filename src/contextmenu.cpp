@@ -19,6 +19,7 @@
 #include "nanogui/screen.h"
 #include "nanogui/window.h"
 #include "nanogui/theme.h"
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 
