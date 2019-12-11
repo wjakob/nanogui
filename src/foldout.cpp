@@ -4,6 +4,9 @@
 #include <nanovg.h>
 #include <nanogui/screen.h>
 
+#include <algorithm>
+
+
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Foldout, Widget)
