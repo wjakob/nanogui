@@ -25,6 +25,7 @@ public:
 
   ContextMenuLabel(Widget* parent, const std::string& caption)
     : Label(parent, Caption{ caption }) {}
+
   void draw(NVGcontext* ctx) override;
   void setShortcut(const std::string& text) { mShortcut = text; }
 
@@ -174,6 +175,7 @@ protected:
     Label *mHighlightedItem;
     ContextMenu *mActiveSubmenu;
     ContextMenu *mRootMenu;
+    Vector2i mAnchorPos;
     bool mDisposable;
     bool mActivated;
     bool mUpdateLayout;

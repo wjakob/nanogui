@@ -75,8 +75,8 @@ void WindowMenu::addItem(const std::string& name, const std::string& shortcut, c
   lbl.setFixedSize({ tw + mItemSpacing * 2, prefh });
 
   if (nvgIsFontIcon(icon)) {
-    auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
-    iconLbl->setFontSize(fontSize() + 2);
+    auto& iconlb = mItemContainer->label(Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
+    iconlb.setFontSize(fontSize() + 2);
   }
 
   performLayout(screen()->nvgContext());
@@ -89,31 +89,29 @@ ContextMenu* WindowMenu::addSubMenu(const std::string& name, int icon)
 
   int prefh = preferredSize(screen()->nvgContext()).y();
 
-  mSubmenus[name] = new ContextMenu(mParent, name, false);
+  mSubmenus[name] = mParent->add<ContextMenu>(name, false);
   mSubmenus[name]->setRoot(mRootMenu ? mRootMenu : this);
-  auto lbl = new ContextMenuLabel(mItemContainer, name);
-  mLabels[name] = lbl;
-  lbl->setFontSize(fontSize());
+  auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
+  mLabels[name] = &lbl;
+  lbl.setFontSize(fontSize());
   int tw = nvgTextBounds(screen()->nvgContext(), 0, 0, name.c_str(), nullptr, nullptr);
-  lbl->setTextHAlign(TextHAlign::hCenter);
-  lbl->setSize(tw + mItemSpacing * 2, prefh);
-  lbl->setFixedSize({ tw + mItemSpacing * 2, prefh });
+  lbl.setTextHAlign(TextHAlign::hCenter);
+  lbl.setSize(tw + mItemSpacing * 2, prefh);
+  lbl.setFixedSize({ tw + mItemSpacing * 2, prefh });
 
-  mSubmenus[name]->setMinWidth(lbl->width());
+  mSubmenus[name]->setMinWidth(lbl.width());
 
   if (nvgIsFontIcon(icon)) {
-    auto iconLbl = new Label(mItemContainer, Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
-    iconLbl->setFontSize(fontSize() + 2);
+    auto& iconlb = mItemContainer->label(Caption{ utf8(icon).data() }, CaptionFont{ "icons" });
+    iconlb.setFontSize(fontSize() + 2);
   }
   return mSubmenus[name];
 }
 
-void WindowMenu::deactivate() {
-  deactivateSubmenu();
-}
+void WindowMenu::deactivate() { deactivateSubmenu(); }
 
 Vector2i WindowMenu::submenuPosition(const std::string &name) const {
-  return mItemContainer->position() + mLabels.at(name)->position() + Vector2i{ 0, height() } + mPos;
+  return mItemContainer->position() + mLabels.at(name)->position() + Vector2i(0, height()) + mPos;
 }
 
 bool WindowMenu::_isLabelSelected(const std::string& name, const Vector2i& p) const {

@@ -116,7 +116,7 @@ ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool dispos
         mCaption(caption)
 {
     mItemContainer = &wdg<ContextMenuArea>();
-    mItemContainer->setPosition({0,0});
+    mItemContainer->setPosition(0,0);
     mItemLayout = new AdvancedGridLayout({10,0,0}, {}, 2);
     mItemLayout->setColStretch(0, 1.0f);
     mItemContainer->setLayout(mItemLayout);
@@ -163,7 +163,7 @@ void ContextMenu::activate(const Vector2i& pos) {
             requestFocus();
         }
     }
-    setPosition(pos);
+    mAnchorPos = pos;
 }
 
 void ContextMenu::deactivate() {
@@ -208,7 +208,8 @@ ContextMenu& ContextMenu::item(const std::string& name, const std::function<void
   return *this;
 }
 
-ContextMenu& ContextMenu::item(const std::string& name, const std::function<void(bool)>& cb, const std::function<void(bool&, bool&)>& condition, int icon)
+ContextMenu& ContextMenu::item(const std::string& name, const std::function<void(bool)>& cb, 
+                               const std::function<void(bool&, bool&)>& condition, int icon)
 {
   item(name, cb, icon);
   if (condition != nullptr)
@@ -382,6 +383,8 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
 
 void ContextMenu::draw(NVGcontext* ctx) {
     nvgSave(ctx);
+
+    mPos = mAnchorPos;
     nvgTranslate(ctx, mPos.x(), mPos.y());
 
     int w = mItemContainer->position().x() + mItemContainer->width();
