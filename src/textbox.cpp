@@ -438,7 +438,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = 0;
-            } else if (key2fourcc(key) == FOURCCS("KEND")) {
+            } else if (isKeyboardKey(key, "KEND")) {
                 if (isKeyboardModifierShift(modifiers)) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
@@ -447,7 +447,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = (int) mValueTemp.size();
-            } else if (key2fourcc(key) == FOURCCS("BACK")) {
+            } else if (isKeyboardKey(key, "BACK")) {
                 if (!deleteSelection()) {
                     if (mCursorPos > 0) {
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
@@ -457,7 +457,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                           mEditCallback(mValueTemp, true);
                     }
                 }
-            } else if (key2fourcc(key) == FOURCCS("KDEL")) {
+            } else if (isKeyboardKey(key, "KDEL")) {
                 if (!deleteSelection()) {
                   if (mCursorPos < (int)mValueTemp.length())
                   {
@@ -466,7 +466,7 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                       mEditCallback(mValueTemp, true);
                   }
                 }
-            } else if (key2fourcc(key) == FOURCCS("ENTR")) {
+            } else if (isKeyboardKey(key, "ENTR")) {
                 if (!mCommitted)
                     focusEvent(false);
                 if (mComitCallback)
@@ -474,15 +474,15 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                   mComitCallback(this);
                   return true;
                 }
-            } else if (key2fourcc(key) == FOURCCS("KEYA") && isKeyboardModifierCtrl(modifiers)) {
+            } else if (isKeyboardKey(key, "KEYA") && isKeyboardModifierCtrl(modifiers)) {
                 mCursorPos = (int) mValueTemp.length();
                 mSelectionPos = 0;
-            } else if (key2fourcc(key) == FOURCCS("KEYX") && isKeyboardModifierCtrl(modifiers)) {
+            } else if (isKeyboardKey(key, "KEYX") && isKeyboardModifierCtrl(modifiers)) {
                 copySelection();
                 deleteSelection();
-            } else if (key2fourcc(key) == FOURCCS("KEYC") && isKeyboardModifierCtrl(modifiers)) {
+            } else if (isKeyboardKey(key, "KEYC") && isKeyboardModifierCtrl(modifiers)) {
                 copySelection();
-            } else if (key2fourcc(key) == FOURCCS("KEYV") && isKeyboardModifierCtrl(modifiers)) {
+            } else if (isKeyboardKey(key, "KEYV") && isKeyboardModifierCtrl(modifiers)) {
                 deleteSelection();
                 pasteFromClipboard();
             }

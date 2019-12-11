@@ -144,20 +144,20 @@ public:
     std::string wtypename() const override { return "button"; }
 
     /// The preferred size of this Button.
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
 
     /// The callback that is called when any type of mouse button event is issued to this Button.
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
 
     /// Responsible for drawing the Button.
-    virtual void draw(NVGcontext *ctx) override;
+    void draw(NVGcontext *ctx) override;
 
     /// Saves the state of this Button provided the given Serializer.
-    virtual void save(Serializer &s) const override;
+    void save(Serializer &s) const override;
     void save(Json::value &s) const override;
 
     /// Sets the state of this Button provided the given Serializer.
-    virtual bool load(Serializer &s) override;
+    bool load(Serializer &s) override;
     bool load(Json::value &s) override;
 
     void setDrawFlags(int flags) { mDrawFlags = flags; }

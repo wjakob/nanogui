@@ -51,6 +51,7 @@
 #include <nanogui/tolerancebar.h>
 #include <nanogui/treeview.h>
 #include <nanogui/treeviewitem.h>
+#include <nanogui/picflow.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -370,6 +371,33 @@ void createBasicWidgets(Screen* parent)
   dialTextBox.setFixedSize({ 60, 25 });
   dialTextBox.setFontSize(20);
   dialTextBox.setAlignment(TextBox::Alignment::Right);
+}
+
+void createPicflowWindow(Screen* screen)
+{
+#if defined(_WIN32)
+  string resourcesFolderPath("../resources/");
+#else
+  string resourcesFolderPath("./");
+#endif
+  auto& mw = screen->window(Caption{ "Picflow" },
+                            FixedSize{ 400, 250 },
+                            WidgetStretchLayout{ Orientation::Horizontal },
+                            Position{ 715, 305 });
+
+  static vector<pair<int, string>> icons = loadImageDirectory(screen->nvgContext(), "icons");
+  static ImagesDataType picflowImagesData;
+
+  // Load all of the images by creating a GLTexture object and saving the pixel data.
+  for (auto& icon : icons) {
+    auto fullpath = resourcesFolderPath + icon.second;
+    auto data = nvgCreateImage(screen->nvgContext(), fullpath.c_str(), 0);
+    picflowImagesData.emplace_back(data, fullpath);
+  }
+
+  auto& picflow = mw.wdg<Picflow>(Vector2f(0.35f, 0.35f));
+  for (auto& icon : picflowImagesData)
+    picflow.addItem(icon.first);
 }
 
 void createMiscWidgets(Screen* screen)
@@ -926,6 +954,7 @@ public:
       createAllWidgetsDemo(this);
       createThemeBuilderWindow(this);
       makeCustomThemeWindow(this, "Custom theme");
+      createPicflowWindow(this);
       toggleTreeView(this, true);
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));

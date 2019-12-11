@@ -23,7 +23,7 @@ TreeView::TreeView( Widget* parent, bool clip,
   mDrawBack( drawBack ),
   mImageLeftOfIcon( true )
 {
-  int s = DEFAULT_SCROLLBAR_SIZE;
+  //int s = DEFAULT_SCROLLBAR_SIZE;
 
   if ( scrollBarVertical )
   {
@@ -61,7 +61,7 @@ void TreeView::removeNode(TreeViewItem::NodeId id)
 
 TreeViewItem& TreeView::addNode()
 {
-  static size_t nodeIdCounter = 1;
+  static TreeViewItem::NodeId nodeIdCounter = 1;
   auto& node = wdg<TreeViewItem>();
   *(const_cast<TreeViewItem::NodeId*>(&node.mNodeId)) = nodeIdCounter++;
   return node;

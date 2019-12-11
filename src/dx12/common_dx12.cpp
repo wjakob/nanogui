@@ -273,6 +273,7 @@ uint32_t key2fourcc(int key)
     RET_KEYCODE(VK_BACKSPACE, "BACK")
     RET_KEYCODE(VK_EXECUTE, "ENTR")
     RET_KEYCODE(VK_ESCAPE, "ESCP")
+    RET_KEYCODE(VK_SPACE,  "SPCE")    
 #undef RET_KEYCODE
   default: return FOURCCS("UNKN");
   }}

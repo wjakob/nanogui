@@ -227,7 +227,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
         continue;
 
       position += mSpacing * sign;
-      Vector2i wSize((containerSize.x() - mMargin * 2) / (pChildren.size() + 1), containerSize.y());
+      Vector2i wSize((containerSize.x() - mMargin * 2) / ((int)pChildren.size() + 1), containerSize.y());
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();
@@ -274,7 +274,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
         continue;
 
       position += mSpacing * sign;
-      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / (pChildren.size() + 1));
+      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / ((int)pChildren.size() + 1));
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();

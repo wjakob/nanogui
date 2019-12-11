@@ -205,23 +205,24 @@ public:
 
   Vector2 operator+(const Vector2& o) const { return Vector2(x() + o.x(), y() + o.y()); }
   Vector2& operator+=(const Vector2& o) { x() += o.x(); y() += o.y(); return *this; }
-  Vector2 operator+(const T v) const { return Vector2(x() + v, y() + v); }
-  Vector2& operator+=(const T v) { x() += v; y() += v; return *this; }
+  template<typename Scalar> Vector2 operator+(Scalar v) const { return Vector2(x() + v, y() + v); }
+  template<typename Scalar> Vector2& operator+=(Scalar v) { x() += v; y() += v; return *this; }
 
   Vector2 operator-(const Vector2& o) const { return Vector2(x() - o.x(), y() - o.y()); }
   Vector2& operator-=(const Vector2& o) { x() -= o.x(); y() -= o.y(); return *this; }
-  Vector2 operator-(const T v) const { return Vector2<T>(x() - v, y() - v); }
-  Vector2& operator-=(const T v) { x() -= v; y() -= v; return *this; }
+  template<typename Scalar> Vector2 operator-(Scalar v) const { return Vector2<T>(x() - v, y() - v); }
+  template<typename Scalar> Vector2& operator-=(Scalar v) { x() -= v; y() -= v; return *this; }
 
   Vector2 operator*(const Vector2& o) const { return Vector2(x() * o.x(), y() * o.y()); }
   Vector2& operator*=(const Vector2& o) { x() *= o.x(); y() *= o.y(); return *this; }
-  Vector2 operator*(const T v) const { return Vector2(x() * v, y() * v); }
-  Vector2& operator*=(const T v) { x() *= v; y() *= v; return *this; }
+  
+  template<typename Scalar> Vector2 operator*(Scalar v) const { return Vector2(x() * v, y() * v); }
+  template<typename Scalar> Vector2& operator*=(Scalar v) { x() *= v; y() *= v; return *this; }
 
   Vector2 operator/(const Vector2& o) const { return Vector2(x() / o.x(), y() / o.y()); }
   Vector2& operator/=(const Vector2& o) { x() /= o.x(); y() /= o.y(); return *this; }
-  Vector2 operator/(const T v) const { return Vector2(x() / v, y() / v); }
-  Vector2& operator/=(const T v) { x() /= v; y() /= v; return *this; }
+  template<typename Scalar> Vector2 operator/(Scalar v) const { return Vector2(x() / v, y() / v); }
+  template<typename Scalar> Vector2& operator/=(Scalar v) { x() /= v; y() /= v; return *this; }
 
   //! sort in order X, Y. Equality with rounding tolerance.
   bool operator<=(const Vector2& o) const
@@ -477,10 +478,11 @@ public:
   Vector4() : Vector4(0) {}
   //! Constructor with two different values
   Vector4(T nx, T ny, T nz, T nw) { x() = nx; y() = ny; z() = nz; w() = nw; }
+  Vector4(const Vector2<T>& b, const Vector2<T>& e) { x() = b.x(); y() = b.y(); z() = e.x(); w() = e.y(); }
   //! Constructor with the same value for both members
   explicit Vector4(T n) : Vector4(n, n, n, n) {}
   //! Copy constructor
-  Vector4(const Vector4& o) { memcpy(_d, o._d, sizeof(T)*4); }
+  Vector4(const Vector4& o) { for (int i=0; i < 4; i++) _d[i] = o._d[i]; }
 
   Vector2<T> lowerright() const { return Vector2<T>(z(), w()); }
   Vector2<T> center() const { return Vector2<T>((x() + z())/2, (y() + w())/2); }
