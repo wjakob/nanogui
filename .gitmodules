@@ -6,7 +6,7 @@
     url = https://github.com/wjakob/glfw
 [submodule "ext/eigen"]
     path = ext/eigen
-    url = https://github.com/eigenteam/eigen-git-mirror.git
+    url = https://gitlab.com/libeigen/eigen.git
     shallow = true
 [submodule "ext/pybind"]
     path = ext/pybind11
