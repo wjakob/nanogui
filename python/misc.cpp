@@ -43,7 +43,9 @@ void register_misc(py::module &m) {
         .def("textColor", &Graph::textColor, D(Graph, textColor))
         .def("setTextColor", &Graph::setTextColor, D(Graph, setTextColor))
         .def("values", (VectorXf &(Graph::*)(void)) &Graph::values, D(Graph, values))
-        .def("setValues", &Graph::setValues, D(Graph, setValues));
+        .def("setValues", &Graph::setValues, D(Graph, setValues))
+        .def("fill", &Graph::fill, D(Graph, fill))
+        .def("setFill", &Graph::setFill, D(Graph, setFill));
 
     py::class_<ImageView, Widget, ref<ImageView>, PyImageView>(m, "ImageView", D(ImageView))
         .def(py::init<Widget *, GLuint>(), D(ImageView, ImageView))
