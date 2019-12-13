@@ -20,8 +20,8 @@ NanoGUI
 
 .. begin_brief_description
 
-NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x or higher. It
-supports automatic layout generation, stateful C++11 lambdas callbacks, a variety of
+NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x/DirectX11[12]/Vulkan. 
+It supports automatic layout generation, stateful C++11 lambdas callbacks, a variety of
 useful widget types and Retina-capable rendering on Apple devices thanks to NanoVG_ by
 Mikko Mononen. Python bindings of all functionality are provided using pybind11_.
 
@@ -36,12 +36,25 @@ Mikko Mononen. Python bindings of all functionality are provided using pybind11_
    :local:
    :backlinks: none
 
-Example screenshot
+Example screenshots (Dx11, Dx12, Vulkan, OpenGL)
 ----------------------------------------------------------------------------------------
 
-.. image:: https://github.com/dalerank/nanogui/raw/master/resources/screenshot.png
-   :alt: Screenshot of Example 1.
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_dx11.png
+   :alt: Screenshot of Dx11 backend.
    :align: center
+   
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_dx12.png
+   :alt: Screenshot of Dx12 backend.
+   :align: center
+   
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_vulkan.png
+   :alt: Screenshot of Vulkan backend.
+   :align: center
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_opengl.png
+   :alt: Screenshot of OpenGL backend.
+   :align: center   
+      
 
 Extensions
 ----------------------------------------------------------------------------------------
@@ -59,9 +72,8 @@ Description
 
 .. begin_long_description
 
-NanoGUI builds on GLFW_ for cross-platform OpenGL context creation and event handling,
-GLAD_ to use OpenGL 3.x or higher Windows, Eigen_ for basic vector types, and NanoVG_ to
-draw 2D primitives.
+NanoGUI builds on GLFW_/Win32 native (dx11/12) for cross-platform context creation and event handling,
+and NanoVG_ to draw 2D primitives.
 
 Note that the dependency library NanoVG already includes some basic example code to draw
 good-looking static widgets; what NanoGUI does is to flesh it out into a complete GUI
@@ -73,7 +85,7 @@ jointly built using a CMake-based build system.
 
 .. _GLFW: http://www.glfw.org/
 .. _GLAD: https://github.com/Dav1dde/glad
-.. _Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
+
 
 .. end_long_description
 
@@ -89,6 +101,11 @@ an existing window `window` and register an event callback.
 
    Button *b = new Button(window, "Plain button");
    b->setCallback([] { cout << "pushed!" << endl; });
+   
+   //or declarative syntax
+   
+   auto& b = window.button(Caption{ "Plain button"},
+                           ButtonCallback{[] { cout << "pushed!" << endl; }} );
 
 
 The following lines from the example application create the coupled
@@ -115,6 +132,23 @@ slider and text box on the bottom of the second window (see the screenshot).
    slider->setCallback([textBox](float value) {
        textBox->setValue(std::to_string((int) (value * 100)));
    });
+   
+   //or declarative syntax
+   /* Create an empty panel with a horizontal layout */
+   auto& panel = window.widget();
+   panel.withLayout<BoxLayout>(BoxLayout::Horizontal, BoxLayout::Middle, 0, 20);
+
+   /* Add a slider and set defaults */
+   auto& slider = panel.slider(InitialValue{0.5f}, 
+                               FixedWidth{80});
+   
+   /* Add a textbox and set defaults */
+   auto& textBox = panel.textbox(FixedSize{60, 25},
+                                 TextValue{"50"},
+                                 UnitsText{"%"});
+
+   /* Propagate slider changes to the text box */
+   slider.setCallback([&](float value) { textBox.setValue(std::to_string((int) (value * 100)));
 
 
 The Python version of this same piece of code looks like this:
