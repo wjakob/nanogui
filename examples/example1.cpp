@@ -52,6 +52,7 @@
 #include <nanogui/treeview.h>
 #include <nanogui/treeviewitem.h>
 #include <nanogui/picflow.h>
+#include <nanogui/textarea.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -62,6 +63,7 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
+#include <string>
 
 #if defined(__GNUC__)
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -93,7 +95,6 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::to_string;
-
 using namespace nanogui;
 
 GPUtimer gpuTimer;
@@ -371,6 +372,22 @@ void createBasicWidgets(Screen* parent)
   dialTextBox.setFixedSize({ 60, 25 });
   dialTextBox.setFontSize(20);
   dialTextBox.setAlignment(TextBox::Alignment::Right);
+}
+
+void createTextAreaWindow(Screen* screen)
+{
+  auto& mw = screen->window(Caption{"TextArea window"},
+                            FixedSize{ 300, 200 },
+                            WidgetStretchLayout{ Orientation::Horizontal },
+                            Position{ 1015, 405 } );
+  std::string longText = "void createTextAreaWindow(Sreen* screen) {\n"
+    "    auto& mw = screen->window(Caption{ \"TextArea window\" }\n"
+    "                              FixedSize{ 300, 200 },\n"
+    "                              WidgetStretchLayout{ Orientation::Horizontal },\n"
+    "                              Position{ 1015, 405 });\n"
+    "    std::string longText = \"\";\n"
+    "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }\n";
+  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } );
 }
 
 void createPicflowWindow(Screen* screen)
@@ -955,6 +972,7 @@ public:
       createThemeBuilderWindow(this);
       makeCustomThemeWindow(this, "Custom theme");
       createPicflowWindow(this);
+      createTextAreaWindow(this);
       toggleTreeView(this, true);
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));

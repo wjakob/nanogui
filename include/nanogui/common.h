@@ -301,7 +301,6 @@ public:
   \return This vector after transformation. */
   Vector2& rotateBy(float degrees, const Vector2& center)
   {
-    degrees = (degrees);
     const float cs = std::cos(degrees);
     const float sn = std::sin(degrees);
 
@@ -433,8 +432,8 @@ public:
   */
   Vector2& interpolate(const Vector2& a, const Vector2& b, const T d)
   {
-    x = (T)((float)b.x() + ( ( a.x() - b.x() ) * d ));
-    y = (T)((float)b.y() + ( ( a.y() - b.y() ) * d ));
+    x() = (T)((float)b.x() + ( ( a.x() - b.x() ) * d ));
+    y() = (T)((float)b.y() + ( ( a.y() - b.y() ) * d ));
     return *this;
   }
 

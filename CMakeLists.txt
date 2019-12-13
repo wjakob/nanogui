@@ -463,6 +463,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/colorpicker.h src/colorpicker.cpp
   include/nanogui/picflow.h src/picflow.cpp
   include/nanogui/graph.h src/graph.cpp
+  include/nanogui/textarea.h src/textarea.cpp
   include/nanogui/stackedwidget.h src/stackedwidget.cpp
   include/nanogui/tabheader.h src/tabheader.cpp
   include/nanogui/tabwidget.h src/tabwidget.cpp

@@ -114,13 +114,12 @@ private:
 #define RTTI_DECLARE_INFO(class_name) \
   static const RttiClass rttiInfo##class_name; \
   static const RttiClass* staticRttiClass(); \
-  virtual RttiClass* rttiClass() const;
+  virtual RttiClass* rttiClass() const override;
 
 #define RTTI_IMPLEMENT_INFO(class_name, base_class_name) \
   const RttiClass class_name::rttiInfo##class_name = { #class_name, sizeof(class class_name), RTTI_CLASS(base_class_name), class_name::RTTI_CLASS_UID }; \
-  RttiClass* class_name::rttiClass() const \
-{ return RTTI_CLASS(class_name); } \
-const RttiClass* class_name::staticRttiClass() { return &class_name::rttiInfo##class_name; }
+  RttiClass* class_name::rttiClass() const { return RTTI_CLASS(class_name); } \
+  const RttiClass* class_name::staticRttiClass() { return &class_name::rttiInfo##class_name; }
 
 /**
  * \class ref object.h nanogui/object.h
