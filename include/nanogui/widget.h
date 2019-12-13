@@ -22,6 +22,7 @@ NAMESPACE_BEGIN(nanogui)
 class Window;
 class Label;
 class ToolButton;
+class LinkButton;
 class MessageDialog;
 class PopupButton;
 class Button;
@@ -520,6 +521,7 @@ public:
     template<typename... Args>Graph& graph(const Args&... args) { return wdg<Graph>(args...); }
     template<typename... Args>TreeView& treeview(const Args&... args) { return wdg<TreeView>(args...); }
     template<typename... Args>ToleranceBar& tolerancebar(const Args&... args) { return wdg<ToleranceBar>(args...); }
+    template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children

@@ -19,6 +19,8 @@
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Button, Widget)
+RTTI_IMPLEMENT_INFO(LedButton, Button)
+RTTI_IMPLEMENT_INFO(LinkButton, Button)
 
 Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
@@ -27,7 +29,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
       mTextColor(Color(0, 0))
 {
   setFlags(NormalButton);
-  mDrawFlags = 0xFF;
+  setDrawFlags(DrawAll);
 }
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
@@ -120,6 +122,19 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     return false;
 }
 
+Color Button::getTextColor() const 
+{
+  if (mPushed)
+    return mPressedTextColor.w() == 0 ? mTheme->mButtonPressedTextColor : mPressedTextColor;
+  else
+  {
+    if (mMouseFocus)
+      return mHoverTextColor.w() == 0 ? mTheme->mButtonHoverTextColor : mTextColor;
+    else
+      return mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+  }
+}
+
 void Button::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
@@ -184,8 +199,8 @@ void Button::draw(NVGcontext *ctx) {
 
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
     Vector2f textPos(center.x() - tw * 0.5f, center.y() - 1);
-    NVGcolor textColor =
-        mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+    NVGcolor textColor = getTextColor();
+
     if (!mEnabled)
         textColor = mTheme->mDisabledTextColor;
 
@@ -291,6 +306,30 @@ bool Button::load(Serializer &s) {
   if (!s.get("backgroundColor", mBackgroundColor)) return false;
   if (!s.get("textColor", mTextColor)) return false;
   return true;
+}
+
+LinkButton::LinkButton(Widget* parent)
+  : Button(parent)
+{
+  setDrawFlags(DrawText);
+}
+
+void LinkButton::draw(NVGcontext* ctx)
+{
+  Button::draw(ctx);
+}
+
+Color LinkButton::getTextColor() const
+{
+  if (mPushed)
+    return mPressedTextColor.w() == 0 ? mTheme->mLinkPressedTextColor : mPressedTextColor;
+  else
+  {
+    if (mMouseFocus)
+      return mHoverTextColor.w() == 0 ? mTheme->mLinkHoverTextColor : mTextColor;
+    else
+      return mTextColor.w() == 0 ? mTheme->mLinkTextColor : mTextColor;
+  }
 }
 
 void nvgBezierTo(NVGcontext* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y, float kw, float kh)

@@ -219,8 +219,12 @@ public:
         editor->setHoveredElement((Widget*)w->data());
       });
 
-      waheader.button(Caption{ "Assets" }, ButtonCallback{ [&] { view.hide(); fo.show(); } });
-      waheader.button(Caption{ "Layers" }, ButtonCallback{ [&] { view.show(); fo.hide(); } });
+      waheader.link(Caption{ "Assets" }, ButtonFlags{ Button::ToggleButton|Button::RadioButton }, 
+                    ButtonCallback{ [&] { view.hide(); fo.show(); } });
+      waheader.link(Caption{ "Layers" }, ButtonFlags{ Button::ToggleButton|Button::RadioButton },
+                    ButtonCallback{ [&] { view.show(); fo.hide(); } });
+      waheader.label(Caption{ "" }, RelativeSize{0.3f, 1.f});
+      waheader.button(Caption{ "Page" });
     }
 
     void addTreeViewNode(TreeViewItem* item, Widget* w)

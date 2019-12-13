@@ -154,6 +154,18 @@ public:
      */
     Color mTextColor;
 
+    Color mButtonHoverTextColor;
+
+    Color mButtonPressedTextColor;
+
+    Color mToggleButtonPressedTextColor;
+
+    Color mLinkPressedTextColor;
+
+    Color mLinkTextColor;
+
+    Color mLinkHoverTextColor;
+
     Color mLabelTextDisabledColor;
     /**
      * The disable dtext color

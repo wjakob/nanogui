@@ -76,6 +76,12 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mBorderLight)
   CHECK(mBorderMedium)
   CHECK(mTextColor)
+  CHECK(mButtonPressedTextColor)
+  CHECK(mLinkPressedTextColor)
+  CHECK(mLinkTextColor)
+  CHECK(mLinkHoverTextColor)
+  CHECK(mButtonHoverTextColor)
+  CHECK(mToggleButtonPressedTextColor)
   CHECK(mLabelTextDisabledColor)
   CHECK(mDisabledTextColor)
   CHECK(mTextColorShadow)
@@ -124,6 +130,12 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mBorderLight)
   CHECKSET(mBorderMedium)
   CHECKSET(mTextColor)
+  CHECKSET(mButtonPressedTextColor)
+  CHECKSET(mLinkPressedTextColor)
+  CHECKSET(mLinkTextColor)
+  CHECKSET(mLinkHoverTextColor)
+  CHECKSET(mButtonHoverTextColor)
+  CHECKSET(mToggleButtonPressedTextColor)
   CHECKSET(mLabelTextDisabledColor)
   CHECKSET(mDisabledTextColor)
   CHECKSET(mTextColorShadow)
@@ -190,6 +202,12 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mBorderLight = Color(92, 255);
   theme.mBorderMedium = Color(35, 255);
   theme.mTextColor = Color(255, 160);
+  theme.mButtonPressedTextColor = Color(255, 160);
+  theme.mLinkPressedTextColor = Color(0, 160);
+  theme.mLinkTextColor = Color(255, 160);
+  theme.mLinkHoverTextColor = Color(200, 160);
+  theme.mButtonHoverTextColor = Color(255, 160);
+  theme.mToggleButtonPressedTextColor = Color(255, 160);
   theme.mLabelTextDisabledColor = Color(29, 160);
   theme.mDisabledTextColor = Color(255, 80);
   theme.mTextColorShadow = Color(0, 160);

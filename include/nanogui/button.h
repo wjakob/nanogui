@@ -27,6 +27,7 @@ DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
 DECLSETTER(ButtonDrawFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
+DECLSETTER(IsToggleButton, bool)
 
 class NANOGUI_EXPORT Button : public Widget {
 public:
@@ -50,10 +51,11 @@ public:
     };
 
     enum DrawFlag {
-        DrawBody =   1,
-        DrawText =   2,
-        DrawBorder = 3,
-        DrawIcon =   4
+        DrawBody =   1<<0,
+        DrawText =   1<<1,
+        DrawBorder = 1<<2,
+        DrawIcon =   1<<3,
+        DrawAll  =   0xff
     };
 
     /**
@@ -163,6 +165,8 @@ public:
     void setDrawFlags(int flags) { mDrawFlags = flags; }
     bool haveDrawFlag(int flag) { return (mDrawFlags & flag)==flag; }
 
+    virtual Color getTextColor() const;
+
 protected:
 
     virtual void beforeDoCallback() {}
@@ -197,7 +201,7 @@ protected:
     Color mBackgroundColor;
 
     /// The color of the caption text of this Button.
-    Color mTextColor;
+    Color mTextColor, mHoverTextColor, mPressedTextColor;
 
     /// The callback issued for all types of buttons.
     std::function<void()> mCallback;
@@ -217,11 +221,15 @@ public:
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(ButtonDrawFlags, setDrawFlags)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
+    PROPSETTER(IsToggleButton,setToggleButton)
 };
 
 class NANOGUI_EXPORT LedButton : public Button
 {
 public:
+  RTTI_CLASS_UID("LEDB")
+  RTTI_DECLARE_INFO(LedButton)
+
   enum Mode { circleCustom=0, rectCustom, triangleCustom, roundrectCustom,
               circleBlack, circleBlue, circleGreen, circleGray, circleOrange, circleRed, circleYellow, circlePurple
   };
@@ -229,8 +237,27 @@ public:
   void draw(NVGcontext* ctx) override;
 
   void setMode(Mode mode) { mMode = mode; }
+
 private:
   Mode mMode = circleBlack;
+};
+
+class NANOGUI_EXPORT LinkButton : public Button
+{
+public:
+  RTTI_CLASS_UID("LNKB")
+  RTTI_DECLARE_INFO(LinkButton)
+
+  LinkButton(Widget* parent);
+
+  using Button::set;
+  template<typename... Args>
+  LinkButton(Widget* parent, const Args&... args)
+    : LinkButton(parent) { set<LinkButton, Args...>(args...); }
+
+  void draw(NVGcontext* ctx) override;
+  Color getTextColor() const override;
+
 };
 
 NAMESPACE_END(nanogui)
