@@ -13,7 +13,7 @@ TreeViewItem::TreeViewItem( Widget* parent )
   _init();
   if (parent)
   {
-    if (auto p = parent->cast<TreeView>())
+    if (auto p = TreeView::cast(parent))
       mOwner = p;
   }
 
@@ -133,7 +133,7 @@ void TreeViewItem::removeAllNodes()
 
 void TreeViewItem::removeNode(const Widget* node)
 {
-  if (const TreeViewItem* twi = node->cast<const TreeViewItem>())
+  if (auto twi = TreeViewItem::cast(node))
   {
     auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), twi->getNodeId());
     if (it != mChildrenIds.end())

@@ -168,7 +168,7 @@ public:
     RetClass *findWidget(const std::string& id, bool inchildren = true)
     {
       Widget* f = findWidget(id, inchildren);
-      return f ? f->cast<RetClass>() : nullptr;
+      return f ? RetClass::cast(f) : nullptr;
     }
 
     template<typename RetClass>
@@ -181,7 +181,7 @@ public:
     RetClass *findWidgetGlobal(const std::string& id)
     {
       Widget* f = findWidgetGlobal(id);
-      return f ? f->cast<RetClass>() : nullptr;
+      return f ? RetClass::cast(f) : nullptr;
     }
 
     template<typename WidgetClass>
@@ -190,7 +190,7 @@ public:
       std::vector<WidgetClass*> ret;
       for (auto& w : mChildren)
       {
-        if (auto cw = w->cast<WidgetClass>())
+        if (auto cw = WidgetClass::cast(w))
           ret.push_back(cw);
       }
 
@@ -335,7 +335,7 @@ public:
     WidgetClass *findParent() {
       Widget *widget = this;
       while (widget) {
-        WidgetClass *parentw = widget->cast<WidgetClass>();
+        WidgetClass *parentw = WidgetClass::cast(widget);
         if (parentw)
           return parentw;
         widget = widget->parent();

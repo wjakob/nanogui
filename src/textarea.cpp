@@ -61,7 +61,7 @@ void TextArea::append(const std::string &text)
         }
     } while (*str++ != 0);
 
-    VScrollPanel *vscroll = mParent->cast<VScrollPanel>();
+    VScrollPanel *vscroll = VScrollPanel::cast(mParent);
     if (vscroll)
         vscroll->performLayout(ctx);
 }
@@ -121,7 +121,7 @@ Vector2i TextArea::preferredSize(NVGcontext *) const { return m_max_size + m_pad
 
 void TextArea::draw(NVGcontext *ctx) 
 {
-    VScrollPanel *vscroll = mParent->cast<VScrollPanel>();
+    VScrollPanel *vscroll = VScrollPanel::cast(mParent);
 
     auto start_it = m_blocks.begin();
     auto end_it = m_blocks.end();

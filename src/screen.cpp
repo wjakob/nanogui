@@ -208,7 +208,7 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
     try {
 #endif
         if (mFocusPath.size() > 1) {
-            const Window *dwindow = mFocusPath[mFocusPath.size() - 2]->cast<Window>();
+            const Window *dwindow = Window::cast(mFocusPath[mFocusPath.size() - 2]);
             if (dwindow && dwindow->modal()) {
                 if (!dwindow->contains(mMousePos))
                     return false;
@@ -273,7 +273,7 @@ bool Screen::dropCallbackEvent(int count, const char **filenames) {
 bool Screen::scrollCallbackEvent(double x, double y) {
     mLastInteraction = getTimeFromStart();
         if (mFocusPath.size() > 1) {
-            const Window *window = mFocusPath[mFocusPath.size() - 2]->cast<Window>();
+            const Window *window = Window::cast(mFocusPath[mFocusPath.size() - 2]);
             if (window && window->modal()) {
                 if (!window->contains(mMousePos))
                     return false;
@@ -290,7 +290,7 @@ void Screen::updateFocus(Widget *widget) {
     Widget *window = nullptr;
     while (widget) {
         mFocusPath.push_back(widget);
-        if (widget->cast<Window>())
+        if (Window::cast(widget))
             window = widget;
         widget = widget->parent();
     }
@@ -339,7 +339,7 @@ void Screen::moveWindowToFront(Window *window) {
               baseIndex = index;
       changed = false;
       for (size_t index = 0; index < mChildren.size(); ++index) {
-          Popup *pw = mChildren[index]->cast<Popup>();
+          Popup *pw = Popup::cast(mChildren[index]);
           if (pw && pw->parentWindow() == window && index < baseIndex) {
               moveWindowToFront(pw);
               changed = true;

@@ -850,7 +850,7 @@ void Table::_startEditCell(int col, int row)
     _edit->setEditable(true);
     _edit->requestFocus();
     _edit->setComitCallback([cell, this](Widget* w) {
-      if (TextBox* ed = w->cast<TextBox>())
+      if (TextBox* ed = TextBox::cast(w))
       {
         cell->setCaption(ed->value());
         cell->requestFocus();

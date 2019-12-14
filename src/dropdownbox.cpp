@@ -180,6 +180,9 @@ public:
 class DropdownPopup : public Popup
 {
 public:
+  RTTI_CLASS_UID("DPOP")
+  RTTI_DECLARE_INFO(DropdownPopup)
+
   int preferredWidth = 0;
 
   DropdownPopup(Widget *parent, Window *parentWindow)
@@ -207,7 +210,7 @@ public:
   {
     if (mChildren.size() > 0)
     {
-      auto* btn = mChildren[0]->cast<Button>();
+      auto* btn = Button::cast(mChildren[0]);
       btn->setCaption(caption);
     }
   }
@@ -310,7 +313,7 @@ DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items, 
 void DropdownBox::performLayout(NVGcontext *ctx) {
   PopupButton::performLayout(ctx);
 
-  auto* dpopup = mPopup->cast<DropdownPopup>();
+  DropdownPopup* dpopup = DropdownPopup::cast(mPopup);
   if (dpopup)
   {
     dpopup->setAnchorPos(position());
@@ -368,7 +371,7 @@ bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int
   if (isMouseButtonLeft(button) && mEnabled) {
     if (!mItems.empty())
     {
-      auto* item = mPopup->childAt(0)->cast<DropdownListItem>();
+      auto* item = DropdownListItem::cast(mPopup->childAt(0));
       if (item)
         item->setCaption(mItems[mSelectedIndex]);
     }
@@ -438,6 +441,6 @@ bool DropdownBox::load(Serializer &s) {
 
 RTTI_IMPLEMENT_INFO(DropdownBox, PopupButton)
 RTTI_IMPLEMENT_INFO(DropdownListItem, Button)
-
+RTTI_IMPLEMENT_INFO(DropdownPopup, Popup)
 
 NAMESPACE_END(nanogui)

@@ -74,7 +74,7 @@ TreeViewItem* TreeView::findNode(std::function<bool(TreeViewItem*)> f)
 
   for (auto& c : children())
   {
-    if (auto twi = c->cast<TreeViewItem>())
+    if (auto twi = TreeViewItem::cast(c))
     {
       if (f(twi))
         return twi;
@@ -91,7 +91,7 @@ TreeViewItem* TreeView::findNode(TreeViewItem::NodeId id)
 
   for (auto& c : children())
   {
-    if (auto twi = c->cast<TreeViewItem>())
+    if (auto twi = TreeViewItem::cast(c))
     {
       if (twi->getNodeId() == id)
         return twi;

@@ -83,19 +83,6 @@ public:
       return self->inherited(info);
     }
 
-    template<typename RetClass> RetClass* cast()
-    {
-      if (isKindOf(RetClass::staticRttiClass()))
-        return static_cast<RetClass*>(this);
-      return nullptr;
-    }
-    template<typename RetClass> const RetClass* cast() const
-    {
-      if (isKindOf(RetClass::staticRttiClass()))
-        return static_cast<RetClass*>(this);
-      return nullptr;
-    }
-
     static const RttiClass rttiInfoObject;
 protected:
     /** \brief Virtual protected deconstructor.
@@ -114,12 +101,16 @@ private:
 #define RTTI_DECLARE_INFO(class_name) \
   static const RttiClass rttiInfo##class_name; \
   static const RttiClass* staticRttiClass(); \
-  virtual RttiClass* rttiClass() const override;
+  virtual RttiClass* rttiClass() const override; \
+  static class_name* cast(Object*); \
+  static const class_name* cast(const Object*);
 
 #define RTTI_IMPLEMENT_INFO(class_name, base_class_name) \
   const RttiClass class_name::rttiInfo##class_name = { #class_name, sizeof(class class_name), RTTI_CLASS(base_class_name), class_name::RTTI_CLASS_UID }; \
   RttiClass* class_name::rttiClass() const { return RTTI_CLASS(class_name); } \
-  const RttiClass* class_name::staticRttiClass() { return &class_name::rttiInfo##class_name; }
+  const RttiClass* class_name::staticRttiClass() { return &class_name::rttiInfo##class_name; } \
+  class_name* class_name::cast(Object*v) { if (v && v->isKindOf(class_name::staticRttiClass()))  return static_cast<class_name*>(v);  return nullptr; } \
+  const class_name* class_name::cast(const Object*v) { if (v && v->isKindOf(class_name::staticRttiClass()))  return static_cast<const class_name*>(v);  return nullptr; }
 
 /**
  * \class ref object.h nanogui/object.h

@@ -143,7 +143,7 @@ public:
   WidgetsArea(Widget* parent) : Widget(parent) {}
   void performLayout(NVGcontext *ctx) override
   {
-    VScrollPanel* vpanel = parent()->cast<VScrollPanel>();
+    VScrollPanel* vpanel = VScrollPanel::cast(parent());
     int xoffset = 0;
     if (vpanel)
       xoffset = vpanel->getSliderAreaWidth();

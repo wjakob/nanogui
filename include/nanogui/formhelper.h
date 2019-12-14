@@ -224,7 +224,7 @@ public:
     /// Set the active \ref Window instance.
     void setWindow(Window *window) {
         mWindow = window;
-        auto newLayout = window->layout()->cast<AdvancedGridLayout>();
+        auto newLayout = AdvancedGridLayout::cast(window->layout());
         if (newLayout)
           mLayout = newLayout;
         else

@@ -55,7 +55,7 @@ public:
 
       // really dirty hack to fix the sizes of the buttons created by the parent
     mpopup->forEachChild([](Widget* w) {
-      if (auto* child = w->cast<Button>())
+      if (auto* child = Button::cast(w))
         child->setFixedWidth(180);
     });
 
@@ -115,7 +115,7 @@ public:
         master_callback(next_color);
 
         popup()->forEachChild([&](Widget* child) {
-          if (Button *btn = child->cast<Button>())
+          if (Button *btn = Button::cast(child))
           {
             if (btn->caption() == "Pick")
             {
@@ -123,7 +123,7 @@ public:
               btn->setTextColor(next_color.contrastingColor());
             }
           }
-          else if (ColorWheel* wheel = child->cast<ColorWheel>())
+          else if (ColorWheel* wheel = ColorWheel::cast(child))
           {
             wheel->setColor(next_color);
           }
@@ -144,7 +144,7 @@ public:
         master_callback(next_color);
 
         popup()->forEachChild([&](Widget* child) {
-          if (Button* btn = child->cast<Button>())
+          if (Button* btn = Button::cast(child))
           {
             if (btn->caption() == "Pick")
             {
@@ -152,7 +152,7 @@ public:
               btn->setTextColor(next_color.contrastingColor());
             }
           }
-          else if (ColorWheel* wheel = child->cast<ColorWheel>())
+          else if (ColorWheel* wheel = ColorWheel::cast(child))
           {
             wheel->setColor(next_color);
           }
@@ -194,7 +194,7 @@ public:
     setBackgroundColor(color);
     setTextColor(fg);
     popup()->forEachChild([&](Widget* child) {
-      if (Button* btn = child->cast<Button>())
+      if (Button* btn = Button::cast(child))
       {
         bool change = true;
         if (fromTextBox && btn->caption() == "Reset")
@@ -205,7 +205,7 @@ public:
           btn->setTextColor(fg);
         }
       }
-      else if (ColorWheel* wheel = child->cast<ColorWheel>())
+      else if (ColorWheel* wheel = ColorWheel::cast(child))
       {
         wheel->setColor(color);
       }

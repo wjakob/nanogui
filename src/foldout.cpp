@@ -142,7 +142,7 @@ bool Foldout::mouseButtonEvent(const Vector2i &p, int button, bool down, int mod
 
 void Foldout::selectButton(Widget* w)
 {
-  Button* elm = w->cast<Button>();
+  Button* elm = Button::cast(w);
 
   for (auto& p: mPages)
   {

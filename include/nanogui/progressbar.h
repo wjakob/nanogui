@@ -50,6 +50,9 @@ public:
 
 class NANOGUI_EXPORT CircleProgressBar : public ProgressBar {
 public:
+  RTTI_CLASS_UID("PRGC")
+  RTTI_DECLARE_INFO(CircleProgressBar)
+
   CircleProgressBar(Widget *parent);
 
   using ProgressBar::set;

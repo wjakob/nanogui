@@ -68,7 +68,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             if (haveFlag(RadioButton)) {
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
-                        Button *b = widget->cast<Button>();
+                        Button *b = Button::cast(widget);
                         if (b != this && b && (b->haveFlag(RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
@@ -87,7 +87,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
             }
             if (haveFlag(PopupButton)) {
                 for (auto widget : parent()->children()) {
-                    Button *b = widget->cast<Button>();
+                    Button *b = Button::cast(widget);
                     if (b != this && b && (b->haveFlag(PopupButton)) && b->mPushed) {
                         b->mPushed = false;
                         if (b->mChangeCallback)

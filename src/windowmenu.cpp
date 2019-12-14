@@ -53,7 +53,7 @@ void WindowMenu::performLayout(NVGcontext* ctx)
   Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
                       fs.y() ? fs.y() : ps.y());
   setSize(targetSize);
-  auto myParentWindow = parent()->cast<Window>();
+  auto myParentWindow = Window::cast(parent());
   if (myParentWindow)
     setPosition(0, mTheme->mWindowHeaderHeight + mTheme->mWindowMenuHeaderOffset);
 
