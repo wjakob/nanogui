@@ -89,7 +89,12 @@ void ImagePanel::draw(NVGcontext* ctx) {
             mMouseIndex == (int)i ? 1.0 : 0.7);
 
         nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, p.x(), p.y(), mThumbSize, mThumbSize, 5);
+        //nvgRoundedRect(ctx, p.x(), p.y(), mThumbSize, mThumbSize, 5);
+        nvgMoveTo(ctx, p.x(), p.y());
+        nvgLineTo(ctx, p.x() + mThumbSize, p.y() + mThumbSize / 2);
+        nvgLineTo(ctx, p.x(), p.y() + mThumbSize);
+        nvgClosePath(ctx);
+
         nvgFillPaint(ctx, imgPaint);
         nvgFill(ctx);
 

@@ -14,6 +14,7 @@
 #include <nanogui/screen.h>
 #include <nanogui/vscrollpanel.h>
 #include <nanovg.h>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 
