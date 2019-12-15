@@ -27,10 +27,14 @@ DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
 DECLSETTER(ButtonDrawFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
-DECLSETTER(IsToggleButton, bool)
+DECLSETTER(ButtonToggleFlag, bool)
+DECLSETTER(ButtonPushed, bool)
 
-class NANOGUI_EXPORT Button : public Widget {
+class NANOGUI_EXPORT Button : public Widget 
+{
 public:
+    //property(ButtonCallback, std::function<void()>, setCallback)
+
     RTTI_CLASS_UID("BTTN")
     RTTI_DECLARE_INFO(Button)
 
@@ -222,7 +226,8 @@ public:
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(ButtonDrawFlags, setDrawFlags)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
-    PROPSETTER(IsToggleButton,setToggleButton)
+    PROPSETTER(ButtonToggleFlag,setToggleButton)
+    PROPSETTER(ButtonPushed,setPushed)
 };
 
 class NANOGUI_EXPORT LedButton : public Button

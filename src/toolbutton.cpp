@@ -24,12 +24,12 @@ RTTI_IMPLEMENT_INFO(ToggleButton, Button)
 Color ToggleButton::getIconColor() const
 {
   return mPushed
-          ? (mInactiveColor.w() 
-               ? mInactiveColor 
-               : theme()->mToggleButtonInactiveColor)
-          : (mActiveColor.w() 
-               ? mActiveColor 
-               : theme()->mToggleButtonActiveColor);
+          ? (mActiveColor.w() == 0
+               ? theme()->mToggleButtonActiveColor
+               : mActiveColor)
+          : (mInactiveColor.w() == 0
+               ? theme()->mToggleButtonInactiveColor
+               : mInactiveColor);
 }
 
 ToggleButton::ToggleButton(Widget *parent, int icon)
@@ -38,7 +38,7 @@ ToggleButton::ToggleButton(Widget *parent, int icon)
   setFlags(Flag::ToggleButton);
   setDrawFlags(DrawFlag::DrawIcon);
 
-  setFixedSize(Vector2i(25, 25));
+  setFixedSize(25, 25);
 }
 
 void ToggleButton::draw(NVGcontext* ctx)
