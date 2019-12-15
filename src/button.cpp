@@ -124,6 +124,9 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
 
 Color Button::getTextColor() const 
 {
+  if (!mEnabled)
+    return mTheme->mDisabledTextColor;
+
   if (mPushed)
     return mPressedTextColor.w() == 0 ? mTheme->mButtonPressedTextColor : mPressedTextColor;
   else
@@ -135,7 +138,10 @@ Color Button::getTextColor() const
   }
 }
 
-void Button::draw(NVGcontext *ctx) {
+Color Button::getIconColor() const { return getTextColor(); }
+
+void Button::draw(NVGcontext *ctx) 
+{
     Widget::draw(ctx);
 
     if (haveDrawFlag(DrawBody))
@@ -201,11 +207,9 @@ void Button::draw(NVGcontext *ctx) {
     Vector2f textPos(center.x() - tw * 0.5f, center.y() - 1);
     NVGcolor textColor = getTextColor();
 
-    if (!mEnabled)
-        textColor = mTheme->mDisabledTextColor;
-
     if (mIcon && haveDrawFlag(DrawIcon)) {
         auto icon = utf8(mIcon);
+        Color iconColor = getIconColor();
 
         float iw, ih = fontSize;
         if (nvgIsFontIcon(mIcon)) {
@@ -221,7 +225,7 @@ void Button::draw(NVGcontext *ctx) {
         }
         if (mCaption != "")
             iw += mSize.y() * 0.15f;
-        nvgFillColor(ctx, textColor);
+        nvgFillColor(ctx, iconColor);
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
         Vector2f iconPos = center;
         iconPos.y() -= 1;

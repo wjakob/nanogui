@@ -46,15 +46,7 @@ public:
   RTTI_CLASS_UID("TGBT")
   RTTI_DECLARE_INFO(ToggleButton)
 
-  explicit ToggleButton(Widget *parent, int icon)
-    : Button(parent, std::string(""), icon)
-  {
-    setFlags(Flag::ToggleButton);
-    setDrawFlags(DrawFlag::DrawIcon);
-
-    setFixedSize(Vector2i(25, 25));
-  }
-
+  explicit ToggleButton(Widget *parent, int icon);
   std::string wtypename() const override { return "togglebutton"; }
 
   using Button::set;
@@ -62,7 +54,7 @@ public:
   ToggleButton(Widget* parent, const Args&... args)
     : ToggleButton(parent, -1) { set<ToggleButton, Args...>(args...); }
 
-  void beforeDoChangeCallback(bool pushed) override;
+  Color getIconColor() const override;
   void draw(NVGcontext* ctx) override;
 
 private:

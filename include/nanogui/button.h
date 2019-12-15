@@ -166,6 +166,7 @@ public:
     bool haveDrawFlag(int flag) { return (mDrawFlags & flag)==flag; }
 
     virtual Color getTextColor() const;
+    virtual Color getIconColor() const;
 
 protected:
 

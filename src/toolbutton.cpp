@@ -21,11 +21,24 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(ToolButton, Button)
 RTTI_IMPLEMENT_INFO(ToggleButton, Button)
 
-void ToggleButton::beforeDoChangeCallback(bool pushed)
+Color ToggleButton::getIconColor() const
 {
-  const Color& acolor = mActiveColor.w() ? mActiveColor : theme()->mToggleButtonActiveColor;
-  const Color& icolor = mInactiveColor.w() ? mInactiveColor : theme()->mToggleButtonInactiveColor;
-  mTextColor = pushed ? icolor : acolor;
+  return mPushed
+          ? (mInactiveColor.w() 
+               ? mInactiveColor 
+               : theme()->mToggleButtonInactiveColor)
+          : (mActiveColor.w() 
+               ? mActiveColor 
+               : theme()->mToggleButtonActiveColor);
+}
+
+ToggleButton::ToggleButton(Widget *parent, int icon)
+  : Button(parent, std::string(""), icon)
+{
+  setFlags(Flag::ToggleButton);
+  setDrawFlags(DrawFlag::DrawIcon);
+
+  setFixedSize(Vector2i(25, 25));
 }
 
 void ToggleButton::draw(NVGcontext* ctx)
