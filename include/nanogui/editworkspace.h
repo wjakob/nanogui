@@ -71,6 +71,7 @@ public:
 
     void performLayout(NVGcontext *ctx) override;
     void setWidgetEditable(intptr_t ptr, bool canEdit);
+    bool isWidgetEditable(intptr_t ptr);
 
     void removeChild(const Widget* child) override;
 

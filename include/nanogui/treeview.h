@@ -14,6 +14,8 @@ public:
     RTTI_CLASS_UID("TRVW")
     RTTI_DECLARE_INFO(TreeView)
 
+    enum IconState { IconCollapsed=0, IconExpanded, IconCount };
+
     explicit TreeView( Widget* parent,
         bool clip = true,
         bool drawBack = true, bool scrollBarVertical = true,
@@ -58,6 +60,8 @@ public:
     TreeViewItem* findNode(TreeViewItem::NodeId id);
     TreeViewItem* findNode(std::function<bool(TreeViewItem*)> f);
 
+    void setActionIcon(uint32_t action, uint32_t icon);
+
     void recheckChildren();
 
 private:
@@ -78,6 +82,8 @@ private:
 
     ScrollBar*    mScrollBarH;
     ScrollBar*    mScrollBarV;
+
+    int mIcons[IconCount];
 
     bool          mLinesVisible;
     bool          mSelecting;

@@ -158,6 +158,11 @@ void EditorWorkspace::setWidgetEditable(intptr_t ptr, bool canEdit)
   else nonEditableElms.insert(ptr);
 }
 
+bool EditorWorkspace::isWidgetEditable(intptr_t ptr)
+{
+  return nonEditableElms.count(ptr) == 0;
+}
+
 Widget* EditorWorkspace::getSelectedElement()
 {
   return mSelectedElement;
@@ -550,6 +555,9 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
 
           setSelectedElement( saveMovedElm );
           _sendSelectElementChangedEvent();
+
+          if (mChildrenChangeCallback)
+            mChildrenChangeCallback();
         }
 
         if (saveelm != mElementUnderMouse)

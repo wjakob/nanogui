@@ -204,6 +204,9 @@ public:
       fo.hide();
 
       auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.layers);
+      view.setActionIcon(TreeView::IconCollapsed, ENTYPO_ICON_RIGHT_DIR);
+      view.setActionIcon(TreeView::IconExpanded, ENTYPO_ICON_DOWN_DIR);
+
       view.setRelativeSize(1, 1);
       view.show();
 
@@ -227,26 +230,29 @@ public:
       waheader.button(Caption{ "Page" });
     }
 
-    void addTreeViewNode(TreeViewItem* item, Widget* w)
+    void addTreeViewNode(EditorWorkspace* editor, TreeViewItem* item, Widget* w)
     {
       auto node = item->addNode("Unknown widget");
       node->setData((intptr_t)w);
       if (auto parea = node->previewArea())
       {
+        bool editable = editor->isWidgetEditable((intptr_t)w);
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
+          ButtonPushed{ !editable },
           ButtonChangeCallback{ [this,w](bool pressed) {
             if (auto workspace = findWidget<EditorWorkspace>(ID.workspace))
-              workspace->setWidgetEditable((intptr_t)w, pressed);
+              workspace->setWidgetEditable((intptr_t)w, !pressed);
           }
         });
 
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
-          ButtonChangeCallback{ [w](bool pressed) { w->setVisible(pressed); }
+          ButtonPushed{ !w->visible() },
+          ButtonChangeCallback{ [w](bool pressed) { w->setVisible(!pressed); }
         });
       }
 
       for (auto& c : w->children())
-        addTreeViewNode(node, c);
+        addTreeViewNode(editor, node, c);
     }
 
     void fillTreeView()
@@ -259,28 +265,32 @@ public:
       treeview->removeAllNodes();
 
       for (auto& c : editor->children())
-        addTreeViewNode(treeview->rootNode(), c);
+        addTreeViewNode(editor, treeview->rootNode(), c);
     }
 
     void createBaseEditorWidget(Widget& area)
     {
       auto* editor = findWidget<EditorWorkspace>(ID.workspace);
-
       if (!editor)
         return;
 
       auto& eb = editor->button("Editor button");
       eb.setCallback([] { cout << "pushed!" << endl; });
       eb.setTooltip("short tooltip");
+      
 
       auto& ew = editor->wdg<Window>(Caption{ "Editor window" });
       ew.setSize(100, 200);
       ew.setPosition(0, 50);
+      ew.button(Caption{ "Button" });
+
+      fillTreeView();
     }
 
     ~ExampleApplication() {}
 
-    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
+    bool keyboardEvent(int key, int scancode, int action, int modifiers) override
+    {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
         if (nanogui::isKeyboardKeyEscape(key) && nanogui::isKeyboardActionPress(action)) {
