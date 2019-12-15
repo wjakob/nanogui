@@ -1,6 +1,7 @@
 #include <nanogui/treeview.h>
 #include <nanogui/scrollbar.h>
 #include <nanogui/treeviewitem.h>
+#include <nanogui/entypo.h>
 #include <nanovg.h>
 #include <string>
 
@@ -23,7 +24,8 @@ TreeView::TreeView( Widget* parent, bool clip,
   mDrawBack( drawBack ),
   mImageLeftOfIcon( true )
 {
-  //int s = DEFAULT_SCROLLBAR_SIZE;
+  mIcons[IconCollapsed] = ENTYPO_ICON_PLUS_CIRCLED;
+  mIcons[IconExpanded] = ENTYPO_ICON_MINUS_CIRCLED;
 
   if ( scrollBarVertical )
   {
@@ -383,6 +385,12 @@ void TreeView::afterDraw(NVGcontext* ctx)
   Widget::afterDraw(ctx);
 }
 
+void TreeView::setActionIcon(uint32_t action, uint32_t icon)
+{
+  if (action < IconCount)
+    mIcons[action] = icon;
+}
+
 //! draws the element and its children
 void TreeView::draw(NVGcontext* ctx)
 {
@@ -415,31 +423,18 @@ void TreeView::draw(NVGcontext* ctx)
 
     if ( node->hasNodes() )
     {
-      //rect for '+/-' sign
-      nvgStrokeWidth(ctx, 1.0f);
-      nvgBeginPath(ctx);
-      nvgRect(ctx, mPos.x() + framePos.x(), mPos.y() + framePos.y() + centerYofs,
-                   rsize.x(), rsize.y());
-      nvgStrokeColor(ctx, theme()->mBorderLight );
-      nvgStroke(ctx);
+      nvgFontFace(ctx, "icons");
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+      nvgFillColor(ctx, theme()->mBorderLight);
 
-      // horizontal '-' line
-      int offset = rsize.x()/2-2;
+      //need cache this calcs
+      float bounds[4];
+      auto icon = utf8(mIcons[node->isExpanded() ? IconExpanded : IconCollapsed]);
 
-      nvgStrokeWidth(ctx, 1.0f);
-      nvgBeginPath(ctx);
-      nvgMoveTo(ctx, center.x() - offset, center.y());
-      nvgLineTo(ctx, center.x() + offset, center.y());
+      nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, bounds);
+      Vector2i iconSize(bounds[2] - bounds[0], bounds[3] - bounds[1]);
 
-      if ( !node->isExpanded() )
-      {
-        // vertical '+' line
-        nvgMoveTo(ctx, center.x(), center.y() - offset);
-        nvgLineTo(ctx, center.x(), center.y() + offset);
-      }
-
-      nvgStrokeColor(ctx, theme()->mBorderLight);
-      nvgStroke(ctx);
+      nvgText(ctx, framePos.x(),  center.y(), icon.data(), nullptr);
     }
 
     // draw the lines if neccessary
