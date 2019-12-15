@@ -66,7 +66,7 @@ public:
 
 private:
     void _recalculateItemsRectangle(NVGcontext* ctx);
-    void _mouseAction( int xpos, int ypos, bool onlyHover = false );
+    void _mouseAction(Vector2i pos, bool onlyHover = false );
     Color _getCurrentNodeColor( TreeViewItem* node  );
     std::string _getCurrentNodeFont( TreeViewItem* node );
 

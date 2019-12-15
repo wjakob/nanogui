@@ -837,6 +837,8 @@ inline bool nvgIsImageIcon(int value) { return value < 1024; }
 */
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
+void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
+
 /**
  * \brief Open a native file open dialog, which allows multiple selection.
  *

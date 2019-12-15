@@ -68,6 +68,12 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
 
 static bool mainloop_active = false;
 
+void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size)
+{
+  nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y());
+}
+
+
 void mainloop(int refresh) {
     if (mainloop_active)
         throw std::runtime_error("Main loop is already running!");
