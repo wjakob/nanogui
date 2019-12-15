@@ -195,6 +195,8 @@ matrix:
     # build opengl render linux clang-3.8
     - os: linux
       compiler: clang-3.8  
+      before_install:
+        - sudo apt-get --purge remove gcc-4.8
       addons:
         apt:
           sources:
