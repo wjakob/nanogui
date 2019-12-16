@@ -38,7 +38,7 @@ public:
 
       nvgBeginPath(ctx);
 
-      nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
+      nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1, mSize.x() - 2,
         mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
 
       if (mBackgroundColor.w() != 0) {

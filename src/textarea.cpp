@@ -149,7 +149,7 @@ void TextArea::draw(NVGcontext *ctx)
     {
         nvgFillColor(ctx, m_background_color);
         nvgBeginPath(ctx);
-        nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+        nvgRect(ctx, mPos, mSize);
         nvgFill(ctx);
     }
 

@@ -191,7 +191,7 @@ void Listbox::draw(NVGcontext* ctx)
 
   nvgStrokeWidth(ctx, 1.0f);
   nvgBeginPath(ctx);
-  nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+  nvgRect(ctx, mPos, mSize);
   nvgStrokeColor(ctx, mTheme->mBorderDark);
   nvgStroke(ctx);
 }

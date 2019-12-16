@@ -50,7 +50,7 @@ void PerfGraph::draw(NVGcontext* vg)
   h = 35;
 
   nvgBeginPath(vg);
-  nvgRect(vg, mPos.x(), mPos.y(), w, h);
+  nvgRect(vg, mPos, Vector2i(w, h));
   nvgFillColor(vg, nvgRGBA(0,0,0,128));
   nvgFill(vg);
 

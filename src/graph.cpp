@@ -33,7 +33,7 @@ void Graph::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+    nvgRect(ctx, mPos, mSize);
     nvgFillColor(ctx, mBackgroundColor);
     nvgFill(ctx);
 
@@ -79,7 +79,7 @@ void Graph::draw(NVGcontext *ctx) {
     }
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+    nvgRect(ctx, mPos, mSize);
     nvgStrokeColor(ctx, Color(100, 255));
     nvgStroke(ctx);
 }

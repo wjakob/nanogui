@@ -283,10 +283,10 @@ void ImageView::drawImageBorder(NVGcontext* ctx) const {
     nvgBeginPath(ctx);
     nvgScissor(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
     nvgStrokeWidth(ctx, 1.0f);
-    Vector2i borderPosition = mPos + mOffset.cast<int>();
-    Vector2i borderSize = scaledImageSizeF().cast<int>();
-    nvgRect(ctx, borderPosition.x() - 0.5f, borderPosition.y() - 0.5f,
-            borderSize.x() + 1, borderSize.y() + 1);
+    Vector2f borderPosition = mPos.cast<float>() + mOffset;
+    Vector2f borderSize = scaledImageSizeF();
+    Vector2f offset{ 0.5f };
+    nvgRect(ctx, borderPosition - offset, borderSize + offset * 2.f);
     nvgStrokeColor(ctx, Color(1.0f, 1.0f, 1.0f, 1.0f));
     nvgStroke(ctx);
     nvgResetScissor(ctx);

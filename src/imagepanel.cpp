@@ -98,11 +98,10 @@ void ImagePanel::draw(NVGcontext* ctx) {
         nvgFillPaint(ctx, imgPaint);
         nvgFill(ctx);
 
-        NVGpaint shadowPaint =
-            nvgBoxGradient(ctx, p.x() - 1, p.y(), mThumbSize + 2, mThumbSize + 2, 5, 3,
-                           nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
+        NVGpaint shadowPaint = nvgBoxGradient(ctx, p.x() - 1, p.y(), mThumbSize + 2, mThumbSize + 2, 5, 3,
+                                              nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
         nvgBeginPath(ctx);
-        nvgRect(ctx, p.x()-5,p.y()-5, mThumbSize+10,mThumbSize+10);
+        nvgRect(ctx, p - Vector2i{5, 5}, Vector2i(mThumbSize + 10, mThumbSize + 10));
         nvgRoundedRect(ctx, p.x(),p.y(), mThumbSize,mThumbSize, 6);
         nvgPathWinding(ctx, NVG_HOLE);
         nvgFillPaint(ctx, shadowPaint);

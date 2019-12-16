@@ -73,6 +73,10 @@ void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size)
   nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y());
 }
 
+void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size)
+{
+  nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y());
+}
 
 void mainloop(int refresh) {
     if (mainloop_active)

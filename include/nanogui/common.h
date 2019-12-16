@@ -203,12 +203,15 @@ public:
   Vector2 operator-() const { return Vector2(-x(), -y()); }
   Vector2& operator=(const Vector2& o) { x() = o.x(); y() = o.y(); return *this; }
 
-  Vector2 operator+(const Vector2& o) const { return Vector2(x() + o.x(), y() + o.y()); }
+  Vector2 operator+(const Vector2& o) const { return{ x() + o.x(), y() + o.y() }; }
+  Vector2 operator+(std::initializer_list<T> l) const { return{ x() + *l.begin(), y() + *(l.begin()+1)}; }
+
   Vector2& operator+=(const Vector2& o) { x() += o.x(); y() += o.y(); return *this; }
   template<typename Scalar> Vector2 operator+(Scalar v) const { return Vector2(x() + v, y() + v); }
   template<typename Scalar> Vector2& operator+=(Scalar v) { x() += v; y() += v; return *this; }
 
-  Vector2 operator-(const Vector2& o) const { return Vector2(x() - o.x(), y() - o.y()); }
+  Vector2 operator-(const Vector2& o) const { return{ x() - o.x(), y() - o.y() }; }
+  Vector2 operator-(std::initializer_list<T> l) const { return{ x() - *l.begin(), y() - *(l.begin() + 1) }; }
   Vector2& operator-=(const Vector2& o) { x() -= o.x(); y() -= o.y(); return *this; }
   template<typename Scalar> Vector2 operator-(Scalar v) const { return Vector2<T>(x() - v, y() - v); }
   template<typename Scalar> Vector2& operator-=(Scalar v) { x() -= v; y() -= v; return *this; }
@@ -472,6 +475,8 @@ public:
 
   T width() const { return z() - x(); }
   T height() const { return w() - y(); }
+
+  Vector2<T> size() const { return{ width(), height() }; }
 
   //! Default constructor (null vector)
   Vector4() : Vector4(0) {}
@@ -837,7 +842,8 @@ inline bool nvgIsImageIcon(int value) { return value < 1024; }
 */
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
-void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
+void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
+void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size);
 
 /**
  * \brief Open a native file open dialog, which allows multiple selection.

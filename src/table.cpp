@@ -76,7 +76,7 @@ public:
     setSize(r.z() - r.x(), r.w() - r.y());
   }
 
-  bool isPointInside(const Vector2i& point) const
+  bool isPointInside(const Vector2i&) const
   {
       return false;
   }
@@ -95,7 +95,7 @@ public:
 
     Table::ColumnOrder orderingMode;
 
-    bool isPointInside(const Vector2i& point) const
+    bool isPointInside(const Vector2i&) const
     {
         return false;
     }
@@ -903,7 +903,7 @@ void Table::draw(NVGcontext* ctx)
       Vector4i r = _rows[i].items.front()->absoluteRect();
       //r.y() = r.w() - 1;
       r.z() = position().x() + width();
-      nvgRect(ctx, r.x(), r.y(), r.z() - r.x(), r.w() - r.y());
+      nvgRect(ctx, r.x(), r.y(), r.width(), r.height());
     }
     nvgStroke(ctx);
   }

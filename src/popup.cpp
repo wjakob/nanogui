@@ -59,7 +59,7 @@ void Popup::draw(NVGcontext* ctx) {
         mTheme->mDropShadow, mTheme->mTransparent);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
+    nvgRect(ctx, mPos - Vector2i(ds), mSize + Vector2i(2 * ds));
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);

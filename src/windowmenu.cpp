@@ -60,7 +60,7 @@ void WindowMenu::performLayout(NVGcontext* ctx)
   ContextMenu::performLayout(ctx);
 }
 
-void WindowMenu::addItem(const std::string& name, const std::string& shortcut, const std::function<void()>& value, int icon)
+void WindowMenu::addItem(const std::string& name, const std::string& /*shortcut*/, const std::function<void()>& value, int icon)
 {
   mItems[name] = value;
   auto& lbl = mItemContainer->wdg<ContextMenuLabel>(name);
@@ -154,7 +154,7 @@ void WindowMenu::draw(NVGcontext* ctx)
 
   /* Draw background */
   nvgBeginPath(ctx);
-  nvgRect(ctx, 0, 0, ww, hh);
+  nvgRect(ctx, { 0, 0 }, size());
   nvgFillColor(ctx, mBackgroundColor);
   nvgFill(ctx);
 
@@ -184,8 +184,8 @@ void WindowMenu::draw(NVGcontext* ctx)
   if (mHighlightedItem)
   {
     nvgBeginPath(ctx);
-    Vector4i r = mHighlightedItem->rect();
-    nvgRect(ctx, r.x(), r.y(), r.z() - r.x(), r.w() - r.y() + mItemMargin *2);
+    nvgRect(ctx, mHighlightedItem->position(), 
+                 mHighlightedItem->size() + Vector2i(0, mItemMargin *2));
     nvgFillColor(ctx, mHighlightColor);
     nvgFill(ctx);
   }
