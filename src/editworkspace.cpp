@@ -41,6 +41,8 @@ void EditorWorkspace::prepareCreateWidget(const std::string& wtypename)
 {
   auto& wfactory = WidgetFactory::instance();
   mNextWidget = wfactory.createWidget(wtypename, this);
+  mSelectedElement = mNextWidget;
+  _currentMode = EditMode::SelectNewParent;
 }
 
 Vector2i getOffsetToChild(Widget* w, Widget* parent)
@@ -366,8 +368,15 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    default:
-      break;
+    case FOURCCS("ESCP"):
+      if (mNextWidget) {
+        mNextWidget->remove();
+        mNextWidget = nullptr;
+      }
+      if (_currentMode == EditMode::SelectNewParent)
+        _currentMode = EditMode::Select;
+
+    default: break;
     }
 
     return true;
@@ -578,6 +587,8 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
           auto saveMovedElm = mSelectedElement;
 
           mElementUnderMouse->addChild(mSelectedElement);
+          mNextWidget = nullptr;
+
           saveMovedElm->setPosition(0, 0);
 
           setSelectedElement(saveMovedElm);
