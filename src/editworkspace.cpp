@@ -1,6 +1,7 @@
 
 #include <nanogui/editworkspace.h>
 #include <nanogui/messagedialog.h>
+#include <nanogui/widgetsfactory.h>
 #include <nanovg.h>
 #include <nanogui/screen.h>
 
@@ -36,9 +37,10 @@ Vector2i getUpperLeftCorner(const Vector4i& r)
   return Vector2i(r.x(), r.y());
 }
 
-Vector4i moveRect(const Vector4i& r, const Vector2i& p)
+void EditorWorkspace::prepareCreateWidget(const std::string& wtypename)
 {
-  return { r.x() + p.x(), r.y() + p.y(), r.z() + p.x(), r.w() + p.y() };
+  auto& wfactory = WidgetFactory::instance();
+  mNextWidget = wfactory.createWidget(wtypename, this);
 }
 
 Vector2i getOffsetToChild(Widget* w, Widget* parent)
@@ -384,8 +386,33 @@ bool EditorWorkspace::scrollEvent(const Vector2i &p, const Vector2f &rel)
   return true;
 }
 
+void EditorWorkspace::_drawNextWidget(NVGcontext* ctx)
+{
+  if (_currentMode == EditMode::SelectNewParent)
+  {
+    Widget* w = mNextWidget ? mNextWidget : mSelectedElement;
+    if (w)
+    {
+      nvgSave(ctx);
+      nvgTranslate(ctx, mLastMousePos - w->position());
+      w->draw(ctx);
+
+      float value = std::fmod((float)getTimeFromStart(), 1.0f);
+
+      Color color(0, 0, 255, value > 0.5 ? 64 : 32);
+      nvgBeginPath(ctx);
+      nvgFillColor(ctx, color);
+      nvgRect(ctx, w->rect());
+      nvgFill(ctx);
+
+      nvgRestore(ctx);
+    }
+  }
+}
+
 bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, int button, int modifiers)
 {
+  mLastMousePos = pp;
   if (_currentMode == EditMode::Select || _currentMode == EditMode::SelectNewParent)
   {
     // highlight the element that the mouse is over
@@ -553,7 +580,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
           mElementUnderMouse->addChild(mSelectedElement);
           saveMovedElm->setPosition(0, 0);
 
-          setSelectedElement( saveMovedElm );
+          setSelectedElement(saveMovedElm);
           _sendSelectElementChangedEvent();
 
           if (mChildrenChangeCallback)
@@ -665,7 +692,7 @@ void EditorWorkspace::draw(NVGcontext* ctx)
   nvgSave(ctx);
 
   nvgBeginPath(ctx);
-  nvgRect(ctx, mPos.x(), mPos.y(), width(), height());
+  nvgRect(ctx, mPos, size());
   nvgStrokeColor(ctx, nvgRGBA(0, 0, 0, 255));
   nvgStroke(ctx);
 
@@ -735,6 +762,7 @@ void EditorWorkspace::draw(NVGcontext* ctx)
 
   _drawSelectedElement(ctx);
   _drawResizePoints(ctx);
+  _drawNextWidget(ctx);
 }
 
 void EditorWorkspace::addChild(int index, Widget * widget)
@@ -749,7 +777,7 @@ void EditorWorkspace::_drawWidthRectangle(NVGcontext* ctx, Color& color, int ww,
 {
   nvgBeginPath(ctx);
   nvgStrokeColor(ctx, color);
-  nvgRect(ctx, r.x(), r.y(), r.z() - r.x(), r.w() - r.y());
+  nvgRect(ctx, r);
   nvgStroke(ctx);
 }
 
@@ -758,15 +786,13 @@ void EditorWorkspace::_drawResizePoint(NVGcontext* ctx, const Color& color, cons
   nvgBeginPath(ctx);
   nvgFillColor(ctx, color);
   Vector2i c = rect_center(tr);
-  float r = (tr.z() - tr.x()) / 2;
+  float r = tr.width() / 2;
   nvgCircle(ctx, c.x(), c.y(), r );
-  //nvgRect(ctx, tr.x(), tr.y(), tr.z() - tr.x(), tr.w() - tr.y());
   nvgFill(ctx);
 
   nvgBeginPath(ctx);
   nvgStrokeColor(ctx, Color(0, 0, 0, 255));
   nvgCircle(ctx, c.x(), c.y(), r );
-  //nvgRect(ctx, tr.x(), tr.y(), tr.z() - tr.x(), tr.w() - tr.y());
   nvgStroke(ctx);
 }
 
@@ -777,7 +803,7 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
         // draw handles for moving
         EditMode m = _currentMode;
         Vector2i offset = getOffsetToChild(mSelectedElement, this);
-        Vector4i r = moveRect(mSelectedElement->rect(), offset);
+        Vector4i r = mSelectedElement->rect() + offset;
         if (m < EditMode::Move)
             m = _mouseOverMode;
 
@@ -837,7 +863,7 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
     auto color = underMouseNotEditable ? Color(0, 0, 64, 255) : Color(100,0,0,255);
 
     Vector2i umoffset = getOffsetToChild(mElementUnderMouse, this);
-    _drawWidthRectangle(ctx, color, 2, moveRect(mElementUnderMouse->rect(), umoffset));
+    _drawWidthRectangle(ctx, color, 2, mElementUnderMouse->rect() + umoffset);
   }
 
   if (!mSelectedElement)
@@ -847,25 +873,25 @@ void EditorWorkspace::_drawSelectedElement(NVGcontext* ctx)
   if (_currentMode == EditMode::Select)
   {
     auto color = avoidedElm ? Color(0, 0, 64, 255) : Color(100, 0, 0, 255);
-    _drawWidthRectangle(ctx, color, 2, moveRect(mSelectedElement->rect(), offset));
+    _drawWidthRectangle(ctx, color, 2, mSelectedElement->rect() + offset);
   }
   else if (_currentMode == EditMode::SelectNewParent)
   {
     float value = std::fmod((float)getTimeFromStart(), 1.0f);
-    Vector4i r = moveRect(mSelectedElement->rect(), offset);
+    Vector4i r = mSelectedElement->rect() + offset;
     Color color(0, 0, 255, value > 0.5 ? 32 : 64);
     nvgBeginPath(ctx);
     nvgFillColor(ctx, color);
-    nvgRect(ctx, r.x(), r.y(), r.z() - r.x(), r.w() - r.y());
+    nvgRect(ctx, r);
     nvgFill(ctx);
   }
   else if (_currentMode >= EditMode::Move)
   {
-    Vector4i tr = moveRect(mSelectedElement->rect(), offset);;
+    Vector4i tr = mSelectedElement->rect() + offset;
     Color color(255, 0, 0, 64);
     nvgBeginPath(ctx);
     nvgFillColor(ctx, color);
-    nvgRect(ctx, tr.x(), tr.y(), tr.z() - tr.x(), tr.w() - tr.y());
+    nvgRect(ctx, tr);
     nvgFill(ctx);
   }
 }
@@ -944,11 +970,6 @@ bool EditorWorkspace::load(Serializer& in )
 std::string EditorWorkspace::wtypename() const
 {
     return "EditorWorkspace";
-}
-
-void EditorWorkspace::setFactoryView( FactoryView* wnd )
-{
-  _factoryView = wnd;
 }
 
 void EditorWorkspace::_sendSelectElementChangedEvent()

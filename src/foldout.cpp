@@ -100,11 +100,9 @@ void Foldout::_reparseChilds(NVGcontext* ctx)
   }
 }
 
-Foldout::Foldout( Widget* parent, const std::string& id )
+Foldout::Foldout( Widget* parent)
   : Widget(parent)
 {
-  setId(id);
-
   mActivePageIndex = -1;
 
   mScrollBar = add<ScrollBar>(ScrollBar::Alignment::VerticalRight);

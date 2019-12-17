@@ -114,7 +114,7 @@ void register_nanovg(py::module &m) {
         .def("ResetTransform", &nvgResetTransform)
         .def("Transform", &nvgTransform, "a"_a, "b"_a, "c"_a, "d"_a, "e"_a,
              "f"_a)
-        .def("Translate", &nvgTranslate, "x"_a, "y"_a)
+        .def("Translate", (void(*)(NVGcontext*, float, float))&nvgTranslate, "x"_a, "y"_a)
         .def("Rotate", &nvgRotate, "angle"_a)
         .def("SkewX", &nvgSkewX, "angle"_a)
         .def("SkewY", &nvgSkewY, "angle"_a)

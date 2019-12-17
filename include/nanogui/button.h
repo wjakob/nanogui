@@ -27,6 +27,7 @@ DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
 DECLSETTER(ButtonDrawFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
+DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
 
@@ -140,7 +141,7 @@ public:
 
     /// Set the change callback (for toggle buttons).
     void setChangeCallback(const std::function<void(bool)> &callback) { mChangeCallback = callback; }
-
+    
     /// Set the button group (for radio buttons).
     void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }
 
@@ -226,6 +227,7 @@ public:
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(ButtonDrawFlags, setDrawFlags)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
+    PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
 };
@@ -263,7 +265,6 @@ public:
 
   void draw(NVGcontext* ctx) override;
   Color getTextColor() const override;
-
 };
 
 NAMESPACE_END(nanogui)

@@ -16,8 +16,6 @@ NAMESPACE_BEGIN(nanogui)
   the current skin.
 */
 
-class FactoryView;
-
 class NANOGUI_EXPORT EditorWorkspace : public Widget
 {
 public:
@@ -104,8 +102,6 @@ public:
 
     void addChild(int index, Widget * widget) override;
 
-    void setFactoryView( FactoryView* wnd );
-
     void quit() { _running = false; }
 
     void bringElementToFront( Widget* elm );
@@ -135,6 +131,8 @@ public:
     void setGridVisible(bool drawGrid);
     void saveSelectedElementToJson();
 
+    void prepareCreateWidget(const std::string& wtypename);
+
 private:
     EditMode getModeFromPos(const Vector2i &p);
 
@@ -145,6 +143,7 @@ private:
 
     void _drawSelectedElement(NVGcontext* ctx);
     void _drawResizePoints(NVGcontext* ctx);
+    void _drawNextWidget(NVGcontext* ctx);
     void _drawWidthRectangle(NVGcontext* ctx, Color& color, int width, const Vector4i& rectangle);
     void _drawResizePoint(NVGcontext* ctx, const Color& color, const Vector4i& rectangle);
     void _createElementsMap( Widget* start, std::map<std::string, Widget*>& mapa );
@@ -160,13 +159,14 @@ private:
     Vector4i  _selectedArea;
 
     Vector2i  _gridSize;
-    int        _menuCommandStart;
+    int       _menuCommandStart;
     bool      _drawGrid, _useGrid, _running;
+    Vector2i  mLastMousePos;
 
     Widget* mElementUnderMouse = nullptr;
     Widget* mSelectedElement = nullptr;
-    FactoryView* _factoryView = nullptr;
-    Window* _optionsWindow = nullptr;
+    Window* mOptionsWindow = nullptr;
+    Widget* mNextWidget = nullptr;
     //ChangesManager* _changesManager;
 
     struct {

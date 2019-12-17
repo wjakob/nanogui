@@ -844,6 +844,9 @@ inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size);
+void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector4i& r);
+void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2i& pos);
+void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2f& pos);
 
 /**
  * \brief Open a native file open dialog, which allows multiple selection.

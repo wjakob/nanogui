@@ -28,8 +28,8 @@ Vector2i Dial::preferredSize(NVGcontext *) const {
     return Vector2i(40, 40);
 }
 
-bool Dial::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
-                            int /* button */, int /* modifiers */) {
+bool Dial::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */, int /* button */, int /* modifiers */) 
+{
     if (!mEnabled)
         return false;
 

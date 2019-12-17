@@ -68,15 +68,11 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
 
 static bool mainloop_active = false;
 
-void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size)
-{
-  nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y());
-}
-
-void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size)
-{
-  nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y());
-}
+void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
+void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
+void nvgTranslate(NVGcontext* ctx, const Vector2i& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
+void nvgTranslate(NVGcontext* ctx, const Vector2f& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
+void nvgRect(NVGcontext* ctx, const Vector4i& r) { nvgRect(ctx, r.x(), r.y(), r.width(), r.height()); }
 
 void mainloop(int refresh) {
     if (mainloop_active)

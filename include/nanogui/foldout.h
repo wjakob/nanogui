@@ -28,7 +28,14 @@ public:
     std::string name;
     std::string caption;
   };
-  Foldout( Widget* parent, const std::string& id="" );
+  
+  explicit Foldout(Widget* parent);
+
+  using Widget::set;
+  template<typename... Args>
+  Foldout(Widget* parent, const Args&... args)
+    : Foldout(parent) { set<Foldout, Args...>(args...); }
+
   virtual ~Foldout();
 
   //! draws the element and its children

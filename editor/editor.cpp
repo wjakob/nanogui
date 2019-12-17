@@ -49,6 +49,8 @@
 #include <memory>
 #include <utility>
 
+#include "widgetctor.h"
+
 #if defined(__GNUC__)
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
@@ -89,6 +91,7 @@ struct {
   WidgetId editor{ "#editor" };
   WidgetId mainview{ "#mainview" };
   WidgetId layers{ "#layers" };
+  WidgetId factoryview{ "#factoryview" };
 } ID;
 
 class ExampleApplication : public Screen {
@@ -192,16 +195,24 @@ public:
       auto& waheader = wa.hlayer(FixedHeight{ 30 });
 
       auto& wawidgets = wa.vlayer(RelativeSize{ 1, 0 });
-      auto& fo = wawidgets.wdg<Foldout>("#foldout_ed");
+      auto& factoryview = wawidgets.wdg<Foldout>(ID.factoryview);
       auto& wfactory = WidgetFactory::instance();
       for (auto f : wfactory.factories())
       {
         auto& layer = this->vlayer();
-        for (auto wt : f->types())
-          layer.button(Caption{ wt }, FixedHeight{ 22 });
-        fo.addPage(f->name(), f->name(), &layer);
+        for (auto wdgtype : f->types())
+        {
+          auto& ctor = layer.wdg<WidgetCtor>(Caption{ wdgtype }, FixedHeight{ 22 },
+                          ButtonCallback{[wdgtype, this] () {
+                            auto editor = findWidget<EditorWorkspace>(ID.workspace);
+                            if (editor) editor->prepareCreateWidget(wdgtype);
+                          }}
+                        );
+          ctor.mWtype = wdgtype;
+        }
+        factoryview.addPage(f->name(), f->name(), &layer);
       }
-      fo.hide();
+      factoryview.hide();
 
       auto& view = wawidgets.wdg<TreeView>(RelativeSize{ 1, 0 }, ID.layers);
       view.setActionIcon(TreeView::IconCollapsed, ENTYPO_ICON_RIGHT_DIR);
@@ -223,9 +234,9 @@ public:
       });
 
       waheader.link(Caption{ "Assets" }, ButtonFlags{ Button::ToggleButton|Button::RadioButton }, 
-                    ButtonCallback{ [&] { view.hide(); fo.show(); } });
+                    ButtonCallback{ [&] { view.hide(); factoryview.show(); } });
       waheader.link(Caption{ "Layers" }, ButtonFlags{ Button::ToggleButton|Button::RadioButton },
-                    ButtonCallback{ [&] { view.show(); fo.hide(); } });
+                    ButtonCallback{ [&] { view.show(); factoryview.hide(); } });
       waheader.label(Caption{ "" }, RelativeSize{0.3f, 1.f});
       waheader.button(Caption{ "Page" });
     }
