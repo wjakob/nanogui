@@ -13,7 +13,7 @@ class TreeView;
 class NANOGUI_EXPORT TreeViewItem : public Label
 {
   friend class TreeView;
-  const int mNodeId;
+  int mNodeId;
 
 public:
   RTTI_CLASS_UID("TRVI")
@@ -48,13 +48,15 @@ public:
 
   int nodesCount() const;
   bool hasNodes() const;
+  void swapChildId(NodeId oldid, NodeId newid);
 
   bool isAliveId(NodeId id);
 
   void removeChild(const Widget *widget) override;
   void removeNode(const Widget* node);
 
-  NodeId getNodeId() const { return mNodeId; }
+  NodeId nodeId() const { return mNodeId; }
+  void setNodeId(NodeId id);
 
   //! Adds a new node behind the last child node.
   //! \param text text of the new node
@@ -171,7 +173,6 @@ private:
   int  mImageIndex;
   int  SelectedImageIndex;
   intptr_t mData;
-  bool mExpanded;
   NodeList mChildrenIds;
   std::string mActiveFont;
 };

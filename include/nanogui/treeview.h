@@ -2,6 +2,7 @@
 
 #include <nanogui/treeviewitem.h>
 #include <memory>
+#include <set>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -32,8 +33,8 @@ public:
     TreeViewItem::NodeId selectedNode() const { return mSelected; }
     TreeViewItem::NodeId hoveredNode() const { return mHovered; }
 
-    void setSelected(TreeViewItem* item) { mSelected = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
-    void setHovered(TreeViewItem* item) { mHovered = item ? item->getNodeId() : TreeViewItem::BadNodeId; }
+    void setSelected(TreeViewItem* item) { mSelected = item ? item->nodeId() : TreeViewItem::BadNodeId; }
+    void setHovered(TreeViewItem* item) { mHovered = item ? item->nodeId() : TreeViewItem::BadNodeId; }
 
     bool getLinesVisible() const { return mLinesVisible; }
     void setLinesVisible( bool visible ) { mLinesVisible = visible; }
@@ -41,6 +42,9 @@ public:
     void draw(NVGcontext* ctx) override;
     void afterDraw(NVGcontext* ctx) override;
     void performLayout(NVGcontext *ctx) override;
+
+    void setExpanded(TreeViewItem* item, bool expanded);
+    bool isExpanded(const TreeViewItem* item) const;
 
     void setImageLeftOfIcon( bool bLeftOf );
     bool getImageLeftOfIcon() const;
@@ -79,6 +83,7 @@ private:
     TreeViewItem::NodeId mHovered;
     int           mItemHeight;
     int           mIndentWidth;
+    std::set<TreeViewItem::NodeId> mExpandedItems;
 
     ScrollBar*    mScrollBarH;
     ScrollBar*    mScrollBarV;

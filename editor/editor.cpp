@@ -245,6 +245,7 @@ public:
     {
       auto node = item->addNode("Unknown widget");
       node->setData((intptr_t)w);
+      node->setNodeId((intptr_t)w);
       if (auto parea = node->previewArea())
       {
         bool editable = editor->isWidgetEditable((intptr_t)w);
@@ -304,7 +305,7 @@ public:
     {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
-        if (nanogui::isKeyboardKeyEscape(key) && nanogui::isKeyboardActionPress(action)) {
+        if (isKeyboardKeyEscape(key) && isKeyboardActionPress(action)) {
             setVisible(false);
             return true;
         }

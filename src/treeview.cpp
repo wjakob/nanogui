@@ -41,8 +41,9 @@ TreeView::TreeView( Widget* parent, bool clip,
   }
 
   mRoot = add<TreeViewItem>();
-  mRoot->mExpanded = true;
-  *(const_cast<TreeViewItem::NodeId*>(&mRoot->mNodeId)) = TreeViewItem::RootNodeId;
+  mRoot->setNodeId(TreeViewItem::RootNodeId);
+  setExpanded(mRoot, true);
+
   mNeedRecalculateItemsRectangle = true;
   mNeedRecheckChildren = true;
   mSelected = TreeViewItem::BadNodeId;
@@ -59,14 +60,17 @@ void TreeView::removeNode(TreeViewItem::NodeId id)
 {
   auto* node = findNode(id);
   if (node)
+  {
+    node->removeAllNodes();
     removeChild(node);
+  }
 }
 
 TreeViewItem& TreeView::addNode()
 {
   static TreeViewItem::NodeId nodeIdCounter = 1;
   auto& node = wdg<TreeViewItem>();
-  *(const_cast<TreeViewItem::NodeId*>(&node.mNodeId)) = nodeIdCounter++;
+  node.setNodeId(nodeIdCounter++);
   return node;
 }
 
@@ -96,7 +100,7 @@ TreeViewItem* TreeView::findNode(TreeViewItem::NodeId id)
   {
     if (auto twi = TreeViewItem::cast(c))
     {
-      if (twi->getNodeId() == id)
+      if (twi->nodeId() == id)
         return twi;
     }
   }
@@ -211,7 +215,7 @@ void TreeView::_mouseAction(Vector2i pos, bool onlyHover /*= false*/ )
 
   if (onlyHover)
   {
-    mHovered = (hitNode ? hitNode->getNodeId() : TreeViewItem::BadNodeId);
+    mHovered = (hitNode ? hitNode->nodeId() : TreeViewItem::BadNodeId);
     if (mHoverNodeCallback)
       mHoverNodeCallback(hitNode);
   }
@@ -220,7 +224,7 @@ void TreeView::_mouseAction(Vector2i pos, bool onlyHover /*= false*/ )
     if (hitNode && pos.x() > hitNode->getLevel() * mIndentWidth)
     {
       selectedPtr = hitNode;
-      mSelected = selectedPtr ? selectedPtr->getNodeId() : TreeViewItem::BadNodeId;
+      mSelected = selectedPtr ? selectedPtr->nodeId() : TreeViewItem::BadNodeId;
     }
 
     if (hitNode
@@ -244,16 +248,26 @@ void TreeView::_mouseAction(Vector2i pos, bool onlyHover /*= false*/ )
   }
 }
 
+void TreeView::setExpanded(TreeViewItem* item, bool expanded)
+{
+  auto nid = item ? item->nodeId() : 0;
+  if (expanded) mExpandedItems.insert(nid);
+  else mExpandedItems.erase(nid);
+}
+
+bool TreeView::isExpanded(const TreeViewItem* item) const
+{
+  return mExpandedItems.count(item ? item->nodeId() : 0);
+}
+
 void TreeView::updateItems() { mNeedUpdateItems = true; }
 
 Color TreeView::_getCurrentNodeColor( TreeViewItem* node )
 {
-    Color textCol = 0xffc0c0c0;
-
-    if (node && enabled())
-      textCol = ( node->getNodeId() == mSelected ) ? 0xffffffff : 0xff000000;
-
-    return textCol;
+  Color textCol = 0xffc0c0c0;
+  if (node && enabled())
+    textCol = ( node->nodeId() == mSelected ) ? 0xffffffff : 0xff000000;
+  return textCol;
 }
 
 std::string TreeView::_getCurrentNodeFont( TreeViewItem* node)
@@ -284,7 +298,7 @@ void TreeView::afterDraw(NVGcontext* ctx)
     for (auto& n : nodes)
     {
       if (n != mRoot)
-        all_ids.push_back({ n->getNodeId(), false });
+        all_ids.push_back({ n->nodeId(), false });
     }
 
     //check each id, that it contain at least in once node

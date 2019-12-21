@@ -27,7 +27,6 @@ void TreeViewItem::_init()
   mImageIndex = -1;
   SelectedImageIndex = -1;
   mData = 0;
-  mExpanded = false;
   mFontColor = Color();
 
   sendToBack();
@@ -53,7 +52,7 @@ TreeViewItem* TreeViewItem::addNodeBack(
 {
   auto& node = source()->addNode();
 
-  mChildrenIds.push_back( node.getNodeId() );
+  mChildrenIds.push_back( node.nodeId() );
   node.setCaption( text );
   node.mIcon = icon;
   node.mImageIndex = imageIndex;
@@ -73,7 +72,7 @@ TreeViewItem* TreeViewItem::addNodeFront(
 {
   auto& node = source()->addNode();
 
-  mChildrenIds.push_front( node.getNodeId() );
+  mChildrenIds.push_front( node.nodeId() );
   node.setCaption( text );
   node.mIcon = icon;
   node.mImageIndex = imageIndex;
@@ -92,7 +91,7 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
   int          selectedImageIndex /*= -1*/,
   intptr_t          data /*= 0*/)
 {
-  NodeId insertId = other->getNodeId();
+  NodeId insertId = other->nodeId();
   for (auto it = mChildrenIds.begin(); it != mChildrenIds.end(); it++ )
   {
     if (insertId == *it)
@@ -104,7 +103,7 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
       node.SelectedImageIndex = selectedImageIndex;
       node.mData = data;
       node.mParentId = mNodeId;
-      mChildrenIds.insert( it, node.getNodeId() );
+      mChildrenIds.insert( it, node.nodeId() );
       return &node;
     }
   }
@@ -114,9 +113,8 @@ TreeViewItem* TreeViewItem::insertNodeAfter(
 
 bool TreeViewItem::isAliveId(NodeId id)
 {
-  for (auto& it : mChildrenIds)
-    if (it == id) return true;
-  return false;
+  auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), id);
+  return it != mChildrenIds.end();
 }
 
 void TreeViewItem::removeChild(const Widget *widget)
@@ -127,6 +125,7 @@ void TreeViewItem::removeChild(const Widget *widget)
 
 void TreeViewItem::removeAllNodes()
 {
+  for (auto& id : mChildrenIds) source()->removeNode(id);
   mChildrenIds.clear();
   source()->recheckChildren();
 }
@@ -135,10 +134,11 @@ void TreeViewItem::removeNode(const Widget* node)
 {
   if (auto twi = TreeViewItem::cast(node))
   {
-    auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), twi->getNodeId());
+    auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), twi->nodeId());
     if (it != mChildrenIds.end())
     {
       source()->recheckChildren();
+      source()->removeNode(*it);
       mChildrenIds.erase(it);
     }
   }
@@ -154,7 +154,7 @@ TreeViewItem* TreeViewItem::insertNodeBefore(
 {
   for (auto it = mChildrenIds.begin(); it != mChildrenIds.end(); it++ )
   {
-    if ( other->getNodeId() == *it )
+    if ( other->nodeId() == *it )
     {
       auto& node = source()->addNode();
       node.setCaption( text );
@@ -163,7 +163,7 @@ TreeViewItem* TreeViewItem::insertNodeBefore(
       node.SelectedImageIndex = selectedImageIndex;
       node.mData = data;
       node.mParentId = mNodeId;
-      mChildrenIds.insert( it, node.getNodeId() );
+      mChildrenIds.insert( it, node.nodeId() );
       return &node;
     }
   }
@@ -259,7 +259,7 @@ TreeViewItem* TreeViewItem::nextVisible() const
 
 bool TreeViewItem::deleteNode( TreeViewItem* child )
 {
-  auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), child->getNodeId());
+  auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), child->nodeId());
   if (it != mChildrenIds.end())
   {
     mChildrenIds.erase(it);
@@ -277,7 +277,7 @@ bool TreeViewItem::moveNodeUp( TreeViewItem* child )
 
   for (auto it = mChildrenIds.begin(); it != mChildrenIds.end(); it++ )
   {
-    if ( child->getNodeId() == *it )
+    if ( child->nodeId() == *it )
     {
       if ( it != mChildrenIds.begin() )
       {
@@ -302,7 +302,7 @@ bool TreeViewItem::moveNodeDown( TreeViewItem* child )
 
   for ( itChild = mChildrenIds.begin(); itChild != mChildrenIds.end(); itChild++ )
   {
-    if ( child->getNodeId() == *itChild )
+    if ( child->nodeId() == *itChild )
     {
       if ( *itChild != mChildrenIds.back() )
       {
@@ -321,7 +321,7 @@ bool TreeViewItem::moveNodeDown( TreeViewItem* child )
 
 void TreeViewItem::setExpanded( bool expanded )
 {
-  mExpanded = expanded;
+  source()->setExpanded(this, expanded);
   if (mOwner)
     mOwner->updateItems();
 }
@@ -374,7 +374,25 @@ bool TreeViewItem::isVisible() const
 }
 
 void TreeViewItem::setColor( const Color& color ) {  mFontColor = color; }
-bool TreeViewItem::isExpanded() const { return mExpanded; }
+bool TreeViewItem::isExpanded() const { return source()->isExpanded(this); }
+
+void TreeViewItem::setNodeId(NodeId id)
+{
+  auto oldId = mNodeId;
+  mNodeId = id;
+  auto bn = baseNode();
+  if (bn) 
+    bn->swapChildId(oldId, id);
+}
+
+void TreeViewItem::swapChildId(NodeId oldid, NodeId newid)
+{
+  auto it = std::find(mChildrenIds.begin(), mChildrenIds.end(), oldid);
+  if (it != mChildrenIds.end())
+    *it = newid;
+  else
+    mChildrenIds.push_back(newid);
+}
 
 TreeView* TreeViewItem::view() { return findParent<TreeView>(); }
 
