@@ -458,10 +458,7 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
     }
 
     Vector2i delta = p - getUpperLeftCorner(_selectedArea);
-    _selectedArea.x() += delta.x();
-    _selectedArea.y() += delta.y();
-    _selectedArea.z() += delta.x();
-    _selectedArea.w() += delta.y();
+    _selectedArea += delta;
 
     if (mElementUnderMouse)
     {
@@ -471,42 +468,46 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
   }
   else if (_currentMode > EditMode::Move)
   {
-    // get difference from start position
-    Vector2i offset = getOffsetToChild(mSelectedElement, this);
-    Vector2i p = pp + (absolutePosition() - offset);
-
-    if (_useGrid)
-    {
-      Vector2i ap = absolutePosition();
-      p -= ap;
-
-      p.x() = (p.x() / _gridSize.x())*_gridSize.x();
-      p.y() = (p.y() / _gridSize.y())*_gridSize.y();
-
-      p += ap;
-    }
-
     switch (_currentMode)
     {
-    case EditMode::ResizeTop:    _selectedArea.y() = p.y(); break;
-    case EditMode::ResizeBottom: _selectedArea.w() = p.y(); break;
-    case EditMode::ResizeLeft:   _selectedArea.x() = p.x(); break;
-    case EditMode::ResizeRight:  _selectedArea.z() = p.x(); break;
-    case EditMode::ResizeTopLeft:_selectedArea.x() = p.x(); _selectedArea.y() = p.y(); break;
-    case EditMode::ResizeTopRight: _selectedArea.y() = p.y(); _selectedArea.z() = p.x(); break;
-    case EditMode::ResizeBottomLeft: _selectedArea.x() = p.x(); _selectedArea.w() = p.y(); break;
-    case EditMode::ResizeBottpmRight: _selectedArea.z() = p.x(); _selectedArea.w() = p.y(); break;
+    case EditMode::ResizeTop:    _selectedArea.y() += rel.y(); break;
+    case EditMode::ResizeBottom: _selectedArea.w() += rel.y(); break;
+    case EditMode::ResizeLeft:   _selectedArea.x() += rel.x(); break;
+    case EditMode::ResizeRight:  _selectedArea.z() += rel.x(); break;
+    case EditMode::ResizeTopLeft: _selectedArea.x() += rel.x(); _selectedArea.y() += rel.y(); break;
+    case EditMode::ResizeTopRight: _selectedArea.y() += rel.y(); _selectedArea.z() += rel.x(); break;
+    case EditMode::ResizeBottomLeft: _selectedArea.x() += rel.x(); _selectedArea.w() += rel.y(); break;
+    case EditMode::ResizeBottpmRight: _selectedArea.z() += rel.x(); _selectedArea.w() += rel.y(); break;
     default: break;
+    }
+
+    Vector4i alignedArea = _selectedArea;
+    if (_useGrid)
+    {
+      Vector2i lpos = _selectedArea.lefttop().alignTo(_gridSize);
+      Vector2i rpos = _selectedArea.lowerright().alignTo(_gridSize);
+
+      switch (_currentMode)
+      {
+      case EditMode::ResizeTop: alignedArea.y() = lpos.y(); break;
+      case EditMode::ResizeBottom: alignedArea.w() = rpos.y(); break;
+      case EditMode::ResizeLeft:   alignedArea.x() = lpos.x(); break;
+      case EditMode::ResizeRight:  alignedArea.z() = rpos.x(); break;
+      case EditMode::ResizeTopLeft: alignedArea.x() = lpos.x(); alignedArea.y() = lpos.y(); break;
+      case EditMode::ResizeTopRight: alignedArea.y() = lpos.y(); alignedArea.z() = rpos.x(); break;
+      case EditMode::ResizeBottomLeft: alignedArea.x() = lpos.x(); alignedArea.w() = rpos.y(); break;
+      case EditMode::ResizeBottpmRight: alignedArea.z() = rpos.x(); alignedArea.w() = rpos.y(); break;
+      default: break;
+      }
     }
 
     if (mElementUnderMouse)
     {
       Vector2i parpos = mElementUnderMouse->parent()->absolutePosition();
-      Vector2i newpos = Vector2i(_selectedArea.x(), _selectedArea.y()) - parpos;
-      Vector2i newsize = Vector2i(_selectedArea.z() - _selectedArea.x(), _selectedArea.w() - _selectedArea.y());
+      Vector2i newpos = Vector2i(alignedArea.x(), alignedArea.y()) - parpos;
       mElementUnderMouse->setPosition(newpos);
-      mElementUnderMouse->setFixedSize(newsize);
-      mElementUnderMouse->setSize(newsize);
+      mElementUnderMouse->setFixedSize(alignedArea.size());
+      mElementUnderMouse->setSize(alignedArea.size());
     }
 
     return true;
@@ -628,50 +629,6 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
   return false;
 }
 
-//! called if an event happened.
-/*bool EditorWorkspace::onEvent( const NEvent &e )
-{
-  switch(e.EventType)
-  {
-    /*case NRP_DRAGDROP_EVENT:
-        if ( e.DragDropEvent.EventType == NRP_DROP_ELEMENT && e.DragDropEvent.Element == _factoryView )
-        {
-            Point mousePos = e.MouseEvent.getPosition();
-            Widget* parentElm = getEditableElementFromPoint(this, mousePos );
-
-            s32 fIndex = _factoryView->GetFactoryIndex();
-            s32 elmIndex = _factoryView->GetElementIndex();
-            if (  fIndex >= 0 && elmIndex >= 0 )
-            {
-                AbstractWidgetsFactory* factory = WidgetsFactoriesManager::instance().getFactory( fIndex );
-                String name = factory->getWidgetTypeName( elmIndex );
-
-                // add it
-                Widget *newElement = factory->createWidget( name, parentElm );
-                if ( newElement )
-                {
-                    Point p = mousePos - parentElm->getAbsoluteRect().UpperLeftCorner;
-          newElement->setGeometry( RectI( p, core::NSizeU(100,100) ) );
-
-                    String checkName;
-                    setElementName( newElement, true, checkName );
-                    setSelectedElement(0);
-                    setSelectedElement( newElement );
-
-                    if ( _changesManager )
-                        _changesManager->Update();
-                }
-            }
-
-            getEnvironment()->setDragObject( NULL, Texture(), core::RectI( 0, 0, 0, 0 ) );
-            _editorWindow->updateTree( this );
-            return true;
-        }
-    break;
-  // even if we didn't absorb the event,
-  // we never pass events back to the GUI we're editing!
-  return false;
-}*/
 
 void EditorWorkspace::preview()
 {

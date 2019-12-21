@@ -427,6 +427,15 @@ public:
   Vector2 cwiseMax(const Vector2& o) const { return Vector2(std::max(x(), o.x()), std::max(y(), o.y())); }
   Vector2 cwiseMin(const Vector2& o) const { return Vector2(std::min(x(), o.x()), std::min(y(), o.y())); }
 
+  template<class B>
+  Vector2 alignTo(const Vector2<B>& size) const
+  {
+    Vector2 ret;
+    ret.x() = (x() / size.x())*size.x();
+    ret.y() = (y() / size.y())*size.y();
+    return ret;
+  }
+
   //! Sets this vector to the linearly interpolated vector between a and b.
   /** \param a first vector to interpolate with, maximum at 1.0f
   \param b second vector to interpolate with, maximum at 0.0f
@@ -488,6 +497,7 @@ public:
   //! Copy constructor
   Vector4(const Vector4& o) { for (int i=0; i < 4; i++) _d[i] = o._d[i]; }
 
+  Vector2<T> lefttop() const { return Vector2<T>(x(), y()); }
   Vector2<T> lowerright() const { return Vector2<T>(z(), w()); }
   Vector2<T> center() const { return Vector2<T>((x() + z())/2, (y() + w())/2); }
   Vector4 operator+(const Vector2<T>& p) const
@@ -503,6 +513,24 @@ public:
     x() += p.x(); y() += p.y();
     z() += p.x(); w() += p.y();
     return *this;
+  }
+
+  Vector4& operator-=(const Vector2<T>& p)
+  {
+    x() -= p.x(); y() -= p.y();
+    z() -= p.x(); w() -= p.y();
+    return *this;
+  }
+
+  template<class B>
+  Vector4 alignTo(const Vector2<B>& size) const
+  {
+    Vector4 ret;
+    ret.x() = (x() / size.x())*size.x();
+    ret.y() = (y() / size.y())*size.y();
+    ret.z() = (z() / size.x())*size.x();
+    ret.w() = (w() / size.y())*size.y();
+    return ret;
   }
 
   Vector4 operator-(const Vector2<T>& p) const

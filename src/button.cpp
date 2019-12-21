@@ -142,8 +142,6 @@ Color Button::getIconColor() const { return getTextColor(); }
 
 void Button::draw(NVGcontext *ctx) 
 {
-    Widget::draw(ctx);
-
     if (haveDrawFlag(DrawBody))
     {
       NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
@@ -230,24 +228,33 @@ void Button::draw(NVGcontext *ctx)
         Vector2f iconPos = center;
         iconPos.y() -= 1;
 
-        if (mIconPosition == IconPosition::LeftCentered) {
+        if (mIconPosition == IconPosition::LeftCentered) 
+        {
             iconPos.x() -= (tw + iw) * 0.5f;
             textPos.x() += iw * 0.5f;
-        } else if (mIconPosition == IconPosition::RightCentered) {
+        } 
+        else if (mIconPosition == IconPosition::RightCentered) 
+        {
             textPos.x() -= iw * 0.5f;
             iconPos.x() += tw * 0.5f;
-        } else if (mIconPosition == IconPosition::Left) {
+        } 
+        else if (mIconPosition == IconPosition::Left) 
+        {
             iconPos.x() = mPos.x() + 8;
-        } else if (mIconPosition == IconPosition::Right) {
+        } 
+        else if (mIconPosition == IconPosition::Right) 
+        {
             iconPos.x() = mPos.x() + mSize.x() - iw - 8;
         }
 
-        if (nvgIsFontIcon(mIcon)) {
+        if (nvgIsFontIcon(mIcon)) 
+        {
             nvgText(ctx, iconPos.x(), iconPos.y()+1, icon.data(), nullptr);
-        } else {
-            NVGpaint imgPaint = nvgImagePattern(ctx,
-                    iconPos.x(), iconPos.y() - ih/2, iw, ih, 0, mIcon, mEnabled ? 0.5f : 0.25f);
-
+        } 
+        else 
+        {
+            NVGpaint imgPaint = nvgImagePattern(ctx, iconPos.x(), iconPos.y() - ih/2, 
+                                                iw, ih, 0, mIcon, mEnabled ? 0.5f : 0.25f);
             nvgFillPaint(ctx, imgPaint);
             nvgFill(ctx);
         }
@@ -263,6 +270,8 @@ void Button::draw(NVGcontext *ctx)
       nvgFillColor(ctx, textColor);
       nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
     }
+
+    Widget::draw(ctx);
 }
 
 void Button::save(Serializer &s) const {
