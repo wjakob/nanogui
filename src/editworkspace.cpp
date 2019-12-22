@@ -69,21 +69,21 @@ EditorWorkspace::EditMode EditorWorkspace::getModeFromPos( const Vector2i& p )
   {
     bool canResize = nonEditableElms.count((intptr_t)mSelectedElement) == 0;
 
-    if (canResize && isPointInsideRect( p, editArea.topleft) )
+    if (canResize && isPointInsideRect( p, mEditArea.topleft) )
       return EditMode::ResizeTopLeft;
-    else if (canResize && isPointInsideRect( p, editArea.topright) )
+    else if (canResize && isPointInsideRect( p, mEditArea.topright) )
       return EditMode::ResizeTopRight;
-    else if (canResize && isPointInsideRect( p, editArea.bottomleft) )
+    else if (canResize && isPointInsideRect( p, mEditArea.bottomleft) )
       return EditMode::ResizeBottomLeft;
-    else if (canResize && isPointInsideRect( p, editArea.bottomright) )
+    else if (canResize && isPointInsideRect( p, mEditArea.bottomright) )
       return EditMode::ResizeBottpmRight;
-    else if (canResize && isPointInsideRect( p, editArea.top) )
+    else if (canResize && isPointInsideRect( p, mEditArea.top) )
       return EditMode::ResizeTop;
-    else if (canResize && isPointInsideRect( p, editArea.bottom) )
+    else if (canResize && isPointInsideRect( p, mEditArea.bottom) )
       return EditMode::ResizeBottom;
-    else if (canResize && isPointInsideRect( p, editArea.left) )
+    else if (canResize && isPointInsideRect( p, mEditArea.left) )
       return EditMode::ResizeLeft;
-    else if (canResize && isPointInsideRect( p, editArea.right) )
+    else if (canResize && isPointInsideRect( p, mEditArea.right) )
       return EditMode::ResizeRight;
     else if ( getEditableElementFromPoint(mSelectedElement, p - offset) == mSelectedElement)
       return EditMode::Move;
@@ -525,8 +525,19 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
 
     Vector2i p = pp;
     Widget* newSelection = findWidget(p);
+    bool isResizeMode = false;
 
-    if (newSelection != this && isMyChildRecursive(newSelection) && mSelectedElement != newSelection) // redirect event
+    switch (getModeFromPos(p))
+    {
+    case EditMode::ResizeTopLeft: case EditMode::ResizeTopRight:
+    case EditMode::ResizeBottomLeft: case EditMode::ResizeBottpmRight:
+    case EditMode::ResizeTop: case EditMode::ResizeBottom:
+    case EditMode::ResizeLeft: case EditMode::ResizeRight:
+      isResizeMode = true;
+    default: break;
+    }
+
+    if (!isResizeMode && newSelection != this && isMyChildRecursive(newSelection) && mSelectedElement != newSelection) // redirect event
     {
       newSelection->requestFocus();
       setSelectedElement(newSelection);
@@ -753,7 +764,7 @@ void EditorWorkspace::_drawResizePoint(NVGcontext* ctx, const Color& color, cons
 {
   nvgBeginPath(ctx);
   nvgFillColor(ctx, color);
-  Vector2i c = rect_center(tr);
+  Vector2i c = tr.center();
   float r = tr.width() / 2;
   nvgCircle(ctx, c.x(), c.y(), r );
   nvgFill(ctx);
@@ -776,16 +787,16 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
             m = _mouseOverMode;
 
         int dfHalf = 3;
-        Vector2i c = rect_center(r);
+        Vector2i c = r.center();
 
-        editArea.topleft =  Vector4i(r.x() - dfHalf, r.y() - dfHalf, r.x() + dfHalf, r.y() + dfHalf);
-        editArea.topright = Vector4i(r.z() - dfHalf, r.y() - dfHalf, r.z() + dfHalf, r.y() + dfHalf);
-        editArea.top = Vector4i(c.x() - dfHalf, r.y() - dfHalf, c.x() + dfHalf, r.y() + dfHalf);
-        editArea.bottomleft = Vector4i(r.x() - dfHalf, r.w() - dfHalf, r.x() + dfHalf, r.w() + dfHalf);
-        editArea.left = Vector4i(r.x() - dfHalf, c.y() - dfHalf, r.x() + dfHalf, c.y() + dfHalf);
-        editArea.right = Vector4i(r.z() - dfHalf, c.y() - dfHalf, r.z() + dfHalf, c.y() + dfHalf);
-        editArea.bottomright = Vector4i(r.z() - dfHalf, r.w() - dfHalf, r.z() + dfHalf, r.w() + dfHalf);
-        editArea.bottom = Vector4i(c.x() - dfHalf, r.w() - dfHalf, c.x() + dfHalf, r.w() + dfHalf);
+        mEditArea.topleft =  Vector4i(r.x() - dfHalf, r.y() - dfHalf, r.x() + dfHalf, r.y() + dfHalf);
+        mEditArea.topright = Vector4i(r.z() - dfHalf, r.y() - dfHalf, r.z() + dfHalf, r.y() + dfHalf);
+        mEditArea.top = Vector4i(c.x() - dfHalf, r.y() - dfHalf, c.x() + dfHalf, r.y() + dfHalf);
+        mEditArea.bottomleft = Vector4i(r.x() - dfHalf, r.w() - dfHalf, r.x() + dfHalf, r.w() + dfHalf);
+        mEditArea.left = Vector4i(r.x() - dfHalf, c.y() - dfHalf, r.x() + dfHalf, c.y() + dfHalf);
+        mEditArea.right = Vector4i(r.z() - dfHalf, c.y() - dfHalf, r.z() + dfHalf, c.y() + dfHalf);
+        mEditArea.bottomright = Vector4i(r.z() - dfHalf, r.w() - dfHalf, r.z() + dfHalf, r.w() + dfHalf);
+        mEditArea.bottom = Vector4i(c.x() - dfHalf, r.w() - dfHalf, c.x() + dfHalf, r.w() + dfHalf);
 
         // top left
         Color bg(180,0, 0, 255);
@@ -795,28 +806,28 @@ void EditorWorkspace::_drawResizePoints(NVGcontext* ctx)
           bg = select = Color(64, 64);
 
         bool mySide = (m == EditMode::ResizeTop || m == EditMode::ResizeLeft || m == EditMode::ResizeTopLeft);
-        _drawResizePoint(ctx, mySide ? select : bg, editArea.topleft );
+        _drawResizePoint(ctx, mySide ? select : bg, mEditArea.topleft );
 
         mySide = (m == EditMode::ResizeTop || m == EditMode::ResizeRight || m == EditMode::ResizeTopRight);
-        _drawResizePoint(ctx, mySide ? select : bg, editArea.topright );
+        _drawResizePoint(ctx, mySide ? select : bg, mEditArea.topright );
 
         mySide = (m == EditMode::ResizeTop);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.top);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.top);
 
         mySide = (m == EditMode::ResizeLeft || m == EditMode::ResizeBottomLeft || m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottomleft);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.bottomleft);
 
         mySide = (m == EditMode::ResizeLeft);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.left);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.left);
 
         mySide = (m == EditMode::ResizeRight);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.right);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.right);
 
         mySide = (m ==  EditMode::ResizeRight || m == EditMode::ResizeBottpmRight || m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottomright);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.bottomright);
 
         mySide = (m == EditMode::ResizeBottom);
-        _drawResizePoint( ctx, mySide ? select : bg, editArea.bottom);
+        _drawResizePoint( ctx, mySide ? select : bg, mEditArea.bottom);
     }
 }
 

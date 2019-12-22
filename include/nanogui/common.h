@@ -930,8 +930,6 @@ clamp(const T& val, const T& min, const T& max) { return val < min ? min : (val 
 
 extern NANOGUI_EXPORT void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
 
-inline Vector2i NANOGUI_EXPORT rect_center(const Vector4i& r) { return Vector2i((r.z() + r.x()) / 2, (r.w() + r.y()) / 2); }
-
 void NANOGUI_EXPORT logic_error(const char* err, const char* file, int line);
 
 /// Helper function used by nvgImageIcon

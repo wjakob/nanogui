@@ -178,7 +178,7 @@ private:
       Vector4i right;
       Vector4i bottomright;
       Vector4i bottom;
-    } editArea;
+    } mEditArea;
 };
 
 NAMESPACE_END(nanogui)
