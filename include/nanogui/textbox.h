@@ -87,7 +87,7 @@ public:
     void setPlaceholder(const std::string &placeholder) { mPlaceholder = placeholder; }
 
     /// Set the \ref Theme used to draw this widget
-    virtual void setTheme(Theme *theme) override;
+    void setTheme(Theme *theme) override;
 
     /// The callback to execute when the value of this TextBox has changed.
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
@@ -97,17 +97,19 @@ public:
     void setEditCallback(const std::function<void(const std::string&, bool)> &callback) { mEditCallback = callback; }
     void setComitCallback(const std::function<void(Widget*)> &callback) { mComitCallback = callback; }
 
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
-    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual bool focusEvent(bool focused) override;
-    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
-    virtual bool keyboardCharacterEvent(unsigned int codepoint) override;
+    virtual int getCornerRadius() const;
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
-    virtual void draw(NVGcontext* ctx) override;
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool focusEvent(bool focused) override;
+    bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
+    bool keyboardCharacterEvent(unsigned int codepoint) override;
+
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+    void draw(NVGcontext* ctx) override;
+    void save(Serializer &s) const override;
+    bool load(Serializer &s) override;
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();

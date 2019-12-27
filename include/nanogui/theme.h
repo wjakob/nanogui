@@ -100,6 +100,8 @@ public:
 
     int mWindowMenuHeaderOffset;
 
+    int mTextBoxCornerRadius;
+
     int mContextMenuShortcutOffset;
     Color mContextMenuShortcutTextColor;
     int mContextMenuMinWidth;

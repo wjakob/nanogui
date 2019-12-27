@@ -30,6 +30,7 @@ DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
+DECLSETTER(HoveredColor, Color)
 
 class NANOGUI_EXPORT Button : public Widget 
 {
@@ -100,7 +101,9 @@ public:
     const Color &textColor() const { return mTextColor; }
 
     /// Sets the text color of the caption of this Button.
-    void setTextColor(const Color &textColor) { mTextColor = textColor; }
+    void setTextColor(const Color &color) { mTextColor = color; }
+
+    void setHoveredTextColor(const Color& color) { mHoverTextColor = color; }
 
     /// Returns the icon of this Button.  See \ref nanogui::Button::mIcon.
     int icon() const { return mIcon; }
@@ -230,6 +233,7 @@ public:
     PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
+    PROPSETTER(HoveredColor, setHoveredTextColor)
 };
 
 class NANOGUI_EXPORT LedButton : public Button

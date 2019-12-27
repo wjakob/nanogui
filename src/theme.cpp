@@ -41,6 +41,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowMenuHeaderOffset)
   CHECK(mWindowFontSize)
   CHECK(mTooltipOpacity)
+  CHECK(mTextBoxCornerRadius)
   std::runtime_error(std::string("No get prop for name") + name);
   return 0;
 }
@@ -65,6 +66,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mWindowMenuHeaderOffset)
   CHECKSET(mWindowFontSize)
   CHECKSET(mTooltipOpacity)
+  CHECKSET(mTextBoxCornerRadius)
   std::runtime_error(std::string("No set prop for name") + name);
 }
 
@@ -195,6 +197,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mTabButtonVerticalPadding = 2;
   theme.mWindowMenuHeaderOffset = -3;
   theme.mWindowFontSize = 18;
+  theme.mTextBoxCornerRadius = 3;
 
   theme.mDropShadow = Color(0, 128);
   theme.mTransparent = Color(0, 0);

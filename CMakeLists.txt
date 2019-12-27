@@ -467,6 +467,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/stackedwidget.h src/stackedwidget.cpp
   include/nanogui/tabheader.h src/tabheader.cpp
   include/nanogui/tabwidget.h src/tabwidget.cpp
+  include/nanogui/searchbox.h src/searchbox.cpp
   include/nanogui/contextmenu.h src/contextmenu.cpp
   include/nanogui/editworkspace.h src/editworkspace.cpp
   include/nanogui/editproperties.h src/editproperties.cpp

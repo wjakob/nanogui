@@ -53,6 +53,7 @@
 #include <nanogui/treeviewitem.h>
 #include <nanogui/picflow.h>
 #include <nanogui/textarea.h>
+#include <nanogui/searchbox.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -208,6 +209,9 @@ void createBasicWidgets(Screen* parent)
                            Position{ 200, 15 },
                            WidgetId{ "#basic_widgets_wnd"},
                            WidgetLayout{ new GroupLayout() });
+
+  w.label("Searchboxes", "sans-bold");
+  w.wdg<SearchBox>();
 
   w.label("Message dialog", "sans-bold");
   auto& tools = w.widget();

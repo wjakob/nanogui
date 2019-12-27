@@ -87,35 +87,46 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
     return size;
 }
 
-void TextBox::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
+int TextBox::getCornerRadius() const { return mTheme->mTextBoxCornerRadius; }
 
-    NVGpaint bg = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(255, 32), Color(32, 32));
+void TextBox::draw(NVGcontext* ctx) 
+{
+  int cornerRadius = getCornerRadius();
     NVGpaint fg1 = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(150, 32), Color(32, 32));
-    NVGpaint fg2 = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
+      cornerRadius, 4, Color(150, 32), Color(32, 32));
 
+    //background fill
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2,
-                   mSize.y() - 2, 3);
+                   mSize.y() - 2, cornerRadius);
 
     if (mEditable && focused())
-        mValidFormat ? nvgFillPaint(ctx, fg1) : nvgFillPaint(ctx, fg2);
+    {
+      NVGpaint fg2 = nvgBoxGradient(ctx,
+                            mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
+        cornerRadius, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
+       
+      nvgFillPaint(ctx, mValidFormat ? fg1 : fg2);
+    }
     else if (mSpinnable && mMouseDownPos.x() != -1)
-        nvgFillPaint(ctx, fg1);
+    {
+      nvgFillPaint(ctx, fg1);
+    }
     else
-        nvgFillPaint(ctx, bg);
+    {
+      NVGpaint bg = nvgBoxGradient(ctx,
+        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
+        cornerRadius, 4, Color(255, 32), Color(32, 32));
+      nvgFillPaint(ctx, bg);
+    }
 
     nvgFill(ctx);
 
+    //background line
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
-                   mSize.y() - 1, 2.5f);
+                   mSize.y() - 1, cornerRadius - 0.5f);
     nvgStrokeColor(ctx, Color(0, 48));
     nvgStroke(ctx);
 
@@ -286,11 +297,12 @@ void TextBox::draw(NVGcontext* ctx) {
         }
     }
     nvgRestore(ctx);
+
+    Widget::draw(ctx);
 }
 
-bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
-                               int modifiers) {
-
+bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
+{
     if (isMouseButtonLeft(button) && down && !mFocused) {
         if (!mSpinnable || spinArea(p) == SpinArea::None) /* not on scrolling arrows */
             requestFocus();
