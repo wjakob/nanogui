@@ -34,6 +34,8 @@ public:
   int getCornerRadius() const override;
   void performLayout(NVGcontext* ctx) override;
 
+  bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+
   void clearText();
 };
 

@@ -27,7 +27,20 @@ SearchBox::SearchBox(Widget* parent)
 }
 
 int SearchBox::getCornerRadius() const { return mSize.y() / 2 - 1; }
-void SearchBox::clearText() { setValue(""); }
+void SearchBox::clearText() 
+{ 
+  setValue("");  
+  mValueTemp.clear();
+  mCursorPos = -1;
+  mSelectionPos = -1;
+}
+
+bool SearchBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
+{
+  if (Widget::mouseButtonEvent(p, button, down, modifiers))
+    return true;
+  return TextBox::mouseButtonEvent(p, button, down, modifiers);
+}
 
 void SearchBox::performLayout(NVGcontext* ctx)
 {
