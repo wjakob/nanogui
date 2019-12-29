@@ -128,13 +128,11 @@ Color Button::getTextColor() const
     return mTheme->mDisabledTextColor;
 
   if (mPushed)
-    return mPressedTextColor.w() == 0 ? mTheme->mButtonPressedTextColor : mPressedTextColor;
+    return mPressedTextColor.notW(mTheme->mButtonPressedTextColor);
   else
   {
-    if (mMouseFocus)
-      return mHoverTextColor.w() == 0 ? mTheme->mButtonHoverTextColor : mTextColor;
-    else
-      return mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+    if (mMouseFocus) return mHoverTextColor.notW(mTheme->mButtonHoverTextColor);
+    else return mTextColor.notW(mTheme->mTextColor);
   }
 }
 
@@ -335,13 +333,11 @@ void LinkButton::draw(NVGcontext* ctx)
 Color LinkButton::getTextColor() const
 {
   if (mPushed)
-    return mPressedTextColor.w() == 0 ? mTheme->mLinkPressedTextColor : mPressedTextColor;
+    return mPressedTextColor.notW(mTheme->mLinkPressedTextColor);
   else
   {
-    if (mMouseFocus)
-      return mHoverTextColor.w() == 0 ? mTheme->mLinkHoverTextColor : mTextColor;
-    else
-      return mTextColor.w() == 0 ? mTheme->mLinkTextColor : mTextColor;
+    if (mMouseFocus) return mHoverTextColor.notW(mTheme->mLinkHoverTextColor);
+    else return mTextColor.notW(mTheme->mLinkTextColor);
   }
 }
 

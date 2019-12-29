@@ -650,6 +650,8 @@ public:
   float &w() { return rgba[3]; }
   const float &w() const { return rgba[3]; }
 
+  const Color& notW(const Color& c) const { return w() == 0 ? c : *this; }
+
   Color rgb() const { return Color(rgba[0], rgba[1], rgba[2], 0.f); }
 
   void setAlpha(float a) { rgba[3] = a; }
