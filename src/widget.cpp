@@ -63,10 +63,7 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
         return mLayout->preferredSize(ctx, this);
     else
     {
-      Vector2i ret = mSize;
-      if (minWidth() > ret.x()) ret.x() = minWidth();
-      if (minHeight() > ret.y()) ret.y() = minHeight();
-      return ret;
+      return mSize.cwiseMax(minSize());
     }
 }
 
@@ -85,18 +82,15 @@ void Widget::performLayout(NVGcontext *ctx)
                rel = Vector2i(relk.x() * width(), relk.y() * height()),
                fix = c->fixedSize();
 
-      pref = { rel.x() ? rel.x() : pref.x(),
-               rel.y() ? rel.y() : pref.y() };
-
-      c->setSize(fix.x() ? fix.x() : pref.x(),
-                 fix.y() ? fix.y() : pref.y());
-
+      pref = rel.fillZero(pref);
+      c->setSize(fix.fillZero(pref));
       c->performLayout(ctx);
     }
   }
 }
 
-Widget *Widget::findWidget(const Vector2i &p) {
+Widget *Widget::findWidget(const Vector2i &p) 
+{
   for (int i=(int)mChildren.size()-1; i >= 0; i--) {
       Widget *child = mChildren[i];
       if (child->visible() && child->contains(p - mPos))
@@ -126,7 +120,8 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
         Widget *child = *it;
         if (!child->visible())
             continue;
-        bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
+        bool contained = child->contains(p - mPos);
+        bool prevContained = child->contains(p - mPos - rel);
         bool found = contained;
         if (contained != prevContained)
         {
@@ -144,7 +139,8 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
     return false;
 }
 
-bool Widget::scrollEvent(const Vector2i &p, const Vector2f &rel) {
+bool Widget::scrollEvent(const Vector2i &p, const Vector2f &rel) 
+{
     for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
         Widget *child = *it;
         if (!child->visible())
@@ -265,17 +261,14 @@ bool Widget::sendToBack()
   return false;
 }
 
-bool Widget::bringChildToFront(Widget* element)
+bool Widget::bringChildToFront(Widget* widget)
 {
-  auto it = mChildren.begin();
-  for (; it != mChildren.end(); ++it)
+  auto it = std::find(mChildren.begin(), mChildren.end(), widget);
+  if (it != mChildren.end())
   {
-    if (element == (*it))
-    {
-      mChildren.erase(it);
-      mChildren.push_back(element);
-      return true;
-    }
+    mChildren.erase(it);
+    mChildren.push_back(widget);
+    return true;
   }
 
   return false;
@@ -404,16 +397,16 @@ bool Widget::load(Json::value &save) {
 }
 
 bool Widget::load(Serializer &s) {
-    if (!s.get("position", mPos)) return false;
-    if (!s.get("size", mSize)) return false;
-    if (!s.get("fixedSize", mFixedSize)) return false;
-    if (!s.get("visible", mVisible)) return false;
-    if (!s.get("enabled", mEnabled)) return false;
-    if (!s.get("focused", mFocused)) return false;
-    if (!s.get("tooltip", mTooltip)) return false;
-    if (!s.get("fontSize", mFontSize)) return false;
-    if (!s.get("cursor", mCursor)) return false;
-    return true;
+  if (!s.get("position", mPos)) return false;
+  if (!s.get("size", mSize)) return false;
+  if (!s.get("fixedSize", mFixedSize)) return false;
+  if (!s.get("visible", mVisible)) return false;
+  if (!s.get("enabled", mEnabled)) return false;
+  if (!s.get("focused", mFocused)) return false;
+  if (!s.get("tooltip", mTooltip)) return false;
+  if (!s.get("fontSize", mFontSize)) return false;
+  if (!s.get("cursor", mCursor)) return false;
+  return true;
 }
 
 NAMESPACE_END(nanogui)
