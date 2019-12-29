@@ -424,8 +424,9 @@ public:
   }
 
   Vector2 cwiseMax(T rx, T ry) const { return Vector2(std::max(x(), rx), std::max(y(), ry)); }
-  Vector2 cwiseMax(const Vector2& o) const { return Vector2(std::max(x(), o.x()), std::max(y(), o.y())); }
-  Vector2 cwiseMin(const Vector2& o) const { return Vector2(std::min(x(), o.x()), std::min(y(), o.y())); }
+  Vector2 cwiseMax(const Vector2& o) const { return{ std::max(x(), o.x()), std::max(y(), o.y()) }; }
+  Vector2 cwiseMin(const Vector2& o) const { return{ std::min(x(), o.x()), std::min(y(), o.y()) }; }
+  Vector2 fillZero(const Vector2& o) const { return{ x() ? x() : o.x(), y() ? y() : o.y() }; }
 
   template<class B>
   Vector2 alignTo(const Vector2<B>& size) const
