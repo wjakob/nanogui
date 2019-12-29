@@ -120,15 +120,11 @@ ContextMenu::ContextMenu(Widget *parent, const std::string& caption, bool dispos
     mItemLayout = new AdvancedGridLayout({10,0,0}, {}, 2);
     mItemLayout->setColStretch(0, 1.0f);
     mItemContainer->setLayout(mItemLayout);
+    mSubElement = true;
     setVisible(false);
 }
 
-void ContextMenu::requestPerformLayout()
-{
-  auto wnd = window();
-  if (wnd)
-    wnd->performLayout(screen()->nvgContext());
-}
+void ContextMenu::requestPerformLayout() { mUpdateLayout = true; }
 
 void ContextMenu::_checkConditions()
 {
@@ -381,51 +377,61 @@ bool ContextMenu::mouseButtonEvent(const Vector2i& p, int button, bool down, int
     return true;
 }
 
-void ContextMenu::draw(NVGcontext* ctx) {
-    nvgSave(ctx);
+void ContextMenu::draw(NVGcontext* ctx) 
+{
+  if (mUpdateLayout)
+  {
+    mUpdateLayout = false;
+    Vector2i ps = preferredSize(ctx);
+    setSize(ps);
 
-    mPos = mAnchorPos;
-    nvgTranslate(ctx, mPos.x(), mPos.y());
+    performLayout(ctx);
+  }
 
-    int w = mItemContainer->position().x() + mItemContainer->width();
-    int h = mItemContainer->position().y() + mItemContainer->height();
+  nvgSave(ctx);
 
-    /* Draw background */
-    nvgBeginPath(ctx);
-    nvgRect(ctx, 0, 0, w, h);
-    nvgFillColor(ctx, mBackgroundColor);
-    nvgFill(ctx);
+  mPos = mAnchorPos;
+  nvgTranslate(ctx, mPos.x(), mPos.y());
 
-    /* Draw margin background */
-    if (!mLabels.empty()) {
-        auto lbl = mLabels.begin()->second;
-        nvgBeginPath(ctx);
-        nvgRect(ctx, 0, 0, lbl->position().x()-1, h);
-        nvgFillColor(ctx, mMarginColor);
-        nvgFill(ctx);
-    }
+  int w = mItemContainer->position().x() + mItemContainer->width();
+  int h = mItemContainer->position().y() + mItemContainer->height();
 
-    /* Draw outline */
-    nvgBeginPath(ctx);
-    nvgStrokeWidth(ctx, 1.0f);
-    nvgRect(ctx, 0.5f, 1.5f, w - 1, h - 2);
-    nvgStrokeColor(ctx, mTheme->mBorderLight);
-    nvgStroke(ctx);
+  /* Draw background */
+  nvgBeginPath(ctx);
+  nvgRect(ctx, 0, 0, w, h);
+  nvgFillColor(ctx, mBackgroundColor);
+  nvgFill(ctx);
 
-    nvgBeginPath(ctx);
-    nvgRect(ctx, 0.5f, 0.5f, w - 1, h - 0.5f);
-    nvgStrokeColor(ctx, mTheme->mBorderDark);
-    nvgStroke(ctx);
+  /* Draw margin background */
+  if (!mLabels.empty()) {
+      auto lbl = mLabels.begin()->second;
+      nvgBeginPath(ctx);
+      nvgRect(ctx, 0, 0, lbl->position().x()-1, h);
+      nvgFillColor(ctx, mMarginColor);
+      nvgFill(ctx);
+  }
 
-    if (mHighlightedItem && mHighlightedItem->enabled()) {
-        nvgBeginPath(ctx);
-        nvgRect(ctx, 1, mHighlightedItem->position().y() + 1, w - 2, mHighlightedItem->height() - 2);
-        nvgFillColor(ctx, mHighlightColor);
-        nvgFill(ctx);
-    }
-    nvgRestore(ctx);
+  /* Draw outline */
+  nvgBeginPath(ctx);
+  nvgStrokeWidth(ctx, 1.0f);
+  nvgRect(ctx, 0.5f, 1.5f, w - 1, h - 2);
+  nvgStrokeColor(ctx, mTheme->mBorderLight);
+  nvgStroke(ctx);
 
-    Widget::draw(ctx);
+  nvgBeginPath(ctx);
+  nvgRect(ctx, 0.5f, 0.5f, w - 1, h - 0.5f);
+  nvgStrokeColor(ctx, mTheme->mBorderDark);
+  nvgStroke(ctx);
+
+  if (mHighlightedItem && mHighlightedItem->enabled()) {
+      nvgBeginPath(ctx);
+      nvgRect(ctx, 1, mHighlightedItem->position().y() + 1, w - 2, mHighlightedItem->height() - 2);
+      nvgFillColor(ctx, mHighlightColor);
+      nvgFill(ctx);
+  }
+  nvgRestore(ctx);
+
+  Widget::draw(ctx);
 }
 
 bool ContextMenu::focusEvent(bool focused) {

@@ -178,7 +178,7 @@ protected:
     Vector2i mAnchorPos;
     bool mDisposable;
     bool mActivated;
-    bool mUpdateLayout;
+    bool mUpdateLayout = false;
     std::string mCaption;
 
     Color mBackgroundColor, mMarginColor, mHighlightColor;

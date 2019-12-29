@@ -111,7 +111,7 @@ public:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
     virtual int getHeaderHeight() const;
-    virtual Vector4i getWidgetsArea();
+    Vector4i getWidgetsArea() override;
 
 protected:
     std::string mTitle;

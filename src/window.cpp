@@ -257,16 +257,19 @@ void Window::draw(NVGcontext *ctx)
   {
     Widget::draw(ctx);
 
-    bool inCorner = mMouseFocus &&
-                    isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), mMousePos - mPos);
-    nvgBeginPath(ctx);
-    nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
-    nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 15);
-    nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 5);
-    nvgLineTo(ctx, mPos.x() + mSize.x() - 5, mPos.y() + mSize.y() - 2);
-    nvgClosePath(ctx);
-    nvgFillColor(ctx, inCorner ? mTheme->mBorderDark : mTheme->mBorderLight);
-    nvgFill(ctx);
+    if (mFixedSize == Vector2i::Zero())
+    {
+      bool inCorner = mMouseFocus && isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), 
+                                                             mSize - Vector2i(ds, 15), mMousePos - mPos);
+      nvgBeginPath(ctx);
+      nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 15);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 5);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 5, mPos.y() + mSize.y() - 2);
+      nvgClosePath(ctx);
+      nvgFillColor(ctx, inCorner ? mTheme->mBorderDark : mTheme->mBorderLight);
+      nvgFill(ctx);
+    }
   }
 }
 

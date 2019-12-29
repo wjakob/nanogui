@@ -91,19 +91,25 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     }
 
     bool first = true;
-    for (auto w : widget->children()) {
-        if (!w->visible())
-            continue;
+
+    std::vector<Widget*> pChildren;
+    std::vector<Widget*> pSubChildren;
+
+    for (auto& w: widget->children()) {
+      if (!w->visible()) continue;
+      if (w->isSubElement()) pSubChildren.push_back(w);
+      else pChildren.push_back(w);
+    };
+
+    for (auto w : pChildren)
+    {      
         if (first)
             first = false;
         else
             position += mSpacing;
 
         Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
-        Vector2i targetSize(
-            fs[0] ? fs[0] : ps[0],
-            fs[1] ? fs[1] : ps[1]
-        );
+        Vector2i targetSize(fs[0] ? fs[0] : ps[0], fs[1] ? fs[1] : ps[1]);
         Vector2i pos(0, yOffset);
 
         pos[axis1] = position;
@@ -124,17 +130,14 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
                 break;
         }
 
-        if (!w->isSubElement())
-        {
-          w->setPosition(pos);
-          w->setSize(targetSize);
-        }
-
+        w->setPosition(pos);
+        w->setSize(targetSize);
         w->performLayout(ctx);
-
-        if (!w->isSubElement())
-          position += targetSize[axis1];
+        position += targetSize[axis1];
     }
+
+    for (auto& w : pSubChildren)
+      w->performLayout(ctx);
 }
 
 Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const 
@@ -182,18 +185,14 @@ Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) con
 void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 {
   Vector2i fs_w = widget->fixedSize();
-  Vector2i containerSize(fs_w.x() ? fs_w.x() : widget->width(),
-                         fs_w.y() ? fs_w.y() : widget->height());
+  Vector4i warea = widget->getWidgetsArea();
 
   int position = mMargin;
   int yOffset = 0;
-  if (widget->id() == "0x42")
-  {
-    position = mMargin;
-  }
 
   Window *window = Window::cast(widget);
-  if (window && !window->title().empty()) {
+  if (window && !window->title().empty()) 
+  {
     if (mOrientation == Orientation::Vertical || mOrientation == Orientation::ReverseVertical)
     {
       position += window->getWidgetsArea().y() - mMargin / 2;
@@ -202,38 +201,43 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
     else
     {
       yOffset = window->getWidgetsArea().y();
-      containerSize.y() -= yOffset;
     }
   }
 
   std::vector<Widget*> pChildren;
+  std::vector<Widget*> pSubChildren;
   bool reversed = mOrientation == Orientation::ReverseHorizontal || mOrientation == Orientation::ReverseVertical;
 
-  std::function<void(Widget*)> insertVisible = [&](Widget* w) { if (w->visible()) pChildren.push_back(w); };
-  if (reversed)
-    insertVisible = [&](Widget* w) { if (w->visible()) pChildren.insert(pChildren.begin(), w); };
+  std::function<void(Widget*)> insertVisible = [&](Widget* w) { 
+    if (!w->visible()) return;
+    if (w->isSubElement()) pSubChildren.push_back(w);
+    else pChildren.push_back(w);
+  };
+  if (reversed) insertVisible = [&](Widget* w) { 
+    if (!w->visible()) return;
+    if (w->isSubElement()) pSubChildren.push_back(w);
+    else pChildren.insert(pChildren.begin(), w);
+  };
 
   for (auto& a : widget->children()) insertVisible(a);
   if (pChildren.size() == 0)
     return;
 
-  Vector2i baseContainerSize = containerSize;
+  Vector2i baseContainerSize = warea.size();
   int sign = reversed ? -1 : 1;
 
   if (mOrientation == Orientation::Horizontal || mOrientation == Orientation::ReverseHorizontal)
   {
     if (reversed)
-      position = containerSize.x() - position;
+      position = warea.width() - position;
+
     while (pChildren.size() > 0)
     {
       Widget* w = pChildren.front();
       pChildren.erase(pChildren.begin());
 
-      if (!w->visible())
-        continue;
-
       position += mSpacing * sign;
-      Vector2i wSize((containerSize.x() - mMargin * 2) / ((int)pChildren.size() + 1), containerSize.y());
+      Vector2i wSize((warea.width() - mMargin * 2) / ((int)pChildren.size() + 1), warea.height());
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();
@@ -241,8 +245,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       if (fs.x() == 0) fs.x() = rs.x() * baseContainerSize.x();
       if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
 
-      Vector2i targetSize(fs.x() ? fs.x() : 0,
-                          fs.y() ? fs.y() : 0);
+      Vector2i targetSize(fs.x() ? fs.x() : 0, fs.y() ? fs.y() : 0);
       Vector2i pos(position, yOffset);
 
       if (targetSize.x() > 0) wSize.x() = targetSize.x();
@@ -250,37 +253,28 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       if (reversed)
         pos.x() -= wSize.x();
 
-      if (!w->isSubElement())
-      {
-        w->setPosition(pos);
-        w->setSize(wSize);
-      }
+      w->setPosition(pos);
+      w->setSize(wSize);
 
       w->performLayout(ctx);
 
-      if (!w->isSubElement())
-      {
-        position += wSize.x() * sign;
-        containerSize.x() -= wSize.x();
-      }
+      position += wSize.x() * sign;
+      warea.z() -= wSize.x();
     }
   }
   else
   {
     position = yOffset;
     if (reversed)
-      position = containerSize.y() - position;
+      position = warea.w() - position;
 
     while (pChildren.size() > 0)
     {
       Widget* w = pChildren.front();
       pChildren.erase(pChildren.begin());
 
-      if (!w->visible())
-        continue;
-
       position += mSpacing * sign;
-      Vector2i wSize(containerSize.x(), (containerSize.y() - mMargin * 2) / ((int)pChildren.size() + 1));
+      Vector2i wSize(warea.width(), (warea.height() - mMargin * 2) / ((int)pChildren.size() + 1));
 
       Vector2i fs = w->fixedSize();
       Vector2f rs = w->relsize();
@@ -297,21 +291,18 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       if (reversed)
         pos.y() -= wSize.y();
 
-      if (!w->isSubElement())
-      {
-        w->setPosition(pos);
-        w->setSize(wSize);
-      }
+      w->setPosition(pos);
+      w->setSize(wSize);
 
       w->performLayout(ctx);
 
-      if (!w->isSubElement())
-      {
-        position += wSize.y() * sign;
-        containerSize.y() -= wSize.y();
-      }
+      position += wSize.y() * sign;
+      warea.w() -= wSize.y();
     }
   }
+
+  for (auto& w : pSubChildren)
+    w->performLayout(ctx);
 }
 
 Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {

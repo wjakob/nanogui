@@ -791,9 +791,8 @@ void createAllWidgetsDemo(Screen* screen)
             BulletLine{ "Please see the examples/example1.cpp." },
             BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableKeyboard' for keyboard controls." },
             BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableGamepad' for gamepad controls." },
-            SeparatorLine{ "" });
-
-  help.text(TextHeader{ "USER GUIDE:" },
+            SeparatorLine{ "" },
+            TextHeader{ "USER GUIDE:" },
             BulletLine{ "Double-click on title bar to collapse window." },
             BulletLine{ "Click and drag on lower corner to resize window" },
             BulletLine{ "Double-click to auto fit window to its contents"},

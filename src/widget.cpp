@@ -177,6 +177,13 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
+Vector4i Widget::getWidgetsArea()
+{
+  return { 0, 0,
+           mFixedSize.x() ? mFixedSize.x() : width(),
+           mFixedSize.y() ? mFixedSize.y() : height() };
+}
+
 Widget* Widget::findWidget(std::function<bool(Widget*)> cond, bool inchildren)
 {
   for (auto child : mChildren)

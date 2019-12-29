@@ -247,6 +247,7 @@ public:
     int minWidth() const { return minSize().x(); }
     int minHeight() const { return minSize().y(); }
     virtual Vector2i minSize() const { return mMinSize; }
+    virtual Vector4i getWidgetsArea();
 
     /// Return the fixed size (see \ref setFixedSize())
     const Vector2i &fixedSize() const { return mFixedSize; }
