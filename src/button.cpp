@@ -156,8 +156,7 @@ void Button::draw(NVGcontext *ctx)
 
       nvgBeginPath(ctx);
 
-      nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
-        mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
+      nvgRoundedRect(ctx, mPos + Vector2i{1, 1}, mSize - Vector2i{2, 2}, mTheme->mButtonCornerRadius - 1);
 
       if (mBackgroundColor.w() != 0) {
         nvgFillColor(ctx, Color(mBackgroundColor.rgb(), 1.f));
@@ -182,14 +181,14 @@ void Button::draw(NVGcontext *ctx)
     {
       nvgBeginPath(ctx);
       nvgStrokeWidth(ctx, 1.0f);
-      nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + (mPushed ? 0.5f : 1.5f), mSize.x() - 1,
-        mSize.y() - 1 - (mPushed ? 0.0f : 1.0f), mTheme->mButtonCornerRadius);
+      nvgRoundedRect(ctx, mPos.cast<float>() + Vector2f{ 0.5f, mPushed ? 0.5f : 1.5f }, 
+                          mSize.cast<float>() - Vector2f{ 1, 1 + mPushed ? 0.0f : 1.0f}, mTheme->mButtonCornerRadius);
       nvgStrokeColor(ctx, mTheme->mBorderLight);
       nvgStroke(ctx);
 
       nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
-        mSize.y() - 2, mTheme->mButtonCornerRadius);
+      nvgRoundedRect(ctx, mPos.cast<float>() + Vector2f{ 0.5f, 0.5f }, 
+                          mSize.cast<float>() - Vector2f{ 1, 2 }, mTheme->mButtonCornerRadius);
       nvgStrokeColor(ctx, mTheme->mBorderDark);
       nvgStroke(ctx);
     }
@@ -199,7 +198,7 @@ void Button::draw(NVGcontext *ctx)
     nvgFontFace(ctx, "sans-bold");
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
 
-    Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
+    Vector2f center = (mPos + mSize / 2).cast<float>();
     Vector2f textPos(center.x() - tw * 0.5f, center.y() - 1);
     NVGcolor textColor = getTextColor();
 

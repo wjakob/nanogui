@@ -73,6 +73,8 @@ void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size) { nvgRe
 void nvgTranslate(NVGcontext* ctx, const Vector2i& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
 void nvgTranslate(NVGcontext* ctx, const Vector2f& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
 void nvgRect(NVGcontext* ctx, const Vector4i& r) { nvgRect(ctx, r.x(), r.y(), r.width(), r.height()); }
+void nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
+void nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
 
 void mainloop(int refresh) {
     if (mainloop_active)

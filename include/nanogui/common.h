@@ -204,14 +204,12 @@ public:
   Vector2& operator=(const Vector2& o) { x() = o.x(); y() = o.y(); return *this; }
 
   Vector2 operator+(const Vector2& o) const { return{ x() + o.x(), y() + o.y() }; }
-  Vector2 operator+(std::initializer_list<T> l) const { return{ x() + *l.begin(), y() + *(l.begin()+1)}; }
 
   Vector2& operator+=(const Vector2& o) { x() += o.x(); y() += o.y(); return *this; }
   template<typename Scalar> Vector2 operator+(Scalar v) const { return Vector2(x() + v, y() + v); }
   template<typename Scalar> Vector2& operator+=(Scalar v) { x() += v; y() += v; return *this; }
 
   Vector2 operator-(const Vector2& o) const { return{ x() - o.x(), y() - o.y() }; }
-  Vector2 operator-(std::initializer_list<T> l) const { return{ x() - *l.begin(), y() - *(l.begin() + 1) }; }
   Vector2& operator-=(const Vector2& o) { x() -= o.x(); y() -= o.y(); return *this; }
   template<typename Scalar> Vector2 operator-(Scalar v) const { return Vector2<T>(x() - v, y() - v); }
   template<typename Scalar> Vector2& operator-=(Scalar v) { x() -= v; y() -= v; return *this; }
@@ -878,6 +876,8 @@ void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector4i& r);
 void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2i& pos);
 void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2f& pos);
+void NANOGUI_EXPORT nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& size, float r);
+void NANOGUI_EXPORT nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& size, float r);
 
 /**
  * \brief Open a native file open dialog, which allows multiple selection.

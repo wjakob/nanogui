@@ -144,7 +144,7 @@ void register_nanovg(py::module &m) {
         .def("PathWinding", &nvgPathWinding, "dir"_a)
         .def("Arc", &nvgArc, "cx"_a, "cy"_a, "r"_a, "a0"_a, "a1"_a, "dir"_a)
         .def("Rect", (void (*)(NVGcontext*,float,float,float,float))&nvgRect, "x"_a, "y"_a, "w"_a, "h"_a)
-        .def("RoundedRect", &nvgRoundedRect, "x"_a, "y"_a, "w"_a, "h"_a, "r"_a)
+        .def("RoundedRect", (void(*)(NVGcontext*, float, float, float, float, float))&nvgRoundedRect, "x"_a, "y"_a, "w"_a, "h"_a, "r"_a)
         .def("RoundedRectVarying", &nvgRoundedRectVarying, "x"_a, "y"_a, "w"_a,
              "h"_a, "radTopLeft"_a, "radTopRight"_a, "radBottomRight"_a,
              "radBottomLeft"_a)
