@@ -137,22 +137,25 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     }
 }
 
-Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
+Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const 
+{
   Vector2i size = Vector2i::Constant(2 * mMargin);
 
   int yOffset = 0;
   const Window *window = Window::cast(widget);
-  if (window && !window->title().empty()) {
+  if (window && !window->title().empty()) 
+  {
     if (mOrientation == Orientation::Vertical)
-      size.y() += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+      size.y() += window->getHeaderHeight() - mMargin / 2;
     else
-      yOffset = widget->theme()->mWindowHeaderHeight;
+      yOffset = window->getHeaderHeight();
   }
 
   bool first = true;
   int axis1 = (int)mOrientation % 2; //because we have reverse horizontal/vertical orientation
   int axis2 = ((int)mOrientation + 1) % 2;
-  for (auto w : widget->children()) {
+  for (auto w : widget->children()) 
+  {
     if (!w->visible())
       continue;
     if (first)
@@ -184,30 +187,33 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 
   int position = mMargin;
   int yOffset = 0;
+  if (widget->id() == "0x42")
+  {
+    position = mMargin;
+  }
 
-  const Window *window = Window::cast(widget);
+  Window *window = Window::cast(widget);
   if (window && !window->title().empty()) {
-    if (mOrientation == Orientation::Vertical
-        || mOrientation == Orientation::ReverseVertical)
+    if (mOrientation == Orientation::Vertical || mOrientation == Orientation::ReverseVertical)
     {
-      position += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+      position += window->getWidgetsArea().y() - mMargin / 2;
+      yOffset = position;
     }
     else
     {
-      yOffset = widget->theme()->mWindowHeaderHeight;
+      yOffset = window->getWidgetsArea().y();
       containerSize.y() -= yOffset;
     }
   }
 
   std::vector<Widget*> pChildren;
-  bool reversed = mOrientation == Orientation::ReverseHorizontal
-                  || mOrientation == Orientation::ReverseVertical;
+  bool reversed = mOrientation == Orientation::ReverseHorizontal || mOrientation == Orientation::ReverseVertical;
 
-  std::function<void(Widget*)> insertf = [&](Widget* w) { if (w->visible()) pChildren.push_back(w); };
+  std::function<void(Widget*)> insertVisible = [&](Widget* w) { if (w->visible()) pChildren.push_back(w); };
   if (reversed)
-    insertf = [&](Widget* w) { if (w->visible()) pChildren.insert(pChildren.begin(), w); };
+    insertVisible = [&](Widget* w) { if (w->visible()) pChildren.insert(pChildren.begin(), w); };
 
-  for (auto& a : widget->children()) insertf(a);
+  for (auto& a : widget->children()) insertVisible(a);
   if (pChildren.size() == 0)
     return;
 

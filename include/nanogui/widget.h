@@ -40,6 +40,8 @@ class Spinner;
 class Graph;
 class TreeView;
 class ToleranceBar;
+class TextArea;
+class Panel;
 template<class X> class IntBox;
 template<class X> class FloatBox;
 
@@ -522,6 +524,8 @@ public:
     template<typename... Args>TreeView& treeview(const Args&... args) { return wdg<TreeView>(args...); }
     template<typename... Args>ToleranceBar& tolerancebar(const Args&... args) { return wdg<ToleranceBar>(args...); }
     template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
+    template<typename... Args>TextArea& text(const Args&... args) { return wdg<TextArea>(args...); }
+    template<typename... Args>Panel& panel(const Args&... args) { return wdg<Panel>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children

@@ -28,11 +28,21 @@ class ContextMenu;
 DECLSETTER(WindowSimpleLayout, Orientation)
 DECLSETTER(WindowMovable, Theme::WindowDraggable)
 
-class NANOGUI_EXPORT Window : public Widget {
-    friend class Popup;
+class NANOGUI_EXPORT Window : public Widget 
+{
 public:
-    RTTI_CLASS_UID("WNDW")
-    RTTI_DECLARE_INFO(Window)
+  RTTI_CLASS_UID("WNDW")
+  RTTI_DECLARE_INFO(Window)
+
+  enum DrawFlag {
+    DrawBody = 1 << 0,
+    DrawTitle = 1 << 1,
+    DrawShadow = 1 << 2,
+    DrawCollapseIcon = 1 << 3,
+    DrawHeader = 1 << 4,
+    DrawAll = 0xff
+  };
+
 
     explicit Window(Widget *parent, const std::string &title = "Untitled");
     explicit Window(Widget *parent, const std::string &title, Orientation orientation);
@@ -89,23 +99,27 @@ public:
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual void performLayout(NVGcontext *ctx) override;
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    void performLayout(NVGcontext *ctx) override;
+    void save(Serializer &s) const override;
+    bool load(Serializer &s) override;
 
     ContextMenu& submenu(const std::string& caption, const std::string& id = "");
 
     bool prefferContains(const Vector2i& p) const override;
+    bool haveDrawFlag(int flag) const { return (mDrawFlags & flag) == flag; }
 
-protected:
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
+    virtual int getHeaderHeight() const;
+    virtual Vector4i getWidgetsArea();
+
 protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
     bool mDrag;
     bool mDragCorner;
+    int mDrawFlags = DrawFlag::DrawAll;
     Vector2i mMousePos;
     int mFontSize = 0;
     bool mNeedPerformUpdate = false;
@@ -115,10 +129,32 @@ protected:
     float mCollapseIconScale = 1.5f;
     Vector2f mCollapseIconPos;
     Vector2f mCollapseIconSize;
+
 public:
     PROPSETTER(WindowMovable,setDraggable)
     PROPSETTER(Caption, setTitle)
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
+};
+
+class NANOGUI_EXPORT Panel : public Window
+{
+public:
+    RTTI_CLASS_UID("PANL")
+    RTTI_DECLARE_INFO(Panel)
+
+    explicit Panel(Widget *parent, const std::string &title);
+
+    explicit Panel(Widget *parent, const char* title)
+      : Panel(parent, std::string(title)) {}
+
+    using Window::set;
+    template<typename... Args>
+    Panel(Widget* parent, const Args&... args)
+      : Panel(parent, "") { set<Panel, Args...>(args...); }
+
+    void draw(NVGcontext* ctx) override;
+    void performLayout(NVGcontext *ctx) override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
 };
 
 NAMESPACE_END(nanogui)

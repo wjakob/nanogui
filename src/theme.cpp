@@ -199,6 +199,18 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowFontSize = 18;
   theme.mTextBoxCornerRadius = 3;
 
+  theme.mPanelCornerRadius = 0;
+  theme.mPanelHeaderHeight = 20;
+
+  theme.mPanelHeaderGradientTop = Color(0, 74, 0, 255);
+  theme.mPanelHeaderGradientBot = Color(0, 96, 0, 255);
+  theme.mPanelDropShadow = Color(0, 128);
+  theme.mPanelTitleUnfocused = Color(220, 160);
+  theme.mPanelTitleFocused = Color(255, 190);
+  theme.mPanelCollapsedIcon = ENTYPO_ICON_RIGHT_DIR;
+  theme.mPanelExpandedIcon = ENTYPO_ICON_DOWN_DIR;
+  theme.mPanelFontSize = 16;
+
   theme.mDropShadow = Color(0, 128);
   theme.mTransparent = Color(0, 0);
   theme.mBorderDark = Color(29, 255);

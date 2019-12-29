@@ -102,6 +102,18 @@ public:
 
     int mTextBoxCornerRadius;
 
+    int mPanelCornerRadius;
+    int mPanelHeaderHeight;
+
+    Color mPanelHeaderGradientTop;
+    Color mPanelHeaderGradientBot;
+    Color mPanelDropShadow;
+    Color mPanelTitleFocused;
+    Color mPanelTitleUnfocused;
+    int mPanelCollapsedIcon;
+    int mPanelExpandedIcon;
+    int mPanelFontSize;
+
     int mContextMenuShortcutOffset;
     Color mContextMenuShortcutTextColor;
     int mContextMenuMinWidth;

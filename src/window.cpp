@@ -22,6 +22,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Window, Widget)
+RTTI_IMPLEMENT_INFO(Panel, Window)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr),
@@ -143,115 +144,130 @@ void Window::afterDraw(NVGcontext *ctx)
   Widget::afterDraw(ctx);
 }
 
-void Window::draw(NVGcontext *ctx) {
-    int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
-    int hh = mTheme->mWindowHeaderHeight;
+void Window::draw(NVGcontext *ctx) 
+{
+  int cr = mTheme->mWindowCornerRadius;
+  int hh = mTheme->mWindowHeaderHeight;
 
-    /* Draw window */
-    int realH = isCollapsed() ? hh : mSize.y();
+  /* Draw window */
+  int realH = isCollapsed() ? hh : mSize.y();
 
-    nvgSave(ctx);
+  nvgSave(ctx);
+
+  if (haveDrawFlag(DrawBody))
+  {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr);
 
-    nvgFillColor(ctx, mMouseFocus ? mTheme->mWindowFillFocused
-                                  : mTheme->mWindowFillUnfocused);
+    nvgFillColor(ctx, mMouseFocus 
+                            ? mTheme->mWindowFillFocused
+                            : mTheme->mWindowFillUnfocused);
     nvgFill(ctx);
+  }
 
-    /* Draw a drop shadow */
+  /* Draw a drop shadow */
+  int ds = mTheme->mWindowDropShadowSize;
+  if (ds > 0 && haveDrawFlag(DrawShadow))
+  {
     NVGpaint shadowPaint = nvgBoxGradient(
-        ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr*2, ds*2,
-        mTheme->mDropShadow, mTheme->mTransparent);
+      ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr * 2, ds * 2,
+      mTheme->mDropShadow, mTheme->mTransparent);
 
     nvgSave(ctx);
     nvgResetScissor(ctx);
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, realH +2*ds);
+    nvgRect(ctx, mPos.x() - ds, mPos.y() - ds, mSize.x() + 2 * ds, realH + 2 * ds);
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);
     nvgFill(ctx);
     nvgRestore(ctx);
+  }
 
-    bool collapsable = mayCollapse();
-    if (!mTitle.empty()) {
-        /* Draw header */
-        NVGpaint headerPaint = nvgLinearGradient(
-            ctx, mPos.x(), mPos.y(), mPos.x(),
-            mPos.y() + hh,
-            mTheme->mWindowHeaderGradientTop,
-            mTheme->mWindowHeaderGradientBot);
-
-        nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
-
-        nvgFillPaint(ctx, headerPaint);
-        nvgFill(ctx);
-
-        nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
-        nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
-
-        nvgSave(ctx);
-        nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
-        nvgStroke(ctx);
-        nvgRestore(ctx);
-
-        nvgBeginPath(ctx);
-        nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
-        nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
-        nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
-        nvgStroke(ctx);
-
-        nvgFontSize(ctx, mFontSize ? mFontSize : theme()->mWindowFontSize);
-        nvgFontFace(ctx, "sans-bold");
-        nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-
-        nvgFontBlur(ctx, 2);
-        nvgFillColor(ctx, mTheme->mDropShadow);
-        nvgText(ctx, mPos.x() + mSize.x() / 2,
-                mPos.y() + hh / 2, mTitle.c_str(), nullptr);
-
-        nvgFontBlur(ctx, 0);
-        nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
-                                   : mTheme->mWindowTitleUnfocused);
-        nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2 - 1,
-                mTitle.c_str(), nullptr);
-    }
-
-    if (collapsable) {
-      auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
-
-      mCollapseIconSize.y() = fontSize();
-      mCollapseIconSize.y() *= mCollapseIconScale;
-      nvgFontSize(ctx, mCollapseIconSize.y());
-      nvgFontFace(ctx, "icons");
-      mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
-
-      nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
-                                 : mTheme->mWindowTitleUnfocused);
-      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-      mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + (hh - mCollapseIconSize.y())/2 );
-      nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
-    }
-
-    nvgRestore(ctx);
-
-    if (!isCollapsed())
+  if (!mTitle.empty()) 
+  {
+    if (haveDrawFlag(DrawHeader))
     {
-      Widget::draw(ctx);
+      NVGpaint headerPaint = nvgLinearGradient(
+        ctx, mPos.x(), mPos.y(), mPos.x(),
+        mPos.y() + hh,
+        mTheme->mWindowHeaderGradientTop,
+        mTheme->mWindowHeaderGradientBot);
 
-      bool inCorner = mMouseFocus &&
-                      isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), mMousePos - mPos);
       nvgBeginPath(ctx);
-      nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
-      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 15);
-      nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 5);
-      nvgLineTo(ctx, mPos.x() + mSize.x() - 5, mPos.y() + mSize.y() - 2);
-      nvgClosePath(ctx);
-      nvgFillColor(ctx, inCorner ? mTheme->mBorderDark : mTheme->mBorderLight);
+      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+
+      nvgFillPaint(ctx, headerPaint);
       nvgFill(ctx);
+
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+      nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
+
+      nvgSave(ctx);
+      nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
+      nvgStroke(ctx);
+      nvgRestore(ctx);
+
+      nvgBeginPath(ctx);
+      nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
+      nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
+      nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
+      nvgStroke(ctx);
     }
+
+    if (haveDrawFlag(DrawTitle))
+    {
+      nvgFontSize(ctx, mFontSize ? mFontSize : theme()->mWindowFontSize);
+      nvgFontFace(ctx, "sans-bold");
+      nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+
+      nvgFontBlur(ctx, 2);
+      nvgFillColor(ctx, mTheme->mDropShadow);
+      nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2, mTitle.c_str(), nullptr);
+
+      nvgFontBlur(ctx, 0);
+      nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
+                                  : mTheme->mWindowTitleUnfocused);
+      nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2 - 1,
+              mTitle.c_str(), nullptr);
+    }
+  }
+
+  if (mayCollapse())
+  {
+    auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
+
+    mCollapseIconSize.y() = fontSize();
+    mCollapseIconSize.y() *= mCollapseIconScale;
+    nvgFontSize(ctx, mCollapseIconSize.y());
+    nvgFontFace(ctx, "icons");
+    mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
+
+    nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
+                                : mTheme->mWindowTitleUnfocused);
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + (hh - mCollapseIconSize.y())/2 );
+    nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+  }
+
+  nvgRestore(ctx);
+
+  if (!isCollapsed())
+  {
+    Widget::draw(ctx);
+
+    bool inCorner = mMouseFocus &&
+                    isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), mMousePos - mPos);
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, mPos.x() + mSize.x() - 15, mPos.y() + mSize.y() - 2);
+    nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 15);
+    nvgLineTo(ctx, mPos.x() + mSize.x() - 2, mPos.y() + mSize.y() - 5);
+    nvgLineTo(ctx, mPos.x() + mSize.x() - 5, mPos.y() + mSize.y() - 2);
+    nvgClosePath(ctx);
+    nvgFillColor(ctx, inCorner ? mTheme->mBorderDark : mTheme->mBorderLight);
+    nvgFill(ctx);
+  }
 }
 
 bool Window::prefferContains(const Vector2i& p) const
@@ -340,18 +356,120 @@ void Window::refreshRelativePlacement() {
     /* Overridden in \ref Popup */
 }
 
-void Window::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("title", mTitle);
-    s.set("modal", mModal);
+int Window::getHeaderHeight() const { return theme()->mWindowHeaderHeight; }
+
+void Window::save(Serializer &s) const 
+{
+  Widget::save(s);
+  s.set("title", mTitle);
+  s.set("modal", mModal);
 }
 
-bool Window::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("title", mTitle)) return false;
-    if (!s.get("modal", mModal)) return false;
-    mDrag = false;
-    return true;
+bool Window::load(Serializer &s) 
+{
+  if (!Widget::load(s)) return false;
+  if (!s.get("title", mTitle)) return false;
+  if (!s.get("modal", mModal)) return false;
+  mDrag = false;
+  return true;
+}
+
+Vector4i Window::getWidgetsArea()
+{
+  Vector4i area = rect();
+  Widget* w = findWidget([](Widget* w) -> bool { return WindowMenu::cast(w) != nullptr; }, false);
+  if (auto wm = WindowMenu::cast(w))
+  {
+    area.y() = wm->rect().w();
+  }
+  else
+  {
+    area.y() = getHeaderHeight();
+  }
+
+  return area;
+}
+
+Panel::Panel(Widget *parent, const std::string &title)
+  : Window(parent, title)
+{
+  mDrawFlags = DrawTitle | DrawHeader;
+  withLayout<StretchLayout>(Orientation::Vertical);
+}
+
+void Panel::draw(NVGcontext *ctx)
+{
+  int cr = mTheme->mPanelCornerRadius;
+  int hh = mTheme->mPanelHeaderHeight;
+
+  /* Draw window */
+  int realH = isCollapsed() ? hh : mSize.y();
+
+  nvgSave(ctx);
+
+  if (!mTitle.empty())
+  {
+    if (haveDrawFlag(DrawHeader))
+    {
+      NVGpaint headerPaint = nvgLinearGradient(
+        ctx, mPos.x(), mPos.y(), mPos.x(),
+        mPos.y() + hh,
+        mTheme->mPanelHeaderGradientTop,
+        mTheme->mPanelHeaderGradientBot);
+
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+
+      nvgFillPaint(ctx, headerPaint);
+      nvgFill(ctx);
+    }
+
+    if (haveDrawFlag(DrawTitle))
+    {
+      nvgFontSize(ctx, mFontSize ? mFontSize : theme()->mPanelFontSize);
+      nvgFontFace(ctx, "sans-bold");
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+
+      nvgFontBlur(ctx, 2);
+      nvgFillColor(ctx, mTheme->mPanelDropShadow);
+      nvgText(ctx, mPos.x() + 24, mPos.y() + hh / 2, mTitle.c_str(), nullptr);
+
+      nvgFontBlur(ctx, 0);
+      nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
+      nvgText(ctx, mPos.x() + 24, mPos.y() + hh / 2 - 1, mTitle.c_str(), nullptr);
+    }
+  }
+
+  if (mayCollapse())
+  {
+    auto icon = utf8(mCollapsed ? mTheme->mPanelCollapsedIcon : mTheme->mPanelExpandedIcon);
+
+    mCollapseIconSize.y() = fontSize();
+    mCollapseIconSize.y() *= mCollapseIconScale;
+    nvgFontSize(ctx, mCollapseIconSize.y());
+    nvgFontFace(ctx, "icons");
+    mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
+
+    nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+    mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + hh / 2);
+    nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+  }
+
+  nvgRestore(ctx);
+
+  if (!isCollapsed())
+    Widget::draw(ctx);
+}
+
+void Panel::performLayout(NVGcontext *ctx) 
+{
+  Window::performLayout(ctx);
+}
+
+Vector2i Panel::preferredSize(NVGcontext *ctx) const 
+{
+  return Window::preferredSize(ctx);
 }
 
 NAMESPACE_END(nanogui)

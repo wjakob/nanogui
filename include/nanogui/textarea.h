@@ -28,6 +28,11 @@ NAMESPACE_BEGIN(nanogui)
  * fixed for the entire widget.
  */
 DECLSETTER(LongText, std::string)
+DECLSETTER(TextHeader, std::string)
+DECLSETTER(BulletLine, std::string)
+DECLSETTER(SeparatorLine, std::string)
+DECLSETTER(IndentWidth, int)
+DECLSETTER(UnindentWidth, int)
 
 class NANOGUI_EXPORT TextArea : public Widget 
 {
@@ -80,10 +85,16 @@ public:
 
     /// Append text at the end of the widget
     void append(const std::string &text);
+    void appendIcon(int icon);
+
     void setText(const std::string &text);
 
     /// Append a line of text at the bottom
     void appendLine(const std::string &text) { append(text + "\n"); }
+
+    void addHeaderLine(const std::string &text);
+    void addBulletLine(const std::string &text);
+    void addSeparatorLine(const std::string &text);
 
     /// Clear all current contents
     void clear();
@@ -95,6 +106,9 @@ public:
     bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
 
+    void addIndentWidth(int w) { mIndentWidth += w; }
+    void resetIndentWidth(int w) { mIndentWidth = 0; }
+
 protected:
     Vector2i positionToBlock(const Vector2i &pos) const;
     Vector2i blockToPosition(const Vector2i &pos) const;
@@ -105,6 +119,8 @@ protected:
         int width;
         std::string text;
         Color color;
+        bool isSeparator;
+        bool isIcon;
     };
 
     std::vector<Block> m_blocks;
@@ -112,14 +128,21 @@ protected:
     Color m_background_color;
     Color m_selection_color;
     std::string m_font;
+    int mIndentWidth = 0;
     Vector2i m_offset, m_max_size;
     int m_padding;
     bool m_selectable;
     Vector2i m_selection_start;
     Vector2i m_selection_end;
+    bool mNeedUpdate = false;
 
 public:
     PROPSETTER(LongText, setText)
+    PROPSETTER(TextHeader, addHeaderLine)
+    PROPSETTER(BulletLine, addBulletLine)
+    PROPSETTER(SeparatorLine, addSeparatorLine)
+    PROPSETTER(IndentWidth, addIndentWidth)
+    PROPSETTER(UnindentWidth, resetIndentWidth)
 };
 
 NAMESPACE_END(nanogui)

@@ -179,15 +179,14 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
 
 Widget* Widget::findWidget(std::function<bool(Widget*)> cond, bool inchildren)
 {
-  if (cond(this))
-    return this;
-
-  if (inchildren)
+  for (auto child : mChildren)
   {
-    for (auto* child : mChildren)
+    if (cond(child))
+      return child;
+
+    if (inchildren)
     {
-      Widget* w = child->findWidget(cond, inchildren);
-      if (w)
+      if (auto w = child->findWidget(cond, inchildren))
         return w;
     }
   }

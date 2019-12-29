@@ -380,7 +380,7 @@ void createBasicWidgets(Screen* parent)
 
 void createTextAreaWindow(Screen* screen)
 {
-  auto& mw = screen->window(Caption{"TextArea window"},
+  /*auto& mw = screen->window(Caption{"TextArea window"},
                             FixedSize{ 300, 200 },
                             WidgetStretchLayout{ Orientation::Horizontal },
                             Position{ 1015, 405 } );
@@ -391,7 +391,7 @@ void createTextAreaWindow(Screen* screen)
     "                              Position{ 1015, 405 });\n"
     "    std::string longText = \"\";\n"
     "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }\n";
-  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } );
+  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } ); */
 }
 
 void createPicflowWindow(Screen* screen)
@@ -743,10 +743,11 @@ void toggleTreeView(Screen* screen, bool show)
 
 void createAllWidgetsDemo(Screen* screen)
 {
-  Window& dw = screen->window(WindowSimpleLayout{ Orientation::Horizontal },
-    Caption{ "All widgets demo" },
-    Position{ 725, 350 },
-    MinimumSize{ 400, 400 });
+  Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical },
+                              Caption{ "All widgets demo" },
+                              Position{ 725, 350 },
+                              MinimumSize{ 400, 400 });
+  dw.setId("0x42");
 
   dw.submenu("File")
     .item("(dummy item)", []() {})
@@ -783,6 +784,40 @@ void createAllWidgetsDemo(Screen* screen)
                          checked = (w && w->visible());
                        });
   dw.submenu("Help");
+
+  auto& help = dw.panel("Help");
+  help.text(TextHeader{ "PROGRAMMER GUIDE:" },
+            BulletLine{ "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" },
+            BulletLine{ "Please see the examples/example1.cpp." },
+            BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableKeyboard' for keyboard controls." },
+            BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableGamepad' for gamepad controls." },
+            SeparatorLine{ "" });
+
+  help.text(TextHeader{ "USER GUIDE:" },
+            BulletLine{ "Double-click on title bar to collapse window." },
+            BulletLine{ "Click and drag on lower corner to resize window" },
+            BulletLine{ "Double-click to auto fit window to its contents"},
+            BulletLine{ "CTRL+Click on a slider or drag box to input value as text." },
+            BulletLine{ "TAB/SHIFT+TAB to cycle through keyboard editable fields."},
+            BulletLine{ "CTRL+Mouse Wheel to zoom window contents." },
+            BulletLine{ "While inputing text:\n" },
+            IndentWidth { 10 },
+              BulletLine{ "CTRL+Left/Right to word jump." },
+              BulletLine{ "CTRL+A or double-click to select all." },
+              BulletLine{ "CTRL+X/C/V to use clipboard cut/copy/paste." },
+              BulletLine{ "CTRL+Z,CTRL+Y to undo/redo." },
+              BulletLine{ "ESCAPE to revert." },
+              BulletLine{ "You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." },
+            UnindentWidth { 0 },
+            TextHeader{ "With keyboard navigation enabled:" },
+            IndentWidth{ 10 },
+              BulletLine{ "Arrow keys to navigate." },
+              BulletLine{ "Space to activate a widget."},
+              BulletLine{ "Return to input text into a widget." },
+              BulletLine{ "Escape to deactivate a widget, close popup, exit child window." },
+              BulletLine{ "Alt to jump to the menu layer of a window." },
+              BulletLine{ "CTRL+Tab to select a window." },
+            UnindentWidth{ 0 });
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

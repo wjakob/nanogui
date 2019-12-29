@@ -13,6 +13,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/screen.h>
 #include <nanogui/vscrollpanel.h>
+#include <nanogui/entypo.h>
 #include <nanovg.h>
 #include <algorithm>
 
@@ -30,6 +31,40 @@ void TextArea::setText(const std::string &text)
 {
   clear();
   append(text);
+}
+
+void TextArea::addHeaderLine(const std::string &text)
+{ 
+  append(text + "\n"); 
+}
+
+void TextArea::addBulletLine(const std::string &text)
+{
+  appendIcon(ENTYPO_ICON_MINUS_1);
+  append(std::string(" ") + text + "\n");
+}
+
+void TextArea::addSeparatorLine(const std::string &text)
+{
+  m_blocks.push_back(Block{ m_offset, 0, std::string(""), m_foreground_color, true, false });
+  m_offset = Vector2i(0, m_offset.y() + 2);
+}
+
+void TextArea::appendIcon(int icon)
+{
+  NVGcontext *ctx = screen()->nvgContext();
+
+  nvgFontSize(ctx, fontSize());
+  nvgFontFace(ctx, "icons");
+
+  std::string str = utf8(icon).data();
+  int width = nvgTextBounds(ctx, 0, 0, str.c_str(), nullptr, nullptr);
+  m_blocks.push_back(Block{ m_offset, width, str, m_foreground_color, false, true });
+
+  m_offset.x() += width;
+  m_max_size = std::max(m_max_size, m_offset);
+
+  mNeedUpdate = true;
 }
 
 void TextArea::append(const std::string &text) 
@@ -50,20 +85,18 @@ void TextArea::append(const std::string &text)
         if (line.empty())
             continue;
         int width = nvgTextBounds(ctx, 0, 0, line.c_str(), nullptr, nullptr);
-        m_blocks.push_back(Block { m_offset, width, line, m_foreground_color });
+        m_blocks.push_back(Block { m_offset, width, line, m_foreground_color, false, false });
 
         m_offset.x() += width;
         m_max_size = std::max(m_max_size, m_offset);
         if (*str == '\n') 
         {
-            m_offset = Vector2i(0, m_offset.y() + fontSize());
+            m_offset = Vector2i(mIndentWidth, m_offset.y() + fontSize());
             m_max_size = std::max(m_max_size, m_offset);
         }
     } while (*str++ != 0);
 
-    VScrollPanel *vscroll = VScrollPanel::cast(mParent);
-    if (vscroll)
-        vscroll->performLayout(ctx);
+    mNeedUpdate = true;
 }
 
 void TextArea::clear() 
@@ -144,6 +177,13 @@ void TextArea::draw(NVGcontext *ctx)
           [](int value, const Block &block) { return value < block.offset.y(); }
       );
     }
+    
+    if (mNeedUpdate)
+    {
+      auto scr = screen();
+      if (scr) scr->needPerformLayout(mParent);
+      mNeedUpdate = false;
+    }
 
     if (m_background_color.w() != 0.f) 
     {
@@ -219,10 +259,26 @@ void TextArea::draw(NVGcontext *ctx)
             nvgFill(ctx);
         }
 
-
-        nvgFillColor(ctx, color);
-        nvgText(ctx, offset.x(), offset.y(),
-                block.text.c_str(), nullptr);
+        if (block.isSeparator)
+        {
+          nvgBeginPath(ctx);
+          nvgMoveTo(ctx, offset.x(), offset.y());
+          nvgLineTo(ctx, mPos.x() + mSize.x(), offset.y());
+          nvgStrokeColor(ctx, color);
+          nvgStroke(ctx);
+        }
+        else if (block.isIcon)
+        {
+          nvgFontFace(ctx, "icons");
+          nvgFillColor(ctx, color);
+          nvgText(ctx, offset.x(), offset.y(), block.text.c_str(), nullptr);
+          nvgFontFace(ctx, m_font.c_str());
+        }
+        else
+        {
+          nvgFillColor(ctx, color);
+          nvgText(ctx, offset.x(), offset.y(), block.text.c_str(), nullptr);
+        }
     }
 }
 
