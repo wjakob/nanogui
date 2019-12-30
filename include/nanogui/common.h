@@ -269,6 +269,10 @@ public:
   /** \return The length of the vector. */
   float getLength() const { return std::sqrt(x()*x() + y()*y()); }
 
+  Vector2 yy() const { return{ y(), y() }; }
+  Vector2 xx() const { return{ x(), x() }; }
+  Vector2 yx() const { return{ y(), x() }; }
+
   //! Get the squared length of this vector
   /** This is useful because it is much faster than getLength().
   \return The squared length of the vector. */
