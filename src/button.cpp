@@ -199,7 +199,7 @@ void Button::draw(NVGcontext *ctx)
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
 
     Vector2f center = (mPos + mSize / 2).cast<float>();
-    Vector2f textPos(center.x() - tw * 0.5f, center.y() - 1);
+    Vector2f textPos = center - Vector2f(tw / 2, 1);
     NVGcolor textColor = getTextColor();
 
     if (mIcon && haveDrawFlag(DrawIcon)) {
@@ -246,7 +246,7 @@ void Button::draw(NVGcontext *ctx)
 
         if (nvgIsFontIcon(mIcon)) 
         {
-            nvgText(ctx, iconPos.x(), iconPos.y()+1, icon.data(), nullptr);
+          nvgText(ctx, iconPos + Vector2f{ 0, 1 }, icon.data());
         } 
         else 
         {
@@ -263,9 +263,9 @@ void Button::draw(NVGcontext *ctx)
       nvgFontFace(ctx, "sans-bold");
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
       nvgFillColor(ctx, mTheme->mTextColorShadow);
-      nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
+      nvgText(ctx, textPos, mCaption);
       nvgFillColor(ctx, textColor);
-      nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
+      nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
     }
 
     Widget::draw(ctx);

@@ -878,6 +878,8 @@ void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2i& pos);
 void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2f& pos);
 void NANOGUI_EXPORT nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& size, float r);
 void NANOGUI_EXPORT nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& size, float r);
+void NANOGUI_EXPORT nvgText(NVGcontext* ctx, const Vector2i& p, const std::string& text);
+void NANOGUI_EXPORT nvgText(NVGcontext* ctx, const Vector2f& p, const std::string& text);
 
 /**
  * \brief Open a native file open dialog, which allows multiple selection.

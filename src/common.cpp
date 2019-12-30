@@ -75,6 +75,8 @@ void nvgTranslate(NVGcontext* ctx, const Vector2f& pos) { nvgTranslate(ctx, pos.
 void nvgRect(NVGcontext* ctx, const Vector4i& r) { nvgRect(ctx, r.x(), r.y(), r.width(), r.height()); }
 void nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
 void nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
+void nvgText(NVGcontext* ctx, const Vector2i& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
+void nvgText(NVGcontext* ctx, const Vector2f& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
 
 void mainloop(int refresh) {
     if (mainloop_active)
