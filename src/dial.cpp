@@ -92,20 +92,20 @@ void Dial::draw(NVGcontext* ctx) {
         float a1 = 0.5f*NVG_PI + 2.0f*NVG_PI*(0.1f + 0.8f * mHighlightedRange.second);
 
         nvgBeginPath(ctx);
-        nvgArc(ctx, dialPos.x(), dialPos.y(), kr, a0, a1, NVG_CW);
-        nvgArc(ctx, dialPos.x(), dialPos.y(), kr + 2*kshadow, a1, a0, NVG_CCW);
+        nvgArc(ctx, dialPos, kr, a0, a1, NVG_CW);
+        nvgArc(ctx, dialPos, kr + 2*kshadow, a1, a0, NVG_CCW);
         nvgFillColor(ctx, mHighlightColor);
         nvgFill(ctx);
     }
 
     nvgBeginPath(ctx);
-    nvgCircle(ctx, dialPos.x(), dialPos.y(), kr);
+    nvgCircle(ctx, dialPos, kr);
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgFillPaint(ctx, dial);
     nvgStroke(ctx);
     nvgFill(ctx);
     nvgBeginPath(ctx);
-    nvgCircle(ctx, dialPos.x(), dialPos.y(), kr - kshadow);
+    nvgCircle(ctx, dialPos, kr - kshadow);
     nvgFillPaint(ctx, dialFace);
     nvgStrokePaint(ctx, dialReverse);
     nvgStroke(ctx);
@@ -119,7 +119,7 @@ void Dial::draw(NVGcontext* ctx) {
     notchPos += dialPos + mPos.cast<float>();
 
     nvgBeginPath(ctx);
-    nvgCircle(ctx, notchPos.x(), notchPos.y(), 0.15f*kr);
+    nvgCircle(ctx, notchPos, 0.15f*kr);
     nvgFillColor(ctx, Color(mEnabled ? 50 : 100, 150));
     nvgStrokePaint(ctx, dial);
     nvgStroke(ctx);
