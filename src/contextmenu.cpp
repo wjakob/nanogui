@@ -65,18 +65,17 @@ void ContextMenuLabel::draw(NVGcontext* ctx)
     nvgFontSize(ctx, fontSize());
     nvgFillColor(ctx, mTheme->mContextMenuShortcutTextColor);
 
-    int xpos = (mSize.x() - mTheme->mContextMenuShortcutOffset);
-    int ypos = 0;
+    Vector2i opos = { mSize.x() - mTheme->mContextMenuShortcutOffset, 0 };
 
     switch (mTextVAlign)
     {
-    case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
-    case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+    case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
+    case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;
     }
 
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mShortcut.c_str(), nullptr);
+    nvgText(ctx, mPos + opos, mShortcut);
   }
 
   if (mChecked) {
