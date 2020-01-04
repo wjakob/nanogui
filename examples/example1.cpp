@@ -380,7 +380,7 @@ void createBasicWidgets(Screen* parent)
 
 void createTextAreaWindow(Screen* screen)
 {
-  /*auto& mw = screen->window(Caption{"TextArea window"},
+  auto& mw = screen->window(Caption{"TextArea window"},
                             FixedSize{ 300, 200 },
                             WidgetStretchLayout{ Orientation::Horizontal },
                             Position{ 1015, 405 } );
@@ -391,7 +391,7 @@ void createTextAreaWindow(Screen* screen)
     "                              Position{ 1015, 405 });\n"
     "    std::string longText = \"\";\n"
     "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }\n";
-  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } ); */
+  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } );
 }
 
 void createPicflowWindow(Screen* screen)
