@@ -40,7 +40,7 @@ void TextArea::addHeaderLine(const std::string &text)
 
 void TextArea::addBulletLine(const std::string &text)
 {
-  appendIcon(ENTYPO_ICON_MINUS_1);
+  appendIcon(ENTYPO_ICON_MINUS);
   append(std::string(" ") + text + "\n");
 }
 

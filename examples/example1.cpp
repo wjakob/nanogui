@@ -105,7 +105,7 @@ void createButtonDemoWindow(Screen* screen)
   auto& w = screen->window(Position{ 15, 15 },
                            WindowMovable{ Theme::WindowDraggable::dgFixed },
                            Caption{ "Button demo" },
-                           WidgetLayout{ new GroupLayout() });
+                           WindowGroupLayout{});
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
@@ -144,18 +144,18 @@ void createButtonDemoWindow(Screen* screen)
   auto& popup = popupBtn.popupref();
   popup.withLayout<GroupLayout>();
   popup.label("Arbitrary widgets can be placed here");
-  popup.checkbox("A check box");
+  popup.checkbox(Caption{ "A check box" });
   // popup right
   auto& popupBtnR = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
   auto& popupRight = popupBtnR.popupref();
   popupRight.withLayout<GroupLayout>();
-  popupRight.checkbox("Another check box");
+  popupRight.checkbox(Caption{ "Another check box" });
   // popup left
   auto& popupBtnL = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
   popupBtnL.setSide(Popup::Side::Left);
   auto& popupLeft = popupBtnL.popupref();
   popupLeft.withLayout<GroupLayout>();
-  popupLeft.checkbox("Another check box");
+  popupLeft.checkbox(Caption{ "Another check box" });
 
   w.label("A switch boxes", "sans-bold");
   auto& switchboxArea = w.widget();
@@ -308,12 +308,14 @@ void createBasicWidgets(Screen* parent)
   w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"});
   w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" });
   w.label("Check box", "sans-bold");
-  auto& cb = w.checkbox("Flag 1", [](bool state) { cout << "Check box 1 state: " << state << endl; });
-  cb.setChecked(true);
+  auto& cb = w.checkbox(Caption{ "Flag 1" }, 
+                        CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
+                        CheckboxState{true});
   cb.setUncheckedColor(Color(128, 0, 0, 255));
   cb.setCheckedColor(Color(0, 128, 0, 255));
   cb.setPushedColor(Color(128, 128, 0, 255));
-  w.checkbox("Flag 2", [](bool state) { cout << "Check box 2 state: " << state << endl; });
+  w.checkbox(Caption{ "Flag 2" }, 
+             CheckboxCallback{ [](bool state) { cout << "Check box 2 state: " << state << endl; }});
 
   w.label("Progress bar", "sans-bold");
 
@@ -547,9 +549,8 @@ void createGridSmallObjects(Screen* screen)
 
   /* Checkbox widget */
   w.label("Checkbox :", "sans-bold");
-  auto& cb = w.checkbox("Check me");
+  auto& cb = w.checkbox(Caption{ "Check me" }, CheckboxState{ true });
   cb.setFontSize(16);
-  cb.setChecked(true);
 
   w.label("Combo box :", "sans-bold");
   auto& cobo = w.combobox(ComboBoxItems{ "Item 1", "Item 2", "Item 3" });
@@ -746,8 +747,7 @@ void createAllWidgetsDemo(Screen* screen)
   Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical },
                               Caption{ "All widgets demo" },
                               Position{ 725, 350 },
-                              MinimumSize{ 400, 400 });
-  dw.setId("0x42");
+                              FixedSize{ 400, 400 });
 
   dw.submenu("File")
     .item("(dummy item)", []() {})
@@ -760,63 +760,73 @@ void createAllWidgetsDemo(Screen* screen)
   dw.submenu("Examples")
     .item("Global menu", [screen](bool v) { toggleMainMenu(screen, v); })
     .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); },
-                     [screen](bool &enabled, bool &checked) {
-                       enabled = true;
-                       auto* w = screen->findWidgetGlobal("#console_wnd");
-                       checked = (w && w->visible());
-                     })
+      [screen](bool &enabled, bool &checked) {
+    enabled = true;
+    auto* w = screen->findWidgetGlobal("#console_wnd");
+    checked = (w && w->visible());
+  })
     .item("Log", [screen](bool v) { toggleLogWnd(screen, v); },
-                 [screen](bool &enabled, bool &checked) {
-                   enabled = true;
-                   auto* w = screen->findWidgetGlobal("#log_wnd");
-                   checked = (w && w->visible());
-                 })
+      [screen](bool &enabled, bool &checked) {
+    enabled = true;
+    auto* w = screen->findWidgetGlobal("#log_wnd");
+    checked = (w && w->visible());
+  })
     .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); },
-                           [screen](bool &enabled, bool &checked) {
-                             enabled = true;
-                             auto* w = screen->findWidgetGlobal("#simple_layout_wnd");
-                             checked = (w && w->visible());
-                           })
+      [screen](bool &enabled, bool &checked) {
+    enabled = true;
+    auto* w = screen->findWidgetGlobal("#simple_layout_wnd");
+    checked = (w && w->visible());
+  })
     .item("Tree view", [screen](bool v) { toggleTreeView(screen, v); },
-                       [screen](bool &enabled, bool &checked) {
-                         enabled = true;
-                         auto* w = screen->findWidgetGlobal("#tree_view_wnd");
-                         checked = (w && w->visible());
-                       });
+      [screen](bool &enabled, bool &checked) {
+    enabled = true;
+    auto* w = screen->findWidgetGlobal("#tree_view_wnd");
+    checked = (w && w->visible());
+  });
   dw.submenu("Help");
 
-  auto& help = dw.panel("Help");
+  auto& pw = dw.vscrollpanel(RelativeSize{1.f, 1.f}).vstack();
+  auto& help = pw.panel("Help");
   help.text(TextHeader{ "PROGRAMMER GUIDE:" },
-            BulletLine{ "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" },
-            BulletLine{ "Please see the examples/example1.cpp." },
-            BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableKeyboard' for keyboard controls." },
-            BulletLine{ "Enable 'theme.configFlags |= Navigation::EnableGamepad' for gamepad controls." },
-            SeparatorLine{ "" },
-            TextHeader{ "USER GUIDE:" },
-            BulletLine{ "Double-click on title bar to collapse window." },
-            BulletLine{ "Click and drag on lower corner to resize window" },
-            BulletLine{ "Double-click to auto fit window to its contents"},
-            BulletLine{ "CTRL+Click on a slider or drag box to input value as text." },
-            BulletLine{ "TAB/SHIFT+TAB to cycle through keyboard editable fields."},
-            BulletLine{ "CTRL+Mouse Wheel to zoom window contents." },
-            BulletLine{ "While inputing text:\n" },
-            IndentWidth { 10 },
-              BulletLine{ "CTRL+Left/Right to word jump." },
-              BulletLine{ "CTRL+A or double-click to select all." },
-              BulletLine{ "CTRL+X/C/V to use clipboard cut/copy/paste." },
-              BulletLine{ "CTRL+Z,CTRL+Y to undo/redo." },
-              BulletLine{ "ESCAPE to revert." },
-              BulletLine{ "You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." },
-            UnindentWidth { 0 },
-            TextHeader{ "With keyboard navigation enabled:" },
-            IndentWidth{ 10 },
-              BulletLine{ "Arrow keys to navigate." },
-              BulletLine{ "Space to activate a widget."},
-              BulletLine{ "Return to input text into a widget." },
-              BulletLine{ "Escape to deactivate a widget, close popup, exit child window." },
-              BulletLine{ "Alt to jump to the menu layer of a window." },
-              BulletLine{ "CTRL+Tab to select a window." },
-            UnindentWidth{ 0 });
+    BulletLine{ "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" },
+    BulletLine{ "Please see the examples/example1.cpp." },
+    BulletLine{ "Enable 'theme.nav.keyboard.enable = true' for keyboard controls." },
+    BulletLine{ "Enable 'theme.nav.gamepad.enable= true' for gamepad controls." },
+    SeparatorLine{ "" },
+    TextHeader{ "USER GUIDE:" },
+    BulletLine{ "Double-click on title bar to collapse window." },
+    BulletLine{ "Click and drag on lower corner to resize window" },
+    BulletLine{ "Double-click to auto fit window to its contents" },
+    BulletLine{ "CTRL+Click on a slider or drag box to input value as text." },
+    BulletLine{ "TAB/SHIFT+TAB to cycle through keyboard editable fields." },
+    BulletLine{ "CTRL+Mouse Wheel to zoom window contents." },
+    BulletLine{ "While inputing text:\n" },
+    IndentWidth{ 15 },
+    BulletLine{ "CTRL+Left/Right to word jump." },
+    BulletLine{ "CTRL+A or double-click to select all." },
+    BulletLine{ "CTRL+X/C/V to use clipboard cut/copy/paste." },
+    BulletLine{ "CTRL+Z,CTRL+Y to undo/redo." },
+    BulletLine{ "ESCAPE to revert." },
+    BulletLine{ "You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." },
+    UnindentWidth{ 0 },
+    TextHeader{ "With keyboard navigation enabled:" },
+    IndentWidth{ 15 },
+    BulletLine{ "Arrow keys to navigate." },
+    BulletLine{ "Space to activate a widget." },
+    BulletLine{ "Return to input text into a widget." },
+    BulletLine{ "Escape to deactivate a widget, close popup, exit child window." },
+    BulletLine{ "Alt to jump to the menu layer of a window." },
+    BulletLine{ "CTRL+Tab to select a window." },
+    UnindentWidth{ 0 });
+
+  auto& iocfg = pw.panel("Configuration");
+  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowGroupLayout{});
+  nav.checkbox(Caption{ "theme.nav.keyboard.enable" }, CheckboxRef{ screen->theme()->nav.keyboard.enable });
+  nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ screen->theme()->nav.mouse.enable });
+  nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ screen->theme()->nav.mouse.drawCursor });
+  nav.checkbox(Caption{ "theme.textarea.blinkCursor" }, CheckboxRef{ screen->theme()->textarea.blinkCursor });
+  nav.checkbox(Caption{ "theme.windows.moveFromTitlebarOnly" }, CheckboxRef{ screen->theme()->window.moveFromTitlebarOnly });
+  nav.checkbox(Caption{ "theme.windows.resizeFromEdge" }, CheckboxRef{ screen->theme()->window.resizeFromEdge });
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)
@@ -900,19 +910,19 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     auto& popup = popupBtn.popupref();
     popup.withLayout<GroupLayout>();
     popup.label("Arbitrary widgets can be placed here");
-    popup.checkbox("A check box");
+    popup.checkbox(Caption{ "A check box" });
     // popup right
     icon = ENTYPO_ICON_FLASH;
     auto& popupBtn2 = popup.popupbutton("Recursive popup", icon);
     auto& popupRight = popupBtn2.popupref();
     popupRight.withLayout<GroupLayout>();
-    popupRight.checkbox("Another check box");
+    popupRight.checkbox(Caption{ "Another check box" });
     // popup left
     auto& popupBtn3 = popup.popupbutton("Recursive popup", icon);
     popupBtn3.setSide(Popup::Side::Left);
     auto& popupLeft = popupBtn3.popupref();
     popupLeft.withLayout<GroupLayout>();
-    popupLeft.checkbox("Another check box");
+    popupLeft.checkbox(Caption{ "Another check box" });
 
     // regular buttons
     auto& button = layer.button("PushButton");
@@ -934,7 +944,7 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     button4.setFlags(Button::Flag::ToggleButton);
 
     // checkbox (top level)
-    layer.checkbox("A CheckBox");
+    layer.checkbox(Caption{ "A CheckBox" });
   }
 
   /* test the graph widget fonts */

@@ -122,10 +122,11 @@ void PropertiesEditor::parse(Widget* w)
       }
       else if (typevalue == "boolean")
       {
-        auto& ch = grid.checkbox("", [&](bool v) { jval.set_bool("value", v); updateAttribs(); });
+        auto& ch = grid.checkbox(Caption{ "" },
+                                 CheckboxCallback{ [&](bool v) { jval.set_bool("value", v); updateAttribs(); } }, 
+                                 CheckboxState{ jval.get_bool("value") });
         ch.setSize(ww, hh);
         ch.setFixedSize({ ww, hh });
-        ch.setChecked(jval.get_bool("value"));
       }
       else if (typevalue == "integer")
       {

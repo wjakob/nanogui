@@ -318,7 +318,7 @@ NAMESPACE_BEGIN(detail)
 template <> class FormWidget<bool, std::true_type> : public CheckBox {
 public:
     /// Creates a new FormWidget with underlying type CheckBox.
-    FormWidget(Widget *p) : CheckBox(p, "") { setFixedWidth(20); }
+    FormWidget(Widget *p) : CheckBox(p, std::string("")) { setFixedWidth(20); }
 
     /// Pass-through function for \ref nanogui::CheckBox::setChecked.
     void setValue(bool v) { setChecked(v); }

@@ -57,6 +57,7 @@ DECLSETTER(FixedHeight, int)
 DECLSETTER(FixedWidth, int)
 DECLSETTER(WidgetLayout, Layout*)
 DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
+DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
 DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
 DECLSETTER(FloatValue, float)
@@ -488,6 +489,7 @@ public:
     PROPSETTER(FixedSize,setFixedSize)
     PROPSETTER(WidgetLayout,setLayout)
     PROPSETTER(WidgetStretchLayout,setLayout)
+    PROPSETTER(WidgetBoxLayout,setLayout)
 
     template<typename FF, typename none = void> void set() {}
 
@@ -501,6 +503,8 @@ public:
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
     template<typename... Args>Widget& hlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal }, args...); }
     template<typename... Args>Widget& vlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical }, args...); }
+    template<typename... Args>Widget& hstack(const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill }, args...); }
+    template<typename... Args>Widget& vstack(const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill }, args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
     template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }
