@@ -50,6 +50,7 @@ TextArea& TextArea::separator(const std::string &text)
 {
   m_blocks.push_back(Block{ m_offset, 0, std::string(""), m_foreground_color, true, false });
   m_offset = Vector2i(0, m_offset.y() + 2);
+  m_max_size = m_max_size.cwiseMax(m_offset);
   return *this;
 }
 
@@ -65,7 +66,7 @@ void TextArea::appendIcon(int icon)
   m_blocks.push_back(Block{ m_offset, width, str, m_foreground_color, false, true });
 
   m_offset.x() += width;
-  m_max_size = std::max(m_max_size, m_offset);
+  m_max_size = m_max_size.cwiseMax(m_offset);
 
   mNeedUpdate = true;
 }
@@ -95,7 +96,7 @@ void TextArea::append(const std::string &text)
         if (*str == '\n') 
         {
             m_offset = Vector2i(mIndentWidth, m_offset.y() + fontSize());
-            m_max_size = std::max(m_max_size, m_offset);
+            m_max_size = m_max_size.cwiseMax(m_offset);
         }
     } while (*str++ != 0);
 
