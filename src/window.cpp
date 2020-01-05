@@ -67,21 +67,24 @@ ContextMenu& Window::submenu(const std::string& caption, const std::string& id)
   return *smenu;
 }
 
-Vector2i Window::preferredSize(NVGcontext *ctx) const {
-    if (mButtonPanel)
-        mButtonPanel->setVisible(false);
-    Vector2i result = Widget::preferredSize(ctx);
-    if (mButtonPanel)
-        mButtonPanel->setVisible(true);
+Vector2i Window::preferredSize(NVGcontext *ctx) const 
+{
+  if (mButtonPanel)
+    mButtonPanel->setVisible(false);
+  
+  Vector2i result = Widget::preferredSize(ctx);
+  if (mButtonPanel)
+    mButtonPanel->setVisible(true);
 
-    nvgFontSize(ctx, 18.0f);
-    nvgFontFace(ctx, "sans-bold");
-    float bounds[4];
-    nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
+  nvgFontSize(ctx, 18.0f);
+  nvgFontFace(ctx, "sans-bold");
+  float bounds[4];
+  nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
 
-    return result.cwiseMax(Vector2i(
-        bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]
-    ));
+  if (mCollapsed)
+    result.y() = mTheme->mPanelHeaderHeight;
+
+  return result.cwiseMax(bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]);
 }
 
 Widget *Window::buttonPanel() {
@@ -324,15 +327,29 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
     return false;
 }
 
-bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
+bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
+{
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
         return true;
-    if (isMouseButtonLeft(button) && mEnabled) {
+
+    if (isMouseButtonLeft(button) && mEnabled) 
+    {
       Vector2i clkPnt = p - mPos - Vector2i(5,5);
       if (down && clkPnt.x() > 0 && clkPnt.x() < mCollapseIconSize.x()
           && clkPnt.y() > 0 && clkPnt.y() < mCollapseIconSize.y())
       {
         mCollapsed = !mCollapsed;
+        screen()->needPerformLayout(mParent);
+        if (mCollapsed)
+        {
+          mSaveFixedHeight = mFixedSize.y();
+          mFixedSize.y() = mTheme->mWindowHeaderHeight;
+        }
+        else
+        {
+          mFixedSize.y() = mSaveFixedHeight;
+          mSaveFixedHeight = 0;
+        }
         return true;
       }
     }
@@ -397,6 +414,7 @@ Panel::Panel(Widget *parent, const std::string &title)
   : Window(parent, title)
 {
   mDrawFlags = DrawTitle | DrawHeader;
+  mDraggable = Theme::WindowDraggable::dgFixed;
   withLayout<StretchLayout>(Orientation::Vertical);
 }
 

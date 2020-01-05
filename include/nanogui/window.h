@@ -27,6 +27,7 @@ class ContextMenu;
 
 DECLSETTER(WindowSimpleLayout, Orientation)
 DECLSETTER(WindowMovable, Theme::WindowDraggable)
+DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 
 class NANOGUI_EXPORT Window : public Widget 
 {
@@ -122,6 +123,7 @@ protected:
     int mDrawFlags = DrawFlag::DrawAll;
     Vector2i mMousePos;
     int mFontSize = 0;
+    int mSaveFixedHeight = 0;
     bool mNeedPerformUpdate = false;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
     Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;
@@ -132,8 +134,9 @@ protected:
 
 public:
     PROPSETTER(WindowMovable,setDraggable)
-    PROPSETTER(Caption, setTitle)
+    PROPSETTER(Caption,setTitle)
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
+    PROPSETTER(WindowGroupLayout,setLayout)
 };
 
 class NANOGUI_EXPORT Panel : public Window
