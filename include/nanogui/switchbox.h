@@ -52,8 +52,10 @@ public:
      *     \ref nanogui::SwitchBox::mPushed for the difference between "pushed"
      *     and "checked".
      */
-    SwitchBox(Widget *parent, Alignment align = Alignment::Horizontal, const std::string &caption = "Untitled",
-             const std::function<void(bool)> &callback = std::function<void(bool)>());
+    SwitchBox(Widget *parent, Alignment align = Alignment::Horizontal, 
+              const std::string &caption = "Untitled",
+              const std::function<void(bool)> &callback = std::function<void(bool)>(),
+              bool initial = false);
 
     /// The preferred size of this SwitchBox.
     virtual Vector2i preferredSize(NVGcontext *ctx) const override;
