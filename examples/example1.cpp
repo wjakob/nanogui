@@ -787,37 +787,38 @@ void createAllWidgetsDemo(Screen* screen)
 
   auto& pw = dw.vscrollpanel(RelativeSize{1.f, 1.f}).vstack();
   auto& help = pw.panel("Help");
-  help.text(TextHeader{ "PROGRAMMER GUIDE:" },
-    BulletLine{ "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" },
-    BulletLine{ "Please see the examples/example1.cpp." },
-    BulletLine{ "Enable 'theme.nav.keyboard.enable = true' for keyboard controls." },
-    BulletLine{ "Enable 'theme.nav.gamepad.enable= true' for gamepad controls." },
-    SeparatorLine{ "" },
-    TextHeader{ "USER GUIDE:" },
-    BulletLine{ "Double-click on title bar to collapse window." },
-    BulletLine{ "Click and drag on lower corner to resize window" },
-    BulletLine{ "Double-click to auto fit window to its contents" },
-    BulletLine{ "CTRL+Click on a slider or drag box to input value as text." },
-    BulletLine{ "TAB/SHIFT+TAB to cycle through keyboard editable fields." },
-    BulletLine{ "CTRL+Mouse Wheel to zoom window contents." },
-    BulletLine{ "While inputing text:\n" },
-    IndentWidth{ 15 },
-    BulletLine{ "CTRL+Left/Right to word jump." },
-    BulletLine{ "CTRL+A or double-click to select all." },
-    BulletLine{ "CTRL+X/C/V to use clipboard cut/copy/paste." },
-    BulletLine{ "CTRL+Z,CTRL+Y to undo/redo." },
-    BulletLine{ "ESCAPE to revert." },
-    BulletLine{ "You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." },
-    UnindentWidth{ 0 },
-    TextHeader{ "With keyboard navigation enabled:" },
-    IndentWidth{ 15 },
-    BulletLine{ "Arrow keys to navigate." },
-    BulletLine{ "Space to activate a widget." },
-    BulletLine{ "Return to input text into a widget." },
-    BulletLine{ "Escape to deactivate a widget, close popup, exit child window." },
-    BulletLine{ "Alt to jump to the menu layer of a window." },
-    BulletLine{ "CTRL+Tab to select a window." },
-    UnindentWidth{ 0 });
+  help.text()
+    .header("PROGRAMMER GUIDE:")
+    .bulletLine( "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" )
+    .bulletLine( "Please see the examples/example1.cpp." )
+    .bulletLine( "Enable 'theme.nav.keyboard.enable = true' for keyboard controls." )
+    .bulletLine( "Enable 'theme.nav.gamepad.enable= true' for gamepad controls." )
+    .separator( "" )
+    .header( "USER GUIDE:" )
+    .bulletLine( "Double-click on title bar to collapse window." )
+    .bulletLine("Click and drag on lower corner to resize window" )
+    .bulletLine("Double-click to auto fit window to its contents" )
+    .bulletLine("CTRL+Click on a slider or drag box to input value as text." )
+    .bulletLine("TAB/SHIFT+TAB to cycle through keyboard editable fields." )
+    .bulletLine("CTRL+Mouse Wheel to zoom window contents." )
+    .bulletLine("While inputing text:\n" )
+      .indent(15)
+      .bulletLine("CTRL+Left/Right to word jump." )
+      .bulletLine("CTRL+A or double-click to select all." )
+      .bulletLine("CTRL+X/C/V to use clipboard cut/copy/paste." )
+      .bulletLine("CTRL+Z,CTRL+Y to undo/redo." )
+      .bulletLine("ESCAPE to revert." )
+      .bulletLine("You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." )
+      .unindent()
+    .header( "With keyboard navigation enabled:" )
+      .indent(15)
+      .bulletLine("Arrow keys to navigate." )
+      .bulletLine("Space to activate a widget." )
+      .bulletLine("Return to input text into a widget." )
+      .bulletLine("Escape to deactivate a widget, close popup, exit child window." )
+      .bulletLine("Alt to jump to the menu layer of a window." )
+      .bulletLine("CTRL+Tab to select a window." )
+      .unindent();
 
   auto& iocfg = pw.panel("Configuration");
   auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowGroupLayout{});

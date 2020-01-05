@@ -92,9 +92,9 @@ public:
     /// Append a line of text at the bottom
     void appendLine(const std::string &text) { append(text + "\n"); }
 
-    void addHeaderLine(const std::string &text);
-    void addBulletLine(const std::string &text);
-    void addSeparatorLine(const std::string &text);
+    TextArea& header(const std::string &text);
+    TextArea& bulletLine(const std::string &text);
+    TextArea& separator(const std::string &text);
 
     /// Clear all current contents
     void clear();
@@ -106,8 +106,8 @@ public:
     bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
 
-    void addIndentWidth(int w) { mIndentWidth += w; }
-    void resetIndentWidth(int w) { mIndentWidth = 0; }
+    TextArea& indent(int w = 15) { mIndentWidth += w; return *this; }
+    TextArea& unindent(int w = 0) { mIndentWidth = w; return *this; }
 
 protected:
     Vector2i positionToBlock(const Vector2i &pos) const;
@@ -138,11 +138,11 @@ protected:
 
 public:
     PROPSETTER(LongText, setText)
-    PROPSETTER(TextHeader, addHeaderLine)
-    PROPSETTER(BulletLine, addBulletLine)
-    PROPSETTER(SeparatorLine, addSeparatorLine)
-    PROPSETTER(IndentWidth, addIndentWidth)
-    PROPSETTER(UnindentWidth, resetIndentWidth)
+    PROPSETTER(TextHeader, header)
+    PROPSETTER(BulletLine, bulletLine)
+    PROPSETTER(SeparatorLine, separator)
+    PROPSETTER(IndentWidth, indent)
+    PROPSETTER(UnindentWidth, unndent)
 };
 
 NAMESPACE_END(nanogui)

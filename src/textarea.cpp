@@ -33,21 +33,24 @@ void TextArea::setText(const std::string &text)
   append(text);
 }
 
-void TextArea::addHeaderLine(const std::string &text)
+TextArea& TextArea::header(const std::string &text)
 { 
   append(text + "\n"); 
+  return *this;
 }
 
-void TextArea::addBulletLine(const std::string &text)
+TextArea& TextArea::bulletLine(const std::string &text)
 {
   appendIcon(ENTYPO_ICON_MINUS);
   append(std::string(" ") + text + "\n");
+  return *this;
 }
 
-void TextArea::addSeparatorLine(const std::string &text)
+TextArea& TextArea::separator(const std::string &text)
 {
   m_blocks.push_back(Block{ m_offset, 0, std::string(""), m_foreground_color, true, false });
   m_offset = Vector2i(0, m_offset.y() + 2);
+  return *this;
 }
 
 void TextArea::appendIcon(int icon)
