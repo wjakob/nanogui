@@ -18,6 +18,7 @@
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
+#include <memory>
 #include <string.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -312,6 +313,26 @@ public:
     int mTooltipOpacity;
     Color mTooltipBackgroundColor;
     Color mTooltipTextColor;
+
+    struct {
+      struct {
+        bool enable = false;
+      } keyboard;
+
+      struct {
+        bool enable = true;
+        bool drawCursor = true;
+      } mouse;
+    } nav;
+
+    struct {
+      bool blinkCursor = true;
+    } textarea;
+
+    struct {
+      bool resizeFromEdge = false;
+      bool moveFromTitlebarOnly = true;
+    } window;
 
     void update(const Theme& newtheme);
 
