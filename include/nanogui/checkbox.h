@@ -28,6 +28,11 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
+
+DECLSETTER(CheckboxState, bool)
+DECLSETTER(CheckboxCallback, std::function<void(bool)>)
+DECLSETTER(CheckboxRef, bool&)
+
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
     RTTI_CLASS_UID("CHCX")
@@ -48,8 +53,14 @@ public:
      *     \ref nanogui::CheckBox::mPushed for the difference between "pushed"
      *     and "checked".
      */
-    CheckBox(Widget *parent, const std::string &caption = "Untitled",
-             const std::function<void(bool)> &callback = std::function<void(bool)>());
+    CheckBox(Widget *parent, const std::string &caption,
+             std::function<void(bool)> callback = nullptr,
+             bool checked = false);
+
+    using Widget::set;
+    template<typename... Args>
+    CheckBox(Widget* parent, const Args&... args)
+      : CheckBox(parent, std::string("")) { set<CheckBox, Args...>(args...); }
 
     /// The caption of this CheckBox.
     const std::string &caption() const { return mCaption; }
@@ -81,6 +92,7 @@ public:
 
     /// Sets the callback to be executed when this CheckBox is checked / unchecked.
     void setCallback(const std::function<void(bool)> &callback) { mCallback = callback; }
+    void setRefCallback(bool &ref) { mCallback = [&](bool c) { ref = c; }; mChecked = ref; }
 
     /**
      * The mouse button callback will return ``true`` when all three conditions are met:
@@ -133,6 +145,10 @@ protected:
     std::function<void(bool)> mCallback;
 
 public:
+  PROPSETTER(CheckboxState, setChecked)
+  PROPSETTER(Caption, setCaption)
+  PROPSETTER(CheckboxCallback, setCallback)
+  PROPSETTER(CheckboxRef, setRefCallback)
 };
 
 NAMESPACE_END(nanogui)

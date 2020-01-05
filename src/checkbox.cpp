@@ -19,11 +19,12 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(CheckBox, Widget)
 
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
-                   const std::function<void(bool) > &callback)
-    : Widget(parent), mCaption(caption), mPushed(false), mChecked(false),
-      mCallback(callback) {
-
-    mIconExtraScale = 1.2f;// widget override
+                   std::function<void(bool)> callback,
+                   bool initial)
+    : Widget(parent), mCaption(caption), mPushed(false), mChecked(initial),
+      mCallback(callback) 
+{
+  mIconExtraScale = 1.2f;// widget override
 }
 
 bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
