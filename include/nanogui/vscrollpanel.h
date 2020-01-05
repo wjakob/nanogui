@@ -30,6 +30,11 @@ public:
 
     VScrollPanel(Widget *parent);
 
+    using Widget::set;
+    template<typename... Args>
+    VScrollPanel(Widget* parent, const Args&... args)
+      : VScrollPanel(parent) { set<VScrollPanel, Args...>(args...); }
+
     /// Return the current scroll amount as a value between 0 and 1. 0 means scrolled to the top and 1 to the bottom.
     float scroll() const { return mScroll; }
     /// Set the scroll amount to a value between 0 and 1. 0 means scrolled to the top and 1 to the bottom.
