@@ -372,7 +372,7 @@ public:
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
     /// Return current font size. If not set the default of the current theme will be returned
-    int fontSize() const;
+    virtual int fontSize() const;
     /// Set the font size of this widget
     void setFontSize(int fontSize) { mFontSize = fontSize; }
     /// Return whether the font size is explicitly specified for this widget

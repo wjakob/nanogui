@@ -76,6 +76,8 @@ public:
     int unitsImage() const { return mUnitsImage; }
     void setUnitsImage(int image) { mUnitsImage = image; }
 
+    int fontSize() const override;
+
     /// Return the underlying regular expression specifying valid formats
     const std::string &format() const { return mFormat; }
     /// Specify a regular expression specifying valid formats

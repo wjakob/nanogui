@@ -45,8 +45,8 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDragPos(Vector2i(-1,-1)),
       mMouseDownModifier(0),
       mTextOffset(0),
-      mLastClick(0) {
-    if (mTheme) mFontSize = mTheme->mTextBoxFontSize;
+      mLastClick(0)
+{
     mIconExtraScale = 0.8f;// widget override
 }
 
@@ -55,13 +55,15 @@ void TextBox::setEditable(bool editable) {
     setCursor(editable ? Cursor::IBeam : Cursor::Arrow);
 }
 
-void TextBox::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
-    if (mTheme)
-        mFontSize = mTheme->mTextBoxFontSize;
+void TextBox::setTheme(Theme *theme) {  Widget::setTheme(theme); }
+
+int TextBox::fontSize() const
+{
+  return mFontSize > 0 ? mFontSize : mTheme->mTextBoxFontSize;
 }
 
-Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
+Vector2i TextBox::preferredSize(NVGcontext *ctx) const 
+{
     Vector2i size(0, fontSize() * 1.4f);
 
     float uw = 0;
@@ -168,7 +170,7 @@ void TextBox::draw(NVGcontext* ctx)
         spinArrowsWidth = 14.f;
 
         nvgFontFace(ctx, "icons");
-        nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
+        nvgFontSize(ctx, (mFontSize > 0 ? mFontSize : mTheme->mButtonFontSize) * icon_scale());
 
         bool spinning = mMouseDownPos.x() != -1;
 
