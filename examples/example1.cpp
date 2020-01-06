@@ -514,8 +514,8 @@ void createMiscWidgets(Screen* screen)
 
 void createGridSmallObjects(Screen* screen)
 {
-  auto& w = screen->window("Grid of small widgets");
-  w.setPosition(425, 300);
+  auto& w = screen->window(Caption{ "Grid of small widgets" },
+                           Position{ 425, 300 });
   auto layoutw = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
   layoutw->setColAlignment({ Alignment::Maximum, Alignment::Fill });
   layoutw->setSpacing(0, 10);

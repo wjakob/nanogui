@@ -404,7 +404,7 @@ Vector4i Window::getWidgetsArea()
   }
   else
   {
-    area.y() = getHeaderHeight();
+    area.y() += getHeaderHeight();
   }
 
   return area;

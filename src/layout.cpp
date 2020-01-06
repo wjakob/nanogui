@@ -416,19 +416,16 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
     }
 }
 
-void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    Vector2i fs_w = widget->fixedSize();
-    Vector2i containerSize = fs_w.fillZero(widget->size());
-
+void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const 
+{
+  Vector4i area = widget->getWidgetsArea();
+    Vector2i containerSize = area.size();
     /* Compute minimum row / column sizes */
     std::vector<int> grid[2];
     computeLayout(ctx, widget, grid);
     int dim[2] = { (int) grid[0].size(), (int) grid[1].size() };
 
-    Vector2i extra = Vector2i::Zero();
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        extra.x() += widget->theme()->mWindowHeaderHeight - mMargin / 2;
+    Vector2i extra = area.lefttop() - widget->position() - mMargin / 2;
 
     /* Strech to size provided by \c widget */
     for (int i = 0; i < 2; i++) {
