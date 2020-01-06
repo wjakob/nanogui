@@ -181,7 +181,6 @@ void fillThemeDefaultValues(Theme& theme)
 {
   theme.mStandardFontSize = 16;
   theme.mButtonFontSize = 20;
-  theme.mTextBoxFontSize = 20;
   theme.mIconScale = 0.77f;
 
   theme.mWindowCornerRadius = 2;
@@ -197,7 +196,11 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mTabButtonVerticalPadding = 2;
   theme.mWindowMenuHeaderOffset = -3;
   theme.mWindowFontSize = 18;
+
+  theme.mTextBoxFontSize = 20;
   theme.mTextBoxCornerRadius = 3;
+  theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;
+  theme.mTextBoxDownIcon = ENTYPO_ICON_DOWN_1;
 
   theme.mPanelCornerRadius = 0;
   theme.mPanelHeaderHeight = 20;
@@ -289,8 +292,6 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPopupChevronLeftIcon = ENTYPO_ICON_LEFT_OPEN;
   theme.mTabHeaderLeftIcon = ENTYPO_ICON_LEFT_1;
   theme.mTabHeaderRightIcon = ENTYPO_ICON_RIGHT_1;
-  theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;
-  theme.mTextBoxDownIcon = ENTYPO_ICON_DOWN_1;
   theme.mWindowExpandedIcon = ENTYPO_ICON_DOWN_OPEN_1;
   theme.mWindowCollapsedIcon = ENTYPO_ICON_RIGHT_OPEN_1;
 }

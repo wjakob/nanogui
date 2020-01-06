@@ -73,8 +73,6 @@ public:
     int mStandardFontSize;
     /// The font size for buttons (default: ``20``).
     int mButtonFontSize;
-    /// The font size for text boxes (default: ``20``).
-    int mTextBoxFontSize;
     /// Rounding radius for Window widget corners (default: ``2``).
     int mWindowCornerRadius;
     /// Default size of Window widget titles (default: ``30``).
@@ -102,6 +100,9 @@ public:
     int mWindowMenuHeaderOffset;
 
     int mTextBoxCornerRadius;
+    int mTextBoxUpIcon;      /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
+    int mTextBoxDownIcon;    /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).                            
+    int mTextBoxFontSize;    /// The font size for text boxes (default: ``20``).
 
     int mPanelCornerRadius;
     int mPanelHeaderHeight;
@@ -300,10 +301,6 @@ public:
     int mTabHeaderLeftIcon;
     /// Icon to indicate hidden tabs to the right on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``).
     int mTabHeaderRightIcon;
-    /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
-    int mTextBoxUpIcon;
-    /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
-    int mTextBoxDownIcon;
 
     int mWindowExpandedIcon;
     int mWindowCollapsedIcon;
