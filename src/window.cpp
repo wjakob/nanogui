@@ -396,7 +396,7 @@ bool Window::load(Serializer &s)
 
 Vector4i Window::getWidgetsArea()
 {
-  Vector4i area = rect();
+  Vector4i area = Widget::getWidgetsArea();
   Widget* w = findWidget([](Widget* w) -> bool { return WindowMenu::cast(w) != nullptr; }, false);
   if (auto wm = WindowMenu::cast(w))
   {

@@ -392,8 +392,8 @@ void createTextAreaWindow(Screen* screen)
     "                              WidgetStretchLayout{ Orientation::Horizontal },\n"
     "                              Position{ 1015, 405 });\n"
     "    std::string longText = \"\";\n"
-    "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }\n";
-  auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, LongText{ longText } );
+    "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }";
+  auto& area = mw.text(RelativeSize{ 1.f, 1.f }, LongText{ longText });
 }
 
 void createPicflowWindow(Screen* screen)

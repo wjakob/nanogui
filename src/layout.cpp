@@ -425,7 +425,7 @@ void GridLayout::performLayout(NVGcontext *ctx, Widget *widget) const
     computeLayout(ctx, widget, grid);
     int dim[2] = { (int) grid[0].size(), (int) grid[1].size() };
 
-    Vector2i extra = area.lefttop() - widget->position() - mMargin / 2;
+    Vector2i extra = area.lefttop() - mMargin / 2;
 
     /* Strech to size provided by \c widget */
     for (int i = 0; i < 2; i++) {
