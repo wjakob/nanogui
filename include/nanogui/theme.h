@@ -51,6 +51,9 @@ public:
     int get(const std::string& name, const int&);
     void set(const std::string& name, const int& v);
 
+    bool get(const std::string& name, const bool&);
+    void set(const std::string& name, const bool& v);
+
     /* Fonts */
     /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
     int mFontNormal;
@@ -322,9 +325,7 @@ public:
       } mouse;
     } nav;
 
-    struct {
-      bool blinkCursor = true;
-    } textarea;
+    bool textAreaBlinkCursor = true;
 
     struct {
       bool resizeFromEdge = false;

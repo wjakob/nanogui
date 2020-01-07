@@ -201,12 +201,16 @@ void TextArea::draw(NVGcontext *ctx)
     selection_end += mPos + m_padding;
     if (m_selection_end != Vector2i(-1)) 
     {
-        nvgBeginPath(ctx);
-        nvgMoveTo(ctx, selection_end.x(), selection_end.y());
-        nvgLineTo(ctx, selection_end.x(), selection_end.y() + fontSize());
-        nvgStrokeColor(ctx, nvgRGBA(255, 192, 0, 255));
-        nvgStrokeWidth(ctx, 1.0f);
-        nvgStroke(ctx);
+      int transp = 255;
+      if (theme()->textAreaBlinkCursor)
+        transp = std::sinf(std::fmod((float)getTimeFromStart()*3, 3.14f)) * 255;
+
+      nvgBeginPath(ctx);
+      nvgMoveTo(ctx, selection_end.x(), selection_end.y());
+      nvgLineTo(ctx, selection_end.x(), selection_end.y() + fontSize());
+      nvgStrokeColor(ctx, nvgRGBA(255, 192, 0, transp));
+      nvgStrokeWidth(ctx, 2.0f);
+      nvgStroke(ctx);
     }
 
     Vector2i selection_start = blockToPosition(m_selection_start);

@@ -21,6 +21,20 @@ RTTI_IMPLEMENT_INFO(Theme, Object)
 
 #define CHECK(a) if (name == #a) return (a);
 #define CHECKSET(a) if (name == #a) { (a) = value; return; }
+
+bool Theme::get(const std::string& name, const bool&)
+{
+  CHECK(textAreaBlinkCursor);
+  printf("No get prop for name %s", name);
+  return false;
+}
+
+void Theme::set(const std::string& name, const bool& value)
+{
+  CHECKSET(textAreaBlinkCursor)
+  printf("No get prop for name %s", name);
+}
+
 int Theme::get(const std::string& name, const int&)
 {
   CHECK(mStandardFontSize)
@@ -42,7 +56,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowFontSize)
   CHECK(mTooltipOpacity)
   CHECK(mTextBoxCornerRadius)
-  std::runtime_error(std::string("No get prop for name") + name);
+  printf("No get prop for name %s", name);
   return 0;
 }
 
@@ -67,7 +81,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mWindowFontSize)
   CHECKSET(mTooltipOpacity)
   CHECKSET(mTextBoxCornerRadius)
-  std::runtime_error(std::string("No set prop for name") + name);
+  printf("No set prop for name %s", name);
 }
 
 Color Theme::get(const std::string& name, const Color&)
@@ -120,7 +134,7 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mToleranceBarBgColor)
   CHECK(mToleranceBarLowColor)
   CHECK(mToleranceBarHighColor)
-  std::runtime_error(std::string("No get prop for name") + name);
+  printf("No get prop for name %s", name);
   return Color(0x800080ff);
 }
 
@@ -174,7 +188,7 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mToleranceBarBgColor)
   CHECKSET(mToleranceBarLowColor)
   CHECKSET(mToleranceBarHighColor)
-  std::runtime_error(std::string("No set prop for name") + name);
+  printf("No set prop for name %s", name);
 }
 
 void fillThemeDefaultValues(Theme& theme)
