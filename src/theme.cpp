@@ -26,6 +26,7 @@ bool Theme::get(const std::string& name, const bool&)
 {
   CHECK(textAreaBlinkCursor)
   CHECK(windowMoveFromTitlebarOnly)
+  CHECK(windowMoveInParent)
   printf("No get prop for name %s", name);
   return false;
 }
@@ -34,6 +35,7 @@ void Theme::set(const std::string& name, const bool& value)
 {
   CHECKSET(textAreaBlinkCursor)
   CHECKSET(windowMoveFromTitlebarOnly)
+  CHECKSET(windowMoveInParent)
   printf("No get prop for name %s", name);
 }
 

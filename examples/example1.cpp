@@ -828,6 +828,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.textAreaBlinkCursor" }, CheckboxRef{ screen->theme()->textAreaBlinkCursor });
   nav.checkbox(Caption{ "theme.windowMoveFromTitlebarOnly" }, CheckboxRef{ screen->theme()->windowMoveFromTitlebarOnly });
   nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ screen->theme()->windowResizeFromEdge });
+  nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

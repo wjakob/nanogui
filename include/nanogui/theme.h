@@ -271,6 +271,7 @@ public:
     int mWindowMenuHeaderOffset;
     bool windowResizeFromEdge = false;
     bool windowMoveFromTitlebarOnly = true;
+    bool windowMoveInParent = true;
 
     WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
     WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;

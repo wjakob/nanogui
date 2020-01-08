@@ -315,15 +315,18 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
   if (mDrag && isMouseButtonLeftMod(buttons)) 
   {
       mPos += rel;
-      mPos = mPos.cwiseMax(Vector2i::Zero());
-      mPos = mPos.cwiseMin(parent()->size() - size());
+      if (theme()->windowMoveInParent)
+      {
+        mPos = mPos.cwiseMax(Vector2i::Zero());
+        mPos = mPos.cwiseMin(parent()->size() - size());
+      }
       return true;
   }
   else if (mDragCorner && isMouseButtonLeftMod(buttons)) 
   {
     mSize += rel;
     mMousePos += rel;
-    mSize = mSize.cwiseMax(Vector2i(15, mTheme->mWindowHeaderHeight));
+    mSize = mSize.cwiseMax(Vector2i(15, theme()->mWindowHeaderHeight));
     mSize = mSize.cwiseMin(parent()->size() - mSize);
 
     mNeedPerformUpdate = true;
