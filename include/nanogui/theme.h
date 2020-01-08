@@ -76,12 +76,7 @@ public:
     int mStandardFontSize;
     /// The font size for buttons (default: ``20``).
     int mButtonFontSize;
-    /// Rounding radius for Window widget corners (default: ``2``).
-    int mWindowCornerRadius;
-    /// Default size of Window widget titles (default: ``30``).
-    int mWindowHeaderHeight;
-    /// Size of drop shadow rendered behind the Window widgets (default: ``10``).
-    int mWindowDropShadowSize;
+    
     /// Rounding radius for Button (and derived types) widgets (default: ``2``).
     int mButtonCornerRadius;
     /// The border width for TabHeader widgets (default: ``0.75f``).
@@ -98,9 +93,6 @@ public:
     int mTabButtonHorizontalPadding;
     /// The amount of vertical padding for a TabHeader widget (default: ``2``).
     int mTabButtonVerticalPadding;
-    int mWindowFontSize;
-
-    int mWindowMenuHeaderOffset;
 
     int mTextBoxCornerRadius;
     int mTextBoxUpIcon;      /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
@@ -271,6 +263,17 @@ public:
     /// The Window header bottom separation color (default: \ref nanogui::Theme::mBorderDark).
     Color mWindowHeaderSepBot;
 
+    /// Rounding radius for Window widget corners (default: ``2``).
+    int mWindowCornerRadius;
+    /// Default size of Window widget titles (default: ``30``).
+    int mWindowHeaderHeight;
+    /// Size of drop shadow rendered behind the Window widgets (default: ``10``).
+    int mWindowDropShadowSize;
+    int mWindowFontSize;
+    int mWindowMenuHeaderOffset;
+    bool windowResizeFromEdge = false;
+    bool windowMoveFromTitlebarOnly = true;
+
     /**
      * The popup window color
      * (default: intensity=``50``, alpha=``255``; see \ref nanogui::Color::Color(int,int))).
@@ -326,11 +329,6 @@ public:
     } nav;
 
     bool textAreaBlinkCursor = true;
-
-    struct {
-      bool resizeFromEdge = false;
-      bool moveFromTitlebarOnly = true;
-    } window;
 
     void update(const Theme& newtheme);
 
