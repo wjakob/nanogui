@@ -335,6 +335,11 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
   return false;
 }
 
+void Window::requestPerformLayout()
+{
+  screen()->needPerformLayout(mParent);
+}
+
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
 {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
@@ -346,7 +351,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
       if (down && clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>()))
       {
         mCollapsed = !mCollapsed;
-        screen()->needPerformLayout(mParent);
+        requestPerformLayout();
         if (mCollapsed)
         {
           mSaveFixedHeight = mFixedSize.y();
@@ -428,6 +433,19 @@ Panel::Panel(Widget *parent, const std::string &title)
   mDrawFlags = DrawTitle | DrawHeader;
   mDraggable = Theme::WindowDraggable::dgFixed;
   withLayout<StretchLayout>(Orientation::Vertical);
+}
+
+void Panel::requestPerformLayout()
+{
+  Widget *wp = mParent;
+  while (wp) {
+    auto parentw = Window::cast(wp);
+    auto panel = Panel::cast(wp);
+    if (parentw && !panel)
+      break;
+    wp = wp->parent();
+  }
+  screen()->needPerformLayout(wp ? wp : mParent);
 }
 
 void Panel::draw(NVGcontext *ctx)

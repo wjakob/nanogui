@@ -118,6 +118,9 @@ public:
     Vector4i getWidgetsArea() override;
 
 protected:
+    virtual void requestPerformLayout();
+
+protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
@@ -165,6 +168,9 @@ public:
     void draw(NVGcontext* ctx) override;
     void performLayout(NVGcontext *ctx) override;
     Vector2i preferredSize(NVGcontext *ctx) const override;
+
+protected:
+    void requestPerformLayout() override;
 };
 
 NAMESPACE_END(nanogui)
