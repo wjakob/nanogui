@@ -305,26 +305,29 @@ bool Window::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
 }
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
-                            int buttons, int /* modifiers */) {
+                            int buttons, int /* modifiers */) 
+{
   if (!isDraggable())
     return false;
 
-    if (mDrag && isMouseButtonLeftMod(buttons)) {
-        mPos += rel;
-        mPos = mPos.cwiseMax(Vector2i::Zero());
-        mPos = mPos.cwiseMin(parent()->size() - mSize);
-        return true;
-    }
-    else if (mDragCorner && isMouseButtonLeftMod(buttons)) {
-      mSize += rel;
-      mMousePos += rel;
-      mSize = mSize.cwiseMax(Vector2i(15, mTheme->mWindowHeaderHeight));
-      mSize = mSize.cwiseMin(parent()->size() - mSize);
-
-      mNeedPerformUpdate = true;
+  if (mDrag && isMouseButtonLeftMod(buttons)) 
+  {
+      mPos += rel;
+      mPos = mPos.cwiseMax(Vector2i::Zero());
+      mPos = mPos.cwiseMin(parent()->size() - mSize);
       return true;
-    }
-    return false;
+  }
+  else if (mDragCorner && isMouseButtonLeftMod(buttons)) 
+  {
+    mSize += rel;
+    mMousePos += rel;
+    mSize = mSize.cwiseMax(Vector2i(15, mTheme->mWindowHeaderHeight));
+    mSize = mSize.cwiseMin(parent()->size() - mSize);
+
+    mNeedPerformUpdate = true;
+    return true;
+  }
+  return false;
 }
 
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
@@ -353,16 +356,20 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
         return true;
       }
     }
-    if ( isMouseButtonLeft(button) && mEnabled) {
-        mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
-        mDragCorner = false;
-        if (!mDrag)
-        {
-          int ds = mTheme->mWindowDropShadowSize;
-          bool inCorner = isTriangleContainsPoint(mSize, mSize - Vector2i(ds, 16), mSize - Vector2i(16, ds), p - mPos);
-          mDragCorner = down && inCorner;
-        }
-        return true;
+    
+    if (isMouseButtonLeft(button) && mEnabled) 
+    {
+      bool moveByHeader = mMoveByHeaderOnly < 0 ? theme()->windowMoveFromTitlebarOnly : mMoveByHeaderOnly;
+      int hh = moveByHeader ? getHeaderHeight() : height();
+      mDrag = down && (p - mPos).y() < hh;
+      mDragCorner = false;
+      if (!mDrag)
+      {
+        int ds = mTheme->mWindowDropShadowSize;
+        bool inCorner = isTriangleContainsPoint(mSize, mSize - Vector2i(ds, 16), mSize - Vector2i(16, ds), p - mPos);
+        mDragCorner = down && inCorner;
+      }
+      return true;
     }
     return false;
 }

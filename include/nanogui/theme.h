@@ -62,8 +62,6 @@ public:
     /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
     int mFontIcons;
 
-    WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
-    WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
     /**
      * The amount of scaling that is applied to each icon to fit the size of
      * NanoGUI widgets.  The default value is ``0.77f``, setting to e.g. higher
@@ -273,6 +271,9 @@ public:
     int mWindowMenuHeaderOffset;
     bool windowResizeFromEdge = false;
     bool windowMoveFromTitlebarOnly = true;
+
+    WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
+    WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
 
     /**
      * The popup window color

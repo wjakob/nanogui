@@ -126,6 +126,7 @@ protected:
     int mSaveFixedHeight = 0;
     bool mNeedPerformUpdate = false;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
+    int mMoveByHeaderOnly = -1;
     Theme::WindowCollapse mMayCollapse = Theme::WindowCollapse::clAuto;
     bool mCollapsed = false;
     float mCollapseIconScale = 1.5f;

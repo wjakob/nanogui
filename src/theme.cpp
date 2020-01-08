@@ -24,7 +24,8 @@ RTTI_IMPLEMENT_INFO(Theme, Object)
 
 bool Theme::get(const std::string& name, const bool&)
 {
-  CHECK(textAreaBlinkCursor);
+  CHECK(textAreaBlinkCursor)
+  CHECK(windowMoveFromTitlebarOnly)
   printf("No get prop for name %s", name);
   return false;
 }
@@ -32,6 +33,7 @@ bool Theme::get(const std::string& name, const bool&)
 void Theme::set(const std::string& name, const bool& value)
 {
   CHECKSET(textAreaBlinkCursor)
+  CHECKSET(windowMoveFromTitlebarOnly)
   printf("No get prop for name %s", name);
 }
 
