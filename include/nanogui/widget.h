@@ -211,7 +211,7 @@ public:
     { for (Widget* w : mChildren) f(w); }
 
     /// Return the size of the widget
-    const Vector2i &size() const { return mSize; }
+    virtual const Vector2i &size() const { return mSize; }
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
     void setSize(int w, int h) { setSize(Vector2i( w, h )); }

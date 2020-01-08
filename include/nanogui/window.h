@@ -103,6 +103,7 @@ public:
     void performLayout(NVGcontext *ctx) override;
     void save(Serializer &s) const override;
     bool load(Serializer &s) override;
+    const Vector2i &size() const override;
 
     ContextMenu& submenu(const std::string& caption, const std::string& id = "");
 
@@ -132,6 +133,8 @@ protected:
     float mCollapseIconScale = 1.5f;
     Vector2f mCollapseIconPos;
     Vector2f mCollapseIconSize;
+
+    Vector2i mCollapsedSize;
 
 public:
     PROPSETTER(WindowMovable,setDraggable)

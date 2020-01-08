@@ -67,6 +67,8 @@ ContextMenu& Window::submenu(const std::string& caption, const std::string& id)
   return *smenu;
 }
 
+const Vector2i& Window::size() const { return mCollapsed ? mCollapsedSize : mSize; }
+
 Vector2i Window::preferredSize(NVGcontext *ctx) const 
 {
   if (mButtonPanel)
@@ -314,7 +316,7 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
   {
       mPos += rel;
       mPos = mPos.cwiseMax(Vector2i::Zero());
-      mPos = mPos.cwiseMin(parent()->size() - mSize);
+      mPos = mPos.cwiseMin(parent()->size() - size());
       return true;
   }
   else if (mDragCorner && isMouseButtonLeftMod(buttons)) 
@@ -338,21 +340,21 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (isMouseButtonLeft(button) && mEnabled) 
     {
       Vector2i clkPnt = p - mPos - Vector2i(5,5);
-      if (down && clkPnt.x() > 0 && clkPnt.x() < mCollapseIconSize.x()
-          && clkPnt.y() > 0 && clkPnt.y() < mCollapseIconSize.y())
+      if (down && clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>()))
       {
         mCollapsed = !mCollapsed;
         screen()->needPerformLayout(mParent);
         if (mCollapsed)
         {
           mSaveFixedHeight = mFixedSize.y();
-          mFixedSize.y() = mTheme->mWindowHeaderHeight;
+          mFixedSize.y() = getHeaderHeight();
         }
         else
         {
           mFixedSize.y() = mSaveFixedHeight;
           mSaveFixedHeight = 0;
         }
+        mCollapsedSize = { width(), getHeaderHeight() };
         return true;
       }
     }
