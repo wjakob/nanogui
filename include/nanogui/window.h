@@ -27,6 +27,7 @@ class ContextMenu;
 
 DECLSETTER(WindowSimpleLayout, Orientation)
 DECLSETTER(WindowMovable, Theme::WindowDraggable)
+DECLSETTER(WindowCollapsed, bool)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 
 class NANOGUI_EXPORT Window : public Widget 
@@ -74,6 +75,7 @@ public:
 
     bool isCollapsed() const { return mCollapsed; }
     void collapse();
+    void setCollapsed(bool c) { mCollapsed = c; }
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -141,6 +143,7 @@ public:
     PROPSETTER(Caption,setTitle)
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
     PROPSETTER(WindowGroupLayout,setLayout)
+    PROPSETTER(WindowCollapsed,setCollapsed)
 };
 
 class NANOGUI_EXPORT Panel : public Window

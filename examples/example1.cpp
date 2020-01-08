@@ -772,7 +772,7 @@ void createAllWidgetsDemo(Screen* screen)
   dw.submenu("Help");
 
   auto& pw = dw.vscrollpanel(RelativeSize{1.f, 1.f}).vstack();
-  auto& help = pw.panel("Help");
+  auto& help = pw.panel(Caption{ "Help" }, WindowCollapsed{ true });
   help.text()
     .header("PROGRAMMER GUIDE:")
     .bulletLine( "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" )
@@ -806,8 +806,8 @@ void createAllWidgetsDemo(Screen* screen)
       .bulletLine("CTRL+Tab to select a window." )
       .unindent();
 
-  auto& iocfg = pw.panel("Configuration");
-  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowGroupLayout{});
+  auto& iocfg = pw.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
+  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowGroupLayout{}, WindowCollapsed{ true });
   nav.checkbox(Caption{ "theme.nav.keyboard.enable" }, CheckboxRef{ screen->theme()->nav.keyboard.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ screen->theme()->nav.mouse.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ screen->theme()->nav.mouse.drawCursor });
