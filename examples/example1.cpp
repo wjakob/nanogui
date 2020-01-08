@@ -757,32 +757,18 @@ void createAllWidgetsDemo(Screen* screen)
   dw.submenu("File").item("(dummy item)").setEnabled(false);
   dw.submenu("File").item("Save").setShortcut("Ctrl+S");
 
-  dw.submenu("Examples")
-    .item("Global menu", [screen](bool v) { toggleMainMenu(screen, v); })
-    .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); },
-      [screen](bool &enabled, bool &checked) {
+  auto toggleVisible = [screen](const std::string& wname, bool& enabled, bool& checked) {
     enabled = true;
     auto* w = screen->findWidgetGlobal("#console_wnd");
     checked = (w && w->visible());
-  })
-    .item("Log", [screen](bool v) { toggleLogWnd(screen, v); },
-      [screen](bool &enabled, bool &checked) {
-    enabled = true;
-    auto* w = screen->findWidgetGlobal("#log_wnd");
-    checked = (w && w->visible());
-  })
-    .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); },
-      [screen](bool &enabled, bool &checked) {
-    enabled = true;
-    auto* w = screen->findWidgetGlobal("#simple_layout_wnd");
-    checked = (w && w->visible());
-  })
-    .item("Tree view", [screen](bool v) { toggleTreeView(screen, v); },
-      [screen](bool &enabled, bool &checked) {
-    enabled = true;
-    auto* w = screen->findWidgetGlobal("#tree_view_wnd");
-    checked = (w && w->visible());
-  });
+  };
+  dw.submenu("Examples")
+    .item("Global menu", [screen](bool v) { toggleMainMenu(screen, v); })
+    .item("Console", [screen](bool v) { toggleConsoleWnd(screen, v); }, [=](bool &e, bool &c) { toggleVisible("#console_wnd", e, c); })
+    .item("Log", [screen](bool v) { toggleLogWnd(screen, v); }, [=](bool &e, bool &c) { toggleVisible("#log_wnd", e, c); })
+    .item("Simple layout", [screen](bool v) { toggleSimpleLayoutWnd(screen, v); }, [=](bool &e, bool &c) { toggleVisible("#simple_layout_wnd", e, c); })
+    .item("Tree view", [screen](bool v) { toggleTreeView(screen, v); }, [=](bool &e, bool &c) { toggleVisible("#tree_view_wnd", e, c); });
+
   dw.submenu("Help");
 
   auto& pw = dw.vscrollpanel(RelativeSize{1.f, 1.f}).vstack();
