@@ -326,8 +326,8 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
   {
     mSize += rel;
     mMousePos += rel;
-    mSize = mSize.cwiseMax(Vector2i(15, theme()->mWindowHeaderHeight));
-    mSize = mSize.cwiseMin(parent()->size() - mSize);
+    mSize = mSize.cwiseMax(Vector2i(15, getHeaderHeight()));
+    //mSize = mSize.cwiseMin(parent()->size() - mSize);
 
     mNeedPerformUpdate = true;
     return true;
