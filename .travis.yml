@@ -230,8 +230,8 @@ matrix:
         - cmake --version
         - cmake -DNANOGUI_GLFW_BACKEND=ON
         - make -j 2
-    - os: linux
-      language: docs
-      env: STYLE
-      script:
-      - resources/check-style.sh
+    #- os: linux
+    #  language: docs
+    #  env: STYLE
+    #  script:
+    #  - resources/check-style.sh

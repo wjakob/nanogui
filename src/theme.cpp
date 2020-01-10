@@ -27,7 +27,7 @@ bool Theme::get(const std::string& name, const bool&)
   CHECK(textAreaBlinkCursor)
   CHECK(windowMoveFromTitlebarOnly)
   CHECK(windowMoveInParent)
-  printf("No get prop for name %s", name);
+  printf("No get prop for name %s", name.c_str());
   return false;
 }
 
@@ -36,7 +36,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(textAreaBlinkCursor)
   CHECKSET(windowMoveFromTitlebarOnly)
   CHECKSET(windowMoveInParent)
-  printf("No get prop for name %s", name);
+  printf("No get prop for name %s", name.c_str());
 }
 
 int Theme::get(const std::string& name, const int&)
@@ -61,7 +61,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mTooltipOpacity)
   CHECK(mTextBoxCornerRadius)
   CHECK(mWindowDragLine)
-  printf("No get prop for name %s", name);
+  printf("No get prop for name %s", name.c_str());
   return 0;
 }
 
@@ -87,7 +87,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mTooltipOpacity)
   CHECKSET(mTextBoxCornerRadius)
   CHECKSET(mWindowDragLine)
-  printf("No set prop for name %s", name);
+  printf("No set prop for name %s", name.c_str());
 }
 
 Color Theme::get(const std::string& name, const Color&)
@@ -140,7 +140,7 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mToleranceBarBgColor)
   CHECK(mToleranceBarLowColor)
   CHECK(mToleranceBarHighColor)
-  printf("No get prop for name %s", name);
+  printf("No get prop for name %s", name.c_str());
   return Color(0x800080ff);
 }
 
@@ -194,7 +194,7 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mToleranceBarBgColor)
   CHECKSET(mToleranceBarLowColor)
   CHECKSET(mToleranceBarHighColor)
-  printf("No set prop for name %s", name);
+  printf("No set prop for name %s", name.c_str());
 }
 
 void fillThemeDefaultValues(Theme& theme)
