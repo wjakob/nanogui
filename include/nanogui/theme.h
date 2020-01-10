@@ -269,6 +269,7 @@ public:
     int mWindowDropShadowSize;
     int mWindowFontSize;
     int mWindowMenuHeaderOffset;
+    int mWindowDragLine;
     bool windowResizeFromEdge = false;
     bool windowMoveFromTitlebarOnly = true;
     bool windowMoveInParent = true;

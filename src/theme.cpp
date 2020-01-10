@@ -60,6 +60,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowFontSize)
   CHECK(mTooltipOpacity)
   CHECK(mTextBoxCornerRadius)
+  CHECK(mWindowDragLine)
   printf("No get prop for name %s", name);
   return 0;
 }
@@ -85,6 +86,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mWindowFontSize)
   CHECKSET(mTooltipOpacity)
   CHECKSET(mTextBoxCornerRadius)
+  CHECKSET(mWindowDragLine)
   printf("No set prop for name %s", name);
 }
 
@@ -297,7 +299,9 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mContextMenuShortcutOffset = 40;
   theme.mContextMenuMinWidth = 140;
   theme.mTooltipOpacity = 255;
+
   theme.mWindowMenuHeight = 18;
+  theme.mWindowDragLine = 3;
 
   theme.mCheckBoxIcon = ENTYPO_ICON_OK;
   theme.mContextSubmenu = ENTYPO_ICON_RIGHT_OPEN;

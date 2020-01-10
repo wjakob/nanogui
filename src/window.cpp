@@ -26,7 +26,7 @@ RTTI_IMPLEMENT_INFO(Panel, Window)
 
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr),
-      mModal(false), mDrag(false), mDragCorner(false)
+      mModal(false), mDrag(dragNone)
 {}
 
 Window::Window(Widget *parent, const std::string &title, Orientation orientation)
@@ -300,9 +300,22 @@ void Window::center() {
     ((Screen *) widget)->centerWindow(this);
 }
 
+bool Window::canEdgeResize() const { return theme()->windowResizeFromEdge; }
+
 bool Window::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
 {
   mMousePos = p;
+  Vector2i innerPos = p - position();
+  int dragw = mDragLine > 0 ? mDragLine : theme()->mWindowDragLine;
+  mCursor = Cursor::Arrow;
+  if (canEdgeResize())
+  {
+    if (innerPos.x() < dragw || innerPos.x() > width() - dragw)
+      mCursor = Cursor::HResize;
+    else if (innerPos.y() < dragw || innerPos.y() > height() - dragw)
+      mCursor = Cursor::VResize;
+  } 
+
   return Widget::mouseMotionEvent(p, rel, button, modifiers);
 }
 
@@ -311,18 +324,45 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
 {
   if (!isDraggable())
     return false;
+  bool edgeResize = canEdgeResize();
 
-  if (mDrag && isMouseButtonLeftMod(buttons)) 
+  if ((mDrag == dragHeader || mDrag == dragBody) && isMouseButtonLeftMod(buttons)) 
   {
-      mPos += rel;
-      if (theme()->windowMoveInParent)
-      {
-        mPos = mPos.cwiseMax(Vector2i::Zero());
-        mPos = mPos.cwiseMin(parent()->size() - size());
-      }
-      return true;
+    mPos += rel;
+    if (theme()->windowMoveInParent)
+    {
+      mPos = mPos.cwiseMax(Vector2i::Zero());
+      mPos = mPos.cwiseMin(parent()->size() - size());
+    }
+    return true;
+  } 
+  else if (edgeResize && mDrag == dragTop)
+  {
+    mPos.y() += rel.y();
+    mSize.y() -= rel.y();
+    mNeedPerformUpdate = true;
+    return true;
   }
-  else if (mDragCorner && isMouseButtonLeftMod(buttons)) 
+  else if (edgeResize && mDrag == dragLeft)
+  {
+    mPos.x() += rel.x();
+    mSize.x() -= rel.x();
+    mNeedPerformUpdate = true;
+    return true;
+  }
+  else if (edgeResize && mDrag == dragRight)
+  {
+    mSize.x() += rel.x();
+    mNeedPerformUpdate = true;
+    return true;
+  }
+  else if (edgeResize && mDrag == dragBottom)
+  {
+    mSize.y() += rel.y();
+    mNeedPerformUpdate = true;
+    return true;
+  }
+  else if (mDrag == dragRbCorner && isMouseButtonLeftMod(buttons)) 
   {
     mSize += rel;
     mMousePos += rel;
@@ -371,14 +411,34 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     {
       bool moveByHeader = mMoveByHeaderOnly < 0 ? theme()->windowMoveFromTitlebarOnly : mMoveByHeaderOnly;
       int hh = moveByHeader ? getHeaderHeight() : height();
-      mDrag = down && (p - mPos).y() < hh;
-      mDragCorner = false;
-      if (!mDrag)
+      mDrag = (down && (p - mPos).y() < hh) ? dragHeader : dragNone;
+      bool edgeResize = canEdgeResize();
+
+      if (mDrag == dragNone)
       {
         int ds = mTheme->mWindowDropShadowSize;
-        bool inCorner = isTriangleContainsPoint(mSize, mSize - Vector2i(ds, 16), mSize - Vector2i(16, ds), p - mPos);
-        mDragCorner = down && inCorner;
+        int dragw = mDragLine > 0 ? mDragLine : theme()->mWindowDragLine;
+
+        Vector2i innerPos = p - mPos;
+
+        if (edgeResize && innerPos.x() < dragw)                mDrag = dragLeft;
+        else if (edgeResize && innerPos.x() > width() - dragw) mDrag = dragRight;
+        else if (edgeResize && innerPos.y() > height() - dragw)mDrag = dragBottom;
+        else
+        {
+          bool inCorner = isTriangleContainsPoint(mSize, mSize - Vector2i(ds, 16), mSize - Vector2i(16, ds), innerPos);
+          if (down && inCorner)
+            mDrag = dragRbCorner;
+        }
       }
+      else if (edgeResize)
+      {
+        int dragw = mDragLine > 0 ? mDragLine : theme()->mWindowDragLine;
+        Vector2i innerPos = p - mPos;
+
+        if (innerPos.y() < dragw) mDrag = dragTop;
+      }
+
       return true;
     }
     return false;
@@ -407,7 +467,7 @@ bool Window::load(Serializer &s)
   if (!Widget::load(s)) return false;
   if (!s.get("title", mTitle)) return false;
   if (!s.get("modal", mModal)) return false;
-  mDrag = false;
+  mDrag = dragNone;
   return true;
 }
 

@@ -116,6 +116,7 @@ public:
     virtual void refreshRelativePlacement();
     virtual int getHeaderHeight() const;
     Vector4i getWidgetsArea() override;
+    virtual bool canEdgeResize() const;
 
 protected:
     virtual void requestPerformLayout();
@@ -124,8 +125,13 @@ protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
-    bool mDrag;
-    bool mDragCorner;
+    enum DragType { dragNone=0, dragHeader=1, dragBody, 
+                                dragLeft, dragRight, 
+                                dragTop, dragBottom,
+                                dragRbCorner, dragLtCorner,
+                                dragLbCorner, dragRtCorner};
+    DragType mDrag = dragNone;
+    int mDragLine = -1;
     int mDrawFlags = DrawFlag::DrawAll;
     Vector2i mMousePos;
     int mFontSize = 0;
