@@ -245,7 +245,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelTitleFocused = Color(255, 190);
   theme.mPanelCollapsedIcon = ENTYPO_ICON_RIGHT_DIR;
   theme.mPanelExpandedIcon = ENTYPO_ICON_DOWN_DIR;
-  theme.mPanelFontSize = 16;
+  theme.mPanelFontSize = 14;
 
   theme.mDropShadow = Color(0, 128);
   theme.mTransparent = Color(0, 0);

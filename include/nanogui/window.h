@@ -28,6 +28,7 @@ class ContextMenu;
 DECLSETTER(WindowSimpleLayout, Orientation)
 DECLSETTER(WindowMovable, Theme::WindowDraggable)
 DECLSETTER(WindowCollapsed, bool)
+DECLSETTER(HeaderHeight, int)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 
 class NANOGUI_EXPORT Window : public Widget 
@@ -42,6 +43,7 @@ public:
     DrawShadow = 1 << 2,
     DrawCollapseIcon = 1 << 3,
     DrawHeader = 1 << 4,
+    DrawHeaderUnselect = 1 << 5,
     DrawAll = 0xff
   };
 
@@ -111,10 +113,16 @@ public:
 
     bool prefferContains(const Vector2i& p) const override;
     bool haveDrawFlag(int flag) const { return (mDrawFlags & flag) == flag; }
+    void setDrawFlag(int flag, bool v) 
+    {
+      if (v) mDrawFlags |= flag;
+      else mDrawFlags &= ~flag;
+    }
 
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
     virtual int getHeaderHeight() const;
+    void setHeaderHeight(int h);
     Vector4i getWidgetsArea() override;
     virtual bool canEdgeResize() const;
 
@@ -135,6 +143,7 @@ protected:
     int mDrawFlags = DrawFlag::DrawAll;
     Vector2i mMousePos;
     int mFontSize = 0;
+    int mHeaderHeight = 0;
     int mSaveFixedHeight = 0;
     bool mNeedPerformUpdate = false;
     Theme::WindowDraggable mDraggable = Theme::WindowDraggable::dgAuto;
@@ -153,7 +162,11 @@ public:
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
     PROPSETTER(WindowGroupLayout,setLayout)
     PROPSETTER(WindowCollapsed,setCollapsed)
+    PROPSETTER(HeaderHeight, setHeaderHeight)
+    PROPSETTER(FontSize, setFontSize)
 };
+
+DECLSETTER(PanelHighlightHeader, bool)
 
 class NANOGUI_EXPORT Panel : public Window
 {
@@ -176,9 +189,15 @@ public:
     int getHeaderHeight() const override;
     Vector2i preferredSize(NVGcontext *ctx) const override;
 
+    void setHighlightHeader(bool v) { setDrawFlag(DrawHeaderUnselect, v); }
+
 protected:
-    void requestPerformLayout() override;
-    bool inFocusChain() const;
+  void requestPerformLayout() override;
+  bool inFocusChain() const;
+
+public:
+  PROPSETTER(PanelHighlightHeader, setHighlightHeader)
+
 };
 
 NAMESPACE_END(nanogui)

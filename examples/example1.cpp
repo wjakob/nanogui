@@ -807,7 +807,7 @@ void createAllWidgetsDemo(Screen* screen)
       .unindent();
 
   auto& iocfg = pw.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
-  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
+  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true }, PanelHighlightHeader{false} );
   nav.checkbox(Caption{ "theme.nav.keyboard.enable" }, CheckboxRef{ screen->theme()->nav.keyboard.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ screen->theme()->nav.mouse.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ screen->theme()->nav.mouse.drawCursor });
@@ -816,7 +816,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ screen->theme()->windowResizeFromEdge });
   nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
 
-  auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true });
+  auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{false});
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

@@ -449,11 +449,16 @@ bool Window::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     return true;
 }
 
+void Window::setHeaderHeight(int h) { mHeaderHeight = h; }
+
 void Window::refreshRelativePlacement() {
     /* Overridden in \ref Popup */
 }
 
-int Window::getHeaderHeight() const { return theme()->mWindowHeaderHeight; }
+int Window::getHeaderHeight() const 
+{ 
+  return mHeaderHeight > 0 ? mHeaderHeight : theme()->mWindowHeaderHeight; 
+}
 
 void Window::save(Serializer &s) const 
 {
@@ -490,7 +495,7 @@ Vector4i Window::getWidgetsArea()
 Panel::Panel(Widget *parent, const std::string &title)
   : Window(parent, title)
 {
-  mDrawFlags = DrawTitle | DrawHeader;
+  mDrawFlags = DrawTitle | DrawHeader | DrawHeaderUnselect;
   mDraggable = Theme::WindowDraggable::dgFixed;
   withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
 }
@@ -508,7 +513,10 @@ void Panel::requestPerformLayout()
   screen()->needPerformLayout(wp ? wp : mParent);
 }
 
-int Panel::getHeaderHeight() const { return mTheme->mPanelHeaderHeight; }
+int Panel::getHeaderHeight() const 
+{ 
+  return mHeaderHeight ? mHeaderHeight : mTheme->mPanelHeaderHeight; 
+}
 
 bool Panel::inFocusChain() const
 {
@@ -534,21 +542,25 @@ void Panel::draw(NVGcontext *ctx)
       const Color& cltop = underMouse ? theme()->mPanelHeaderGradientTopFocus : theme()->mPanelHeaderGradientTopNormal;
       const Color& clbot = underMouse ? theme()->mPanelHeaderGradientBotFocus : theme()->mPanelHeaderGradientBotNormal;
 
-      NVGpaint headerPaint = nvgLinearGradient(
-        ctx, mPos.x(), mPos.y(), mPos.x(),
-        mPos.y() + hh,
-        cltop, clbot);
+      bool visheader = true;
+      if (!haveDrawFlag(DrawHeaderUnselect))
+        visheader = underMouse;
 
-      nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos, { mSize.x(), hh }, cr);
+      if (visheader)
+      {
+        NVGpaint headerPaint = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(), mPos.y() + hh, cltop, clbot);
 
-      nvgFillPaint(ctx, headerPaint);
-      nvgFill(ctx);
+        nvgBeginPath(ctx);
+        nvgRoundedRect(ctx, mPos, { mSize.x(), hh }, cr);
+
+        nvgFillPaint(ctx, headerPaint);
+        nvgFill(ctx);
+      }
     }
 
     if (haveDrawFlag(DrawTitle))
     {
-      nvgFontSize(ctx, mFontSize ? mFontSize : theme()->mPanelFontSize);
+      nvgFontSize(ctx, mFontSize > 0 ? mFontSize : theme()->mPanelFontSize);
       nvgFontFace(ctx, "sans-bold");
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 
