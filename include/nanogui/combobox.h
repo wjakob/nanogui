@@ -25,6 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 DECLSETTERILIST(ComboBoxItems, std::vector<std::string>)
 DECLSETTERILIST(ComboBoxShortItems, std::vector<std::string>)
+DECLSETTER(ComboBoxStrCallback, std::function<void(std::string)>)
 
 class NANOGUI_EXPORT ComboBox : public PopupButton {
 public:
@@ -56,6 +57,7 @@ public:
 
     /// Sets the callback to execute for this ComboBox.
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
+    void setCallback(const std::function<void(std::string)> &callback) { mStrCallback = callback; }
 
     /// The current index this ComboBox has selected.
     int selectedIndex() const { return mSelectedIndex; }
@@ -93,12 +95,14 @@ protected:
 
     /// The callback for this ComboBox.
     std::function<void(int)> mCallback;
+    std::function<void(std::string)> mStrCallback;
 
     /// The current index this ComboBox has selected.
     int mSelectedIndex;
 
 public:
     PROPSETTER(ComboBoxItems, setItems)
+    PROPSETTER(ComboBoxStrCallback, setCallback)
 };
 
 NAMESPACE_END(nanogui)

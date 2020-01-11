@@ -360,6 +360,8 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
             setPushed(false);
             if (mCallback)
                 mCallback(index);
+            if (mStrCallback)
+              mStrCallback(mItems[index]);
         });
         index++;
     }
@@ -385,11 +387,15 @@ bool DropdownBox::scrollEvent(const Vector2i &p, const Vector2f &rel) {
         setSelectedIndex(std::min(mSelectedIndex+1, (int)(items().size()-1)));
         if (mCallback)
             mCallback(mSelectedIndex);
+        if (mStrCallback)
+          mStrCallback(mItems[mSelectedIndex]);
         return true;
     } else if (rel.y() > 0) {
         setSelectedIndex(std::max(mSelectedIndex-1, 0));
         if (mCallback)
             mCallback(mSelectedIndex);
+        if (mStrCallback)
+          mStrCallback(mItems[mSelectedIndex]);
         return true;
     }
     return PopupButton::scrollEvent(p, rel);

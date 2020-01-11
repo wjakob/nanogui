@@ -36,7 +36,7 @@ void Screen::needPerformLayout(Widget* w)
 void Screen::_setupStartParams()
 {
     mVisible = true;
-    setTheme(new Theme(mNVGContext));
+    setTheme<Theme>();
     mMousePos = Vector2i::Zero();
     mMouseState = mModifiers = 0;
     mDragActive = false;

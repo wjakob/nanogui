@@ -158,6 +158,7 @@ public:
 
     void needPerformLayout(Widget* w);
 
+    template<typename T> void setTheme() { Widget::setTheme(new T(nvgContext())); }
     template<typename... Args>Window& window(const Args&... args) { return wdg<Window>(args...); }
 
 public:

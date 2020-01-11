@@ -311,7 +311,18 @@ int Widget::childIndex(Widget *widget) const {
     return (int) (it - mChildren.begin());
 }
 
-Window *Widget::window() { return findParent<Window>(); }
+Window *Widget::window() 
+{
+  Widget *w = this;
+  while (w) {
+    Window *parentw = Window::cast(w);
+    Panel *parentpn = Panel::cast(w);
+    if (parentw && !parentpn)
+      return parentw;
+    w = w->parent();
+  }
+  return nullptr;
+}
 Screen *Widget::screen() { return findParent<Screen>(); }
 
 void Widget::requestFocus() {

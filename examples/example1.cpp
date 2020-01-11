@@ -745,9 +745,9 @@ void toggleTreeView(Screen* screen, bool show)
 void createAllWidgetsDemo(Screen* screen)
 {
   Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical },
-                              Caption{ "All widgets demo" },
-                              Position{ 725, 350 },
-                              FixedSize{ 400, 400 });
+    Caption{ "All widgets demo" },
+    Position{ 725, 350 },
+    FixedSize{ 400, 400 });
 
   dw.submenu("File")
     .item("(dummy item)", []() {})
@@ -771,43 +771,43 @@ void createAllWidgetsDemo(Screen* screen)
 
   dw.submenu("Help");
 
-  auto& pw = dw.vscrollpanel(RelativeSize{1.f, 1.f}).vstack();
+  auto& pw = dw.vscrollpanel(RelativeSize{ 1.f, 1.f }).vstack();
   auto& help = pw.panel(Caption{ "Help" }, WindowCollapsed{ true });
   help.text()
     .header("PROGRAMMER GUIDE:")
-    .bulletLine( "Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!" )
-    .bulletLine( "Please see the examples/example1.cpp." )
-    .bulletLine( "Enable 'theme.nav.keyboard.enable = true' for keyboard controls." )
-    .bulletLine( "Enable 'theme.nav.gamepad.enable= true' for gamepad controls." )
-    .separator( "" )
-    .header( "USER GUIDE:" )
-    .bulletLine( "Double-click on title bar to collapse window." )
-    .bulletLine("Click and drag on lower corner to resize window" )
-    .bulletLine("Double-click to auto fit window to its contents" )
-    .bulletLine("CTRL+Click on a slider or drag box to input value as text." )
-    .bulletLine("TAB/SHIFT+TAB to cycle through keyboard editable fields." )
-    .bulletLine("CTRL+Mouse Wheel to zoom window contents." )
-    .bulletLine("While inputing text:\n" )
-      .indent(15)
-      .bulletLine("CTRL+Left/Right to word jump." )
-      .bulletLine("CTRL+A or double-click to select all." )
-      .bulletLine("CTRL+X/C/V to use clipboard cut/copy/paste." )
-      .bulletLine("CTRL+Z,CTRL+Y to undo/redo." )
-      .bulletLine("ESCAPE to revert." )
-      .bulletLine("You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract." )
-      .unindent()
-    .header( "With keyboard navigation enabled:" )
-      .indent(15)
-      .bulletLine("Arrow keys to navigate." )
-      .bulletLine("Space to activate a widget." )
-      .bulletLine("Return to input text into a widget." )
-      .bulletLine("Escape to deactivate a widget, close popup, exit child window." )
-      .bulletLine("Alt to jump to the menu layer of a window." )
-      .bulletLine("CTRL+Tab to select a window." )
-      .unindent();
+    .bulletLine("Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!")
+    .bulletLine("Please see the examples/example1.cpp.")
+    .bulletLine("Enable 'theme.nav.keyboard.enable = true' for keyboard controls.")
+    .bulletLine("Enable 'theme.nav.gamepad.enable= true' for gamepad controls.")
+    .separator("")
+    .header("USER GUIDE:")
+    .bulletLine("Double-click on title bar to collapse window.")
+    .bulletLine("Click and drag on lower corner to resize window")
+    .bulletLine("Double-click to auto fit window to its contents")
+    .bulletLine("CTRL+Click on a slider or drag box to input value as text.")
+    .bulletLine("TAB/SHIFT+TAB to cycle through keyboard editable fields.")
+    .bulletLine("CTRL+Mouse Wheel to zoom window contents.")
+    .bulletLine("While inputing text:\n")
+    .indent(15)
+    .bulletLine("CTRL+Left/Right to word jump.")
+    .bulletLine("CTRL+A or double-click to select all.")
+    .bulletLine("CTRL+X/C/V to use clipboard cut/copy/paste.")
+    .bulletLine("CTRL+Z,CTRL+Y to undo/redo.")
+    .bulletLine("ESCAPE to revert.")
+    .bulletLine("You can apply arithmetic operators +,*,/ on numerical values. Use +- to subtract.")
+    .unindent()
+    .header("With keyboard navigation enabled:")
+    .indent(15)
+    .bulletLine("Arrow keys to navigate.")
+    .bulletLine("Space to activate a widget.")
+    .bulletLine("Return to input text into a widget.")
+    .bulletLine("Escape to deactivate a widget, close popup, exit child window.")
+    .bulletLine("Alt to jump to the menu layer of a window.")
+    .bulletLine("CTRL+Tab to select a window.")
+    .unindent();
 
   auto& iocfg = pw.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
-  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true }, PanelHighlightHeader{false} );
+  auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   nav.checkbox(Caption{ "theme.nav.keyboard.enable" }, CheckboxRef{ screen->theme()->nav.keyboard.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ screen->theme()->nav.mouse.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ screen->theme()->nav.mouse.drawCursor });
@@ -816,7 +816,13 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ screen->theme()->windowResizeFromEdge });
   nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
 
-  auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{false});
+  auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  auto& stcfg = iocfg.panel(Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  stcfg.wdg<DropdownBox>(DropdownBoxItems{ "Default", "White" },
+    DropdownBoxStrCallback{ [screen](std::string item) {
+      if (item == "Default") screen->setTheme<DefaultTheme>();
+      else if (item == "White") screen->setTheme<WhiteTheme>();
+    }});
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

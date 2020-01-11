@@ -69,7 +69,7 @@ void register_basics(py::module &m) {
                       const std::vector<std::string> &>(),
              py::arg("parent"), py::arg("items"), py::arg("itemsShort")/* ,D(ComboBox, ComboBox, 3)*/)
         .def("callback", &ComboBox::callback, D(ComboBox, callback))
-        .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
+        .def("setCallback", (void (ComboBox::*)(const std::function<void (std::string)>&))&ComboBox::setCallback, D(ComboBox, setCallback))
         .def("selectedIndex", &ComboBox::selectedIndex, D(ComboBox, selectedIndex))
         .def("setSelectedIndex", &ComboBox::setSelectedIndex, D(ComboBox, setSelectedIndex))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))

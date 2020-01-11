@@ -24,6 +24,7 @@ NAMESPACE_BEGIN(nanogui)
  * \brief Simple dropdownbox box widget based on a popup button.
  */
 DECLSETTERILIST(DropdownBoxItems, std::vector<std::string>)
+DECLSETTER(DropdownBoxStrCallback, std::function<void(std::string)>)
 
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
@@ -55,6 +56,8 @@ public:
 
     /// Sets the callback to execute for this widget.
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
+    void setCallback(const std::function<void(std::string)> &callback) { mStrCallback = callback; }
+
 
     /// The current index this dropdownbox has selected.
     int selectedIndex() const { return mSelectedIndex; }
@@ -97,12 +100,14 @@ protected:
 
     /// The callback for this dropdownbox.
     std::function<void(int)> mCallback;
+    std::function<void(std::string)> mStrCallback;
 
     /// The current index this dropdownbox has selected.
     int mSelectedIndex;
 
 public:
     PROPSETTER(DropdownBoxItems, setItems)
+    PROPSETTER(DropdownBoxStrCallback, setCallback)
 };
 
 NAMESPACE_END(nanogui)
