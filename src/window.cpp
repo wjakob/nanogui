@@ -492,7 +492,7 @@ Panel::Panel(Widget *parent, const std::string &title)
 {
   mDrawFlags = DrawTitle | DrawHeader;
   mDraggable = Theme::WindowDraggable::dgFixed;
-  withLayout<StretchLayout>(Orientation::Vertical);
+  withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
 }
 
 void Panel::requestPerformLayout()
