@@ -285,21 +285,8 @@ bool Window::prefferContains(const Vector2i& p) const
           && isTriangleContainsPoint(mSize, mSize - Vector2i(15, ds), mSize - Vector2i(ds, 15), p - mPos);
 }
 
-
-void Window::dispose() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->disposeWindow(this);
-}
-
-void Window::center() {
-    Widget *widget = this;
-    while (widget->parent())
-        widget = widget->parent();
-    ((Screen *) widget)->centerWindow(this);
-}
-
+void Window::dispose() { screen()->disposeWindow(this); }
+void Window::center() { screen()->centerWindow(this); }
 bool Window::canEdgeResize() const { return theme()->windowResizeFromEdge; }
 
 bool Window::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
