@@ -161,6 +161,9 @@ class NANOGUI_EXPORT StretchLayout : public BoxLayout
 {
 public:
   StretchLayout(Orientation orientation) : BoxLayout(orientation) {}
+  StretchLayout(Orientation orientation, int margin, int spacing)
+    : BoxLayout(orientation, Alignment::Middle, margin, spacing) {}
+
   void performLayout(NVGcontext* ctx, Widget* widget) const override;
   Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
 };
