@@ -187,6 +187,7 @@ public:
     void draw(NVGcontext* ctx) override;
     void performLayout(NVGcontext *ctx) override;
     int getHeaderHeight() const override;
+    bool canEdgeResize() const override { return false; }
     Vector2i preferredSize(NVGcontext *ctx) const override;
 
     void setHighlightHeader(bool v) { setDrawFlag(DrawHeaderUnselect, v); }
