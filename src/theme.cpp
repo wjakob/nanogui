@@ -27,6 +27,7 @@ bool Theme::get(const std::string& name, const bool&)
   CHECK(textAreaBlinkCursor)
   CHECK(windowMoveFromTitlebarOnly)
   CHECK(windowMoveInParent)
+  CHECK(windowDrawBorder)
   printf("No get prop for name %s", name.c_str());
   return false;
 }
@@ -36,6 +37,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(textAreaBlinkCursor)
   CHECKSET(windowMoveFromTitlebarOnly)
   CHECKSET(windowMoveInParent)
+  CHECKSET(windowDrawBorder)
   printf("No get prop for name %s", name.c_str());
 }
 
@@ -118,6 +120,8 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mWindowFillFocused)
   CHECK(mWindowTitleUnfocused)
   CHECK(mWindowTitleFocused)
+  CHECK(windowBorderColorFocused)
+  CHECK(windowBorderColorUnfocused)
   CHECK(mWindowHeaderGradientTop)
   CHECK(mWindowHeaderGradientBot)
   CHECK(mWindowHeaderSepTop)
@@ -177,6 +181,8 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mWindowFillFocused)
   CHECKSET(mWindowTitleUnfocused)
   CHECKSET(mWindowTitleFocused)
+  CHECKSET(windowBorderColorFocused)
+  CHECKSET(windowBorderColorUnfocused)
   CHECKSET(mWindowHeaderGradientTop)
   CHECKSET(mWindowHeaderGradientBot)
   CHECKSET(mWindowHeaderSepTop)
@@ -281,6 +287,8 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowFillFocused = Color(45, 230);
   theme.mWindowTitleUnfocused = Color(220, 160);
   theme.mWindowTitleFocused = Color(255, 190);
+  theme.windowBorderColorFocused = Color(26, 240);
+  theme.windowBorderColorUnfocused = Color(43, 240);
 
   theme.mWindowHeaderGradientTop = theme.mButtonGradientTopUnfocused;
   theme.mWindowHeaderGradientBot = theme.mButtonGradientBotUnfocused;

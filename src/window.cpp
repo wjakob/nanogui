@@ -27,7 +27,9 @@ RTTI_IMPLEMENT_INFO(Panel, Window)
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr),
       mModal(false), mDrag(dragNone)
-{}
+{
+  setDrawFlag(DrawBorder, false);
+}
 
 Window::Window(Widget *parent, const std::string &title, Orientation orientation)
   : Window(parent, title)
@@ -151,8 +153,8 @@ void Window::afterDraw(NVGcontext *ctx)
 
 void Window::draw(NVGcontext *ctx) 
 {
-  int cr = mTheme->mWindowCornerRadius;
-  int hh = mTheme->mWindowHeaderHeight;
+  int cr = theme()->mWindowCornerRadius;
+  int hh = getHeaderHeight();
 
   /* Draw window */
   int realH = isCollapsed() ? hh : mSize.y();
@@ -162,12 +164,21 @@ void Window::draw(NVGcontext *ctx)
   if (haveDrawFlag(DrawBody))
   {
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), realH, cr);
+    nvgRoundedRect(ctx, mPos, { width(), realH }, cr);
 
-    nvgFillColor(ctx, mMouseFocus 
-                            ? mTheme->mWindowFillFocused
-                            : mTheme->mWindowFillUnfocused);
+    nvgFillColor(ctx, mMouseFocus ? mTheme->mWindowFillFocused
+                                  : mTheme->mWindowFillUnfocused);
     nvgFill(ctx);
+  }
+
+  if (haveDrawFlag(DrawBorder) || theme()->windowDrawBorder)
+  {
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, mPos, { width(), realH }, cr);
+
+    nvgStrokeColor(ctx, mMouseFocus ? mTheme->windowBorderColorFocused  
+                                    : mTheme->windowBorderColorUnfocused);
+    nvgStroke(ctx);
   }
 
   /* Draw a drop shadow */

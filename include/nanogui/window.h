@@ -44,6 +44,7 @@ public:
     DrawCollapseIcon = 1 << 3,
     DrawHeader = 1 << 4,
     DrawHeaderUnselect = 1 << 5,
+    DrawBorder = 1 << 6,
     DrawAll = 0xff
   };
 

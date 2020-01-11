@@ -262,6 +262,8 @@ public:
     Color mWindowHeaderSepTop;
     /// The Window header bottom separation color (default: \ref nanogui::Theme::mBorderDark).
     Color mWindowHeaderSepBot;
+    Color windowBorderColorFocused;
+    Color windowBorderColorUnfocused;
 
     /// Rounding radius for Window widget corners (default: ``2``).
     int mWindowCornerRadius;
@@ -275,6 +277,7 @@ public:
     bool windowResizeFromEdge = false;
     bool windowMoveFromTitlebarOnly = true;
     bool windowMoveInParent = true;
+    bool windowDrawBorder = true;
 
     WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
     WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
