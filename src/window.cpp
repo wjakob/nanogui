@@ -84,9 +84,9 @@ Vector2i Window::preferredSize(NVGcontext *ctx) const
   nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
 
   if (mCollapsed)
-    result.y() = mTheme->mPanelHeaderHeight;
+    result.y() = getHeaderHeight();
 
-  return result.cwiseMax(bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]);
+  return result.cwiseMax(bounds[2] - bounds[0] + 20, bounds[3] - bounds[1]);
 }
 
 Widget *Window::buttonPanel() {
@@ -481,7 +481,7 @@ Vector4i Window::getWidgetsArea()
   }
   else
   {
-    area.y() += getHeaderHeight();
+    area.y() = getHeaderHeight();
   }
 
   return area;
@@ -507,6 +507,8 @@ void Panel::requestPerformLayout()
   }
   screen()->needPerformLayout(wp ? wp : mParent);
 }
+
+int Panel::getHeaderHeight() const { return mTheme->mPanelHeaderHeight; }
 
 void Panel::draw(NVGcontext *ctx)
 {

@@ -34,11 +34,12 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
 
     int yOffset = 0;
     const Window *window = Window::cast(widget);
-    if (window && !window->title().empty()) {
+    if (window && !window->title().empty()) 
+    {
         if (mOrientation == Orientation::Vertical)
-            size.y() += widget->theme()->mWindowHeaderHeight - mMargin/2;
+            size.y() += window->getHeaderHeight() - mMargin/2;
         else
-            yOffset = widget->theme()->mWindowHeaderHeight;
+            yOffset = window->getHeaderHeight();
     }
 
     bool first = true;
@@ -76,11 +77,12 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     int yOffset = 0;
 
     const Window *window = Window::cast(widget);
-    if (window && !window->title().empty()) {
+    if (window && !window->title().empty()) 
+    {
         if (mOrientation == Orientation::Vertical) {
-            position += widget->theme()->mWindowHeaderHeight - mMargin/2;
+            position += window->getHeaderHeight() - mMargin/2;
         } else {
-            yOffset = widget->theme()->mWindowHeaderHeight;
+            yOffset = window->getHeaderHeight();
             containerSize.y() -= yOffset;
         }
     }

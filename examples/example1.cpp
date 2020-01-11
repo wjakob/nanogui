@@ -744,7 +744,7 @@ void toggleTreeView(Screen* screen, bool show)
 
 void createAllWidgetsDemo(Screen* screen)
 {
-  Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical, 2, 2 },
+  Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical },
                               Caption{ "All widgets demo" },
                               Position{ 725, 350 },
                               FixedSize{ 400, 400 });

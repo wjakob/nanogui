@@ -173,6 +173,7 @@ public:
 
     void draw(NVGcontext* ctx) override;
     void performLayout(NVGcontext *ctx) override;
+    int getHeaderHeight() const override;
     Vector2i preferredSize(NVGcontext *ctx) const override;
 
 protected:
