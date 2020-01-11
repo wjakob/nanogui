@@ -203,7 +203,7 @@ void TextArea::draw(NVGcontext *ctx)
     {
       int transp = 255;
       if (theme()->textAreaBlinkCursor)
-        transp = std::sinf(std::fmod((float)getTimeFromStart()*3, 3.14f)) * 255;
+        transp = sinf(std::fmod((float)getTimeFromStart()*3, 3.14f)) * 255;
 
       nvgBeginPath(ctx);
       nvgMoveTo(ctx, selection_end.x(), selection_end.y());
