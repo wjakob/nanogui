@@ -612,6 +612,8 @@ protected:
      */
     float mIconExtraScale;
     Cursor mCursor;
+
+    static std::vector<intptr_t> mFocusChain;
 };
 
 NAMESPACE_END(nanogui)

@@ -178,6 +178,7 @@ public:
 
 protected:
     void requestPerformLayout() override;
+    bool inFocusChain() const;
 };
 
 NAMESPACE_END(nanogui)

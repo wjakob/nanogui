@@ -510,10 +510,16 @@ void Panel::requestPerformLayout()
 
 int Panel::getHeaderHeight() const { return mTheme->mPanelHeaderHeight; }
 
+bool Panel::inFocusChain() const
+{
+  return std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) 
+                != mFocusChain.end();
+}
+
 void Panel::draw(NVGcontext *ctx)
 {
   int cr = mTheme->mPanelCornerRadius;
-  int hh = mTheme->mPanelHeaderHeight;
+  int hh = getHeaderHeight();
 
   /* Draw window */
   int realH = isCollapsed() ? hh : mSize.y();
@@ -524,14 +530,17 @@ void Panel::draw(NVGcontext *ctx)
   {
     if (haveDrawFlag(DrawHeader))
     {
+      bool underMouse = inFocusChain();
+      const Color& cltop = underMouse ? theme()->mPanelHeaderGradientTopFocus : theme()->mPanelHeaderGradientTopNormal;
+      const Color& clbot = underMouse ? theme()->mPanelHeaderGradientBotFocus : theme()->mPanelHeaderGradientBotNormal;
+
       NVGpaint headerPaint = nvgLinearGradient(
         ctx, mPos.x(), mPos.y(), mPos.x(),
         mPos.y() + hh,
-        mTheme->mPanelHeaderGradientTop,
-        mTheme->mPanelHeaderGradientBot);
+        cltop, clbot);
 
       nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+      nvgRoundedRect(ctx, mPos, { mSize.x(), hh }, cr);
 
       nvgFillPaint(ctx, headerPaint);
       nvgFill(ctx);

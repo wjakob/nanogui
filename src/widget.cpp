@@ -22,6 +22,8 @@ NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Widget, Object)
 
+std::vector<intptr_t> Widget::mFocusChain;
+
 Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
@@ -157,6 +159,12 @@ bool Widget::mouseDragEvent(const Vector2i &, const Vector2i &, int, int) {
 
 bool Widget::mouseEnterEvent(const Vector2i &, bool enter) {
     mMouseFocus = enter;
+    if (enter)
+    {
+      mFocusChain.clear();
+      const Widget *w = this;
+      while (w) { mFocusChain.push_back((intptr_t)w); w = w->parent(); }
+    }
     return false;
 }
 

@@ -100,8 +100,10 @@ public:
     int mPanelCornerRadius;
     int mPanelHeaderHeight;
 
-    Color mPanelHeaderGradientTop;
-    Color mPanelHeaderGradientBot;
+    Color mPanelHeaderGradientTopFocus;
+    Color mPanelHeaderGradientTopNormal;
+    Color mPanelHeaderGradientBotFocus;
+    Color mPanelHeaderGradientBotNormal;
     Color mPanelDropShadow;
     Color mPanelTitleFocused;
     Color mPanelTitleUnfocused;

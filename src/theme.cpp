@@ -140,6 +140,11 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mToleranceBarBgColor)
   CHECK(mToleranceBarLowColor)
   CHECK(mToleranceBarHighColor)
+  CHECK(mPanelHeaderGradientTopNormal)
+  CHECK(mPanelHeaderGradientBotNormal)
+  CHECK(mPanelHeaderGradientTopFocus)
+  CHECK(mPanelHeaderGradientBotFocus)
+
   printf("No get prop for name %s", name.c_str());
   return Color(0x800080ff);
 }
@@ -194,6 +199,11 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mToleranceBarBgColor)
   CHECKSET(mToleranceBarLowColor)
   CHECKSET(mToleranceBarHighColor)
+  CHECKSET(mPanelHeaderGradientTopNormal)
+  CHECKSET(mPanelHeaderGradientBotNormal)
+  CHECKSET(mPanelHeaderGradientTopFocus)
+  CHECKSET(mPanelHeaderGradientBotFocus)
+
   printf("No set prop for name %s", name.c_str());
 }
 
@@ -225,8 +235,11 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelCornerRadius = 0;
   theme.mPanelHeaderHeight = 20;
 
-  theme.mPanelHeaderGradientTop = Color(0, 74, 0, 255);
-  theme.mPanelHeaderGradientBot = Color(0, 96, 0, 255);
+  theme.mPanelHeaderGradientTopNormal = Color(0, 38, 0, 255);
+  theme.mPanelHeaderGradientBotNormal = Color(0, 48, 0, 255);
+  theme.mPanelHeaderGradientTopFocus = Color(0, 74, 0, 255);
+  theme.mPanelHeaderGradientBotFocus = Color(0, 96, 0, 255);
+
   theme.mPanelDropShadow = Color(0, 128);
   theme.mPanelTitleUnfocused = Color(220, 160);
   theme.mPanelTitleFocused = Color(255, 190);
