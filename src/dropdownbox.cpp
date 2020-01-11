@@ -326,11 +326,14 @@ void DropdownBox::setSelectedIndex(int idx) {
     if (mItemsShort.empty())
         return;
     const std::vector<Widget *> &children = popup()->children();
-    ((Button *) children[mSelectedIndex])->setPushed(false);
-    ((Button *) children[idx])->setPushed(true);
+    if (auto b = Button::cast(children[mSelectedIndex]))
+      b->setPushed(false);
+    if (auto b = Button::cast(children[idx]))
+      b->setPushed(true);
     mSelectedIndex = idx;
     setCaption(mItemsShort[idx]);
-    ((DropdownPopup*)mPopup)->updateCaption(mItemsShort[idx]);
+    if (auto pp = DropdownPopup::cast(mPopup))
+      pp->updateCaption(mItemsShort[idx]);
 }
 
 void DropdownBox::setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort) {
@@ -346,9 +349,9 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
     mPopup->withLayout<GroupLayout>(0,0,0,0);
     if (!items.empty())
     {
-      DropdownListItem *button = new DropdownListItem(mPopup, items[mSelectedIndex], false);
-      button->setPushed(false);
-      button->setCallback([&] { setPushed(false); popup()->setVisible(false); });
+      auto& button = mPopup->wdg<DropdownListItem>(items[mSelectedIndex], false);
+      button.setPushed(false);
+      button.setCallback([&] { setPushed(false); popup()->setVisible(false); });
     }
 
     int index = 0;
@@ -374,8 +377,7 @@ bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int
   if (isMouseButtonLeft(button) && mEnabled) {
     if (!mItems.empty())
     {
-      auto* item = DropdownListItem::cast(mPopup->childAt(0));
-      if (item)
+      if (auto item = DropdownListItem::cast(mPopup->childAt(0)))
         item->setCaption(mItems[mSelectedIndex]);
     }
   }
@@ -383,15 +385,19 @@ bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int
   return PopupButton::mouseButtonEvent(p, button, down, modifiers);
 }
 
-bool DropdownBox::scrollEvent(const Vector2i &p, const Vector2f &rel) {
-    if (rel.y() < 0) {
+bool DropdownBox::scrollEvent(const Vector2i &p, const Vector2f &rel) 
+{
+    if (rel.y() < 0) 
+    {
         setSelectedIndex(std::min(mSelectedIndex+1, (int)(items().size()-1)));
         if (mCallback)
             mCallback(mSelectedIndex);
         if (mStrCallback)
           mStrCallback(mItems[mSelectedIndex]);
         return true;
-    } else if (rel.y() > 0) {
+    } 
+    else if (rel.y() > 0) 
+    {
         setSelectedIndex(std::max(mSelectedIndex-1, 0));
         if (mCallback)
             mCallback(mSelectedIndex);
