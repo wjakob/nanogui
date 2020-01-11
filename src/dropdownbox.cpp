@@ -316,7 +316,8 @@ void DropdownBox::performLayout(NVGcontext *ctx) {
   DropdownPopup* dpopup = DropdownPopup::cast(mPopup);
   if (dpopup)
   {
-    dpopup->setAnchorPos(position());
+    Window* ww = window();
+    dpopup->setAnchorPos(absolutePosition() - ww->absolutePosition());
     dpopup->preferredWidth = width();
   }
 }
@@ -342,7 +343,7 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
     while (mPopup->childCount() != 0)
       mPopup->removeChild(mPopup->childCount() - 1);
 
-    mPopup->setLayout(new GroupLayout(0,0,0,0));
+    mPopup->withLayout<GroupLayout>(0,0,0,0);
     if (!items.empty())
     {
       DropdownListItem *button = new DropdownListItem(mPopup, items[mSelectedIndex], false);
@@ -401,32 +402,36 @@ bool DropdownBox::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     return PopupButton::scrollEvent(p, rel);
 }
 
-void DropdownBox::draw(NVGcontext* ctx) {
+void DropdownBox::draw(NVGcontext* ctx) 
+{
   if (!mEnabled && mPushed)
     mPushed = false;
 
-  ((DropdownPopup*)mPopup)->updateVisible(mPushed);
+  if (auto pp = DropdownPopup::cast(mPopup))
+    pp->updateVisible(mPushed);
+
   Button::draw(ctx);
 
-  if (mChevronIcon) {
+  if (mChevronIcon) 
+  {
     auto icon = utf8(mChevronIcon);
-    NVGcolor textColor =
-      mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
 
     nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
     nvgFontFace(ctx, "icons");
-    nvgFillColor(ctx, mEnabled ? textColor : mTheme->mDisabledTextColor);
+    nvgFillColor(ctx, mEnabled 
+                          ? mTextColor.notW(mTheme->mTextColor)
+                          : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 
     float iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
     Vector2f iconPos(0, mPos.y() + mSize.y() * 0.5f - 1);
 
     if (mPopup->side() == Popup::Right)
-      iconPos[0] = mPos.x() + mSize.x() - iw - 8;
+      iconPos.x() = mPos.x() + mSize.x() - iw - 8;
     else
-      iconPos[0] = mPos.x() + 8;
+      iconPos.x() = mPos.x() + 8;
 
-    nvgText(ctx, iconPos.x(), iconPos.y(), icon.data(), nullptr);
+    nvgText(ctx, iconPos, icon.data());
   }
 }
 
