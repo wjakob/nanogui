@@ -68,16 +68,17 @@ public:
     }
 
     /// Set the \ref Theme used to draw this widget
-    virtual void setTheme(Theme *theme) override;
+    void setTheme(Theme *theme) override;
+    int fontSize() const override;
 
     /// Compute the size needed to fully display the label
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
 
     /// Draw the label
-    virtual void draw(NVGcontext *ctx) override;
+    void draw(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    void save(Serializer &s) const override;
+    bool load(Serializer &s) override;
 protected:
     std::string mCaption;
     std::string mFont;

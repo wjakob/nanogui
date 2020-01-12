@@ -29,6 +29,7 @@ bool Theme::get(const std::string& name, const bool&)
   CHECK(windowMoveInParent)
   CHECK(windowDrawBorder)
   CHECK(frameDrawBorder)
+  CHECK(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
   return false;
 }
@@ -40,6 +41,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(windowMoveInParent)
   CHECKSET(windowDrawBorder)
   CHECKSET(frameDrawBorder)
+  CHECKSET(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
 }
 
