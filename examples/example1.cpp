@@ -817,6 +817,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
   nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxRef{ screen->theme()->windowDrawBorder });
   nav.checkbox(Caption{ "theme.frameDrawBorder" }, CheckboxRef{ screen->theme()->frameDrawBorder });
+  nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, CheckboxRef{ screen->theme()->debugHighlightMouseover });
 
   auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto& stcfg = iocfg.panel(Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });

@@ -20,18 +20,13 @@ RTTI_IMPLEMENT_INFO(Label, Widget)
 
 Label::Label(Widget *parent)
     : Widget(parent), mCaption(""), mFont("sans") {
-    if (mTheme) {
-        mFontSize = mTheme->mStandardFontSize;
-    }
-    //if (fontSize >= 0) mFontSize = fontSize;
 }
 
 void Label::setTheme(Theme *theme) {
     Widget::setTheme(theme);
-    if (mTheme) {
-        mFontSize = mTheme->mStandardFontSize;
-    }
 }
+
+int Label::fontSize() const { return mFontSize > 0 ? mFontSize : mTheme->mStandardFontSize;  }
 
 Vector2i Label::preferredSize(NVGcontext *ctx) const {
   if (mCaption == "")
@@ -41,55 +36,56 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
 
     return Vector2i::Zero();
   }
-  nvgFontFace(ctx, mFont.c_str());
-  nvgFontSize(ctx, fontSize());
-  if (mFixedSize.x() > 0 || mFixedSize.y() > 0) {
+
+  nvgFontFaceSize(ctx, mFont.c_str(), fontSize());
+  if (mFixedSize.x() > 0 || mFixedSize.y() > 0) 
+  {
       float bounds[4];
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
       nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, bounds);
       const_cast<Label*>(this)->mTextRealSize = Vector2i(bounds[2] - bounds[0], bounds[3] - bounds[1] );
-      return Vector2i(mFixedSize.x() > 0 ? mFixedSize.x() : mTextRealSize.x(),
-                      mFixedSize.y() > 0 ? mFixedSize.y() : mTextRealSize.y());
-  } else {
+      return mFixedSize.fillZero(mTextRealSize);
+  } 
+  else 
+  {
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
       int tw = nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 2;
       int th = fontSize();
       const_cast<Label*>(this)->mTextRealSize = Vector2i(tw, th);
-      return Vector2i( std::max(mMinSize.x(), tw), std::max(mMinSize.y(),th) );
+      return mMinSize.cwiseMax(tw, th);
   }
 }
 
 void Label::draw(NVGcontext *ctx) 
 {
-    nvgFontFace(ctx, mFont.c_str());
-    nvgFontSize(ctx, fontSize());
-    Color color;
-    if (enabled()) color = (mColor.w() > 0) ? mColor : mTheme->mTextColor;
-    else color = (mDisabledColor.w() > 0) ? mDisabledColor : mTheme->mLabelTextDisabledColor;
+    nvgFontFaceSize(ctx, mFont.c_str(), fontSize());
+    const Color& color = enabled() 
+                            ? mColor.notW(mTheme->mTextColor)
+                            : mDisabledColor.notW(mTheme->mLabelTextDisabledColor);
 
     nvgFillColor(ctx, color);
 
     //int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
     //int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
 
-    int xpos = 0, ypos = 0;
+    Vector2i opos;
     switch (mTextHAlign)
     {
-    case TextHAlign::hCenter: xpos = (mSize.x() - mTextRealSize.x()) / 2; break;
-    case TextHAlign::hRight: xpos = (mSize.x() - mTextRealSize.x()); break;
+    case TextHAlign::hCenter: opos.x() = (mSize.x() - mTextRealSize.x()) / 2; break;
+    case TextHAlign::hRight: opos.x() = (mSize.x() - mTextRealSize.x()); break;
     }
 
     switch (mTextVAlign)
     {
-    case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
-    case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;
+    case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
+    case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
     if (mFixedSize.x() > 0)
-      nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
+      nvgTextBox(ctx, mPos.x() + opos.x(), mPos.y() + opos.y(), mFixedSize.x(), mCaption.c_str(), nullptr);
     else
-      nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
+      nvgText(ctx, mPos + opos, mCaption);
 
     Widget::draw(ctx);
 }

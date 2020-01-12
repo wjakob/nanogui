@@ -280,6 +280,7 @@ public:
     bool windowDrawBorder = true;
 
     bool frameDrawBorder = false;
+    bool debugHighlightMouseover = false;
     Color frameBorderColor;
 
     WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;

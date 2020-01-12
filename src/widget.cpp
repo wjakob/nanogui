@@ -334,14 +334,6 @@ void Widget::requestFocus() {
 
 void Widget::draw(NVGcontext *ctx) 
 {
-  #if NANOGUI_SHOW_WIDGET_BOUNDS
-      nvgStrokeWidth(ctx, 1.0f);
-      nvgBeginPath(ctx);
-      nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
-      nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
-      nvgStroke(ctx);
-  #endif
-
   if (!mChildren.empty())
   {
     nvgSave(ctx);
@@ -369,6 +361,24 @@ void Widget::draw(NVGcontext *ctx)
     nvgStroke(ctx);
 
     nvgRestore(ctx);
+  }
+
+  if (theme()->debugHighlightMouseover)
+  {
+    if (std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) != mFocusChain.end())
+    {
+      nvgSave(ctx);
+
+      nvgResetScissor(ctx);
+
+      nvgStrokeWidth(ctx, 1.0f);
+      nvgBeginPath(ctx);
+      nvgRect(ctx, mPos - Vector2f(1), mSize + Vector2f(2));
+      nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
+      nvgStroke(ctx);
+
+      nvgRestore(ctx);
+    }
   }
 }
 
