@@ -495,6 +495,7 @@ Panel::Panel(Widget *parent, const std::string &title)
 {
   mDrawFlags = DrawTitle | DrawHeader | DrawHeaderUnselect;
   mDraggable = Theme::WindowDraggable::dgFixed;
+  mCollapseIconScale = 1.0f;
   withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
 }
 
@@ -576,7 +577,7 @@ void Panel::draw(NVGcontext *ctx)
   {
     auto icon = utf8(mCollapsed ? mTheme->mPanelCollapsedIcon : mTheme->mPanelExpandedIcon);
 
-    mCollapseIconSize.y() = fontSize();
+    mCollapseIconSize.y() = mFontSize > 0 ? mFontSize : theme()->mPanelFontSize;
     mCollapseIconSize.y() *= mCollapseIconScale;
     nvgFontSize(ctx, mCollapseIconSize.y());
     nvgFontFace(ctx, "icons");
