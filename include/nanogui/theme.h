@@ -279,6 +279,9 @@ public:
     bool windowMoveInParent = true;
     bool windowDrawBorder = true;
 
+    bool frameDrawBorder = false;
+    Color frameBorderColor;
+
     WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
     WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
 

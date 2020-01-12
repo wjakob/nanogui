@@ -28,6 +28,7 @@ bool Theme::get(const std::string& name, const bool&)
   CHECK(windowMoveFromTitlebarOnly)
   CHECK(windowMoveInParent)
   CHECK(windowDrawBorder)
+  CHECK(frameDrawBorder)
   printf("No get prop for name %s", name.c_str());
   return false;
 }
@@ -38,6 +39,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(windowMoveFromTitlebarOnly)
   CHECKSET(windowMoveInParent)
   CHECKSET(windowDrawBorder)
+  CHECKSET(frameDrawBorder)
   printf("No get prop for name %s", name.c_str());
 }
 
@@ -148,6 +150,7 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mPanelHeaderGradientBotNormal)
   CHECK(mPanelHeaderGradientTopFocus)
   CHECK(mPanelHeaderGradientBotFocus)
+  CHECK(frameBorderColor)
 
   printf("No get prop for name %s", name.c_str());
   return Color(0x800080ff);
@@ -209,6 +212,7 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mPanelHeaderGradientBotNormal)
   CHECKSET(mPanelHeaderGradientTopFocus)
   CHECKSET(mPanelHeaderGradientBotFocus)
+  CHECKSET(frameBorderColor)
 
   printf("No set prop for name %s", name.c_str());
 }
@@ -252,6 +256,8 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelCollapsedIcon = ENTYPO_ICON_RIGHT_DIR;
   theme.mPanelExpandedIcon = ENTYPO_ICON_DOWN_DIR;
   theme.mPanelFontSize = 14;
+
+  theme.frameBorderColor = Color(64, 128);
 
   theme.mDropShadow = Color(0, 128);
   theme.mTransparent = Color(0, 0);

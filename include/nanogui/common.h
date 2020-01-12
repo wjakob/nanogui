@@ -565,6 +565,9 @@ using Vector4f = Vector4<float>;
 using Vector4i = Vector4<int>;
 using VectorXf = std::vector<float>;
 
+inline Vector2f operator-(const Vector2i& p, const Vector2f o) { return (p.cast<float>() - o); }
+inline Vector2f operator+(const Vector2i& p, const Vector2f o) { return (p.cast<float>() + o); }
+
 //! Calculates the angle of this vector in degrees in the trigonometric sense.
 /** 0 is to the right (3 o'clock), values increase counter-clockwise.
 This method has been suggested by Pr3t3nd3r.

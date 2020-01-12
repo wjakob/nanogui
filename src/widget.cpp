@@ -332,18 +332,18 @@ void Widget::requestFocus() {
     ((Screen *) widget)->updateFocus(this);
 }
 
-void Widget::draw(NVGcontext *ctx) {
-    #if NANOGUI_SHOW_WIDGET_BOUNDS
-        nvgStrokeWidth(ctx, 1.0f);
-        nvgBeginPath(ctx);
-        nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
-        nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
-        nvgStroke(ctx);
-    #endif
+void Widget::draw(NVGcontext *ctx) 
+{
+  #if NANOGUI_SHOW_WIDGET_BOUNDS
+      nvgStrokeWidth(ctx, 1.0f);
+      nvgBeginPath(ctx);
+      nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
+      nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
+      nvgStroke(ctx);
+  #endif
 
-    if (mChildren.empty())
-        return;
-
+  if (!mChildren.empty())
+  {
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
     for (auto child : mChildren) {
@@ -355,6 +355,21 @@ void Widget::draw(NVGcontext *ctx) {
         }
     }
     nvgRestore(ctx);
+  }
+
+  if (theme()->frameDrawBorder)
+  {
+    nvgSave(ctx);
+
+    nvgResetScissor(ctx);
+    nvgStrokeWidth(ctx, 1.0f);
+    nvgBeginPath(ctx);
+    nvgRect(ctx, mPos - Vector2f(1), mSize + Vector2f(2));
+    nvgStrokeColor(ctx, theme()->frameBorderColor);
+    nvgStroke(ctx);
+
+    nvgRestore(ctx);
+  }
 }
 
 void Widget::setVisible(bool visible)

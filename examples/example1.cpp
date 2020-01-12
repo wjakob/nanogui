@@ -816,7 +816,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ screen->theme()->windowResizeFromEdge });
   nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
   nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxRef{ screen->theme()->windowDrawBorder });
-
+  nav.checkbox(Caption{ "theme.frameDrawBorder" }, CheckboxRef{ screen->theme()->frameDrawBorder });
 
   auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto& stcfg = iocfg.panel(Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });

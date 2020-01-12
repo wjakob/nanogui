@@ -59,8 +59,8 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
   }
 }
 
-void Label::draw(NVGcontext *ctx) {
-    Widget::draw(ctx);
+void Label::draw(NVGcontext *ctx) 
+{
     nvgFontFace(ctx, mFont.c_str());
     nvgFontSize(ctx, fontSize());
     Color color;
@@ -90,6 +90,8 @@ void Label::draw(NVGcontext *ctx) {
       nvgTextBox(ctx, mPos.x() + xpos, mPos.y() + ypos, mFixedSize.x(), mCaption.c_str(), nullptr);
     else
       nvgText(ctx, mPos.x() + xpos, mPos.y() + ypos, mCaption.c_str(), nullptr);
+
+    Widget::draw(ctx);
 }
 
 void Label::save(Serializer &s) const {
