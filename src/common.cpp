@@ -77,10 +77,9 @@ void nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& s, float
 void nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
 void nvgText(NVGcontext* ctx, const Vector2i& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
 void nvgText(NVGcontext* ctx, const Vector2f& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
-void nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int dir)
-{ nvgArc(ctx, c.x(), c.y(), r, a0, a1, dir); }
+void nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int dir) { nvgArc(ctx, c.x(), c.y(), r, a0, a1, dir); }
 void nvgCircle(NVGcontext* ctx, const Vector2f& c, float r) { nvgCircle(ctx, c.x(), c.y(), r); }
-
+void nvgFontFaceSize(NVGcontext* ctx, const char* font, float size) { nvgFontFace(ctx, font); nvgFontSize(ctx, size); }
 
 void mainloop(int refresh) {
     if (mainloop_active)

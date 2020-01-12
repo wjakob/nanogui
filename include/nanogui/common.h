@@ -886,6 +886,7 @@ void NANOGUI_EXPORT nvgText(NVGcontext* ctx, const Vector2i& p, const std::strin
 void NANOGUI_EXPORT nvgText(NVGcontext* ctx, const Vector2f& p, const std::string& text);
 void NANOGUI_EXPORT nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int dir);
 void NANOGUI_EXPORT nvgCircle(NVGcontext* ctx, const Vector2f& c, float r);
+void NANOGUI_EXPORT nvgFontFaceSize(NVGcontext* ctx, const char* font, float size);
 
 /**
  * \brief Open a native file open dialog, which allows multiple selection.

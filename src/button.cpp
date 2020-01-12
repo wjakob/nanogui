@@ -34,19 +34,20 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
-    nvgFontSize(ctx, (float)fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFaceSize(ctx, "sans-bold", fontSize);
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
     float iw = 0.0f, ih = (float)fontSize;
 
-    if (mIcon) {
-        if (nvgIsFontIcon(mIcon)) {
+    if (mIcon) 
+    {
+        if (nvgIsFontIcon(mIcon)) 
+        {
             ih *= icon_scale();
-            nvgFontFace(ctx, "icons");
-            nvgFontSize(ctx, ih);
-            iw = nvgTextBounds(ctx, 0, 0, utf8(mIcon).data(), nullptr, nullptr)
-                + mSize.y() * 0.15f;
-        } else {
+            nvgFontFaceSize(ctx, "icons", ih);
+            iw = nvgTextBounds(ctx, 0, 0, utf8(mIcon).data(), nullptr, nullptr) + mSize.y() * 0.15f;
+        }
+        else 
+        {
             int w, h;
             ih *= 0.9f;
             nvgImageSize(ctx, mIcon, &w, &h);
@@ -194,8 +195,7 @@ void Button::draw(NVGcontext *ctx)
     }
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
-    nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFaceSize(ctx, "sans-bold", fontSize);
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
 
     Vector2f center = (mPos + mSize / 2).cast<float>();
@@ -209,8 +209,7 @@ void Button::draw(NVGcontext *ctx)
         float iw, ih = fontSize;
         if (nvgIsFontIcon(mIcon)) {
             ih *= icon_scale();
-            nvgFontSize(ctx, ih);
-            nvgFontFace(ctx, "icons");
+            nvgFontFaceSize(ctx, "icons", ih);
             iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
         } else {
             int w, h;
@@ -259,8 +258,7 @@ void Button::draw(NVGcontext *ctx)
 
     if (haveDrawFlag(DrawText))
     {
-      nvgFontSize(ctx, fontSize);
-      nvgFontFace(ctx, "sans-bold");
+      nvgFontFaceSize(ctx, "sans-bold", fontSize);
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
       nvgFillColor(ctx, mTheme->mTextColorShadow);
       nvgText(ctx, textPos, mCaption);
