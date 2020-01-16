@@ -286,7 +286,7 @@ void Button::save(Json::value &save) const {
   obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
   obj["icon"] = Json::hobject().$("value", mIcon).$("type", "integer").$("name", "Icon");
   obj["iconPosition"] = Json::hobject().$("value", (int)mIconPosition).$("type", "integer").$("name", "Icon position");
-  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Icon");
+  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Pushed");
   obj["backgroundColor"] = Json::hobject().$("color", mBackgroundColor.toInt()).$("type", "color").$("name", "Background color");
   obj["textColor"] = Json::hobject().$("color", mTextColor.toInt()).$("type", "color").$("name", "Text color");
 

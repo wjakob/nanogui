@@ -20,14 +20,17 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(Theme, Object)
 
 #define CHECK(a) if (name == #a) return (a);
+#define CHECK_S(a) if (name == #a) return (*a);
 #define CHECKSET(a) if (name == #a) { (a) = value; return; }
+#define CHECKSET_S(a) if (name == #a) { (*a) = value; return; }
+
 
 bool Theme::get(const std::string& name, const bool&)
 {
   CHECK(textAreaBlinkCursor)
   CHECK(windowMoveFromTitlebarOnly)
   CHECK(windowMoveInParent)
-  CHECK(windowDrawBorder)
+  CHECK_S(windowDrawBorder)
   CHECK(frameDrawBorder)
   CHECK(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
@@ -39,7 +42,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(textAreaBlinkCursor)
   CHECKSET(windowMoveFromTitlebarOnly)
   CHECKSET(windowMoveInParent)
-  CHECKSET(windowDrawBorder)
+  CHECKSET_S(windowDrawBorder)
   CHECKSET(frameDrawBorder)
   CHECKSET(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
@@ -246,6 +249,8 @@ void fillThemeDefaultValues(Theme& theme)
 
   theme.mPanelCornerRadius = 0;
   theme.mPanelHeaderHeight = 20;
+
+  theme.windowDrawBorder = std::make_shared<bool>(true);
 
   theme.mPanelHeaderGradientTopNormal = Color(0, 38, 0, 255);
   theme.mPanelHeaderGradientBotNormal = Color(0, 48, 0, 255);

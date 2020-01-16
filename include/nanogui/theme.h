@@ -277,7 +277,7 @@ public:
     bool windowResizeFromEdge = false;
     bool windowMoveFromTitlebarOnly = true;
     bool windowMoveInParent = true;
-    bool windowDrawBorder = true;
+    shared_bool windowDrawBorder;
 
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;

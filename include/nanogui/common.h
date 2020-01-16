@@ -30,6 +30,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
+#include <memory>
 #include <functional>
 #include <vector>
 
@@ -567,6 +568,22 @@ using VectorXf = std::vector<float>;
 
 inline Vector2f operator-(const Vector2i& p, const Vector2f o) { return (p.cast<float>() - o); }
 inline Vector2f operator+(const Vector2i& p, const Vector2f o) { return (p.cast<float>() + o); }
+
+using shared_bool = std::shared_ptr<bool>;
+
+struct BoolObservable {
+  shared_bool _b;
+  std::function<bool()> _get;
+  std::function<void(bool)> _set;
+  BoolObservable() : _b(std::make_shared<bool>()) {}
+  BoolObservable(shared_bool b) : _b(b) {}
+  //BoolObservable(bool& b) { _get = [&] {return b;}; _set = [&](bool v){b=v;};}
+  BoolObservable(std::function<bool()> g, std::function<void(bool)> s = nullptr)
+    : _get(g), _set(s) {}
+
+  operator bool() const { return _b ? *_b : _get ? _get() : false; }
+  void operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; }
+};
 
 //! Calculates the angle of this vector in degrees in the trigonometric sense.
 /** 0 is to the right (3 o'clock), values increase counter-clockwise.

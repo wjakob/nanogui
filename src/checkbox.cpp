@@ -13,6 +13,7 @@
 #include <nanovg.h>
 #include <nanogui/theme.h>
 #include <nanogui/serializer/core.h>
+#include <nanogui/serializer/json.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -21,10 +22,13 @@ RTTI_IMPLEMENT_INFO(CheckBox, Widget)
 CheckBox::CheckBox(Widget *parent, const std::string &caption,
                    std::function<void(bool)> callback,
                    bool initial)
-    : Widget(parent), mCaption(caption), mPushed(false), mChecked(initial),
+    : Widget(parent), 
+      mCaption(caption), 
+      mPushed(false),
       mCallback(callback) 
 {
   mIconExtraScale = 1.2f;// widget override
+  mChecked = initial;
 }
 
 bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
@@ -36,7 +40,9 @@ bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
     if (isMouseButtonLeft(button)) {
         if (down) {
             mPushed = true;
-        } else if (mPushed) {
+        } 
+        else if (mPushed) 
+        {
             if (contains(p)) {
                 mChecked = !mChecked;
                 if (mCallback)
@@ -89,8 +95,7 @@ void CheckBox::draw(NVGcontext *ctx)
     nvgFill(ctx);
 
     if (mChecked) {
-        nvgFontSize(ctx, mSize.y() * icon_scale());
-        nvgFontFace(ctx, "icons");
+        nvgFontFaceSize(ctx, "icons", mSize.y() * icon_scale());
         nvgFillColor(ctx, mEnabled ? mTheme->mIconColor : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
         nvgText(ctx, mPos.x() + mSize.y() * 0.5f + 1,
@@ -99,19 +104,20 @@ void CheckBox::draw(NVGcontext *ctx)
     }
 }
 
-void CheckBox::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("caption", mCaption);
-    s.set("pushed", mPushed);
-    s.set("checked", mChecked);
+void CheckBox::save(Json::value &save) const {
+  Widget::save(save);
+  Json::object obj = save.get_obj();
+  obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
+  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Pushed");
+  obj["checked"] = Json::hobject().$("value", mChecked).$("type", "boolean").$("name", "Checked");
 }
 
-bool CheckBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("caption", mCaption)) return false;
-    if (!s.get("pushed", mPushed)) return false;
-    if (!s.get("checked", mChecked)) return false;
-    return true;
+bool CheckBox::load(Json::value &save) {
+  Widget::load(save);
+  auto c = save.get("caption"); mCaption = c.get_str("value");
+  auto ph = save.get("pushed"); mPushed = ph.get_bool("value");
+  auto ch = save.get("checked"); mChecked = ch.get_bool("value");
+  return true;
 }
 
 NAMESPACE_END(nanogui)

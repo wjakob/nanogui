@@ -171,7 +171,7 @@ void Window::draw(NVGcontext *ctx)
     nvgFill(ctx);
   }
 
-  if (haveDrawFlag(DrawBorder) || theme()->windowDrawBorder)
+  if (haveDrawFlag(DrawBorder) || *theme()->windowDrawBorder)
   {
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos, { width(), realH }, cr);

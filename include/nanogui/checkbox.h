@@ -32,6 +32,7 @@ NAMESPACE_BEGIN(nanogui)
 DECLSETTER(CheckboxState, bool)
 DECLSETTER(CheckboxCallback, std::function<void(bool)>)
 DECLSETTER(CheckboxRef, bool&)
+DECLSETTER(CheckboxObservable, BoolObservable)
 
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
@@ -69,16 +70,19 @@ public:
     void setCaption(const std::string &caption) { mCaption = caption; }
 
     /// Whether or not this CheckBox is currently checked.
-    const bool &checked() const { return mChecked; }
+    bool checked() const { return (bool)mChecked; }
 
     /// Sets whether or not this CheckBox is currently checked.
-    void setChecked(const bool &checked) { mChecked = checked; }
+    void setChecked(bool checked) { mChecked = checked; }
 
     /// Whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
-    const bool &pushed() const { return mPushed; }
+    bool pushed() const { return mPushed; }
+
+    BoolObservable observable() { return mChecked; }
+    void setObservable(BoolObservable value) { mChecked = value; }
 
     /// Sets whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
-    void setPushed(const bool &pushed) { mPushed = pushed; }
+    void setPushed(bool pushed) { mPushed = pushed; }
 
     void setPushedColor(const Color& c) { mPushedColor = c; }
     void setCheckedColor(const Color& c) { mCheckedColor = c; }
@@ -121,10 +125,10 @@ public:
     virtual void draw(NVGcontext *ctx) override;
 
     /// Saves this CheckBox to the specified Serializer.
-    virtual void save(Serializer &s) const override;
+    virtual void save(Json::value &save) const override;
 
     /// Loads the state of the specified Serializer to this CheckBox.
-    virtual bool load(Serializer &s) override;
+    virtual bool load(Json::value &load) override;
 
 protected:
     /// The caption text of this CheckBox.
@@ -138,7 +142,7 @@ protected:
     bool mPushed;
 
     /// Whether or not this CheckBox is currently checked or unchecked.
-    bool mChecked;
+    BoolObservable mChecked;
     Color mPushedColor, mUncheckedColor, mCheckedColor;
 
     /// The function to execute when \ref nanogui::CheckBox::mChecked is changed.
@@ -149,6 +153,7 @@ public:
   PROPSETTER(Caption, setCaption)
   PROPSETTER(CheckboxCallback, setCallback)
   PROPSETTER(CheckboxRef, setRefCallback)
+  PROPSETTER(CheckboxObservable, setObservable)
 };
 
 NAMESPACE_END(nanogui)

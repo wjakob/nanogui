@@ -815,7 +815,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowMoveFromTitlebarOnly" }, CheckboxRef{ screen->theme()->windowMoveFromTitlebarOnly });
   nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ screen->theme()->windowResizeFromEdge });
   nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ screen->theme()->windowMoveInParent });
-  nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxRef{ screen->theme()->windowDrawBorder });
+  nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxObservable{ screen->theme()->windowDrawBorder });
   nav.checkbox(Caption{ "theme.frameDrawBorder" }, CheckboxRef{ screen->theme()->frameDrawBorder });
   nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, CheckboxRef{ screen->theme()->debugHighlightMouseover });
 
