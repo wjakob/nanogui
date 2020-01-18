@@ -171,9 +171,34 @@ DECLSETTER(InitialValue,float)
 DECLSETTER(MinValue,float)
 DECLSETTER(MaxValue,float)
 
+#define GET_CLASS_UID(s)  (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0]))
 template <typename Scalar>
 class IntBox : public TextBox {
 public:
+  // Rtti info
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "TextBox", sizeof(class IntBox<Scalar>),
+                                  RTTI_CLASS(TextBox),
+                                  GET_CLASS_UID("INB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                  + (sizeof(Scalar) == sizeof(int32_t) ? 0x0 : 0x2) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return IntBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const { return IntBox<Scalar>::staticRttiClass(); }
+  inline IntBox<Scalar>* cast(Object*v) 
+  { 
+    if (v && v->isKindOf(IntBox<Scalar>::staticRttiClass()))  
+      return static_cast<IntBox<Scalar>*>(v);  
+    return nullptr; 
+  }
+  inline const IntBox<Scalar>* cast(const Object*v) 
+  {
+    if (v && v->isKindOf(IntBox<Scalar>::staticRttiClass_const()))  
+      return static_cast<const IntBox<Scalar>*>(v);  
+    return nullptr; 
+  }
+
     explicit IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent, std::string("")) {
         setDefaultValue("0");
         setFormat(std::is_signed<Scalar>::value ? "[-]?[0-9]*" : "[0-9]*");
@@ -306,6 +331,29 @@ public:
 template <typename Scalar>
 class FloatBox : public TextBox {
 public:
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "FloatBox", sizeof(class FloatBox<Scalar>),
+                                   RTTI_CLASS(TextBox),
+                                   GET_CLASS_UID("FLB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                    + (sizeof(Scalar) == sizeof(float) ? 0x0 : 0x2) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return FloatBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const { return FloatBox<Scalar>::staticRttiClass(); }
+  inline FloatBox<Scalar>* cast(Object*v)
+  {
+    if (v && v->isKindOf(FloatBox<Scalar>::staticRttiClass()))
+      return static_cast<FloatBox<Scalar>*>(v);
+    return nullptr;
+  }
+  inline const FloatBox<Scalar>* cast(const Object*v)
+  {
+    if (v && v->isKindOf(FloatBox<Scalar>::staticRttiClass_const()))
+      return static_cast<const FloatBox<Scalar>*>(v);
+    return nullptr;
+  }
+
     explicit FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
         mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
         setDefaultValue("0");
@@ -414,6 +462,80 @@ public:
     PROPSETTER(InitialValue, setValue)
     PROPSETTER(MinValue, setMinValue)
     PROPSETTER(MaxValue, setMaxValue)
+};
+
+DECLSETTER(NumberPickerSplit, float)
+
+template<typename Scalar>
+class NumberPicker : public Widget
+{
+  auto& editor(Widget& parent, float v) { return floatbox(v); }
+  auto& editor(Widget& parent, int v) { return intbox(v); }
+  template<typename B> auto* find() { return nullptr; }
+  template<typename B = float> FloatBox<float>* find() {
+    auto widgets = findAll<FloatBox<float>>();
+    return widgets.empty() ? nullptr : widgets.front();
+  }
+  template<typename B = int> IntBox<int>* find(int) {
+    auto widgets = findAll<IntBox<int>>();
+    return widgets.empty() ? nullptr : widgets.front();
+  }
+
+public:
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "NumberPicker", sizeof(class NumberPicker<Scalar>),
+                                  RTTI_CLASS(Widget),
+                                  GET_CLASS_UID("FLB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                  + (sizeof(Scalar) == sizeof(float) ? 0x0 : 0x2)
+                                  + (std::is_floating_point<Scalar>::value ? 0x0 : 0x4) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return NumberPicker<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const { return NumberPicker<Scalar>::staticRttiClass(); }
+  inline NumberPicker<Scalar>* cast(Object*v)
+  {
+    if (v && v->isKindOf(NumberPicker<Scalar>::staticRttiClass()))
+      return static_cast<NumberPicker<Scalar>*>(v);
+    return nullptr;
+  }
+  inline const NumberPicker<Scalar>* cast(const Object*v)
+  {
+    if (v && v->isKindOf(NumberPicker<Scalar>::staticRttiClass_const()))
+      return static_cast<const NumberPicker<Scalar>*>(v);
+    return nullptr;
+  }
+
+
+  using TextBox::set;
+  template<typename... Args>
+  NumberPicker(Widget* parent, const Args&... args)
+    : NumberPicker(parent, Scalar(0)) { set<NumberPicker<Scalar>, Args...>(args...); }
+
+  NumberPicker(Widget* parent, Scalar val)
+    : Widget(parent)
+  {
+    auto& wrapper = widget();
+    wrapper.flexlayout(Orientation::Horizontal);
+    wrapper.label(CaptionFont{ "sans" }, RelativeSize{ 0.5, 0 });
+
+    auto& box = editor(wrapper, val);
+    box.setValue(val);
+    box.setSpinnable(false);
+    box.setEditable(true);
+    box.setDefaultValue(std::to_string(val));
+    box.setRelativeSize(0.5f, 0);
+  }
+
+  void setSplit(float split) 
+  {
+    if (auto w = findWidget<Label>())
+      w->setRelativeSize({ spit, 0 });
+    if (auto w = find<Scalar>())
+      w->setRelativeSize({ 1 - split, 0 });
+  }
+public:
+  PROPSETTER(NumberPickerSplit, setSplit)
 };
 
 NAMESPACE_END(nanogui)
