@@ -330,9 +330,7 @@ void createBasicWidgets(Screen* parent)
   auto& panel = w.widget();
   panel.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
 
-  auto& slider = panel.slider();
-  slider.setValue(0.5f);
-  slider.setFixedWidth(80);
+  auto& slider = panel.slider(InitialValue{ 0.5f }, FixedWidth{ 80 });
 
   auto& textBox = panel.textbox();
   textBox.setFixedSize(Vector2i(60, 25));

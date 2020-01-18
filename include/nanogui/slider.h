@@ -26,7 +26,12 @@ public:
     RTTI_CLASS_UID("SLDR")
     RTTI_DECLARE_INFO(Slider)
 
-    Slider(Widget *parent);
+    explicit Slider(Widget *parent);
+
+    using Widget::set;
+    template<typename... Args>
+    Slider(Widget* parent, const Args&... args)
+      : Slider(parent) { set<Slider, Args...>(args...); }
 
     float value() const { return mValue; }
     void setValue(float value) { mValue = value; }
@@ -65,6 +70,9 @@ protected:
     Color mHighlightColor;
     Color mValueColor;
     bool mShowValueWithColor = true;
+
+public:
+  PROPSETTER(InitialValue, setValue)
 };
 
 NAMESPACE_END(nanogui)

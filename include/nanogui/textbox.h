@@ -167,9 +167,6 @@ public:
  * Template parameters should be integral types, e.g. ``int``, ``long``,
  * ``uint32_t``, etc.
  */
-DECLSETTER(InitialValue,float)
-DECLSETTER(MinValue,float)
-DECLSETTER(MaxValue,float)
 
 #define GET_CLASS_UID(s)  (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0]))
 template <typename Scalar>

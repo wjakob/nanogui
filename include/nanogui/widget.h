@@ -73,6 +73,9 @@ DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
 DECLSETTER(CaptionHAlign, TextHAlign)
+DECLSETTER(InitialValue, float)
+DECLSETTER(MinValue, float)
+DECLSETTER(MaxValue, float)
 
 /**
  * \class Widget widget.h nanogui/widget.h
