@@ -13,15 +13,18 @@
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/serializer/core.h>
+#include <nanogui/serializer/json.h>
 
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Slider, Widget)
 
 Slider::Slider(Widget *parent)
-    : Widget(parent), mValue(0.0f), mRange(0.f, 1.f),
-      mHighlightedRange(0.f, 0.f) {
-    mHighlightColor = Color(255, 80, 80, 70);
+    : Widget(parent), mRange(0.f, 1.f),
+      mHighlightedRange(0.f, 0.f) 
+{
+  mValue = 0.f;
+  mHighlightColor = Color(255, 80, 80, 70);
 }
 
 Vector2i Slider::preferredSize(NVGcontext *) const {
@@ -137,21 +140,23 @@ void Slider::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 }
 
-void Slider::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("value", mValue);
-    s.set("range", mRange);
-    s.set("highlightedRange", mHighlightedRange);
-    s.set("highlightColor", mHighlightColor);
+void Slider::save(Json::value &save) const {
+  Widget::save(save);
+  Json::object obj = save.get_obj();
+  obj["value"] = Json::hobject().$("value", mValue).$("type", "float").$("name", "Value");
+  obj["range"] = Json::hobject().$("min", mRange.first).$("max", mRange.second).$("type", "range").$("name", "Range");
+  obj["highlightedRange"] = Json::hobject().$("min", mHighlightedRange.first).$("max", mHighlightedRange.second).$("type", "range").$("name", "Highligh range color");
+  obj["highlightColor"] = Json::hobject().$("color", mHighlightColor.toInt()).$("type", "color").$("name", "Highlight color");
 }
 
-bool Slider::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("value", mValue)) return false;
-    if (!s.get("range", mRange)) return false;
-    if (!s.get("highlightedRange", mHighlightedRange)) return false;
-    if (!s.get("highlightColor", mHighlightColor)) return false;
-    return true;
+bool Slider::load(Json::value &save) {
+  Widget::load(save);
+  mValue = save.get_float("value"); 
+  auto r = save.get("range"); mRange = { r.get_float("min"), r.get_float("max") };
+  auto hr = save.get("highlightedRange"); mHighlightedRange = { hr.get_float("min"), hr.get_float("max") };
+  auto bg = save.get("highlightColor"); mHighlightColor = Color(bg.get_int("color"));
+
+  return true;
 }
 
 NAMESPACE_END(nanogui)

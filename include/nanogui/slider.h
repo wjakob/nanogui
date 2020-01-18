@@ -54,15 +54,15 @@ public:
     std::function<void(float)> finalCallback() const { return mFinalCallback; }
     void setFinalCallback(const std::function<void(float)> &callback) { mFinalCallback = callback; }
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
-    virtual void draw(NVGcontext* ctx) override;
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+    bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    void draw(NVGcontext* ctx) override;
+    void save(Json::value &save) const override;
+    bool load(Json::value &save) override;
 
 protected:
-    float mValue;
+    FloatObservable mValue;
     std::function<void(float)> mCallback;
     std::function<void(float)> mFinalCallback;
     std::pair<float, float> mRange;

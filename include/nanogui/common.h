@@ -570,6 +570,7 @@ inline Vector2f operator-(const Vector2i& p, const Vector2f o) { return (p.cast<
 inline Vector2f operator+(const Vector2i& p, const Vector2f o) { return (p.cast<float>() + o); }
 
 using shared_bool = std::shared_ptr<bool>;
+using shared_int = std::shared_ptr<int>;
 
 struct BoolObservable {
   shared_bool _b;
@@ -577,13 +578,29 @@ struct BoolObservable {
   std::function<void(bool)> _set;
   BoolObservable() : _b(std::make_shared<bool>()) {}
   BoolObservable(shared_bool b) : _b(b) {}
-  //BoolObservable(bool& b) { _get = [&] {return b;}; _set = [&](bool v){b=v;};}
   BoolObservable(std::function<bool()> g, std::function<void(bool)> s = nullptr)
     : _get(g), _set(s) {}
 
   operator bool() const { return _b ? *_b : _get ? _get() : false; }
   void operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; }
 };
+
+template<class Scalar>
+struct ScalarObservable {
+  std::shared_ptr<Scalar> _v;
+  std::function<Scalar()> _get;
+  std::function<void(Scalar)> _set;
+  ScalarObservable() : _v(std::make_shared<Scalar>()) {}
+  ScalarObservable(std::shared_ptr<Scalar> v) : _v(v) {}
+  ScalarObservable(std::function<Scalar()> g, std::function<void(const Scalar&)> s = nullptr)
+    : _get(g), _set(s) {}
+
+  operator typename Scalar() const { return _v ? *_v : _get ? _get() : Scalar(); }
+  void operator=(typename Scalar v) { _v ? *_v = v : _set ? _set(v) : Scalar(); }
+};
+
+using IntObservable = ScalarObservable<int>;
+using FloatObservable = ScalarObservable<float>;
 
 //! Calculates the angle of this vector in degrees in the trigonometric sense.
 /** 0 is to the right (3 o'clock), values increase counter-clockwise.

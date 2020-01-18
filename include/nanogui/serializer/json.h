@@ -168,6 +168,9 @@ public:
   int get_int() const;
   int get_int(const std::string& key) const;
 
+  float get_float() const;
+  float get_float(const std::string& key) const;
+
   bool get_bool() const;
   bool get_bool(const std::string& key) const;
 
@@ -399,6 +402,9 @@ inline const std::string& value::get_str(const std::string& key) const { return 
 
 inline int value::get_int() const { return get<int64_t>(); }
 inline int value::get_int(const std::string& key) const { return get(key).get<int64_t>(); }
+
+inline float value::get_float() const { return get<double>(); }
+inline float value::get_float(const std::string& key) const { return get(key).get<double>(); }
 
 inline bool value::get_bool() const { return get<bool>(); }
 inline bool value::get_bool(const std::string& key) const { return get(key).get<bool>(); }
