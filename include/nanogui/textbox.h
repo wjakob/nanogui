@@ -35,6 +35,7 @@ NAMESPACE_BEGIN(nanogui)
 DECLSETTER(IsSpinnable,bool)
 DECLSETTER(IsEditable,bool)
 DECLSETTER(TextValue,std::string)
+DECLSETTER(TextBoxUnits,std::string)
 
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
@@ -157,6 +158,7 @@ public:
     PROPSETTER(IsSpinnable,setSpinnable)
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)
+    PROPSETTER(TextBoxUnits,setUnits)
 };
 
 /**

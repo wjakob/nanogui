@@ -332,10 +332,7 @@ void createBasicWidgets(Screen* parent)
 
   auto& slider = panel.slider(InitialValue{ 0.5f }, FixedWidth{ 80 });
 
-  auto& textBox = panel.textbox();
-  textBox.setFixedSize(Vector2i(60, 25));
-  textBox.setValue("50");
-  textBox.setUnits("%");
+  auto& textBox = panel.textbox(FixedSize{ 60, 25 }, TextBoxUnits{ "%" }, TextValue{"50"});
 
   slider.setCallback([&](float value) { textBox.setValue(std::to_string((int)(value * 100))); });
   slider.setFinalCallback([&](float value) { cout << "Final slider value: " << (int)(value * 100) << endl; });
