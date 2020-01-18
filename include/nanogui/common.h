@@ -590,7 +590,7 @@ struct ScalarObservable {
   std::shared_ptr<Scalar> _v;
   std::function<Scalar()> _get;
   std::function<void(Scalar)> _set;
-  ScalarObservable() : _v(std::make_shared<Scalar>()) {}
+  ScalarObservable(const Scalar& v = Scalar()) : _v(std::make_shared<Scalar>()) { *_v = v; }
   ScalarObservable(std::shared_ptr<Scalar> v) : _v(v) {}
   ScalarObservable(std::function<Scalar()> g, std::function<void(const Scalar&)> s = nullptr)
     : _get(g), _set(s) {}

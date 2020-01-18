@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "python.h"
+#include "nanogui/layout.h"
 
 #if defined(__APPLE__) || defined(__linux__)
 #  include <coro.h>
@@ -229,6 +230,12 @@ PYBIND11_MODULE(nanogui, m) {
         .value("Middle", Alignment::Middle)
         .value("Maximum", Alignment::Maximum)
         .value("Fill", Alignment::Fill);
+    
+    py::enum_<TextAlignment>(m, "TextAlignment", D(TextAlignment))
+      .value("Auto", TextAlignment::Auto)
+      .value("Left", TextAlignment::Left)
+      .value("Center", TextAlignment::Center)
+      .value("Right", TextAlignment::Right);
 
     py::enum_<Orientation>(m, "Orientation", D(Orientation))
         .value("Horizontal", Orientation::Horizontal)

@@ -36,6 +36,7 @@ DECLSETTER(IsSpinnable,bool)
 DECLSETTER(IsEditable,bool)
 DECLSETTER(TextValue,std::string)
 DECLSETTER(TextBoxUnits,std::string)
+DECLSETTER(TextBoxUpdateCallback, std::function<void(TextBox*)>)
 
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
@@ -43,12 +44,6 @@ public:
     RTTI_DECLARE_INFO(TextBox)
 
     /// How to align the text in the text box.
-    enum class Alignment {
-        Left,
-        Center,
-        Right
-    };
-
     explicit TextBox(Widget   *parent, const std::string &value = "Untitled");
 
     using Widget::set;
@@ -68,8 +63,8 @@ public:
     const std::string &defaultValue() const { return mDefaultValue; }
     void setDefaultValue(const std::string &defaultValue) { mDefaultValue = defaultValue; }
 
-    Alignment alignment() const { return mAlignment; }
-    void setAlignment(Alignment align) { mAlignment = align; }
+    TextAlignment alignment() const { return mAlignment; }
+    void setAlignment(TextAlignment align) { mAlignment = align; }
 
     const std::string &units() const { return mUnits; }
     void setUnits(const std::string &units) { mUnits = units; }
@@ -99,6 +94,7 @@ public:
     void setCallback(const std::function<bool(const std::string&)> &callback) { mCallback = callback; }
     void setEditCallback(const std::function<void(const std::string&, bool)> &callback) { mEditCallback = callback; }
     void setComitCallback(const std::function<void(Widget*)> &callback) { mComitCallback = callback; }
+    void setUpdateCallback(const std::function<void(TextBox*)> &callback) { mUpdateCallback = callback; }
 
     virtual int getCornerRadius() const;
 
@@ -111,6 +107,7 @@ public:
 
     Vector2i preferredSize(NVGcontext *ctx) const override;
     void draw(NVGcontext* ctx) override;
+    void afterDraw(NVGcontext* ctx) override;
     void save(Serializer &s) const override;
     bool load(Serializer &s) override;
 protected:
@@ -130,19 +127,23 @@ protected:
     enum class SpinArea { None, Top, Bottom };
     SpinArea spinArea(const Vector2i & pos);
 
+    template<typename FF, typename First, typename... Args>
+    void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
+
 protected:
     bool mEditable;
     bool mSpinnable;
     bool mCommitted;
     std::string mValue;
     std::string mDefaultValue;
-    Alignment mAlignment;
+    TextAlignment mAlignment;
     std::string mUnits;
     std::string mFormat;
     int mUnitsImage;
     std::function<bool(const std::string&)> mCallback;
     std::function<void(const std::string&, bool)> mEditCallback;
     std::function<void(Widget*)> mComitCallback;
+    std::function<void(TextBox*)> mUpdateCallback;
     bool mValidFormat;
     std::string mValueTemp;
     std::string mPlaceholder;
@@ -159,6 +160,8 @@ public:
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)
     PROPSETTER(TextBoxUnits,setUnits)
+    PROPSETTER(TextBoxUpdateCallback,setUpdateCallback)
+    PROPSETTER(FontSize,setFontSize)
 };
 
 /**

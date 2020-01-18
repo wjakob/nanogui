@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(SliderObservable, FloatObservable)
+
 /**
  * \class Slider slider.h nanogui/slider.h
  *
@@ -35,6 +37,9 @@ public:
 
     float value() const { return mValue; }
     void setValue(float value) { mValue = value; }
+
+    FloatObservable observable() { return mValue; }
+    void setObservable(FloatObservable value) { mValue = value; }
 
     const Color &highlightColor() const { return mHighlightColor; }
     void setHighlightColor(const Color &highlightColor) { mHighlightColor = highlightColor; }
@@ -73,6 +78,7 @@ protected:
 
 public:
   PROPSETTER(InitialValue, setValue)
+  PROPSETTER(SliderObservable, setObservable)
 };
 
 NAMESPACE_END(nanogui)

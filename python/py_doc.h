@@ -124,6 +124,17 @@ static const char *__doc_nanogui_Alignment_Middle = R"doc(Center align.)doc";
 
 static const char *__doc_nanogui_Alignment_Minimum = R"doc(Take only as much space as is required.)doc";
 
+static const char *__doc_nanogui_TextAlignment = R"doc(The different kinds of alignments a layout can perform.)doc";
+
+static const char *__doc_nanogui_TextAlignment_Auto = R"doc(Fill according to preferred sizes.)doc";
+
+static const char *__doc_nanogui_TextAlignment_Left = R"doc(Take as much space as is allowed.)doc";
+
+static const char *__doc_nanogui_TextAlignment_Center = R"doc(Center align.)doc";
+
+static const char *__doc_nanogui_TextAlignment_Right = R"doc(Take only as much space as is required.)doc";
+
+
 static const char *__doc_nanogui_Arcball =
 R"doc(Arcball helper class to interactively rotate objects on-screen.
 

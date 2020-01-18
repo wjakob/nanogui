@@ -32,7 +32,7 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mCommitted(true),
       mValue(value),
       mDefaultValue(""),
-      mAlignment(Alignment::Center),
+      mAlignment(TextAlignment::Center),
       mUnits(""),
       mFormat(""),
       mUnitsImage(-1),
@@ -90,6 +90,13 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const
 }
 
 int TextBox::getCornerRadius() const { return mTheme->mTextBoxCornerRadius; }
+
+void TextBox::afterDraw(NVGcontext* ctx)
+{
+  Widget::afterDraw(ctx);
+  if (mUpdateCallback)
+    mUpdateCallback(this);
+}
 
 void TextBox::draw(NVGcontext* ctx) 
 {
@@ -199,15 +206,15 @@ void TextBox::draw(NVGcontext* ctx)
     }
 
     switch (mAlignment) {
-        case Alignment::Left:
+        case TextAlignment::Left:
             nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
             drawPos.x() += xSpacing + spinArrowsWidth;
             break;
-        case Alignment::Right:
+        case TextAlignment::Right:
             nvgTextAlign(ctx, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
             drawPos.x() += mSize.x() - unitWidth - xSpacing;
             break;
-        case Alignment::Center:
+        case TextAlignment::Center:
             nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
             drawPos.x() += mSize.x() * 0.5f;
             break;

@@ -365,7 +365,7 @@ public:
 template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
 public:
     /// Creates a new FormWidget with underlying type IntBox.
-    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 };
 
 /**
@@ -377,7 +377,7 @@ public:
 template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
 public:
     /// Creates a new FormWidget with underlying type FloatBox.
-    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
+    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 };
 
 /**
@@ -386,7 +386,7 @@ public:
 template <> class FormWidget<std::string, std::true_type> : public TextBox {
 public:
     /// Creates a new FormWidget with underlying type TextBox.
-    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextBox::Alignment::Left); }
+    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextAlignment::Left); }
 
     /// Pass-through function for \ref nanogui::TextBox::setCallback.
     void setCallback(const std::function<void(const std::string&)> &cb) {

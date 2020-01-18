@@ -29,6 +29,14 @@ enum class Alignment : uint8_t {
     Fill         ///< Fill according to preferred sizes.
 };
 
+/// !
+enum class TextAlignment { 
+  Auto = 0, ///<
+  Left,     ///<
+  Center,   ///<
+  Right     ///<
+};
+
 /// The direction of data flow for a layout.
 enum class Orientation {
     Horizontal = 0, ///< Layout expands on horizontal axis.

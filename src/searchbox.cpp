@@ -16,7 +16,7 @@ SearchBox::SearchBox(Widget* parent)
 {
   setPlaceholder("Search");
   setEditable(true);
-  mAlignment = Alignment::Left;
+  mAlignment = TextAlignment::Left;
 
   auto& btn = button(Caption{ "" }, 
                      WidgetId{ "#cancel_btn"},

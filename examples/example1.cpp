@@ -330,15 +330,19 @@ void createBasicWidgets(Screen* parent)
   auto& panel = w.widget();
   panel.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
 
-  auto& slider = panel.slider(InitialValue{ 0.5f }, FixedWidth{ 80 });
-
-  auto& textBox = panel.textbox(FixedSize{ 60, 25 }, TextBoxUnits{ "%" }, TextValue{"50"});
-
-  slider.setCallback([&](float value) { textBox.setValue(std::to_string((int)(value * 100))); });
-  slider.setFinalCallback([&](float value) { cout << "Final slider value: " << (int)(value * 100) << endl; });
-  textBox.setFixedSize(Vector2i(60, 25));
-  textBox.setFontSize(20);
-  textBox.setAlignment(TextBox::Alignment::Right);
+  FloatObservable sliderValue(0.5f);
+  panel.textbox(FixedSize{ 60, 25 }, FontSize{ 20 }, 
+                TextAlignment::Right,
+                TextBoxUnits{ "%" }, TextValue{ "50" },
+                TextBoxUpdateCallback{ [sliderValue] (TextBox* tb) { 
+                  static int lastValue = 0;
+                  if (lastValue != (int)(sliderValue * 100))
+                  {
+                    lastValue = sliderValue * 100;
+                    tb->setValue(std::to_string(lastValue));
+                  }
+                }});
+  panel.slider(SliderObservable{ sliderValue }, FixedWidth{ 80 });
 
   w.label(Caption{ "Spinners" }, CaptionFont{ "sans-bold" });
   auto& spinners = w.widget().boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
@@ -372,7 +376,7 @@ void createBasicWidgets(Screen* parent)
   });
   dialTextBox.setFixedSize({ 60, 25 });
   dialTextBox.setFontSize(20);
-  dialTextBox.setAlignment(TextBox::Alignment::Right);
+  dialTextBox.setAlignment(TextAlignment::Right);
 }
 
 void createTextAreaWindow(Screen* screen)
