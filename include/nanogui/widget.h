@@ -44,6 +44,7 @@ class TextArea;
 class Panel;
 template<class X> class IntBox;
 template<class X> class FloatBox;
+template<class X> class NumberPicker;
 
 enum class Cursor;// do not put a docstring, this is already documented
 namespace Json { class value; }
@@ -531,6 +532,12 @@ public:
     template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
     template<typename... Args>TextArea& text(const Args&... args) { return wdg<TextArea>(args...); }
     template<typename... Args>Panel& panel(const Args&... args) { return wdg<Panel>(args...); }
+    template<typename... Args>Panel& hgrid2(float split, const Args&... args) {
+      auto& w = wdg<Panel>(args...); 
+      w.withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill});
+      return w;
+    }
+    template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children
