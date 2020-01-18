@@ -278,6 +278,7 @@ public:
     bool windowMoveFromTitlebarOnly = true;
     bool windowMoveInParent = true;
     shared_bool windowDrawBorder;
+    shared_float windowPaddingLeft;
 
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;

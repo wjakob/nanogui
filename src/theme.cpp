@@ -70,6 +70,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mTooltipOpacity)
   CHECK(mTextBoxCornerRadius)
   CHECK(mWindowDragLine)
+  CHECK_S(windowPaddingLeft)
   printf("No get prop for name %s", name.c_str());
   return 0;
 }
@@ -96,6 +97,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mTooltipOpacity)
   CHECKSET(mTextBoxCornerRadius)
   CHECKSET(mWindowDragLine)
+  CHECKSET_S(windowPaddingLeft)
   printf("No set prop for name %s", name.c_str());
 }
 
@@ -302,6 +304,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowTitleFocused = Color(255, 190);
   theme.windowBorderColorFocused = Color(26, 240);
   theme.windowBorderColorUnfocused = Color(43, 240);
+  theme.windowPaddingLeft = std::make_shared<float>(0.f);
 
   theme.mWindowHeaderGradientTop = theme.mButtonGradientTopUnfocused;
   theme.mWindowHeaderGradientBot = theme.mButtonGradientBotUnfocused;

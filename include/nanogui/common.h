@@ -571,6 +571,7 @@ inline Vector2f operator+(const Vector2i& p, const Vector2f o) { return (p.cast<
 
 using shared_bool = std::shared_ptr<bool>;
 using shared_int = std::shared_ptr<int>;
+using shared_float = std::shared_ptr<float>;
 
 struct BoolObservable {
   shared_bool _b;
