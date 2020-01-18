@@ -264,6 +264,9 @@ struct NANOGUI_EXPORT ColumnsAligment {
   { for (auto& a: l) value.push_back(a); };
 };
 
+DECLSETTER(GridLayoutColAlignment, Alignment)
+DECLSETTERILIST(GridLayoutSplit,std::vector<float>)
+
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
     /**
@@ -301,9 +304,7 @@ public:
     Orientation orientation() const { return mOrientation; }
 
     /// Sets the Orientation of this GridLayout.
-    void setOrientation(Orientation orientation) {
-        mOrientation = orientation;
-    }
+    void setOrientation(Orientation orientation) { mOrientation = orientation; }
 
     /// The number of rows or columns (depending on the Orientation) of this GridLayout.
     int resolution() const { return mResolution; }
@@ -351,10 +352,12 @@ public:
 
     /* Implementation of the layout interface */
     /// See \ref Layout::preferredSize.
-    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
 
     /// See \ref Layout::performLayout.
-    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
+    void performLayout(NVGcontext *ctx, Widget *widget) const override;
+
+    void setRelWidth(std::vector<float> w) { mRelWidth = w; }
 
 protected:
     /// Compute the maximum row and column sizes
@@ -377,10 +380,14 @@ protected:
     /// The spacing used for each dimension.
     Vector2i mSpacing;
 
+    std::vector<float> mRelWidth;
+
     /// The margin around this GridLayout.
     int mMargin;
 public:
     PROPSETTER(ColumnsAligment,setColAlignment)
+    PROPSETTER(GridLayoutSplit,setRelWidth)
+    PROPSETTER(GridLayoutColAlignment,setColAlignment)
 };
 
 /**

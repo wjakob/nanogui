@@ -396,6 +396,9 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
     grid[axis1].clear(); grid[axis1].resize(dim[axis1], 0);
     grid[axis2].clear(); grid[axis2].resize(dim[axis2], 0);
 
+    Vector2i wsize = const_cast<Widget*>(widget)->getWidgetsArea().size();
+    wsize[axis1] -= mMargin * 2;
+
     size_t child = 0;
     for (int i2 = 0; i2 < dim[axis2]; i2++) 
     {
@@ -413,6 +416,8 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
             Vector2i targetSize = fs.fillZero(ps);
 
             grid[axis1][i1] = std::max(grid[axis1][i1], targetSize[axis1]);
+            if (i1 < mRelWidth.size())
+              grid[axis1][i1] = wsize[axis1] * mRelWidth[i1];
             grid[axis2][i2] = std::max(grid[axis2][i2], targetSize[axis2]);
         }
     }
