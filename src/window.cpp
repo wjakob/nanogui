@@ -173,12 +173,16 @@ void Window::draw(NVGcontext *ctx)
 
   if (haveDrawFlag(DrawBorder) || *theme()->windowDrawBorder)
   {
+    nvgSave(ctx);
+    nvgResetScissor(ctx);
     nvgBeginPath(ctx);
     nvgRoundedRect(ctx, mPos, { width(), realH }, cr);
 
+    nvgStrokeWidth(ctx, *theme()->windowBorderSize);
     nvgStrokeColor(ctx, mMouseFocus ? mTheme->windowBorderColorFocused  
                                     : mTheme->windowBorderColorUnfocused);
     nvgStroke(ctx);
+    nvgRestore(ctx);
   }
 
   /* Draw a drop shadow */

@@ -264,6 +264,7 @@ public:
     Color mWindowHeaderSepBot;
     Color windowBorderColorFocused;
     Color windowBorderColorUnfocused;
+    shared_float windowBorderSize;
 
     /// Rounding radius for Window widget corners (default: ``2``).
     int mWindowCornerRadius;

@@ -306,7 +306,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.windowBorderColorUnfocused = Color(43, 240);
   theme.windowPaddingLeft = std::make_shared<float>(3.f);
   theme.windowPaddingTop = std::make_shared<float>(0.f);
-  theme.framePaddingLeft = std::make_shared<float>(0.f);
+  theme.windowBorderSize = std::make_shared<float>(1.f);
 
   theme.mWindowHeaderGradientTop = theme.mButtonGradientTopUnfocused;
   theme.mWindowHeaderGradientBot = theme.mButtonGradientBotUnfocused;
@@ -319,6 +319,8 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mCheckboxUncheckedColor = Color(0, 32);
   theme.mCheckboxCheckedColor = Color(0, 32);
   theme.mCheckboxPushedColor = Color(0, 100);
+
+  theme.framePaddingLeft = std::make_shared<float>(0.f);
 
   theme.mSwitchboxBackgroundColor = Color(0, 255);
   theme.mSwitchboxCheckedColor = Color(0, 0);

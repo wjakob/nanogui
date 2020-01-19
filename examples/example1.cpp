@@ -825,6 +825,8 @@ void createAllWidgetsDemo(Screen* screen)
   auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); } };
   stcfg.label("Window padding left");
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
+  stcfg.label("Window border size");
+  stcfg.slider(SliderObservable{ screen->theme()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform);
   stcfg.label("Window padding top");
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Frame padding left");
