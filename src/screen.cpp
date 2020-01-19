@@ -30,7 +30,10 @@ void Screen::addChild(int index, Widget * widget)
 
 void Screen::needPerformLayout(Widget* w)
 {
-  widgetsNeedUpdate.emplace_back(w);
+  if (w == this)
+    mWidgetsNeedUpdateGlobal = true;
+  else
+    mWidgetsNeedUpdate.emplace_back(w);
 }
 
 void Screen::_setupStartParams()
@@ -54,14 +57,20 @@ void Screen::_setupStartParams()
 void Screen::drawWidgets() {
     if (!mVisible)
         return;
+    if (mWidgetsNeedUpdateGlobal)
+    {
+      mWidgetsNeedUpdate.clear();
+      mWidgetsNeedUpdateGlobal = false;
 
-    if (!widgetsNeedUpdate.empty())
+      performLayout();
+    }
+    else if (!mWidgetsNeedUpdate.empty())
     {
       std::set<Widget*> ws;
-      for (auto w : widgetsNeedUpdate)
+      for (auto w : mWidgetsNeedUpdate)
         ws.insert(w);
 
-      for (auto c: widgetsNeedUpdate)
+      for (auto c: mWidgetsNeedUpdate)
       {
         for (auto it = ws.begin(); it != ws.end(); )
         {
@@ -71,14 +80,14 @@ void Screen::drawWidgets() {
         }
       }
 
-      widgetsNeedUpdate.clear();
+      mWidgetsNeedUpdate.clear();
       for (auto& c : ws)
         c->performLayout(mNVGContext);
     }
 
     _drawWidgetsBefore();
 
-    nvgBeginFrame(mNVGContext, mSize[0], mSize[1], mPixelRatio);
+    nvgBeginFrame(mNVGContext, mSize.x(), mSize.y(), mPixelRatio);
 
     draw(mNVGContext);
     afterDraw(mNVGContext);
@@ -92,8 +101,7 @@ void Screen::drawWidgets() {
             int tooltipWidth = 150;
 
             float bounds[4];
-            nvgFontFace(mNVGContext, "sans");
-            nvgFontSize(mNVGContext, 15.0f);
+            nvgFontFaceSize(mNVGContext, "sans", 15.0f);
             nvgTextAlign(mNVGContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
             nvgTextLineHeight(mNVGContext, 1.1f);
             Vector2i pos = widget->absolutePosition() +

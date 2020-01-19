@@ -220,7 +220,8 @@ protected:
     std::string mCaption;
     bool mShutdownOnDestruct;
     bool mFullscreen;
-    std::vector<Widget*> widgetsNeedUpdate;
+    bool mWidgetsNeedUpdateGlobal = false;
+    std::vector<Widget*> mWidgetsNeedUpdate;
     std::function<void(Vector2i)> mResizeCallback;
 };
 
