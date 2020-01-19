@@ -19,6 +19,7 @@ NAMESPACE_BEGIN(nanogui)
 using FloatPair = std::pair<float, float>;
 DECLSETTER(SliderObservable, FloatObservable)
 DECLSETTERILIST(SliderRange, FloatPair)
+DECLSETTER(SliderCallback, std::function<void(float)>)
 
 /**
  * \class Slider slider.h nanogui/slider.h
@@ -82,6 +83,7 @@ public:
   PROPSETTER(InitialValue, setValue)
   PROPSETTER(SliderObservable, setObservable)
   PROPSETTER(SliderRange, setRange)
+  PROPSETTER(SliderCallback, setCallback)
 };
 
 NAMESPACE_END(nanogui)
