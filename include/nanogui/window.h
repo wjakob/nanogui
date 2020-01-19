@@ -129,6 +129,7 @@ public:
 
 protected:
     virtual void requestPerformLayout();
+    virtual bool isClickInsideCollapseArea(const Vector2i& clkPnt);
 
 protected:
     std::string mTitle;
@@ -195,6 +196,7 @@ public:
 
 protected:
   void requestPerformLayout() override;
+  bool isClickInsideCollapseArea(const Vector2i& clkPnt) override;
   bool inFocusChain() const;
 
 public:

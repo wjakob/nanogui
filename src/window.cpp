@@ -375,6 +375,11 @@ void Window::requestPerformLayout()
   screen()->needPerformLayout(mParent);
 }
 
+bool Window::isClickInsideCollapseArea(const Vector2i& clkPnt)
+{
+  return clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>());
+}
+
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
 {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
@@ -383,7 +388,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (isMouseButtonLeft(button) && mEnabled) 
     {
       Vector2i clkPnt = p - mPos - Vector2i(5,5);
-      if (down && clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>()))
+      if (down && isClickInsideCollapseArea(clkPnt))
       {
         mCollapsed = !mCollapsed;
         requestPerformLayout();
@@ -513,6 +518,11 @@ bool Panel::inFocusChain() const
 {
   return std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) 
                 != mFocusChain.end();
+}
+
+bool Panel::isClickInsideCollapseArea(const Vector2i& clkPnt)
+{
+  return clkPnt.positive() && clkPnt.lessOrEq(width(), getHeaderHeight());
 }
 
 void Panel::draw(NVGcontext *ctx)
