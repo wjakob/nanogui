@@ -193,7 +193,7 @@ public:
     Vector2i preferredSize(NVGcontext *ctx) const override;
 
     void setHighlightHeader(bool v) { setDrawFlag(DrawHeaderUnselect, v); }
-
+    Vector4i getWidgetsArea() override;
 protected:
   void requestPerformLayout() override;
   bool isClickInsideCollapseArea(const Vector2i& clkPnt) override;

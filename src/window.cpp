@@ -484,8 +484,8 @@ Vector4i Window::getWidgetsArea()
   else area.y() = getHeaderHeight();
 
   area.x() += *theme()->windowPaddingLeft;
+  area.y() += *theme()->windowPaddingTop;
   area.z() -= *theme()->windowPaddingLeft;
-
   return area;
 }
 
@@ -595,6 +595,15 @@ void Panel::draw(NVGcontext *ctx)
 
   if (!isCollapsed())
     Widget::draw(ctx);
+}
+
+Vector4i Panel::getWidgetsArea()
+{
+  Vector4i area = Window::getWidgetsArea();
+  area.y() = getHeaderHeight();
+  area.w() = height();
+
+  return area;
 }
 
 void Panel::performLayout(NVGcontext *ctx) 

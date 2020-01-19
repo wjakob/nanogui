@@ -327,12 +327,8 @@ void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const
 { 
     Vector4i area = widget->getWidgetsArea();
 
-    int height = mMargin, availableWidth = area.width() - 2*mMargin;
-
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        height += window->getHeaderHeight() - mMargin/2;
-
+    int availableWidth = area.width() - 2*mMargin;
+    int height = area.y();
 
     bool first = true, indent = false;
     for (auto c : widget->children()) {

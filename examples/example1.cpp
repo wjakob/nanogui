@@ -822,9 +822,12 @@ void createAllWidgetsDemo(Screen* screen)
       if (item == "Default") screen->setTheme<DefaultTheme>();
       else if (item == "White") screen->setTheme<WhiteTheme>();
     }});
-  stcfg.label("Window padding");
-  stcfg.slider(SliderObservable{ screen->theme()->windowPaddingLeft }, SliderRange{ 0.f, 20.f },
-               SliderCallback{ [screen] (float) { screen->needPerformLayout(screen); }});
+  auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); } };
+  stcfg.label("Window padding left");
+  stcfg.slider(SliderObservable{ screen->theme()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
+  stcfg.label("Window padding top");
+  stcfg.slider(SliderObservable{ screen->theme()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
+
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

@@ -279,6 +279,7 @@ public:
     bool windowMoveInParent = true;
     shared_bool windowDrawBorder;
     shared_float windowPaddingLeft;
+    shared_float windowPaddingTop;
 
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;
