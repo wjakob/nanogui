@@ -227,16 +227,19 @@ public:
   template<typename Scalar> Vector2& operator/=(Scalar v) { x() /= v; y() /= v; return *this; }
 
   //! sort in order X, Y. Equality with rounding tolerance.
-  bool operator<=(const Vector2& o) const
+  inline bool operator<=(const Vector2& o) const
   { return (math::lessOrEqual(x(), o.x()) && math::lessOrEqual(y(), o.y())); }
 
   bool positive() const { return x() >= 0 && y() >= 0; }
 
-  bool lessOrEq(const Vector2& o) const
+  inline bool lessOrEq(const Vector2& o) const
   { return (math::lessOrEqual(x(), o.x()) && math::lessOrEqual(y(), o.y())); }
 
+  inline bool lessOrEq(T _x, T _y) const 
+  { return (math::lessOrEqual(x(), _x) && math::lessOrEqual(y(), _y)); }
+
   //! sort in order X, Y. Equality with rounding tolerance.
-  bool operator>=(const Vector2&o) const
+  inline bool operator>=(const Vector2&o) const
   { return (math::greatOrEqual(x(), o.x()) && math::greatOrEqual(y(), o.y())); }
 
   //! sort in order X, Y. Difference must be above rounding tolerance.
