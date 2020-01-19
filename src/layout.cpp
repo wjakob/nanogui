@@ -65,26 +65,25 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
     return size;
 }
 
-void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    Vector2i fs_w = widget->fixedSize();
-    Vector2i containerSize(
-        fs_w.x() ? fs_w.x() : widget->width(),
-        fs_w.y() ? fs_w.y() : widget->height()
-    );
+void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const 
+{
+    Vector4i warea = widget->getWidgetsArea();
+    Vector2i containerSize = warea.size();
 
     int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
     int position = mMargin;
-    int yOffset = 0;
+    int yOffset = 0, xOffset = 0;
 
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty()) 
+    if (mOrientation == Orientation::Vertical) 
     {
-        if (mOrientation == Orientation::Vertical) {
-            position += window->getHeaderHeight() - mMargin/2;
-        } else {
-            yOffset = window->getHeaderHeight();
-            containerSize.y() -= yOffset;
-        }
+        position += warea.y() - mMargin/2;
+        xOffset = warea.x();
+    } 
+    else 
+    {
+        yOffset = warea.y();
+        containerSize.y() -= yOffset;
+        position = warea.x() + mMargin;
     }
 
     bool first = true;
@@ -107,7 +106,7 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
         Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
         Vector2i targetSize = fs.fillZero(ps);
-        Vector2i pos(0, yOffset);
+        Vector2i pos(xOffset, yOffset);
 
         pos[axis1] = position;
 
