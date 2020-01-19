@@ -336,8 +336,7 @@ void createBasicWidgets(Screen* parent)
                 TextBoxUnits{ "%" }, TextValue{ "50" },
                 TextBoxUpdateCallback{ [sliderValue] (TextBox* tb) { 
                   static int lastValue = 0;
-                  if (lastValue != (int)(sliderValue * 100))
-                  {
+                  if (lastValue != (int)(sliderValue * 100)) {
                     lastValue = sliderValue * 100;
                     tb->setValue(std::to_string(lastValue));
                   }
@@ -819,13 +818,16 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, CheckboxRef{ screen->theme()->debugHighlightMouseover });
 
   auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
-  auto& stcfg = iocfg.hgrid2(0.7f, Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  auto& stcfg = iocfg.hgrid2(0.3f, Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  stcfg.label("Theme");
   stcfg.wdg<DropdownBox>(DropdownBoxItems{ "Default", "White" },
     DropdownBoxStrCallback{ [screen](std::string item) {
       if (item == "Default") screen->setTheme<DefaultTheme>();
       else if (item == "White") screen->setTheme<WhiteTheme>();
     }});
-  stcfg.label("Theme");
+  stcfg.label("Window padding");
+  stcfg.slider(SliderObservable{ screen->theme()->windowPaddingLeft }, SliderRange{ 0.f, 20.f },
+               SliderCallback{ [screen] (float) { screen->needPerformLayout(screen); }});
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)
