@@ -184,18 +184,14 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
   int position = mMargin;
   int yOffset = 0;
 
-  Window *window = Window::cast(widget);
-  if (window && !window->title().empty()) 
+  if (mOrientation == Orientation::Vertical || mOrientation == Orientation::ReverseVertical)
   {
-    if (mOrientation == Orientation::Vertical || mOrientation == Orientation::ReverseVertical)
-    {
-      position += window->getWidgetsArea().y() - mMargin / 2;
-      yOffset = position;
-    }
-    else
-    {
-      yOffset = window->getWidgetsArea().y();
-    }
+    position += warea.y() - mMargin / 2;
+    yOffset = position;
+  }
+  else
+  {
+    yOffset = warea.y();
   }
 
   std::vector<Widget*> pChildren;
@@ -277,7 +273,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       if (fs.y() == 0) fs.y() = rs.y() * baseContainerSize.y();
 
       Vector2i targetSize(fs.x() ? fs.x() : 0, fs.y() ? fs.y() : 0);
-      Vector2i pos(mMargin, position);
+      Vector2i pos( warea.x() + mMargin, position);
 
       if (targetSize.y() > 0) wSize.y() = targetSize.y();
 
