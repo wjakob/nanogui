@@ -274,6 +274,8 @@ struct NANOGUI_EXPORT ColumnsAligment {
 
 DECLSETTER(GridLayoutColAlignment, Alignment)
 DECLSETTERILIST(GridLayoutSplit,std::vector<float>)
+DECLSETTER(LayoutMargin, int)
+DECLSETTER(LayoutHorSpacing, int)
 
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
@@ -326,8 +328,10 @@ public:
     /// Sets the spacing for a specific axis.
     void setSpacing(int axis, int spacing) { mSpacing[axis] = spacing; }
 
+    void setHorSpacing(int spacing) { mSpacing.x() = spacing; }
+
     /// Sets the spacing for all axes.
-    void setSpacing(int spacing) { mSpacing[0] = mSpacing[1] = spacing; }
+    void setSpacing(int spacing) { mSpacing.x() = mSpacing.y() = spacing; }
 
     /// The margin around this GridLayout.
     int margin() const { return mMargin; }
@@ -396,6 +400,8 @@ public:
     PROPSETTER(ColumnsAligment,setColAlignment)
     PROPSETTER(GridLayoutSplit,setRelWidth)
     PROPSETTER(GridLayoutColAlignment,setColAlignment)
+    PROPSETTER(LayoutMargin,setMargin)
+    PROPSETTER(LayoutHorSpacing,setHorSpacing)
 };
 
 /**

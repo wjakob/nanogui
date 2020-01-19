@@ -58,6 +58,7 @@ DECLSETTER(FixedHeight, int)
 DECLSETTER(FixedWidth, int)
 DECLSETTER(WidgetLayout, Layout*)
 DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
+DECLSETTERARGSNEW(WidgetGridLayout, GridLayout)
 DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
 DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
@@ -493,6 +494,7 @@ public:
     PROPSETTER(FixedSize,setFixedSize)
     PROPSETTER(WidgetLayout,setLayout)
     PROPSETTER(WidgetStretchLayout,setLayout)
+    PROPSETTER(WidgetGridLayout,setLayout)
     PROPSETTER(WidgetBoxLayout,setLayout)
 
     template<typename FF, typename none = void> void set() {}

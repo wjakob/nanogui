@@ -513,12 +513,10 @@ void createMiscWidgets(Screen* screen)
 void createGridSmallObjects(Screen* screen)
 {
   auto& w = screen->window(Caption{ "Grid of small widgets" },
-                           Position{ 425, 300 });
-  auto layoutw = new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 15, 5);
-  layoutw->setColAlignment({ Alignment::Maximum, Alignment::Fill });
-  layoutw->setSpacing(0, 10);
-  w.setLayout(layoutw);
-
+                           Position{ 425, 300 },
+                           WidgetGridLayout{ LayoutMargin { 15 }, 
+                                             LayoutHorSpacing { 5 },
+                                             ColumnsAligment { Alignment::Maximum, Alignment::Fill }  });
 
   /* FP widget */
   w.label("Floating point :", "sans-bold");
