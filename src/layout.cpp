@@ -303,7 +303,7 @@ Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
 
     const Window *window = Window::cast(widget);
     if (window && !window->title().empty())
-        height += widget->theme()->mWindowHeaderHeight - mMargin/2;
+        height += window->getHeaderHeight() - mMargin/2;
 
     bool first = true, indent = false;
     for (auto c : widget->children()) {
@@ -328,13 +328,16 @@ Vector2i GroupLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
     return Vector2i(width, height);
 }
 
-void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
-    int height = mMargin, availableWidth =
-        (widget->fixedWidth() ? widget->fixedWidth() : widget->width()) - 2*mMargin;
+void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const 
+{ 
+    Vector4i area = widget->getWidgetsArea();
+
+    int height = mMargin, availableWidth = area.width() - 2*mMargin;
 
     const Window *window = Window::cast(widget);
     if (window && !window->title().empty())
-        height += widget->theme()->mWindowHeaderHeight - mMargin/2;
+        height += window->getHeaderHeight() - mMargin/2;
+
 
     bool first = true, indent = false;
     for (auto c : widget->children()) {
@@ -352,7 +355,7 @@ void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
 
         Vector2i targetSize = fs.fillZero(ps);
 
-        c->setPosition(Vector2i(mMargin + (indentCur ? mGroupIndent : 0), height));
+        c->setPosition(Vector2i(area.x() + mMargin + (indentCur ? mGroupIndent : 0), height));
         c->setSize(targetSize);
         c->performLayout(ctx);
 
