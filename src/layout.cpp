@@ -343,7 +343,6 @@ void GroupLayout::performLayout(NVGcontext *ctx, Widget *widget) const
         Vector2i ps = Vector2i(availableWidth - (indentCur ? mGroupIndent : 0),
                                c->preferredSize(ctx).y());
         Vector2i fs = c->fixedSize();
-
         Vector2i targetSize = fs.fillZero(ps);
 
         c->setPosition(Vector2i(area.x() + mMargin + (indentCur ? mGroupIndent : 0), height));

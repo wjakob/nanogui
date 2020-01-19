@@ -827,7 +827,8 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Window padding top");
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
-
+  stcfg.label("Frame padding left");
+  stcfg.slider(SliderObservable{ screen->theme()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

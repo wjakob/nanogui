@@ -306,6 +306,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.windowBorderColorUnfocused = Color(43, 240);
   theme.windowPaddingLeft = std::make_shared<float>(3.f);
   theme.windowPaddingTop = std::make_shared<float>(0.f);
+  theme.framePaddingLeft = std::make_shared<float>(0.f);
 
   theme.mWindowHeaderGradientTop = theme.mButtonGradientTopUnfocused;
   theme.mWindowHeaderGradientBot = theme.mButtonGradientBotUnfocused;

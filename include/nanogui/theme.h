@@ -280,6 +280,7 @@ public:
     shared_bool windowDrawBorder;
     shared_float windowPaddingLeft;
     shared_float windowPaddingTop;
+    shared_float framePaddingLeft;
 
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;

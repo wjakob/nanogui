@@ -54,7 +54,7 @@ Vector2i Button::preferredSize(NVGcontext *ctx) const {
             iw = w * ih / h;
         }
     }
-    return Vector2i((int)(tw + iw) + 20, fontSize + 10);
+    return Vector2i((int)(tw + iw) + 20 + (*theme()->framePaddingLeft * 2), fontSize + 10);
 }
 
 bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
