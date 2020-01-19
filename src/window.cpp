@@ -254,16 +254,13 @@ void Window::draw(NVGcontext *ctx)
   {
     auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
 
-    mCollapseIconSize.y() = fontSize();
-    mCollapseIconSize.y() *= mCollapseIconScale;
-    nvgFontSize(ctx, mCollapseIconSize.y());
-    nvgFontFace(ctx, "icons");
+    mCollapseIconSize.y() = fontSize() * mCollapseIconScale;
+    nvgFontFaceSize(ctx, "icons", mCollapseIconSize.y());
     mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
 
-    nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
-                                : mTheme->mWindowTitleUnfocused);
+    nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused : mTheme->mWindowTitleUnfocused);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + (hh - mCollapseIconSize.y())/2 );
+    mCollapseIconPos = mPos + Vector2f(5, (hh - mCollapseIconSize.y())/2);
     nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
   }
 
@@ -478,14 +475,11 @@ Vector4i Window::getWidgetsArea()
 {
   Vector4i area = Widget::getWidgetsArea();
   Widget* w = findWidget([](Widget* w) -> bool { return WindowMenu::cast(w) != nullptr; }, false);
-  if (auto wm = WindowMenu::cast(w))
-  {
-    area.y() = wm->rect().w();
-  }
-  else
-  {
-    area.y() = getHeaderHeight();
-  }
+  if (auto wm = WindowMenu::cast(w)) area.y() = wm->rect().w();
+  else area.y() = getHeaderHeight();
+
+  area.x() += *theme()->windowPaddingLeft;
+  area.z() -= *theme()->windowPaddingLeft;
 
   return area;
 }
@@ -503,9 +497,7 @@ void Panel::requestPerformLayout()
 {
   Widget *wp = mParent;
   while (wp) {
-    auto parentw = Window::cast(wp);
-    auto panel = Panel::cast(wp);
-    if (parentw && !panel)
+    if (Window::cast(wp) && !Panel::cast(wp))
       break;
     wp = wp->parent();
   }
@@ -565,11 +557,11 @@ void Panel::draw(NVGcontext *ctx)
 
       nvgFontBlur(ctx, 2);
       nvgFillColor(ctx, mTheme->mPanelDropShadow);
-      nvgText(ctx, mPos.x() + 24, mPos.y() + hh / 2, mTitle.c_str(), nullptr);
+      nvgText(ctx, mPos + Vector2i(24, hh / 2), mTitle);
 
       nvgFontBlur(ctx, 0);
       nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
-      nvgText(ctx, mPos.x() + 24, mPos.y() + hh / 2 - 1, mTitle.c_str(), nullptr);
+      nvgText(ctx, mPos + Vector2i(24, hh / 2 - 1), mTitle);
     }
   }
 
