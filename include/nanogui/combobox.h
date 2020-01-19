@@ -103,6 +103,7 @@ protected:
 public:
     PROPSETTER(ComboBoxItems, setItems)
     PROPSETTER(ComboBoxStrCallback, setCallback)
+    PROPSETTER(FontSize, setFontSize)
 };
 
 NAMESPACE_END(nanogui)

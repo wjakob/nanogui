@@ -545,13 +545,12 @@ void createGridSmallObjects(Screen* screen)
 
   /* Checkbox widget */
   w.label("Checkbox :", "sans-bold");
-  auto& cb = w.checkbox(Caption{ "Check me" }, CheckboxState{ true });
-  cb.setFontSize(16);
+  w.checkbox(Caption{ "Check me" }, CheckboxState{ true }, FontSize{ 16 });
 
   w.label("Combo box :", "sans-bold");
-  auto& cobo = w.combobox(ComboBoxItems{ "Item 1", "Item 2", "Item 3" });
-  cobo.setFontSize(16);
-  cobo.setFixedSize(Vector2i(100, 20));
+  w.combobox(ComboBoxItems{ "Item 1", "Item 2", "Item 3" },
+             FontSize{ 16 },
+             FixedSize{ 100, 20 });
 
   w.label("Color picker :", "sans-bold");
   auto& cp = w.wdg<ColorPicker>(Color{ 255, 120, 0, 255 });

@@ -154,6 +154,7 @@ public:
   PROPSETTER(CheckboxCallback, setCallback)
   PROPSETTER(CheckboxRef, setRefCallback)
   PROPSETTER(CheckboxObservable, setObservable)
+  PROPSETTER(FontSize,setFontSize)
 };
 
 NAMESPACE_END(nanogui)
