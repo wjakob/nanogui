@@ -32,7 +32,7 @@ NAMESPACE_BEGIN(nanogui)
 DECLSETTER(CheckboxState, bool)
 DECLSETTER(CheckboxCallback, std::function<void(bool)>)
 DECLSETTER(CheckboxRef, bool&)
-DECLSETTER(CheckboxObservable, BoolObservable)
+DECLSETTERARGS(CheckboxObservable, BoolObservable)
 
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:

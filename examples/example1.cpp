@@ -831,6 +831,10 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Frame padding left");
   stcfg.slider(SliderObservable{ screen->theme()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
+
+  auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
+  wopt.checkbox(Caption{ "No header" }, CheckboxObservable{ [&] {return dw.haveDrawFlag(Window::DrawHeader); }, 
+                                                            [&] (bool v) { dw.setDrawFlag(Window::DrawHeader, v); } });
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)
