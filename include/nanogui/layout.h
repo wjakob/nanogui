@@ -102,6 +102,9 @@ protected:
  */
 class NANOGUI_EXPORT BoxLayout : public Layout {
 public:
+    RTTI_CLASS_UID("LTBX")
+    RTTI_DECLARE_INFO(BoxLayout)
+
     /**
      * \brief Construct a box layout which packs widgets in the given \c Orientation
      *
@@ -168,6 +171,9 @@ protected:
 class NANOGUI_EXPORT StretchLayout : public BoxLayout
 {
 public:
+  RTTI_CLASS_UID("SHLT")
+  RTTI_DECLARE_INFO(StretchLayout)
+
   StretchLayout(Orientation orientation) : BoxLayout(orientation) {}
   StretchLayout(Orientation orientation, int margin, int spacing)
     : BoxLayout(orientation, Alignment::Middle, margin, spacing) {}
@@ -190,6 +196,9 @@ public:
  */
 class NANOGUI_EXPORT GroupLayout : public Layout {
 public:
+  RTTI_CLASS_UID("GRLT")
+  RTTI_DECLARE_INFO(GroupLayout)
+
     /**
      * Creates a GroupLayout.
      *
@@ -279,6 +288,9 @@ DECLSETTER(LayoutHorSpacing, int)
 
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
+  RTTI_CLASS_UID("GRLT")
+  RTTI_DECLARE_INFO(GridLayout)
+
     /**
      * Create a 2-column grid layout by default.
      *

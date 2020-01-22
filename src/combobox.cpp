@@ -39,8 +39,10 @@ void ComboBox::setSelectedIndex(int idx)
     if (mItemsShort.empty())
         return;
     const std::vector<Widget *> &children = popup()->children();
-    ((Button *) children[mSelectedIndex])->setPushed(false);
-    ((Button *) children[idx])->setPushed(true);
+    if (auto button = Button::cast(children[mSelectedIndex]))
+      button->setPushed(false);
+    if (auto button = Button::cast(children[idx]))
+      button->setPushed(true);
     mSelectedIndex = idx;
     setCaption(mItemsShort[idx]);
 }

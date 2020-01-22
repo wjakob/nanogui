@@ -21,6 +21,10 @@
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Layout, Object)
+RTTI_IMPLEMENT_INFO(GridLayout, Layout)
+RTTI_IMPLEMENT_INFO(BoxLayout, Layout)
+RTTI_IMPLEMENT_INFO(GroupLayout, Layout)
+RTTI_IMPLEMENT_INFO(StretchLayout, Layout)
 RTTI_IMPLEMENT_INFO(AdvancedGridLayout, Layout)
 
 BoxLayout::BoxLayout(Orientation orientation, Alignment alignment,

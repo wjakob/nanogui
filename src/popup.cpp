@@ -42,6 +42,13 @@ void Popup::refreshRelativePlacement() {
     mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
 }
 
+int Popup::getHeaderHeight() const 
+{
+  if (auto layt = GroupLayout::cast(layout()))
+    return layt->margin();
+  return 0;
+}
+
 void Popup::draw(NVGcontext* ctx) {
     refreshRelativePlacement();
 
