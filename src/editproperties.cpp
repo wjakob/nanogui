@@ -26,7 +26,7 @@ PropertiesEditor::PropertiesEditor( Widget* parent,const std::string& id )
   // create attributes
 
   _propholder = new VScrollPanel(this);
-  _propholder->setPosition(0, mTheme->mWindowHeaderHeight);
+  _propholder->setPosition(0, getHeaderHeight());
 }
 
 PropertiesEditor::~PropertiesEditor()

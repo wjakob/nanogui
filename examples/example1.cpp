@@ -833,8 +833,18 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.slider(SliderObservable{ screen->theme()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
-  wopt.checkbox(Caption{ "No header" }, CheckboxObservable{ [&] {return dw.haveDrawFlag(Window::DrawHeader); }, 
-                                                            [&] (bool v) { dw.setDrawFlag(Window::DrawHeader, v); } });
+  auto dwf = [screen, w = &dw](int f, int v = -1) { 
+    if (v < 0) return w->haveDrawFlag(f);
+    w->setDrawFlag(f, v); 
+    screen->needPerformLayout(screen);
+  };
+  wopt.checkbox(Caption{ "No header" }, CheckboxObservable{ [=] {return !dwf(Window::DrawHeader); },
+                                                            [=] (bool v) { dwf(Window::DrawHeader, !v); } });
+  wopt.checkbox(Caption{ "No title" },  CheckboxObservable{ [=] {return !dwf(Window::DrawTitle); },
+                                                            [=](bool v) { dwf(Window::DrawTitle, !v); } });
+  wopt.checkbox(Caption{ "No collapse icon" }, CheckboxObservable{ [=] {return !dwf(Window::DrawCollapseIcon); },
+                                                           [=](bool v) { dwf(Window::DrawCollapseIcon, !v); } });
+
 }
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)

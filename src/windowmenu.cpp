@@ -49,13 +49,11 @@ Vector2i WindowMenu::preferredSize(NVGcontext* ctx) const
 
 void WindowMenu::performLayout(NVGcontext* ctx)
 {
-  Vector2i ps = preferredSize(ctx), fs = fixedSize();
-  Vector2i targetSize(fs.x() ? fs.x() : ps.x(),
-                      fs.y() ? fs.y() : ps.y());
+  Vector2i ps = preferredSize(ctx);
+  Vector2i targetSize = fixedSize().fillZero(ps);
   setSize(targetSize);
-  auto myParentWindow = Window::cast(parent());
-  if (myParentWindow)
-    setPosition(0, mTheme->mWindowHeaderHeight + mTheme->mWindowMenuHeaderOffset);
+  if (auto myParentWindow = Window::cast(parent()))
+    setPosition(0, myParentWindow->getHeaderHeight() + mTheme->mWindowMenuHeaderOffset);
 
   ContextMenu::performLayout(ctx);
 }

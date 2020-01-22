@@ -204,38 +204,35 @@ void Window::draw(NVGcontext *ctx)
     nvgRestore(ctx);
   }
 
-  if (!mTitle.empty()) 
+  if (haveDrawFlag(DrawHeader))
   {
-    if (haveDrawFlag(DrawHeader))
-    {
-      NVGpaint headerPaint = nvgLinearGradient(
-        ctx, mPos.x(), mPos.y(), mPos.x(),
-        mPos.y() + hh,
-        mTheme->mWindowHeaderGradientTop,
-        mTheme->mWindowHeaderGradientBot);
+    NVGpaint headerPaint = nvgLinearGradient(
+      ctx, mPos.x(), mPos.y(), mPos.x(),
+      mPos.y() + hh,
+      mTheme->mWindowHeaderGradientTop,
+      mTheme->mWindowHeaderGradientBot);
 
-      nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
 
-      nvgFillPaint(ctx, headerPaint);
-      nvgFill(ctx);
+    nvgFillPaint(ctx, headerPaint);
+    nvgFill(ctx);
 
-      nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
-      nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
+    nvgBeginPath(ctx);
+    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+    nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
 
-      nvgSave(ctx);
-      nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
-      nvgStroke(ctx);
-      nvgRestore(ctx);
+    nvgSave(ctx);
+    nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
+    nvgStroke(ctx);
+    nvgRestore(ctx);
 
-      nvgBeginPath(ctx);
-      nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
-      nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
-      nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
-      nvgStroke(ctx);
-    }
-
+    nvgBeginPath(ctx);
+    nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
+    nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
+    nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
+    nvgStroke(ctx);
+ 
     if (haveDrawFlag(DrawTitle))
     {
       nvgFontSize(ctx, mFontSize ? mFontSize : theme()->mWindowFontSize);
@@ -252,20 +249,20 @@ void Window::draw(NVGcontext *ctx)
       nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2 - 1,
               mTitle.c_str(), nullptr);
     }
-  }
 
-  if (mayCollapse())
-  {
-    auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
+    if (mayCollapse() && haveDrawFlag(DrawCollapseIcon))
+    {
+      auto icon = utf8(mCollapsed ? mTheme->mWindowCollapsedIcon : mTheme->mWindowExpandedIcon);
 
-    mCollapseIconSize.y() = fontSize() * mCollapseIconScale;
-    nvgFontFaceSize(ctx, "icons", mCollapseIconSize.y());
-    mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
+      mCollapseIconSize.y() = fontSize() * mCollapseIconScale;
+      nvgFontFaceSize(ctx, "icons", mCollapseIconSize.y());
+      mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
 
-    nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused : mTheme->mWindowTitleUnfocused);
-    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    mCollapseIconPos = mPos + Vector2f(5, (hh - mCollapseIconSize.y())/2);
-    nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+      nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused : mTheme->mWindowTitleUnfocused);
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+      mCollapseIconPos = mPos + Vector2f(5, (hh - mCollapseIconSize.y()) / 2);
+      nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+    }
   }
 
   nvgRestore(ctx);
@@ -381,6 +378,9 @@ void Window::requestPerformLayout()
 
 bool Window::isClickInsideCollapseArea(const Vector2i& clkPnt)
 {
+  if (!haveDrawFlag(DrawHeader) || !haveDrawFlag(DrawCollapseIcon))
+    return false;
+
   return clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>());
 }
 
@@ -461,6 +461,8 @@ void Window::refreshRelativePlacement() {
 
 int Window::getHeaderHeight() const 
 { 
+  if (!haveDrawFlag(DrawHeader))
+    return 0;
   return mHeaderHeight > 0 ? mHeaderHeight : theme()->mWindowHeaderHeight; 
 }
 
@@ -496,7 +498,7 @@ Vector4i Window::getWidgetsArea()
 Panel::Panel(Widget *parent, const std::string &title)
   : Window(parent, title)
 {
-  mDrawFlags = DrawTitle | DrawHeader | DrawHeaderUnselect;
+  mDrawFlags = DrawTitle | DrawHeader | DrawHeaderUnselect | DrawCollapseIcon;
   mDraggable = Theme::WindowDraggable::dgFixed;
   mCollapseIconScale = 1.0f;
   withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
@@ -539,28 +541,25 @@ void Panel::draw(NVGcontext *ctx)
 
   nvgSave(ctx);
 
-  if (!mTitle.empty())
+  if (haveDrawFlag(DrawHeader))
   {
-    if (haveDrawFlag(DrawHeader))
+    bool underMouse = inFocusChain();
+    const Color& cltop = underMouse ? theme()->mPanelHeaderGradientTopFocus : theme()->mPanelHeaderGradientTopNormal;
+    const Color& clbot = underMouse ? theme()->mPanelHeaderGradientBotFocus : theme()->mPanelHeaderGradientBotNormal;
+
+    bool visheader = true;
+    if (!haveDrawFlag(DrawHeaderUnselect))
+      visheader = underMouse;
+
+    if (visheader)
     {
-      bool underMouse = inFocusChain();
-      const Color& cltop = underMouse ? theme()->mPanelHeaderGradientTopFocus : theme()->mPanelHeaderGradientTopNormal;
-      const Color& clbot = underMouse ? theme()->mPanelHeaderGradientBotFocus : theme()->mPanelHeaderGradientBotNormal;
+      NVGpaint headerPaint = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(), mPos.y() + hh, cltop, clbot);
 
-      bool visheader = true;
-      if (!haveDrawFlag(DrawHeaderUnselect))
-        visheader = underMouse;
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos, { mSize.x(), hh }, cr);
 
-      if (visheader)
-      {
-        NVGpaint headerPaint = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(), mPos.y() + hh, cltop, clbot);
-
-        nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos, { mSize.x(), hh }, cr);
-
-        nvgFillPaint(ctx, headerPaint);
-        nvgFill(ctx);
-      }
+      nvgFillPaint(ctx, headerPaint);
+      nvgFill(ctx);
     }
 
     if (haveDrawFlag(DrawTitle))
@@ -577,22 +576,22 @@ void Panel::draw(NVGcontext *ctx)
       nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
       nvgText(ctx, mPos + Vector2i(24, hh / 2 - 1), mTitle);
     }
-  }
 
-  if (mayCollapse())
-  {
-    auto icon = utf8(mCollapsed ? mTheme->mPanelCollapsedIcon : mTheme->mPanelExpandedIcon);
+    if (mayCollapse() && haveDrawFlag(DrawCollapseIcon))
+    {
+      auto icon = utf8(mCollapsed ? mTheme->mPanelCollapsedIcon : mTheme->mPanelExpandedIcon);
 
-    mCollapseIconSize.y() = mFontSize > 0 ? mFontSize : theme()->mPanelFontSize;
-    mCollapseIconSize.y() *= mCollapseIconScale;
-    nvgFontSize(ctx, mCollapseIconSize.y());
-    nvgFontFace(ctx, "icons");
-    mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
+      mCollapseIconSize.y() = mFontSize > 0 ? mFontSize : theme()->mPanelFontSize;
+      mCollapseIconSize.y() *= mCollapseIconScale;
+      nvgFontSize(ctx, mCollapseIconSize.y());
+      nvgFontFace(ctx, "icons");
+      mCollapseIconSize.x() = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
 
-    nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
-    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + hh / 2);
-    nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+      nvgFillColor(ctx, mFocused ? mTheme->mPanelTitleFocused : mTheme->mPanelTitleUnfocused);
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+      mCollapseIconPos = Vector2f(mPos.x() + 5, mPos.y() + hh / 2);
+      nvgText(ctx, mCollapseIconPos.x(), mCollapseIconPos.y(), icon.data(), nullptr);
+    }
   }
 
   nvgRestore(ctx);

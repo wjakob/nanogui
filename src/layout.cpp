@@ -369,9 +369,8 @@ Vector2i GridLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
          + std::max((int) grid[1].size() - 1, 0) * mSpacing[1]
     );
 
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        size[1] += widget->theme()->mWindowHeaderHeight - mMargin/2;
+    if (auto window = Window::cast(widget))
+        size[1] += window->getHeaderHeight() - mMargin/2;
 
     return size;
 }
@@ -514,9 +513,8 @@ Vector2i AdvancedGridLayout::preferredSize(NVGcontext *ctx, const Widget *widget
         std::accumulate(grid[1].begin(), grid[1].end(), 0));
 
     Vector2i extra = Vector2i::Constant(2 * mMargin);
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        extra.y() += widget->theme()->mWindowHeaderHeight - mMargin/2;
+    if (auto window = Window::cast(widget))
+        extra.y() += window->getHeaderHeight() - mMargin/2;
 
     return size+extra;
 }
@@ -526,9 +524,8 @@ void AdvancedGridLayout::performLayout(NVGcontext *ctx, Widget *widget) const {
     computeLayout(ctx, widget, grid);
 
     grid[0].insert(grid[0].begin(), mMargin);
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        grid[1].insert(grid[1].begin(), widget->theme()->mWindowHeaderHeight + mMargin/2);
+    if (auto window = Window::cast(widget))
+        grid[1].insert(grid[1].begin(), window->getHeaderHeight() + mMargin/2);
     else
         grid[1].insert(grid[1].begin(), mMargin);
 
@@ -578,9 +575,8 @@ void AdvancedGridLayout::computeLayout(NVGcontext *ctx, const Widget *widget,
     Vector2i containerSize = fs_w.fillZero(widget->size());
 
     Vector2i extra = Vector2i::Constant(2 * mMargin);
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty())
-        extra.y() += widget->theme()->mWindowHeaderHeight - mMargin/2;
+    if (auto window = Window::cast(widget))
+        extra.y() += window->getHeaderHeight() - mMargin/2;
 
     containerSize -= extra;
 
