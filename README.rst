@@ -67,6 +67,20 @@ jointly built using a CMake-based build system.
 
 .. end_long_description
 
+Building NanoGUI - Using vcpkg
+----------------------------------------------------------------------------------------
+
+You can download and install NanoGUI using the `vcpkg <https://github.com/Microsoft/vcpkg>`_ dependency manager::
+
+    $ git clone https://github.com/Microsoft/vcpkg.git
+    $ cd vcpkg
+    $ ./bootstrap-vcpkg.sh
+    $ ./vcpkg integrate install
+    $ ./vcpkg install nanogui
+
+The NanoGUI port in vcpkg is kept up to date by Microsoft team members and community contributors.
+If the version is out of date, please `create an issue or pull request <https://github.com/Microsoft/vcpkg>`_ on the vcpkg repository.
+
 Creating widgets
 ----------------------------------------------------------------------------------------
 
