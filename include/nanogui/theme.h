@@ -282,6 +282,7 @@ public:
     shared_float windowPaddingLeft;
     shared_float windowPaddingTop;
     shared_float framePaddingLeft;
+    shared_float framePaddingTop;
 
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;

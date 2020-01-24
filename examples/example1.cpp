@@ -831,6 +831,8 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.slider(SliderObservable{ screen->theme()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Frame padding left");
   stcfg.slider(SliderObservable{ screen->theme()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
+  stcfg.label("Frame padding top");
+  stcfg.slider(SliderObservable{ screen->theme()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 

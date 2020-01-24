@@ -71,6 +71,8 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mTextBoxCornerRadius)
   CHECK(mWindowDragLine)
   CHECK_S(windowPaddingLeft)
+  CHECK_S(framePaddingLeft)
+  CHECK_S(framePaddingTop)
   printf("No get prop for name %s", name.c_str());
   return 0;
 }
@@ -98,6 +100,8 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mTextBoxCornerRadius)
   CHECKSET(mWindowDragLine)
   CHECKSET_S(windowPaddingLeft)
+  CHECKSET_S(framePaddingLeft)
+  CHECKSET_S(framePaddingTop)
   printf("No set prop for name %s", name.c_str());
 }
 
@@ -321,6 +325,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mCheckboxPushedColor = Color(0, 100);
 
   theme.framePaddingLeft = std::make_shared<float>(0.f);
+  theme.framePaddingTop = std::make_shared<float>(0.f);
 
   theme.mSwitchboxBackgroundColor = Color(0, 255);
   theme.mSwitchboxCheckedColor = Color(0, 0);
