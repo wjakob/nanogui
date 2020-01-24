@@ -55,16 +55,14 @@ bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
     return false;
 }
 
-Vector2i CheckBox::preferredSize(NVGcontext *ctx) const {
-    nvgFontSize(ctx, (float)fontSize());
-    nvgFontFace(ctx, "sans");
+Vector2i CheckBox::preferredSize(NVGcontext *ctx) const 
+{
+    nvgFontFaceSize(ctx, "sans", fontSize());
     Vector2i prefSize( nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 1.8f * fontSize(),
                        fontSize() * 1.3f);
 
-    if (mFixedSize.x() > 0)
-      prefSize.x() = mFixedSize.x();
-    if (mFixedSize.y() > 0)
-      prefSize.y() = mFixedSize.y();
+    prefSize += Vector2i::Constant(*theme()->framePaddingTop);
+    prefSize = mFixedSize.fillZero(prefSize);
 
     return prefSize;
 }
@@ -73,11 +71,10 @@ void CheckBox::draw(NVGcontext *ctx)
 {
     Widget::draw(ctx);
 
-    nvgFontSize(ctx, (float)fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFaceSize(ctx, "sans", fontSize());
     nvgFillColor(ctx, mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgText(ctx, mPos + Vector2i( 1.6f * fontSize(), mSize.y() * 0.5f ), mCaption);
+    nvgText(ctx, mPos + Vector2i( 0.6f * fontSize() + height(), height() / 2 ), mCaption);
 
     const Color& pushedColor = mPushedColor.notW(mTheme->mCheckboxPushedColor);
     const Color& bgColor = mChecked
@@ -85,7 +82,7 @@ void CheckBox::draw(NVGcontext *ctx)
                               : mUncheckedColor.notW(mTheme->mCheckboxUncheckedColor);
 
     NVGpaint bg = nvgBoxGradient(ctx, mPos.x() + 1.5f, mPos.y() + 1.5f,
-                                 mSize.y() - 2.0f, mSize.y() - 2.0f, 3, 3,
+                                 height() - 2.0f, height() - 2.0f, 3, 3,
                                  mPushed ? pushedColor : bgColor,
                                  Color(0, 0, 0, 180));
 
@@ -95,12 +92,10 @@ void CheckBox::draw(NVGcontext *ctx)
     nvgFill(ctx);
 
     if (mChecked) {
-        nvgFontFaceSize(ctx, "icons", mSize.y() * icon_scale());
+        nvgFontFaceSize(ctx, "icons", height() * icon_scale());
         nvgFillColor(ctx, mEnabled ? mTheme->mIconColor : mTheme->mDisabledTextColor);
         nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-        nvgText(ctx, mPos.x() + mSize.y() * 0.5f + 1,
-                     mPos.y() + mSize.y() * 0.5f, utf8(mTheme->mCheckBoxIcon).data(),
-                nullptr);
+        nvgText(ctx, mPos + size().yy() / 2 + Vector2i{ 1, 0 }, utf8(mTheme->mCheckBoxIcon).data());
     }
 }
 
