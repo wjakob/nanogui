@@ -463,7 +463,9 @@ int Window::getHeaderHeight() const
 { 
   if (!haveDrawFlag(DrawHeader))
     return 0;
-  return mHeaderHeight > 0 ? mHeaderHeight : theme()->mWindowHeaderHeight; 
+  return mHeaderHeight > 0 
+                  ? mHeaderHeight 
+                  : (theme()->mWindowHeaderHeight + *theme()->framePaddingTop);
 }
 
 void Window::save(Serializer &s) const 
@@ -517,7 +519,9 @@ void Panel::requestPerformLayout()
 
 int Panel::getHeaderHeight() const 
 { 
-  return mHeaderHeight ? mHeaderHeight : mTheme->mPanelHeaderHeight; 
+  return mHeaderHeight 
+              ? mHeaderHeight 
+              : (theme()->mPanelHeaderHeight + *theme()->framePaddingTop);
 }
 
 bool Panel::inFocusChain() const
