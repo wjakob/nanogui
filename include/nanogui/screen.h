@@ -82,11 +82,7 @@ public:
      *     invalid profile will result in no context (and therefore no GUI)
      *     being created.
      */
-    Screen(const Vector2i &size, const std::string &caption,
-           bool resizable = true, bool fullscreen = false, int colorBits = 8,
-           int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
-           int nSamples = 0,
-           unsigned int glMajor = 3, unsigned int glMinor = 3);
+    Screen(const Vector2i &size, const std::string &caption, bool fullscreen);
 
     /// Release all resources
     virtual ~Screen();
@@ -108,6 +104,7 @@ public:
 
     /// Set window size
     void setSize(const Vector2i& size);
+    void setSizeFBSize(const Vector2i& size, const Vector2i& fbsize);
 
     /// Draw the Screen contents
     virtual void drawAll();
@@ -117,6 +114,7 @@ public:
 
     /// Return the ratio between pixel and device coordinates (e.g. >= 2 on Mac Retina displays)
     float pixelRatio() const { return mPixelRatio; }
+    void setPixelRatio(float ratio) { mPixelRatio = ratio; }
 
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
@@ -132,16 +130,14 @@ public:
 
     /// Set the resize callback
     std::function<void(Vector2i)> resizeCallback() const { return mResizeCallback; }
+    void setResizeHwHandler(std::function<void(Screen*, Vector2i&, Vector2i&)> func) { mResizeHwHandler = func; }
     void setResizeCallback(const std::function<void(Vector2i)> &callback) { mResizeCallback = callback; }
 
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }
 
-    /// Return a pointer to the underlying GLFW window data structure
-    void *hwWindow() { return mHwWindow; }
-
     /// Return a pointer to the underlying nanoVG draw context
-    NVGcontext *nvgContext() { return mNVGContext; }
+    NVGcontext *nvgContext();
 
     void setShutdownOnDestruct(bool v) { mShutdownOnDestruct = v; }
     bool shutdownOnDestruct() { return mShutdownOnDestruct; }
@@ -151,10 +147,14 @@ public:
     using Widget::performLayout;
 
     /// Compute the layout of all widgets
-    void performLayout() { Widget::performLayout(mNVGContext); }
+    void performLayout() { Widget::performLayout(nvgContext()); }
 
-    void setClipboardString(const std::string& text);
-    std::string getClipboardString();
+    void setClipboardString(const std::string& text) { if (mClipboardSetFunc) mClipboardSetFunc(text); }
+    void initClipboardSetHandler(std::function<void(std::string)> handler) { mClipboardSetFunc = handler; }
+    void initHwCursorSetter(std::function<void(intptr_t)> func) { mHwCursorSetter = func; }
+
+    std::string getClipboardString() { if (mClipboardGetFunc) return mClipboardGetFunc(); return ""; }
+    void initClipboardGetHandler(std::function<std::string ()> handler) { mClipboardGetFunc = handler; }
 
     void needPerformLayout(Widget* w);
 
@@ -178,9 +178,6 @@ public:
      */
     Screen();
 
-    /// Initialize the \ref Screen
-    void initialize(void *handle, bool shutdownOnDestruct);
-
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
     bool mouseButtonCallbackEvent(int button, int action, int modifiers);
@@ -196,15 +193,14 @@ public:
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
     void drawWidgets();
+    bool canProcessEvents() const { return mProcessEvents; }
+    void setPrepareFrameHandler(std::function<void(Screen*)> handler) { mPrepareFrameFunc = handler; }
+
     intptr_t createStandardCursor(int shape);
 
 protected:
-    void _drawWidgetsBefore();
-    void _internalSetCursor(int cursor);
     void _setupStartParams();
 
-    void *mHwWindow;
-    NVGcontext *mNVGContext;
     intptr_t mCursors[(int)Cursor::CursorCount];
     Cursor mCursor;
     std::vector<Widget *> mFocusPath;
@@ -223,6 +219,11 @@ protected:
     bool mWidgetsNeedUpdateGlobal = false;
     std::vector<Widget*> mWidgetsNeedUpdate;
     std::function<void(Vector2i)> mResizeCallback;
+    std::function<void(std::string)> mClipboardSetFunc;
+    std::function<std::string()> mClipboardGetFunc;
+    std::function<void(Screen*)> mPrepareFrameFunc;
+    std::function<void(Screen*, Vector2i&, Vector2i&)> mResizeHwHandler;
+    std::function<void(intptr_t)> mHwCursorSetter;
 };
 
 NAMESPACE_END(nanogui)

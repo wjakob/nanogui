@@ -94,9 +94,9 @@ struct {
   WidgetId factoryview{ "#factoryview" };
 } ID;
 
-class ExampleApplication : public Screen {
+class EditorScreen : public Screen {
 public:
-    ExampleApplication() : Screen(Vector2i(1920, 1080), "Editor")
+    EditorScreen(const Vector2i& s) : Screen(s, "Editor", false)
     {
       auto& mmenu = createMainMenu();
 
@@ -299,8 +299,6 @@ public:
       fillTreeView();
     }
 
-    ~ExampleApplication() {}
-
     bool keyboardEvent(int key, int scancode, int action, int modifiers) override
     {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
@@ -344,26 +342,34 @@ public:
 };
 
 int main(int /* argc */, char ** /* argv */) {
-    try {
-        nanogui::init();
+    nanogui::init();
 
-        /* scoped variables */ {
-            nanogui::ref<ExampleApplication> app = new ExampleApplication();
-            app->drawAll();
-            app->setVisible(true);
-            nanogui::mainloop();
-        }
+    auto window = nanogui::sample::create_window(1920, 1080, "Nigma: editor", true, false);
+    nanogui::sample::create_context();
 
-        nanogui::shutdown();
-    } catch (const std::runtime_error &e) {
-        std::string error_msg = std::string("Caught a fatal error: ") + std::string(e.what());
-        #if defined(_WIN32)
-            MessageBoxA(nullptr, error_msg.c_str(), NULL, MB_ICONERROR | MB_OK);
-        #else
-            std::cerr << error_msg << endl;
-        #endif
-        return -1;
+    /* scoped variables */ {
+      EditorScreen screen({1920, 1080});
+      nanogui::sample::setup_window_params(window, &screen);
+
+      screen.drawAll();
+      screen.setVisible(true);
+      
+      nanogui::sample::run([&] {
+        nanogui::sample::clear_frame(screen.background());
+
+        screen.drawAll();
+
+        nanogui::sample::present_frame(window);
+
+        /* Wait for mouse/keyboard or empty refresh events */
+        nanogui::sample::wait_events();
+      });
+
+      nanogui::sample::poll_events();
     }
+
+    nanogui::sample::destroy_window(window);
+    nanogui::shutdown();
 
     return 0;
 }

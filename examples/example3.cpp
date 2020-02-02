@@ -52,12 +52,17 @@ int main(int /* argc */, char ** /* argv */) {
 
   nanogui::init();
 
+  auto window = nanogui::sample::create_window(1600, 900, "Example Nanogui", true, false);
+  nanogui::sample::create_context();
+
   {
     // Create a nanogui screen and pass the glfw pointer to initialize
-    screen = new Screen({ 1600, 900 }, "NanoGUI Test");
+    Screen screen({ 1600, 900 }, "NanoGUI Test", false);
+    nanogui::sample::setup_window_params(window, &screen);
+
     // Create nanogui gui
     bool enabled = true;
-    FormHelper *gui = new FormHelper(screen);
+    FormHelper *gui = new FormHelper(&screen);
     ref<Window> nanoguiWindow = gui->addWindow({ 10, 10 }, "Form helper example");
     gui->addGroup("Basic types");
     gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
@@ -82,15 +87,27 @@ int main(int /* argc */, char ** /* argv */) {
     gui->addGroup("Other widgets");
     gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
 
-    screen->setVisible(true);
-    screen->performLayout();
+    screen.setVisible(true);
+    screen.performLayout();
 
-    screen->drawAll();
-    nanogui::mainloop();
+    screen.drawAll();
+    
+    nanogui::sample::run([&] {
+      nanogui::sample::clear_frame(screen.background());
+
+      screen.drawAll();
+
+      nanogui::sample::present_frame(window);
+
+      /* Wait for mouse/keyboard or empty refresh events */
+      nanogui::sample::wait_events();
+    });
+
+    nanogui::sample::poll_events();
   }
 
+  nanogui::sample::destroy_window(window);
   nanogui::shutdown();
-
 
   return 0;
 }

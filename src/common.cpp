@@ -40,6 +40,8 @@ NAMESPACE_BEGIN(nanogui)
 const struct RttiClass Object::rttiInfoObject = { "Object", sizeof(Object), nullptr, 0 };
 RttiClass* Object::rttiClass() const { return RTTI_CLASS_INFO(Object); }
 
+NVGcontext* __nanogui_context = nullptr;
+
 #if !NANOGUI_CUSTOM_FONT_FUNCTION
 void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
 {
@@ -81,67 +83,56 @@ void nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int
 void nvgCircle(NVGcontext* ctx, const Vector2f& c, float r) { nvgCircle(ctx, c.x(), c.y(), r); }
 void nvgFontFaceSize(NVGcontext* ctx, const char* font, float size) { nvgFontFace(ctx, font); nvgFontSize(ctx, size); }
 
-void mainloop(int refresh) {
+std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
+  auto result = file_dialog(filetypes, save, false);
+  return result.empty() ? std::string() : result.front();
+}
+
+namespace sample
+{
+
+  void run(std::function<void()> frame_func, int refresh)
+  {
     if (mainloop_active)
-        throw std::runtime_error("Main loop is already running!");
+      throw std::runtime_error("Main loop is already running!");
 
     mainloop_active = true;
 
     std::thread refresh_thread;
     if (refresh > 0) {
-        /* If there are no mouse/keyboard events, try to refresh the
-           view roughly every 50 ms (default); this is to support animations
-           such as progress bars while keeping the system load
-           reasonably low */
-        refresh_thread = std::thread(
-            [refresh]() {
-                std::chrono::milliseconds time(refresh);
-                while (mainloop_active) {
-                    std::this_thread::sleep_for(time);
-                    appPostEmptyEvent();
-                }
-            }
-        );
+      /* If there are no mouse/keyboard events, try to refresh the
+         view roughly every 50 ms (default); this is to support animations
+         such as progress bars while keeping the system load
+         reasonably low */
+      refresh_thread = std::thread(
+        [refresh]() {
+        std::chrono::milliseconds time(refresh);
+        while (mainloop_active) {
+          std::this_thread::sleep_for(time);
+          post_empty_event();
+        }
+      }
+      );
     }
 
 #if NANOGUI_USING_EXCEPTION
     try {
 #endif
-        while (mainloop_active) {
-            int numScreens = 0;
-            appForEachScreen([&](Screen* screen) {
-                if (!screen->visible()) {
-                    return;
-                } else if (appIsShouldCloseScreen(screen)) {
-                    screen->setVisible(false);
-                    return;
-                }
-                screen->drawAll();
-                numScreens++;
-            });
-
-            if (numScreens == 0) {
-                /* Give up if there was nothing to draw */
-                mainloop_active = false;
-                break;
-            }
-
-            /* Wait for mouse/keyboard or empty refresh events */
-            appWaitEvents();
-        }
-
-        /* Process events once more */
-        appPollEvents();
+      while (mainloop_active)
+        frame_func();
 #if NANOGUI_USING_EXCEPTION
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-        leave();
+    }
+    catch (const std::exception &e) {
+      std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
+      leave();
     }
 #endif
 
     if (refresh > 0)
-        refresh_thread.join();
-}
+      refresh_thread.join();
+  }
+
+} //end namespace sample
 
 void leave() {
     mainloop_active = false;
@@ -231,11 +222,6 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path,
 void logic_error(const char* err, const char* file, int line)
 {
   std::cout << err << " FILE:" << file << "  LINE:" << line;
-}
-
-std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
-    auto result = file_dialog(filetypes, save, false);
-    return result.empty() ? "" : result.front();
 }
 
 #if !defined(__APPLE__)

@@ -178,9 +178,9 @@ private:
 #endif
 
 using namespace nanogui;
-class ExampleApplication : public Screen {
+class ExampleScreen : public Screen {
 public:
-    ExampleApplication() : Screen(Vector2i(800, 600), "NanoGUI Test", false) {
+  ExampleScreen() : Screen(Vector2i(1600, 900), "NanoGUI Test", false) {
 #ifdef NANOGUI_GLFW_BACKEND
         Window *window = new Window(this, "GLCanvas Demo");
 #else
@@ -228,26 +228,33 @@ private:
 };
 
 int main(int /* argc */, char ** /* argv */) {
-    try {
-        nanogui::init();
+    nanogui::init();
 
-        /* scoped variables */ {
-            nanogui::ref<ExampleApplication> app = new ExampleApplication();
-            app->drawAll();
-            app->setVisible(true);
-            nanogui::mainloop();
-        }
+    auto window = nanogui::sample::create_window(1600, 900, "NanoGUI test", true, false);
+    nanogui::sample::create_context();
 
-        nanogui::shutdown();
-    } catch (const std::runtime_error &e) {
-        std::string error_msg = std::string("Caught a fatal error: ") + std::string(e.what());
-        #if defined(_WIN32)
-            MessageBoxA(nullptr, error_msg.c_str(), NULL, MB_ICONERROR | MB_OK);
-        #else
-            std::cerr << error_msg << endl;
-        #endif
-        return -1;
+    /* scoped variables */ {
+        ExampleScreen screen;
+        nanogui::sample::setup_window_params(window, &screen);
+
+        screen.drawAll();
+        screen.setVisible(true);
+        
+        nanogui::sample::run([&] {
+          nanogui::sample::clear_frame(screen.background());
+
+          screen.drawAll();
+
+          nanogui::sample::present_frame(window);
+
+          /* Wait for mouse/keyboard or empty refresh events */
+          nanogui::sample::wait_events();
+        });
+
+        nanogui::sample::poll_events();
     }
 
+    nanogui::sample::destroy_window(window);
+    nanogui::shutdown();
     return 0;
 }

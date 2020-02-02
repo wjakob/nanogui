@@ -36,6 +36,9 @@ void Screen::needPerformLayout(Widget* w)
     mWidgetsNeedUpdate.emplace_back(w);
 }
 
+/// Return a pointer to the underlying nanoVG draw context
+NVGcontext *Screen::nvgContext() { return __nanogui_context; }
+
 void Screen::_setupStartParams()
 {
     mVisible = true;
@@ -50,8 +53,79 @@ void Screen::_setupStartParams()
       mCursors[i] = createStandardCursor(i);
 
     /// Fixes retina display-related font rendering issue (#185)
-    nvgBeginFrame(mNVGContext, mSize.x(), mSize.y(), mPixelRatio);
-    nvgEndFrame(mNVGContext);
+    nvgBeginFrame(nvgContext(), mSize.x(), mSize.y(), mPixelRatio);
+    nvgEndFrame(nvgContext());
+}
+
+void Screen::drawAll() 
+{
+  drawContents();
+  drawWidgets();
+}
+
+Screen::~Screen() 
+{
+  for (int i = 0; i < (int)Cursor::CursorCount; ++i) {
+    if (mCursors[i])
+      __nanogui_destroy_cursor(mCursors[i]);
+  }
+}
+
+intptr_t Screen::createStandardCursor(int shape) { return __nanogui_create_cursor(shape); }
+
+Screen::Screen()
+  : Widget(nullptr),
+  mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
+  mShutdownOnDestruct(false), mFullscreen(false)
+{
+  memset(mCursors, 0, (int)Cursor::CursorCount * sizeof(intptr_t));
+}
+
+Screen::Screen(const Vector2i &size, const std::string &caption, bool fullscreen)
+  : Screen()
+{
+  mFullscreen = fullscreen;
+  mCaption = caption;
+  mSize = size;
+  mVisible = true;
+
+  _setupStartParams();
+}
+
+void Screen::setSizeFBSize(const Vector2i& size, const Vector2i& )
+{
+#if defined(_WIN32) || defined(__linux__)
+  mSize = (size / mPixelRatio).cast<int>();
+  mFBSize = (size * mPixelRatio).cast<int>();
+#else
+  /* Recompute pixel ratio on OSX */
+  if (size[0])
+    mPixelRatio = (float)mFBSize[0] / (float)mSize[0];
+#endif
+}
+
+void Screen::setVisible(bool visible) { mVisible = visible; }
+
+void Screen::setCaption(const std::string &caption) { mCaption = caption; }
+
+void Screen::setSize(const Vector2i &size) { Widget::setSize(size); }
+
+bool Screen::resizeCallbackEvent(int, int) {
+  Vector2i fbSize, size;
+  if (mResizeHwHandler)
+    mResizeHwHandler(this, size, fbSize);
+
+#if defined(_WIN32) || defined(__linux__)
+  size = (size.cast<float>() / mPixelRatio).cast<int>();
+#endif
+
+  if (fbSize == Vector2i(0, 0) || size == Vector2i(0, 0))
+    return false;
+
+  mFBSize = fbSize; mSize = size;
+  mLastInteraction = getTimeFromStart();
+
+  return resizeEvent(mSize);
 }
 
 void Screen::drawWidgets() {
@@ -82,15 +156,16 @@ void Screen::drawWidgets() {
 
       mWidgetsNeedUpdate.clear();
       for (auto& c : ws)
-        c->performLayout(mNVGContext);
+        c->performLayout(nvgContext());
     }
 
-    _drawWidgetsBefore();
+    if (mPrepareFrameFunc)
+      mPrepareFrameFunc(this);
 
-    nvgBeginFrame(mNVGContext, mSize.x(), mSize.y(), mPixelRatio);
+    nvgBeginFrame(nvgContext(), mSize.x(), mSize.y(), mPixelRatio);
 
-    draw(mNVGContext);
-    afterDraw(mNVGContext);
+    draw(nvgContext());
+    afterDraw(nvgContext());
 
     double elapsed = getTimeFromStart() - mLastInteraction;
 
@@ -101,45 +176,44 @@ void Screen::drawWidgets() {
             int tooltipWidth = 150;
 
             float bounds[4];
-            nvgFontFaceSize(mNVGContext, "sans", 15.0f);
-            nvgTextAlign(mNVGContext, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-            nvgTextLineHeight(mNVGContext, 1.1f);
+            nvgFontFaceSize(nvgContext(), "sans", 15.0f);
+            nvgTextAlign(nvgContext(), NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+            nvgTextLineHeight(nvgContext(), 1.1f);
             Vector2i pos = widget->absolutePosition() +
                            Vector2i(widget->width() / 2, widget->height() + 10);
 
-            nvgTextBounds(mNVGContext, pos.x(), pos.y(),
+            nvgTextBounds(nvgContext(), pos.x(), pos.y(),
                             widget->tooltip().c_str(), nullptr, bounds);
             int h = (bounds[2] - bounds[0]) / 2;
             if (h > tooltipWidth / 2) {
-                nvgTextAlign(mNVGContext, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-                nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
+                nvgTextAlign(nvgContext(), NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
+                nvgTextBoxBounds(nvgContext(), pos.x(), pos.y(), tooltipWidth,
                                 widget->tooltip().c_str(), nullptr, bounds);
 
                 h = (bounds[2] - bounds[0]) / 2;
             }
-            nvgGlobalAlpha(mNVGContext,
-                           std::min<float>(1.0, 2 * (elapsed - 0.5f)) * 0.8);
+            nvgGlobalAlpha(nvgContext(), std::min<float>(1.0, 2 * (elapsed - 0.5f)) * 0.8);
 
-            nvgBeginPath(mNVGContext);
-            nvgFillColor(mNVGContext, theme()->mTooltipBackgroundColor.mul_a(theme()->mTooltipOpacity));
-            nvgRoundedRect(mNVGContext, bounds[0] - 4 - h, bounds[1] - 4,
+            nvgBeginPath(nvgContext());
+            nvgFillColor(nvgContext(), theme()->mTooltipBackgroundColor.mul_a(theme()->mTooltipOpacity));
+            nvgRoundedRect(nvgContext(), bounds[0] - 4 - h, bounds[1] - 4,
                            (int) (bounds[2] - bounds[0]) + 8,
                            (int) (bounds[3] - bounds[1]) + 8, 3);
 
             int px = (int) ((bounds[2] + bounds[0]) / 2) - h;
-            nvgMoveTo(mNVGContext, px, bounds[1] - 10);
-            nvgLineTo(mNVGContext, px + 7, bounds[1] + 1);
-            nvgLineTo(mNVGContext, px - 7, bounds[1] + 1);
-            nvgFill(mNVGContext);
+            nvgMoveTo(nvgContext(), px, bounds[1] - 10);
+            nvgLineTo(nvgContext(), px + 7, bounds[1] + 1);
+            nvgLineTo(nvgContext(), px - 7, bounds[1] + 1);
+            nvgFill(nvgContext());
 
-            nvgFillColor(mNVGContext, theme()->mTooltipTextColor.mul_a(theme()->mTooltipOpacity));
-            nvgFontBlur(mNVGContext, 0.0f);
-            nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
+            nvgFillColor(nvgContext(), theme()->mTooltipTextColor.mul_a(theme()->mTooltipOpacity));
+            nvgFontBlur(nvgContext(), 0.0f);
+            nvgTextBox(nvgContext(), pos.x() - h, pos.y(), tooltipWidth,
                        widget->tooltip().c_str(), nullptr);
         }
     }
 
-    nvgEndFrame(mNVGContext);
+    nvgEndFrame(nvgContext());
 }
 
 bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
@@ -187,7 +261,8 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
-                _internalSetCursor((int)mCursor);
+                if (mHwCursorSetter)
+                  mHwCursorSetter(mCursors[(int)mCursor]);
             }
         } else {
             ret = mDragWidget->mouseDragEvent(
@@ -237,7 +312,8 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
-            _internalSetCursor( (int)mCursor);
+            if (mHwCursorSetter)
+              mHwCursorSetter(mCursors[(int)mCursor]);
         }
 
         if ( isMouseActionPress(action) && (isMouseButtonLeft(button) || isMouseButtonRight(button))) {
@@ -326,8 +402,8 @@ void Screen::disposeWindow(Window *window) {
 
 void Screen::centerWindow(Window *window) {
     if (window->size() == Vector2i::Zero()) {
-        window->setSize(window->preferredSize(mNVGContext));
-        window->performLayout(mNVGContext);
+        window->setSize(window->preferredSize(nvgContext()));
+        window->performLayout(nvgContext());
     }
     window->setPosition((mSize - window->size()) / 2);
 }

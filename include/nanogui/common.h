@@ -798,43 +798,6 @@ NANOGUI_EXPORT void init();
 /// Static shutdown; should be called before the application terminates.
 NANOGUI_EXPORT void shutdown();
 
-/**
- * \brief Enter the application main loop
- *
- * \param refresh
- *     NanoGUI issues a redraw call whenever an keyboard/mouse/.. event is
- *     received. In the absence of any external events, it enforces a redraw
- *     once every ``refresh`` milliseconds. To disable the refresh timer,
- *     specify a negative value here.
- *
- * \param detach
- *     This parameter only exists in the Python bindings. When the active
- *     \c Screen instance is provided via the \c detach parameter, the
- *     ``mainloop()`` function becomes non-blocking and returns
- *     immediately (in this case, the main loop runs in parallel on a newly
- *     created thread). This feature is convenient for prototyping user
- *     interfaces on an interactive Python command prompt. When
- *     ``detach != None``, the function returns an opaque handle that
- *     will release any resources allocated by the created thread when the
- *     handle's ``join()`` method is invoked (or when it is garbage
- *     collected).
- *
- * \remark
- *     Unfortunately, Mac OS X strictly requires all event processing to take
- *     place on the application's main thread, which is fundamentally
- *     incompatible with this type of approach. Thus, NanoGUI relies on a
- *     rather crazy workaround on Mac OS (kudos to Dmitriy Morozov):
- *     ``mainloop()`` launches a new thread as before but then uses
- *     libcoro to swap the thread execution environment (stack, registers, ..)
- *     with the main thread. This means that the main application thread is
- *     hijacked and processes events in the main loop to satisfy the
- *     requirements on Mac OS, while the thread that actually returns from this
- *     function is the newly created one (paradoxical, as that may seem).
- *     Deleting or ``join()``ing the returned handle causes application to
- *     wait for the termination of the main loop and then swap the two thread
- *     environments back into their initial configuration.
- */
-NANOGUI_EXPORT void mainloop(int refresh = 50);
 
 /// Request the application main loop to terminate (e.g. if you detached mainloop).
 NANOGUI_EXPORT void leave();
@@ -853,9 +816,12 @@ NANOGUI_EXPORT bool active();
  *     Set to ``true`` if you would like subsequent file dialogs to open
  *     at whatever folder they were in when they close this one.
  */
+NANOGUI_EXPORT std::vector<std::string>
+file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save, bool multiple);
+
 NANOGUI_EXPORT std::string
-file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
-            bool save);
+file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save);
+
 
 NANOGUI_EXPORT bool isPointInsideRect(const Vector2i& p, const Vector4i& r);
 NANOGUI_EXPORT bool isMouseActionRelease(int action);
@@ -868,11 +834,12 @@ NANOGUI_EXPORT bool isMouseButtonRight(int button);
 #define FOURCCS(s) ( (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0])) )
 NANOGUI_EXPORT uint32_t key2fourcc(int key);
 
-NANOGUI_EXPORT bool appPostEmptyEvent();
-NANOGUI_EXPORT void appForEachScreen(std::function<void(Screen*)> f);
-NANOGUI_EXPORT bool appIsShouldCloseScreen(Screen* screen);
-NANOGUI_EXPORT bool appWaitEvents();
-NANOGUI_EXPORT bool appPollEvents();
+namespace sample
+{
+  NANOGUI_EXPORT bool wait_events();
+  NANOGUI_EXPORT bool poll_events();
+  NANOGUI_EXPORT bool post_empty_event();
+}
 NANOGUI_EXPORT float getTimeFromStart();
 
 NANOGUI_EXPORT bool isKeyboardActionRelease(int action);
@@ -929,25 +896,6 @@ void NANOGUI_EXPORT nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0
 void NANOGUI_EXPORT nvgCircle(NVGcontext* ctx, const Vector2f& c, float r);
 void NANOGUI_EXPORT nvgFontFaceSize(NVGcontext* ctx, const char* font, float size);
 
-/**
- * \brief Open a native file open dialog, which allows multiple selection.
- *
- * \param filetypes
- *     Pairs of permissible formats with descriptions like
- *     ``("png", "Portable Network Graphics")``.
- *
- * \param save
- *     Set to ``true`` if you would like subsequent file dialogs to open
- *     at whatever folder they were in when they close this one.
- *
- * \param multiple
- *     Set to ``true`` if you would like to be able to select multiple
- *     files at once. May not be simultaneously true with \p save.
- */
-extern NANOGUI_EXPORT std::vector<std::string>
-file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes,
-            bool save, bool multiple);
-
 #if defined(__APPLE__) || defined(DOXYGEN_DOCUMENTATION_BUILD)
 /**
  * \brief Move to the application bundle's parent directory
@@ -981,17 +929,32 @@ extern NANOGUI_EXPORT std::vector<std::pair<int, std::string>>
 template<typename T> T
 clamp(const T& val, const T& min, const T& max) { return val < min ? min : (val > max ? max : val); }
 
-extern NANOGUI_EXPORT void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
-
+void NANOGUI_EXPORT __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize);
 void NANOGUI_EXPORT logic_error(const char* err, const char* file, int line);
 
 /// Helper function used by nvgImageIcon
-extern NANOGUI_EXPORT int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
+int NANOGUI_EXPORT __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
+
+namespace sample
+{
+  using WindowHandle = void*;
+  WindowHandle NANOGUI_EXPORT create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen);
+  void NANOGUI_EXPORT destroy_window(WindowHandle w);
+  void NANOGUI_EXPORT create_context();
+  void NANOGUI_EXPORT run(std::function<void ()> func, int refresh = 50);
+  void NANOGUI_EXPORT clear_frame(Color background);
+  void NANOGUI_EXPORT setup_window_params(WindowHandle window, Screen* screen);
+  void NANOGUI_EXPORT present_frame(WindowHandle window);
+}
 
 // Measures the specified text string height.
 // Returns the vertical advance of the measured text (i.e. where the next character should drawn).
 // Measured values are returned in local coordinate space.
-extern NANOGUI_EXPORT float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
+float NANOGUI_EXPORT nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds);
+
+extern NVGcontext* __nanogui_context;
+void NANOGUI_EXPORT __nanogui_destroy_cursor(intptr_t cursor);
+intptr_t NANOGUI_EXPORT __nanogui_create_cursor(int shape);
 
 NAMESPACE_END(nanogui)
 

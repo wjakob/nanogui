@@ -101,10 +101,8 @@ void register_widget(py::module &m) {
         .def("center", &Window::center, D(Window, center));
 
     py::class_<Screen, Widget, ref<Screen>, PyScreen>(m, "Screen", D(Screen))
-        .def(py::init<const Vector2i &, const std::string &, bool, bool, int, int, int, int, int, unsigned int, unsigned int>(),
-            py::arg("size"), py::arg("caption"), py::arg("resizable") = true, py::arg("fullscreen") = false,
-            py::arg("colorBits") = 8, py::arg("alphaBits") = 8, py::arg("depthBits") = 24, py::arg("stencilBits") = 8,
-            py::arg("nSamples") = 0, py::arg("glMajor") = 3, py::arg("glMinor") = 3, D(Screen, Screen))
+        .def(py::init<const Vector2i &, const std::string &, bool>(),
+            py::arg("size"), py::arg("caption"), py::arg("fullscreen") = false, D(Screen, Screen))
         .def("caption", &Screen::caption, D(Screen, caption))
         .def("setCaption", &Screen::setCaption, D(Screen, setCaption))
         .def("background", &Screen::background, D(Screen, background))

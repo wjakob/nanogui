@@ -179,7 +179,22 @@ PYBIND11_MODULE(nanogui, m) {
                 coro_transfer(&handle->ctx_main, &handle->ctx_helper);
             #else
                 handle->thread = std::thread([]{
-                    mainloop(handle->refresh);
+                    auto window = nanogui::sample::create_window(1600, 900, "NanoGUI Python", true, false);
+                    nanogui::sample::create_context();
+
+                    Screen screen({ 1600, 900 }, "NanoGUI Python", false);
+                    nanogui::sample::setup_window_params(window, &screen);
+                    
+                    nanogui::sample::run([&] {
+                      nanogui::sample::clear_frame(screen.background());
+
+                      screen.drawAll();
+
+                      nanogui::sample::present_frame(window);
+
+                      /* Wait for mouse/keyboard or empty refresh events */
+                      nanogui::sample::wait_events();
+                    }, handle->refresh);
                 });
             #endif
 
@@ -196,7 +211,22 @@ PYBIND11_MODULE(nanogui, m) {
                 sigint_handler_prev = signal(SIGINT, sigint_handler);
             #endif
 
-            mainloop(refresh);
+            auto window = nanogui::sample::create_window(1600, 900, "NanoGUI Python", true, false);
+            nanogui::sample::create_context();
+
+            Screen screen({ 1600, 900 }, "NanoGUI Python", false);
+            nanogui::sample::setup_window_params(window, &screen);
+
+            nanogui::sample::run([&] {
+                nanogui::sample::clear_frame(screen.background());
+
+                screen.drawAll();
+
+                nanogui::sample::present_frame(window);
+
+                /* Wait for mouse/keyboard or empty refresh events */
+                nanogui::sample::wait_events();
+            }, handle->refresh);
 
             #if defined(__APPLE__) || defined(__linux__)
                 signal(SIGINT, sigint_handler_prev);

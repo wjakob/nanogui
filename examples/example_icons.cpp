@@ -30,14 +30,19 @@ using namespace nanogui;
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    /* scoped variables */ {
-        static constexpr int width      = 1600;
-        static constexpr int btn_width = width / 4;
-        static constexpr int height     = 900;
+    static constexpr int width = 1600;
+    static constexpr int btn_width = width / 4;
+    static constexpr int height = 900;
 
+    auto hwindow = nanogui::sample::create_window(width, height, "NanoGUI Icons", true, false);
+    nanogui::sample::create_context();
+    /* scoped variables */ {
         // create a fixed size screen with one window
         Screen *screen = new Screen({width, height}, "NanoGUI Icons", false);
+        nanogui::sample::setup_window_params(hwindow, screen);
+
         Window *window = new Window(screen, "All Icons");
+
         window->setPosition({0, 0});
         window->setFixedSize({width, height});
 
@@ -2385,9 +2390,21 @@ int main(int /* argc */, char ** /* argv */) {
         screen->performLayout();
         screen->setVisible(true);
 
-        nanogui::mainloop();
+        nanogui::sample::run([&] {
+          nanogui::sample::clear_frame(screen->background());
+
+          screen->drawAll();
+
+          nanogui::sample::present_frame(hwindow);
+
+          /* Wait for mouse/keyboard or empty refresh events */
+          nanogui::sample::wait_events();
+        });
+
+        nanogui::sample::poll_events();
     }
 
+    nanogui::sample::destroy_window(hwindow);
     nanogui::shutdown();
     return 0;
 }

@@ -386,7 +386,6 @@ if (NANOGUI_GLFW_BACKEND)
     include/nanogui/opengl.h
     include/nanogui/serializer/opengl.h
     src/glfw/common_glfw.cpp
-    src/glfw/screen_glfw.cpp
     src/glfw/gpu_glfw.cpp
   )
 elseif (NANOGUI_VULKAN_BACKEND)

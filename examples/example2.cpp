@@ -33,20 +33,12 @@ Color colval(0.5f, 0.5f, 0.7f, 1.f);
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    /* scoped variables */ {
-        bool use_gl_4_1 = false;// Set to true to create an OpenGL 4.1 context.
-        Screen *screen = nullptr;
+    auto window = nanogui::sample::create_window(1600, 900, "NanoGUI test", true, false);
+    nanogui::sample::create_context();
 
-        if (use_gl_4_1) {
-            // NanoGUI presents many options for you to utilize at your discretion.
-            // See include/nanogui/screen.h for what all of these represent.
-            screen = new Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]",
-                                /*resizable*/true, /*fullscreen*/false, /*colorBits*/8,
-                                /*alphaBits*/8, /*depthBits*/24, /*stencilBits*/8,
-                                /*nSamples*/0, /*glMajor*/4, /*glMinor*/1);
-        } else {
-            screen = new Screen(Vector2i(500, 700), "NanoGUI test");
-        }
+    /* scoped variables */ {
+        Screen *screen = new Screen({ 1600, 900 }, "NanoGUI test", false);
+        nanogui::sample::setup_window_params(window, screen);
 
         bool enabled = true;
         FormHelper *gui = new FormHelper(screen);
@@ -78,9 +70,21 @@ int main(int /* argc */, char ** /* argv */) {
         screen->setVisible(true);
         screen->performLayout();
 
-        nanogui::mainloop();
+        nanogui::sample::run([&] {
+          nanogui::sample::clear_frame(screen->background());
+
+          screen->drawAll();
+
+          nanogui::sample::present_frame(window);
+
+          /* Wait for mouse/keyboard or empty refresh events */
+          nanogui::sample::wait_events();
+        });
+
+        nanogui::sample::poll_events();
     }
 
+    nanogui::sample::destroy_window(window);
     nanogui::shutdown();
     return 0;
 }

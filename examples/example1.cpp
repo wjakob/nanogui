@@ -1026,9 +1026,9 @@ void createThemeBuilderWindow(Screen* screen)
   screen->wdg<ThemeBuilder>(Position{ 1050, 15 });
 }
 
-class ExampleApplication : public nanogui::Screen {
+class ExampleScreen : public Screen {
 public:
-  ExampleApplication() : nanogui::Screen({ 1600, 900 }, "NanoGUI Test") {
+  ExampleScreen(const Vector2i& size, const std::string& caption) : Screen(size, caption, false) {
       initGPUTimer(&gpuTimer);
 
       createButtonDemoWindow(this);
@@ -1052,7 +1052,7 @@ public:
       performLayout();
     }
 
-    ~ExampleApplication() {}
+    ~ExampleScreen() {}
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
@@ -1157,27 +1157,34 @@ private:
     double previousFrameTime = 0, cpuTime = 0;
 };
 
-int main(int /* argc */, char ** /* argv */) {
-    try {
-        nanogui::init();
+int main(int /* argc */, char ** /* argv */) 
+{
+  nanogui::init();
+  auto window = nanogui::sample::create_window(1600, 900, "Example Nanogui", true, false);
+  nanogui::sample::create_context();
 
-        /* scoped variables */ {
-            nanogui::ref<ExampleApplication> app = new ExampleApplication();
-            app->drawAll();
-            app->setVisible(true);
-            nanogui::mainloop();
-        }
+  {
+    ExampleScreen* screen = new ExampleScreen({ 1600, 900 }, "");
+    nanogui::sample::setup_window_params(window, screen);
+    screen->drawAll();
+    screen->setVisible(true);
+    screen->performLayout();
 
-        nanogui::shutdown();
-    } catch (const std::runtime_error &e) {
-        std::string error_msg = std::string("Caught a fatal error: ") + std::string(e.what());
-        #if defined(_WIN32)
-            MessageBoxA(nullptr, error_msg.c_str(), NULL, MB_ICONERROR | MB_OK);
-        #else
-            std::cerr << error_msg << endl;
-        #endif
-        return -1;
-    }
+    nanogui::sample::run([=] {
+        nanogui::sample::clear_frame(screen->background());
 
-    return 0;
+        screen->drawAll();
+
+        nanogui::sample::present_frame(window);
+
+        /* Wait for mouse/keyboard or empty refresh events */
+        nanogui::sample::wait_events();
+    });
+
+    nanogui::sample::poll_events();
+  }
+
+  nanogui::sample::destroy_window(window);
+  nanogui::shutdown();
+  return 0;
 }
