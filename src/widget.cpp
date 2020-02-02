@@ -21,10 +21,10 @@ NAMESPACE_BEGIN(nanogui)
 
 Widget::Widget(Widget *parent)
     : mParent(nullptr), mTheme(nullptr), mLayout(nullptr),
-      mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
-      mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
-      mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
-      mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
+    mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
+    mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
+    mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
+    mIconExtraScale(1.0f), mCursor(Cursor::Arrow) {
     if (parent)
         parent->addChild(this);
 }
@@ -80,11 +80,18 @@ Widget *Widget::findWidget(const Vector2i &p) {
 }
 
 bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
-    for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
-        Widget *child = *it;
-        if (child->visible() && child->contains(p - mPos) &&
-            child->mouseButtonEvent(p - mPos, button, down, modifiers))
-            return true;
+    for (auto it = mChildren.begin(); it != mChildren.end(); ++it) {
+        Widget* child = *it;
+        if (child->visible()) {
+            if (child->contains(p - mPos)) {
+                if (child->mouseButtonEvent(p - mPos, button, down, modifiers)) {
+                    return true;
+                }
+            }
+            else {
+                child->focusEvent(false);
+            }
+        }
     }
     if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused)
         requestFocus();
@@ -92,13 +99,23 @@ bool Widget::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
 }
 
 bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) {
+    bool childContainedAlready = false;
     for (auto it = mChildren.rbegin(); it != mChildren.rend(); ++it) {
         Widget *child = *it;
         if (!child->visible())
             continue;
         bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
-        if (contained != prevContained)
+        if (contained && !prevContained && !childContainedAlready)
+                child->mouseEnterEvent(p, contained);
+
+        else if (contained && prevContained){
+            child->mouseEnterEvent(p, !childContainedAlready);
+            childContainedAlready = true;
+        }
+
+        if (!contained && prevContained)
             child->mouseEnterEvent(p, contained);
+
         if ((contained || prevContained) &&
             child->mouseMotionEvent(p - mPos, rel, button, modifiers))
             return true;
@@ -139,7 +156,7 @@ bool Widget::keyboardCharacterEvent(unsigned int) {
     return false;
 }
 
-void Widget::addChild(int index, Widget * widget) {
+void Widget::addChild(int index, Widget *widget) {
     assert(index <= childCount());
     mChildren.insert(mChildren.begin() + index, widget);
     widget->incRef();
@@ -147,7 +164,7 @@ void Widget::addChild(int index, Widget * widget) {
     widget->setTheme(mTheme);
 }
 
-void Widget::addChild(Widget * widget) {
+void Widget::addChild(Widget *widget) {
     addChild(childCount(), widget);
 }
 
@@ -166,7 +183,7 @@ int Widget::childIndex(Widget *widget) const {
     auto it = std::find(mChildren.begin(), mChildren.end(), widget);
     if (it == mChildren.end())
         return -1;
-    return (int) (it - mChildren.begin());
+    return (int)(it - mChildren.begin());
 }
 
 Window *Widget::window() {
@@ -199,7 +216,7 @@ void Widget::requestFocus() {
     Widget *widget = this;
     while (widget->parent())
         widget = widget->parent();
-    ((Screen *) widget)->updateFocus(this);
+    ((Screen *)widget)->updateFocus(this);
 }
 
 void Widget::draw(NVGcontext *ctx) {
@@ -236,7 +253,7 @@ void Widget::save(Serializer &s) const {
     s.set("focused", mFocused);
     s.set("tooltip", mTooltip);
     s.set("fontSize", mFontSize);
-    s.set("cursor", (int) mCursor);
+    s.set("cursor", (int)mCursor);
 }
 
 bool Widget::load(Serializer &s) {

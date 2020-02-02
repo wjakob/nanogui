@@ -154,7 +154,7 @@ void Button::draw(NVGcontext *ctx) {
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
+    nvgFontFaceId(ctx, mTheme->mFontNormal);
     float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
 
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
@@ -209,13 +209,20 @@ void Button::draw(NVGcontext *ctx) {
         }
     }
 
-    nvgFontSize(ctx, fontSize);
-    nvgFontFace(ctx, "sans-bold");
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     nvgFillColor(ctx, mTheme->mTextColorShadow);
     nvgText(ctx, textPos.x(), textPos.y(), mCaption.c_str(), nullptr);
     nvgFillColor(ctx, textColor);
     nvgText(ctx, textPos.x(), textPos.y() + 1, mCaption.c_str(), nullptr);
+
+    if (buttonIcons() != "") {
+        nvgFontFaceId(ctx, mTheme->mFontIcons);
+        nvgFontSize(ctx, fontSize * icon_scale());
+        float iw = nvgTextBounds(ctx, 0, 0, buttonIcons(), nullptr, nullptr);
+        nvgText(ctx, textPos.x() - iw * 0.5f, textPos.y() + 1, buttonIcons(), nullptr);
+    }
+
+
 }
 
 void Button::save(Serializer &s) const {

@@ -129,6 +129,12 @@ public:
     /// Sets the state of this Button provided the given Serializer.
     virtual bool load(Serializer &s) override;
 
+    void setButtonIcons(const char* ButtonIcon) {
+       mButtonIcons = ButtonIcon;
+    }
+
+    const char* buttonIcons() { return mButtonIcons; }
+
 protected:
     /// The caption of this Button.
     std::string mCaption;
@@ -145,6 +151,17 @@ protected:
      * \endrst
      */
     int mIcon;
+
+    /**
+     * \brief string of characters from icon font to be displayed
+     *
+     * \rst
+     * Enables custom vector icons,
+     * load a font containing desired vectors into the themes icon font,
+     * assign mButtonIcons to the desired character codes
+     * leave "" to ignore
+    */
+    const char* mButtonIcons = "";
 
     /// The position to draw the icon at.
     IconPosition mIconPosition;

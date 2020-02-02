@@ -14,7 +14,7 @@
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
 #include <nanogui/entypo.h>
-#include <nanogui_resources.h>
+//#include <nanogui_resources.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -80,14 +80,17 @@ Theme::Theme(NVGcontext *ctx) {
     mTextBoxUpIcon                    = ENTYPO_ICON_CHEVRON_UP;
     mTextBoxDownIcon                  = ENTYPO_ICON_CHEVRON_DOWN;
 
-    mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
-                                   roboto_regular_ttf_size, 0);
-    mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
-                                 roboto_bold_ttf_size, 0);
-    mFontIcons = nvgCreateFontMem(ctx, "icons", entypo_ttf,
-                                  entypo_ttf_size, 0);
+    //mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
+    //                               roboto_regular_ttf_size, 0);
+    //mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
+    //                             roboto_bold_ttf_size, 0);
+    //mFontIcons = nvgCreateFontMem(ctx, "icons", entypo_ttf,entypo_ttf_size, 0);  uncomment for legacy font support, using reasource nanogui_reasource.h (uncomment include)
+
+    mFontNormal = nvgCreateFont(ctx, "sans", ".\\Roboto-Regular.ttf");
+    mFontBold = nvgCreateFont(ctx, "sans-bold", ".\\Roboto-Bold.ttf");
+    mFontIcons = nvgCreateFont(ctx, "icons", ".\\entypo.ttf");
     if (mFontNormal == -1 || mFontBold == -1 || mFontIcons == -1)
-        throw std::runtime_error("Could not load fonts!");
+        throw std::runtime_error("Could not load fonts! You may have to copy the font files: Roboto-Regular.ttf, Roboto-Bold.ttf, entypo.ttf to your project directory");
 }
 
 NAMESPACE_END(nanogui)
