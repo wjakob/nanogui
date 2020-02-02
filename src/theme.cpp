@@ -81,7 +81,6 @@ Theme::Theme(NVGcontext *ctx) {
     mTextBoxUpIcon                    = ENTYPO_ICON_CHEVRON_UP;
     mTextBoxDownIcon                  = ENTYPO_ICON_CHEVRON_DOWN;
 
-
     //mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
     //                               roboto_regular_ttf_size, 0);
     //mFontBold = nvgCreateFontMem(ctx, "sans-bold", roboto_bold_ttf,
