@@ -17,6 +17,7 @@
 //#include <nanogui_resources.h>
 
 NAMESPACE_BEGIN(nanogui)
+#define LOAD_FROM_BUILTIN_FONTS
 
 Theme::Theme(NVGcontext *ctx) {
     mStandardFontSize                 = 16;
@@ -79,6 +80,7 @@ Theme::Theme(NVGcontext *ctx) {
     mTabHeaderRightIcon               = ENTYPO_ICON_ARROW_BOLD_RIGHT;
     mTextBoxUpIcon                    = ENTYPO_ICON_CHEVRON_UP;
     mTextBoxDownIcon                  = ENTYPO_ICON_CHEVRON_DOWN;
+
 
     //mFontNormal = nvgCreateFontMem(ctx, "sans", roboto_regular_ttf,
     //                               roboto_regular_ttf_size, 0);
