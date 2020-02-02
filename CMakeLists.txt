@@ -390,8 +390,9 @@ if (NANOGUI_GLFW_BACKEND)
   )
 elseif (NANOGUI_VULKAN_BACKEND)
   list (APPEND NANOGUI_BACKEND_SOURCES 
-    include/nanogui/nanovg_vk.h src/vulkan/screen_vk.cpp
-    src/vulkan/vulkan_util.h src/vulkan/common_vk.cpp
+    include/nanogui/nanovg_vk.h 
+    src/vulkan/vulkan_util.h 
+    src/vulkan/common_vk.cpp
     src/vulkan/shaders_vk.cpp
     src/vulkan/gpu_vk.cpp
   ) 
