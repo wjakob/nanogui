@@ -399,7 +399,6 @@ elseif (NANOGUI_VULKAN_BACKEND)
 elseif (NANOGUI_DX11_BACKEND)
   list(APPEND NANOGUI_BACKEND_SOURCES
     src/dx11/common_dx11.h src/dx11/common_dx11.cpp 
-    src/dx11/screen_dx11.cpp
     src/dx11/gpu_dx11.cpp
   )
 elseif (NANOGUI_DX12_BACKEND)

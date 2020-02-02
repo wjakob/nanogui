@@ -945,6 +945,7 @@ namespace sample
   void NANOGUI_EXPORT clear_frame(Color background);
   void NANOGUI_EXPORT setup_window_params(WindowHandle window, Screen* screen);
   void NANOGUI_EXPORT present_frame(WindowHandle window);
+  void NANOGUI_EXPORT destroy_context();
 }
 
 // Measures the specified text string height.
