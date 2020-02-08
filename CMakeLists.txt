@@ -404,7 +404,6 @@ elseif (NANOGUI_DX11_BACKEND)
 elseif (NANOGUI_DX12_BACKEND)
   list(APPEND NANOGUI_BACKEND_SOURCES
     src/dx12/common_dx12.h src/dx12/common_dx12.cpp 
-    src/dx12/screen_dx12.cpp
     src/dx12/gpu_dx12.cpp
 	
   	include/nanogui/nanovg_d3d12.h  src/dx12/nanovg_d3d12.cpp
