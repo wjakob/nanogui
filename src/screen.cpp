@@ -339,7 +339,13 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
     mLastInteraction = getTimeFromStart();
-    return keyboardEvent(key, scancode, action, mods);
+    bool resolved = keyboardEvent(key, scancode, action, mods);
+    if (!resolved)
+    {
+      //printf("%d\n", key);
+    }
+
+    return resolved;
 }
 
 bool Screen::charCallbackEvent(unsigned int codepoint) {
@@ -366,17 +372,23 @@ bool Screen::scrollCallbackEvent(double x, double y) {
         return scrollEvent(mMousePos, Vector2f(x, y));
 }
 
+Widget* Screen::getCurrentSelection() const { return mSelectedWidget; }
+
 void Screen::updateFocus(Widget *widget) {
     // Save old focus path
     auto oldFocusPath = mFocusPath;
     mFocusPath.clear();
     // Generate new focus path
     Widget *window = nullptr;
+    mSelectedWidget = nullptr;
     while (widget) {
-        mFocusPath.push_back(widget);
-        if (Window::cast(widget))
-            window = widget;
-        widget = widget->parent();
+      if (!mSelectedWidget)
+        mSelectedWidget = widget;
+      
+      mFocusPath.push_back(widget);
+      if (Window::cast(widget))
+        window = widget;
+      widget = widget->parent();
     }
     // Send unfocus events to widgets losing focus.
     for (auto w : oldFocusPath) {
@@ -432,6 +444,5 @@ void Screen::moveWindowToFront(Window *window) {
       }
   } while (changed);
 }
-
 
 NAMESPACE_END(nanogui)

@@ -363,6 +363,24 @@ void Widget::draw(NVGcontext *ctx)
     nvgRestore(ctx);
   }
 
+  if (theme()->keyboardNavigation)
+  {
+    Widget* screen = mFocusChain.empty() ? nullptr : (Widget*)mFocusChain.back();
+    if (screen && (this == screen->getCurrentSelection()))
+    {
+      nvgSave(ctx);
+
+      nvgResetScissor(ctx);
+      nvgBeginPath(ctx);
+      nvgStrokeWidth(ctx, 2.0f);
+      nvgRect(ctx, mPos - Vector2f(3), mSize + Vector2f(6));
+      nvgStrokeColor(ctx, nvgRGBA(0, 0, 255, 255));
+      nvgStroke(ctx);
+
+      nvgRestore(ctx);
+    }
+  }
+
   if (theme()->debugHighlightMouseover)
   {
     if (std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) != mFocusChain.end())

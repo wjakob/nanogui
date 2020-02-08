@@ -813,6 +813,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxObservable{ screen->theme()->windowDrawBorder });
   nav.checkbox(Caption{ "theme.frameDrawBorder" }, CheckboxRef{ screen->theme()->frameDrawBorder });
   nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, CheckboxRef{ screen->theme()->debugHighlightMouseover });
+  nav.checkbox(Caption{ "theme.keyboardNavigation" }, CheckboxRef{ screen->theme()->keyboardNavigation });
 
   auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto& stcfg = iocfg.hgrid2(0.3f, Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
@@ -1164,16 +1165,16 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::sample::create_context();
 
   {
-    ExampleScreen* screen = new ExampleScreen({ 1600, 900 }, "");
-    nanogui::sample::setup_window_params(window, screen);
-    screen->drawAll();
-    screen->setVisible(true);
-    screen->performLayout();
+    ExampleScreen screen({ 1600, 900 }, "");
+    nanogui::sample::setup_window_params(window, &screen);
+    screen.drawAll();
+    screen.setVisible(true);
+    screen.performLayout();
 
-    nanogui::sample::run([=] {
-        nanogui::sample::clear_frame(screen->background());
+    nanogui::sample::run([&] {
+        nanogui::sample::clear_frame(screen.background());
 
-        screen->drawAll();
+        screen.drawAll();
 
         nanogui::sample::present_frame(window);
 

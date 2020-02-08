@@ -196,6 +196,8 @@ public:
     bool canProcessEvents() const { return mProcessEvents; }
     void setPrepareFrameHandler(std::function<void(Screen*)> handler) { mPrepareFrameFunc = handler; }
 
+    Widget* getCurrentSelection() const override;
+
     intptr_t createStandardCursor(int shape);
 
 protected:
@@ -203,6 +205,7 @@ protected:
 
     intptr_t mCursors[(int)Cursor::CursorCount];
     Cursor mCursor;
+    Widget* mSelectedWidget = nullptr;
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;
     float mPixelRatio;

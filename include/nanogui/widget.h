@@ -376,6 +376,8 @@ public:
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
+    virtual Widget* getCurrentSelection() const { return nullptr; }
+
     /// Return current font size. If not set the default of the current theme will be returned
     virtual int fontSize() const;
     /// Set the font size of this widget

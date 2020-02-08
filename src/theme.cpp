@@ -31,6 +31,7 @@ bool Theme::get(const std::string& name, const bool&)
   CHECK(windowMoveFromTitlebarOnly)
   CHECK(windowMoveInParent)
   CHECK_S(windowDrawBorder)
+  CHECK(keyboardNavigation)
   CHECK(frameDrawBorder)
   CHECK(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
@@ -43,6 +44,7 @@ void Theme::set(const std::string& name, const bool& value)
   CHECKSET(windowMoveFromTitlebarOnly)
   CHECKSET(windowMoveInParent)
   CHECKSET_S(windowDrawBorder)
+  CHECKSET(keyboardNavigation)
   CHECKSET(frameDrawBorder)
   CHECKSET(debugHighlightMouseover)
   printf("No get prop for name %s", name.c_str());
@@ -257,6 +259,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelHeaderHeight = 20;
 
   theme.windowDrawBorder = std::make_shared<bool>(true);
+  theme.keyboardNavigation = false;
 
   theme.mPanelHeaderGradientTopNormal = Color(0, 38, 0, 255);
   theme.mPanelHeaderGradientBotNormal = Color(0, 48, 0, 255);
