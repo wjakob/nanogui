@@ -153,8 +153,12 @@ bool ImageView::scrollEvent(const Vector2i& p, const Vector2f& rel) {
     return true;
 }
 
-bool ImageView::keyboardEvent(int key, int /*scancode*/, int action, int modifiers) {
-    if (action) {
+bool ImageView::keyboardEvent(int key, int scancode, int action, int modifiers) 
+{
+  if (!focused())
+    return false;
+
+  if (action) {
         int keycode = key2fourcc(key);
         switch (keycode)
         {
@@ -196,7 +200,8 @@ bool ImageView::keyboardEvent(int key, int /*scancode*/, int action, int modifie
             break;
         }
     }
-    return false;
+  
+  return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
 bool ImageView::keyboardCharacterEvent(unsigned int codepoint) {

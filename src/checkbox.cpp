@@ -73,10 +73,17 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const
 
 bool CheckBox::keyboardEvent(int key, int scancode, int action, int mods)
 {
-  if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action))
+  if (!focused())
+    return false;
+
+  if (isKeyboardActionPress(action)
+      || isKeyboardActionRepeat(action))
   {
     if (isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "ENTR"))
+    {
       toggleCheck();
+      return true;
+    }
   }
 
   return Widget::keyboardEvent(key, scancode, action, mods);

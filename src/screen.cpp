@@ -167,6 +167,12 @@ void Screen::drawWidgets() {
     draw(nvgContext());
     afterDraw(nvgContext());
 
+    /*if (mFocusRequested)
+    {
+      updateFocus(mFocusRequested);
+      mFocusRequested = nullptr;
+    }*/
+
     double elapsed = getTimeFromStart() - mLastInteraction;
 
     if (elapsed > 0.5f) {
@@ -214,25 +220,6 @@ void Screen::drawWidgets() {
     }
 
     nvgEndFrame(nvgContext());
-}
-
-bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
-    if (mFocusPath.size() > 0) {
-        for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused() && (*it)->keyboardEvent(key, scancode, action, modifiers))
-                return true;
-    }
-
-    return false;
-}
-
-bool Screen::keyboardCharacterEvent(unsigned int codepoint) {
-    if (mFocusPath.size() > 0) {
-        for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
-            if ((*it)->focused() && (*it)->keyboardCharacterEvent(codepoint))
-                return true;
-    }
-    return false;
 }
 
 bool Screen::resizeEvent(const Vector2i& size) {
@@ -290,8 +277,8 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 #if NANOGUI_USING_EXCEPTIONS
     try {
 #endif
-        if (mFocusPath.size() > 1) {
-            const Window *dwindow = Window::cast(mFocusPath[mFocusPath.size() - 2]);
+        if (!mFocusPath.empty()) {
+            const Window *dwindow = Window::cast(mFocusPath.back());
             if (dwindow && dwindow->modal()) {
                 if (!dwindow->contains(mMousePos))
                     return false;
@@ -340,7 +327,11 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) 
 {
     mLastInteraction = getTimeFromStart();
-    bool resolved = keyboardEvent(key, scancode, action, mods);
+
+    bool resolved = false;
+    if (!mFocusPath.empty())
+      resolved = mFocusPath.front()->keyboardEvent(key, scancode, action, mods);
+
     if (!resolved)
     {
       if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) 
@@ -351,27 +342,27 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods)
         if (kbup || kbdown) 
         {
           std::vector<Widget*> test;
-          selected->parent()->forEachChild([&](Widget*w) {
+          selected->window()->forEachChild([&](Widget*w) {
             if (w->visible() && w->tabstop())
               test.push_back(w);
           }, true);
           
-          Widget* newselected = nullptr;
+          Widget* mFocusRequested = nullptr;
           if (kbdown)
           {
             auto it = std::find(test.begin(), test.end(), selected);
             if (it != test.end())
-              newselected = (it + 1) != test.end() ? *(it + 1) : nullptr;
+              mFocusRequested = (it + 1) != test.end() ? *(it + 1) : nullptr;
           }
           else
           {
             auto it = std::find(test.rbegin(), test.rend(), selected);
             if (it != test.rend())
-              newselected = (it + 1) != test.rend() ? *(it + 1) : nullptr;
+              mFocusRequested = (it + 1) != test.rend() ? *(it + 1) : nullptr;
           }
 
-          if (newselected)
-            updateFocus(newselected);
+          if (mFocusRequested)
+            updateFocus(mFocusRequested);
         }
       }
     }
@@ -381,7 +372,10 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods)
 
 bool Screen::charCallbackEvent(unsigned int codepoint) {
     mLastInteraction = getTimeFromStart();
-    return keyboardCharacterEvent(codepoint);
+    if (!mFocusPath.empty())
+      return mFocusPath.front()->keyboardCharacterEvent(codepoint);
+
+    return false;
 }
 
 bool Screen::dropCallbackEvent(int count, const char **filenames) {
@@ -393,8 +387,8 @@ bool Screen::dropCallbackEvent(int count, const char **filenames) {
 
 bool Screen::scrollCallbackEvent(double x, double y) {
     mLastInteraction = getTimeFromStart();
-        if (mFocusPath.size() > 1) {
-            const Window *window = Window::cast(mFocusPath[mFocusPath.size() - 2]);
+        if (!mFocusPath.empty()) {
+            const Window *window = Window::cast(mFocusPath.back());
             if (window && window->modal()) {
                 if (!window->contains(mMousePos))
                     return false;
@@ -412,7 +406,7 @@ void Screen::updateFocus(Widget *widget) {
     // Generate new focus path
     Widget *window = nullptr;
     mSelectedWidget = nullptr;
-    while (widget) {
+    while (widget != this) {
       if (!mSelectedWidget)
         mSelectedWidget = widget;
       

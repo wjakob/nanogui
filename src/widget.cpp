@@ -173,8 +173,11 @@ bool Widget::focusEvent(bool focused) {
     return false;
 }
 
-bool Widget::keyboardEvent(int, int, int, int) {
-    return false;
+bool Widget::keyboardEvent(int key, int scancode, int action, int mods) {
+  if (parent())
+    return parent()->keyboardEvent(key, scancode, action, mods);
+
+  return false;
 }
 
 bool Widget::keyboardCharacterEvent(unsigned int) {

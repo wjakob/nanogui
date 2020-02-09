@@ -326,6 +326,9 @@ bool Picflow::mouseButtonEvent(const Vector2i &p, int button, bool down, int mod
 
 bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)
 {
+  if (!focused())
+    return false;
+
   int curTime = getTimeFromStart();
 	//uncheck for double event of keyInput
 	if (isKeyboardKey(key, "RGHT")&& isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))

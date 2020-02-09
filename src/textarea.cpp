@@ -110,8 +110,11 @@ void TextArea::clear()
     m_selection_start = m_selection_end = Vector2i(-1, -1);
 }
 
-bool TextArea::keyboardEvent(int key, int /* scancode */, int action, int modifiers) 
+bool TextArea::keyboardEvent(int key, int scancode, int action, int modifiers) 
 {
+  if (!focused())
+    return false;
+
   const Vector2i nonePos(-1, -1);
     if (m_selectable && focused()) 
     {
@@ -151,7 +154,8 @@ bool TextArea::keyboardEvent(int key, int /* scancode */, int action, int modifi
             return true;
         }
     }
-    return false;
+  
+  return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
 Vector2i TextArea::preferredSize(NVGcontext *) const { return m_max_size + m_padding * 2; }

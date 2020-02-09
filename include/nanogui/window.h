@@ -130,6 +130,7 @@ public:
 protected:
     virtual void requestPerformLayout();
     virtual bool isClickInsideCollapseArea(const Vector2i& clkPnt);
+    void changeCollapsed(bool newstate);
 
 protected:
     std::string mTitle;
@@ -191,6 +192,9 @@ public:
     int getHeaderHeight() const override;
     bool canEdgeResize() const override { return false; }
     Vector2i preferredSize(NVGcontext *ctx) const override;
+    bool tabstop() const { return true; }
+
+    bool keyboardEvent(int key, int scancode, int action, int mods) override;
 
     void setHighlightHeader(bool v) { setDrawFlag(DrawHeaderUnselect, v); }
     Vector4i getWidgetsArea() override;

@@ -384,6 +384,26 @@ bool Window::isClickInsideCollapseArea(const Vector2i& clkPnt)
   return clkPnt.positive() && clkPnt.lessOrEq(mCollapseIconSize.cast<int>());
 }
 
+void Window::changeCollapsed(bool newstate)
+{
+  if (mCollapsed == newstate)
+    return;
+
+  mCollapsed = newstate;
+  requestPerformLayout();
+  if (mCollapsed)
+  {
+    mSaveFixedHeight = mFixedSize.y();
+    mFixedSize.y() = getHeaderHeight();
+  }
+  else
+  {
+    mFixedSize.y() = mSaveFixedHeight;
+    mSaveFixedHeight = 0;
+  }
+  mCollapsedSize = { width(), getHeaderHeight() };
+}
+
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
 {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
@@ -394,19 +414,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
       Vector2i clkPnt = p - mPos - Vector2i(5,5);
       if (down && isClickInsideCollapseArea(clkPnt))
       {
-        mCollapsed = !mCollapsed;
-        requestPerformLayout();
-        if (mCollapsed)
-        {
-          mSaveFixedHeight = mFixedSize.y();
-          mFixedSize.y() = getHeaderHeight();
-        }
-        else
-        {
-          mFixedSize.y() = mSaveFixedHeight;
-          mSaveFixedHeight = 0;
-        }
-        mCollapsedSize = { width(), getHeaderHeight() };
+        changeCollapsed(!mCollapsed);
         return true;
       }
     }
@@ -621,6 +629,34 @@ void Panel::performLayout(NVGcontext *ctx)
 Vector2i Panel::preferredSize(NVGcontext *ctx) const 
 {
   return Window::preferredSize(ctx);
+}
+
+bool Panel::keyboardEvent(int key, int scancode, int action, int mods)
+{
+  if (!focused())
+    return false;
+
+  if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action))
+  {
+    if (isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "ENTR")
+        || isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "SPCE"))
+    {
+      changeCollapsed(!mCollapsed);
+      return true;
+    }
+    else if (isKeyboardKey(key, "LEFT"))
+    {
+      changeCollapsed(true);
+      return true;
+    }
+    else if (isKeyboardKey(key, "RGHT"))
+    {
+      changeCollapsed(false);
+      return true;
+    }
+  }
+
+  return Widget::keyboardEvent(key, scancode, action, mods);
 }
 
 NAMESPACE_END(nanogui)

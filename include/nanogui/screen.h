@@ -119,12 +119,6 @@ public:
     /// Handle a file drop event
     virtual bool dropEvent(const std::vector<std::string> & /* filenames */) { return false; /* To be overridden */ }
 
-    /// Default keyboard event handler
-    bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
-
-    /// Text input event handler: codepoint is native endian UTF-32 format
-    bool keyboardCharacterEvent(unsigned int codepoint) override;
-
     /// Window resize event handler
     virtual bool resizeEvent(const Vector2i& size);
 

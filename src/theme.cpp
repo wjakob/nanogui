@@ -259,7 +259,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelHeaderHeight = 20;
 
   theme.windowDrawBorder = std::make_shared<bool>(true);
-  theme.keyboardNavigation = false;
+  theme.keyboardNavigation = true;
 
   theme.mPanelHeaderGradientTopNormal = Color(0, 38, 0, 255);
   theme.mPanelHeaderGradientBotNormal = Color(0, 48, 0, 255);

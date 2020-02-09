@@ -281,6 +281,9 @@ void EditorWorkspace::_sendHoveredElementChangedEvent()
 
 bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modifiers)
 {
+  if (!focused())
+    return false;
+
   if (isKeyboardActionRelease(action))
   {
     int keycode = key2fourcc(key);
@@ -382,7 +385,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
     return true;
   }
 
-  return false;
+  return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
 bool EditorWorkspace::scrollEvent(const Vector2i &p, const Vector2f &rel)

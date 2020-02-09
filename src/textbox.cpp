@@ -427,95 +427,120 @@ bool TextBox::focusEvent(bool focused) {
     return true;
 }
 
-bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
-    if (mEditable && focused()) {
-        if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) {
-            if (isKeyboardKey(key, "LEFT")) {
-                if (isKeyboardModifierShift(modifiers)) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
+bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) 
+{
+  if (!focused())
+    return false;
 
-                if (mCursorPos > 0)
-                    mCursorPos--;
-            } else if (isKeyboardKey(key, "RGHT")) {
-                if (isKeyboardModifierShift(modifiers)) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                if (mCursorPos < (int) mValueTemp.length())
-                    mCursorPos++;
-            } else if (isKeyboardKey(key, "HOME")) {
-                if (isKeyboardModifierShift(modifiers)) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                mCursorPos = 0;
-            } else if (isKeyboardKey(key, "KEND")) {
-                if (isKeyboardModifierShift(modifiers)) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                mCursorPos = (int) mValueTemp.size();
-            } else if (isKeyboardKey(key, "BACK")) {
-                if (!deleteSelection()) {
-                    if (mCursorPos > 0) {
-                        mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
-                        mCursorPos--;
-
-                        if (mEditCallback)
-                          mEditCallback(mValueTemp, true);
-                    }
-                }
-            } else if (isKeyboardKey(key, "KDEL")) {
-                if (!deleteSelection()) {
-                  if (mCursorPos < (int)mValueTemp.length())
-                  {
-                    mValueTemp.erase(mValueTemp.begin() + mCursorPos);
-                    if (mEditCallback)
-                      mEditCallback(mValueTemp, true);
-                  }
-                }
-            } else if (isKeyboardKey(key, "ENTR")) {
-                if (!mCommitted)
-                    focusEvent(false);
-                if (mComitCallback)
-                {
-                  mComitCallback(this);
-                  return true;
-                }
-            } else if (isKeyboardKey(key, "KEYA") && isKeyboardModifierCtrl(modifiers)) {
-                mCursorPos = (int) mValueTemp.length();
-                mSelectionPos = 0;
-            } else if (isKeyboardKey(key, "KEYX") && isKeyboardModifierCtrl(modifiers)) {
-                copySelection();
-                deleteSelection();
-            } else if (isKeyboardKey(key, "KEYC") && isKeyboardModifierCtrl(modifiers)) {
-                copySelection();
-            } else if (isKeyboardKey(key, "KEYV") && isKeyboardModifierCtrl(modifiers)) {
-                deleteSelection();
-                pasteFromClipboard();
+  if (mEditable) 
+  {
+    if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) {
+        if (isKeyboardKey(key, "LEFT")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
             }
 
-            mValidFormat =
-                (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
+            if (mCursorPos > 0)
+                mCursorPos--;
+        }
+        else if (isKeyboardKey(key, "RGHT")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            if (mCursorPos < (int) mValueTemp.length())
+                mCursorPos++;
+        } 
+        else if (isKeyboardKey(key, "HOME")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            mCursorPos = 0;
+        } 
+        else if (isKeyboardKey(key, "KEND")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            mCursorPos = (int) mValueTemp.size();
+        } 
+        else if (isKeyboardKey(key, "BACK")) 
+        {
+            if (!deleteSelection()) {
+                if (mCursorPos > 0) {
+                    mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
+                    mCursorPos--;
+
+                    if (mEditCallback)
+                      mEditCallback(mValueTemp, true);
+                }
+            }
+        } 
+        else if (isKeyboardKey(key, "KDEL")) 
+        {
+            if (!deleteSelection()) {
+              if (mCursorPos < (int)mValueTemp.length())
+              {
+                mValueTemp.erase(mValueTemp.begin() + mCursorPos);
+                if (mEditCallback)
+                  mEditCallback(mValueTemp, true);
+              }
+            }
+        } 
+        else if (isKeyboardKey(key, "ENTR")) 
+        {
+            if (!mCommitted)
+                focusEvent(false);
+            if (mComitCallback)
+            {
+              mComitCallback(this);
+              return true;
+            }
+        } 
+        else if (isKeyboardKey(key, "KEYA") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            mCursorPos = (int) mValueTemp.length();
+            mSelectionPos = 0;
+        } 
+        else if (isKeyboardKey(key, "KEYX") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            copySelection();
+            deleteSelection();
+        } 
+        else if (isKeyboardKey(key, "KEYC") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            copySelection();
+        } 
+        else if (isKeyboardKey(key, "KEYV") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            deleteSelection();
+            pasteFromClipboard();
         }
 
-        return true;
+        mValidFormat = (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
     }
 
-    return false;
+    return true;
+  }
+
+  return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
 bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
