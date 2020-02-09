@@ -1,5 +1,6 @@
 #include <nanogui/picflow.h>
 #include <nanovg.h>
+#include <nanogui/keyboard.h>
 #include <nanogui/screen.h>
 
 #define DEFAULT_SMOOTH 0.6f
@@ -331,7 +332,7 @@ bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)
 
   int curTime = getTimeFromStart();
 	//uncheck for double event of keyInput
-	if (isKeyboardKey(key, "RGHT")&& isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
+	if (isKeyboardKey(key, kbkey::right)&& isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
 	{
 		next(1);
 		mLastTimeKey = getTimeFromStart();
@@ -339,14 +340,14 @@ bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)
 		return true;
 	}
 
-	if (isKeyboardKey(key, "LEFT") && isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
+	if (isKeyboardKey(key, kbkey::left) && isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
 	{
 		prev(1);
 		mLastTimeKey = getTimeFromStart();
 		return true;
 	}
   
-	if (isKeyboardKey(key, "SPCE") && isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
+	if (isKeyboardKey(key, kbkey::space) && isKeyboardActionPress(action) && (curTime - mLastTimeKey > 20))
 	{
 		mLastTimeKey = getTimeFromStart();
 		return true;

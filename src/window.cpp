@@ -10,6 +10,7 @@
 */
 
 #include <nanogui/window.h>
+#include <nanogui/keyboard.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/entypo.h>
@@ -638,18 +639,17 @@ bool Panel::keyboardEvent(int key, int scancode, int action, int mods)
 
   if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action))
   {
-    if (isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "ENTR")
-        || isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "SPCE"))
+    if (isKeyboardKeys(key, { kbkey::space, kbkey::enter }))
     {
       changeCollapsed(!mCollapsed);
       return true;
     }
-    else if (isKeyboardKey(key, "LEFT"))
+    else if (isKeyboardKey(key, kbkey::left))
     {
       changeCollapsed(true);
       return true;
     }
-    else if (isKeyboardKey(key, "RGHT"))
+    else if (isKeyboardKey(key, kbkey::right))
     {
       changeCollapsed(false);
       return true;

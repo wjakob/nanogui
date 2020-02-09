@@ -429,6 +429,7 @@ add_library(nanogui-obj OBJECT
   # Fonts etc.
   nanogui_resources.cpp
   include/nanogui/common.h src/common.cpp
+  include/nanogui/keyboard.h src/keyboard.cpp
   include/nanogui/widget.h src/widget.cpp
   include/nanogui/theme.h src/theme.cpp
   include/nanogui/layout.h src/layout.cpp

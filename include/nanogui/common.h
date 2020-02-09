@@ -849,6 +849,12 @@ NANOGUI_EXPORT bool isKeyboardActionPress(int action);
 NANOGUI_EXPORT bool isKeyboardActionRepeat(int action);
 NANOGUI_EXPORT bool isKeyboardKeyEscape(int key);
 inline bool isKeyboardKey(int key, const std::string& fourcc) { return key2fourcc(key) == FOURCCS(fourcc); }
+inline bool isKeyboardKeys(int key, const std::vector<std::string>& fourcc) {
+  for (auto& k : fourcc)
+    if (isKeyboardKey(key, k))
+      return true;
+  return false;
+}
 
 /**
 * \brief Determine whether an icon ID is a texture loaded via ``nvgImageIcon``.
