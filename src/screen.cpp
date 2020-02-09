@@ -359,22 +359,22 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods)
           std::vector<Widget*> tabSequence;
           resolveTabSequence(selected->window(), tabSequence);
           
-          Widget* mFocusRequested = nullptr;
+          Widget* focusRequested = nullptr;
           if (kbdown)
           {
             auto it = std::find(tabSequence.begin(), tabSequence.end(), selected);
             if (it != tabSequence.end())
-              mFocusRequested = (it + 1) != tabSequence.end() ? *(it + 1) : nullptr;
+              focusRequested = (it + 1) != tabSequence.end() ? *(it + 1) : nullptr;
           }
           else
           {
             auto it = std::find(tabSequence.rbegin(), tabSequence.rend(), selected);
             if (it != tabSequence.rend())
-              mFocusRequested = (it + 1) != tabSequence.rend() ? *(it + 1) : nullptr;
+              focusRequested = (it + 1) != tabSequence.rend() ? *(it + 1) : nullptr;
           }
 
-          if (mFocusRequested)
-            updateFocus(mFocusRequested);
+          if (focusRequested)
+            updateFocus(focusRequested);
         }
       }
     }

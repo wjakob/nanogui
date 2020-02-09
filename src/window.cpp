@@ -563,7 +563,7 @@ void Panel::draw(NVGcontext *ctx)
 
   if (haveDrawFlag(DrawHeader))
   {
-    bool underMouse = inFocusChain();
+    bool underMouse = inFocusChain() || mFocused;
     const Color& cltop = underMouse ? theme()->mPanelHeaderGradientTopFocus : theme()->mPanelHeaderGradientTopNormal;
     const Color& clbot = underMouse ? theme()->mPanelHeaderGradientBotFocus : theme()->mPanelHeaderGradientBotNormal;
 
@@ -639,6 +639,11 @@ void Panel::performLayout(NVGcontext *ctx)
 Vector2i Panel::preferredSize(NVGcontext *ctx) const 
 {
   return Window::preferredSize(ctx);
+}
+
+bool Panel::focusEvent(bool focused)
+{
+  return Window::focusEvent(focused);
 }
 
 void Panel::drawTabstop(NVGcontext* ctx)

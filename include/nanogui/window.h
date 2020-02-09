@@ -195,6 +195,7 @@ public:
     Vector2i preferredSize(NVGcontext *ctx) const override;
 
     bool keyboardEvent(int key, int scancode, int action, int mods) override;
+    bool focusEvent(bool focused) override; 
 
     void setHighlightHeader(bool v) { setDrawFlag(DrawHeaderUnselect, v); }
     Vector4i getWidgetsArea() override;
