@@ -87,6 +87,7 @@ public:
     void setPushedColor(const Color& c) { mPushedColor = c; }
     void setCheckedColor(const Color& c) { mCheckedColor = c; }
     void setUncheckedColor(const Color& c) { mUncheckedColor = c; }
+    bool tabstop() const { return true; }
 
     void setStateColor(const Color& checked, const Color& unchecked = {}, const Color& pushed = {})
     { mPushedColor = pushed; mCheckedColor = checked; mUncheckedColor = unchecked; }

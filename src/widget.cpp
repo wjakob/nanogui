@@ -363,7 +363,7 @@ void Widget::draw(NVGcontext *ctx)
     nvgRestore(ctx);
   }
 
-  if (theme()->keyboardNavigation)
+  if (theme()->keyboardNavigation && tabstop())
   {
     Widget* screen = mFocusChain.empty() ? nullptr : (Widget*)mFocusChain.back();
     if (screen && (this == screen->getCurrentSelection()))

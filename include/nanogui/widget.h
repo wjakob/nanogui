@@ -212,11 +212,13 @@ public:
       for (WidgetClass* w : widgets) f(w);
     }
 
-    void forEachChild(const std::function<void (Widget*)>& f)
-    { for (Widget* w : mChildren) f(w); }
+    void forEachChild(const std::function<void(Widget*)>& f, bool deep = false)
+    { for (Widget* w : mChildren) { f(w); if (deep) w->forEachChild(f, deep); }}
+
 
     /// Return the size of the widget
     virtual const Vector2i &size() const { return mSize; }
+    virtual bool tabstop() const { return false; }
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
     void setSize(int w, int h) { setSize(Vector2i( w, h )); }

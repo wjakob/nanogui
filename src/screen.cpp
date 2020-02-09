@@ -337,12 +337,43 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 #endif
 }
 
-bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) {
+bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) 
+{
     mLastInteraction = getTimeFromStart();
     bool resolved = keyboardEvent(key, scancode, action, mods);
     if (!resolved)
     {
-      //printf("%d\n", key);
+      if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) 
+      {
+        Widget* selected = getCurrentSelection();
+        bool kbup = isKeyboardKey(key, "KBUP");
+        bool kbdown = isKeyboardKey(key, "DOWN");
+        if (kbup || kbdown) 
+        {
+          std::vector<Widget*> test;
+          selected->parent()->forEachChild([&](Widget*w) {
+            if (w->visible() && w->tabstop())
+              test.push_back(w);
+          }, true);
+          
+          Widget* newselected = nullptr;
+          if (kbdown)
+          {
+            auto it = std::find(test.begin(), test.end(), selected);
+            if (it != test.end())
+              newselected = (it + 1) != test.end() ? *(it + 1) : nullptr;
+          }
+          else
+          {
+            auto it = std::find(test.rbegin(), test.rend(), selected);
+            if (it != test.rend())
+              newselected = (it + 1) != test.rend() ? *(it + 1) : nullptr;
+          }
+
+          if (newselected)
+            updateFocus(newselected);
+        }
+      }
     }
 
     return resolved;
