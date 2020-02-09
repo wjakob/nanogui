@@ -63,6 +63,8 @@ public:
     void setTextHAlign(TextHAlign align) { mTextHAlign = align; }
     void setTextVAlign(TextVAlign align) { mTextVAlign = align; }
 
+    bool tabstop(CanTabStop) const override { return false; }
+
     void setTextAlign(TextHAlign halign, TextVAlign valign) {
       mTextHAlign = halign; mTextVAlign = valign;
     }

@@ -324,6 +324,21 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 #endif
 }
 
+void resolveTabSequence(Widget* w, std::vector<Widget*>& arr)
+{
+  if (w->visible())
+  {
+    if (w->tabstop(Widget::TabStopSelf))
+      arr.push_back(w);
+
+    if (w->tabstop(Widget::TabStopChildren))
+    {
+      for (auto& c : w->children())
+        resolveTabSequence(c, arr);
+    }
+  }
+}
+
 bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods) 
 {
     mLastInteraction = getTimeFromStart();
@@ -341,24 +356,21 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods)
         bool kbdown = isKeyboardKey(key, "DOWN");
         if (kbup || kbdown) 
         {
-          std::vector<Widget*> test;
-          selected->window()->forEachChild([&](Widget*w) {
-            if (w->visible() && w->tabstop())
-              test.push_back(w);
-          }, true);
+          std::vector<Widget*> tabSequence;
+          resolveTabSequence(selected->window(), tabSequence);
           
           Widget* mFocusRequested = nullptr;
           if (kbdown)
           {
-            auto it = std::find(test.begin(), test.end(), selected);
-            if (it != test.end())
-              mFocusRequested = (it + 1) != test.end() ? *(it + 1) : nullptr;
+            auto it = std::find(tabSequence.begin(), tabSequence.end(), selected);
+            if (it != tabSequence.end())
+              mFocusRequested = (it + 1) != tabSequence.end() ? *(it + 1) : nullptr;
           }
           else
           {
-            auto it = std::find(test.rbegin(), test.rend(), selected);
-            if (it != test.rend())
-              mFocusRequested = (it + 1) != test.rend() ? *(it + 1) : nullptr;
+            auto it = std::find(tabSequence.rbegin(), tabSequence.rend(), selected);
+            if (it != tabSequence.rend())
+              mFocusRequested = (it + 1) != tabSequence.rend() ? *(it + 1) : nullptr;
           }
 
           if (mFocusRequested)

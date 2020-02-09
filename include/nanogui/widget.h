@@ -218,7 +218,8 @@ public:
 
     /// Return the size of the widget
     virtual const Vector2i &size() const { return mSize; }
-    virtual bool tabstop() const { return false; }
+    enum CanTabStop { TabStopSelf=0, TabStopChildren };
+    virtual bool tabstop(CanTabStop mode) const;
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
     void setSize(int w, int h) { setSize(Vector2i( w, h )); }
@@ -551,6 +552,7 @@ public:
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();
+    virtual void drawTabstop(NVGcontext *ctx);
 
     /**
      * Convenience definition for subclasses to get the full icon scale for this

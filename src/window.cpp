@@ -493,6 +493,13 @@ bool Window::load(Serializer &s)
   return true;
 }
 
+bool Window::tabstop(CanTabStop mode) const
+{
+  if (mode == CanTabStop::TabStopSelf) return true;
+  if (mode == CanTabStop::TabStopChildren) return !mCollapsed;
+  return false;
+}
+
 Vector4i Window::getWidgetsArea()
 {
   Vector4i area = Widget::getWidgetsArea();
@@ -611,6 +618,8 @@ void Panel::draw(NVGcontext *ctx)
 
   if (!isCollapsed())
     Widget::draw(ctx);
+  else
+    drawTabstop(ctx);
 }
 
 Vector4i Panel::getWidgetsArea()
@@ -630,6 +639,24 @@ void Panel::performLayout(NVGcontext *ctx)
 Vector2i Panel::preferredSize(NVGcontext *ctx) const 
 {
   return Window::preferredSize(ctx);
+}
+
+void Panel::drawTabstop(NVGcontext* ctx)
+{
+  Widget* screen = mFocusChain.empty() ? nullptr : (Widget*)mFocusChain.back();
+  if (screen && (this == screen->getCurrentSelection()))
+  {
+    nvgSave(ctx);
+
+    nvgResetScissor(ctx);
+    nvgBeginPath(ctx);
+    nvgStrokeWidth(ctx, 2.0f);
+    nvgRect(ctx, position() - Vector2i(3), Vector2i(width(), getHeaderHeight()) + Vector2i(6));
+    nvgStrokeColor(ctx, nvgRGBA(0, 0, 255, 255));
+    nvgStroke(ctx);
+
+    nvgRestore(ctx);
+  }
 }
 
 bool Panel::keyboardEvent(int key, int scancode, int action, int mods)
