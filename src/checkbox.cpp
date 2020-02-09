@@ -43,16 +43,20 @@ bool CheckBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
         } 
         else if (mPushed) 
         {
-            if (contains(p)) {
-                mChecked = !mChecked;
-                if (mCallback)
-                    mCallback(mChecked);
-            }
+            if (contains(p))
+              toggleCheck();           
             mPushed = false;
         }
         return true;
     }
     return false;
+}
+
+void CheckBox::toggleCheck()
+{
+  mChecked = !mChecked;
+  if (mCallback)
+    mCallback(mChecked);
 }
 
 Vector2i CheckBox::preferredSize(NVGcontext *ctx) const 
@@ -65,6 +69,17 @@ Vector2i CheckBox::preferredSize(NVGcontext *ctx) const
     prefSize = mFixedSize.fillZero(prefSize);
 
     return prefSize;
+}
+
+bool CheckBox::keyboardEvent(int key, int scancode, int action, int mods)
+{
+  if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action))
+  {
+    if (isKeyboardKey(key, "SPCE") || isKeyboardKey(key, "ENTR"))
+      toggleCheck();
+  }
+
+  return Widget::keyboardEvent(key, scancode, action, mods);
 }
 
 void CheckBox::draw(NVGcontext *ctx) 

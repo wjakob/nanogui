@@ -84,6 +84,8 @@ public:
     /// Sets whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
     void setPushed(bool pushed) { mPushed = pushed; }
 
+    bool keyboardEvent(int key, int scancode, int action, int mods) override;
+
     void setPushedColor(const Color& c) { mPushedColor = c; }
     void setCheckedColor(const Color& c) { mCheckedColor = c; }
     void setUncheckedColor(const Color& c) { mUncheckedColor = c; }
@@ -132,6 +134,8 @@ public:
     virtual bool load(Json::value &load) override;
 
 protected:
+    void toggleCheck();
+
     /// The caption text of this CheckBox.
     std::string mCaption;
 
