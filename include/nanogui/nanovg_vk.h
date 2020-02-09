@@ -898,21 +898,14 @@ static void vknvg_setUniforms(VKNVGcontext *vk, VkDescriptorSet descSet, int uni
     writes[2].descriptorCount = 1;
     writes[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     writes[2].pImageInfo = &image_info;
-  } else {
-    //fixme
-    VKNVGtexture *tex = vknvg_findTexture(vk, 1);
-    image_info.imageLayout = tex->imageLayout;
-    image_info.imageView = tex->view;
-    image_info.sampler = tex->sampler;
 
-    writes[2].dstSet = descSet;
-    writes[2].dstBinding = 2;
-    writes[2].descriptorCount = 1;
-    writes[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    writes[2].pImageInfo = &image_info;
+    vkUpdateDescriptorSets(device, 3, writes, 0, nullptr);
+  } else {
+
+    vkUpdateDescriptorSets(device, 2, writes, 0, nullptr);
   }
 
-  vkUpdateDescriptorSets(device, 3, writes, 0, nullptr);
+  
 }
 
 static void vknvg_fill(VKNVGcontext *vk, VKNVGcall *call) {
@@ -1003,7 +996,8 @@ static void vknvg_convexFill(VKNVGcontext *vk, VKNVGcall *call) {
   for (int i = 0; i < npaths; ++i) {
     const VkDeviceSize offsets[1] = {paths[i].fillOffset * sizeof(NVGvertex)};
     vkCmdBindVertexBuffers(cmdBuffer, 0, 1, &vk->vertexBuffer.buffer, offsets);
-    vkCmdDraw(cmdBuffer, paths[i].fillCount, 1, 0, 0);
+    if (paths[i].fillCount)
+        vkCmdDraw(cmdBuffer, paths[i].fillCount, 1, 0, 0);
   }
   if (vk->flags & NVG_ANTIALIAS) {
     pipelinekey.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;

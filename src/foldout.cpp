@@ -4,6 +4,8 @@
 #include <nanovg.h>
 #include <nanogui/screen.h>
 
+#include <iostream>
+#include <string>
 #include <algorithm>
 
 

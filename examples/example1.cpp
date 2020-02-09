@@ -1166,7 +1166,6 @@ int main(int /* argc */, char ** /* argv */)
   {
     ExampleScreen screen({ 1600, 900 }, "");
     nanogui::sample::setup_window_params(window, &screen);
-    screen.drawAll();
     screen.setVisible(true);
     screen.performLayout();
 

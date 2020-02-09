@@ -3,6 +3,13 @@
 Port to dx12 by megai2
 
 */
+#include <nanogui/screen.h>
+#include <nanogui/theme.h>
+#include <nanogui/window.h>
+#include <nanogui/popup.h>
+#include <nanovg.h>
+#include <map>
+#include <iostream>
 #include "common_dx12.h"
 
 #if NANOGUI_DX12_BACKEND
@@ -226,6 +233,8 @@ const char* dx12GetClipboardString(HWND window)
   return clipboardString;
 }
 
+
+
 bool sample::post_empty_event(void) { PostMessage(hWndmain, WM_NULL, 0, 0); return false; }
 
 bool sample::wait_events(void)
@@ -401,11 +410,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           int button, action;
 
           if (message == WM_LBUTTONDOWN || message == WM_LBUTTONUP)
-            button = MOUSE_BUTTON_LEFT;
+              button = MOUSE_BUTTON_LEFT;
           else if (message == WM_RBUTTONDOWN || message == WM_RBUTTONUP)
-            button = MOUSE_BUTTON_RIGHT;
+              button = MOUSE_BUTTON_RIGHT;
           else if (message == WM_MBUTTONDOWN || message == WM_MBUTTONUP)
-            button = MOUSE_BUTTON_MIDDLE;
+              button = MOUSE_BUTTON_MIDDLE;
+          else
+              button = MOUSE_BUTTON_LEFT;
 
           if (message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN ||
               message == WM_MBUTTONDOWN || message == WM_XBUTTONDOWN)
@@ -545,6 +556,38 @@ void setWindowSize(HWND window, int w, int h)
     SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
 }
 
+/* Calculate pixel ratio for hi-dpi devices. */
+static float get_pixel_ratio(HWND window) {
+    HMONITOR monitor = nullptr;
+    static HMONITOR(WINAPI * MonitorFromWindow_)(HWND, DWORD);
+    static bool MonitorFromWindow_tried = false;
+    if (!MonitorFromWindow_tried) {
+        auto user32 = LoadLibrary(TEXT("user32"));
+        if (user32)
+            MonitorFromWindow_ = (decltype(MonitorFromWindow_))GetProcAddress(user32, "MonitorFromWindow");
+        MonitorFromWindow_tried = true;
+    }
+    if (MonitorFromWindow_)
+        monitor = MonitorFromWindow_(hWndmain, 2);
+    /* The following function only exists on Windows 8.1+, but we don't want to make that a dependency */
+    static HRESULT(WINAPI * GetDpiForMonitor_)(HMONITOR, UINT, UINT*, UINT*) = nullptr;
+    static bool GetDpiForMonitor_tried = false;
+
+    if (!GetDpiForMonitor_tried) {
+        auto shcore = LoadLibrary(TEXT("shcore"));
+        if (shcore)
+            GetDpiForMonitor_ = (decltype(GetDpiForMonitor_))GetProcAddress(shcore, "GetDpiForMonitor");
+        GetDpiForMonitor_tried = true;
+    }
+
+    if (GetDpiForMonitor_ && monitor) {
+        uint32_t dpiX, dpiY;
+        if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
+            return dpiX / 96.0;
+    }
+    return 1.f;
+}
+
 sample::WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
 {
   RECT rcWin;
@@ -565,7 +608,7 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
     rcWin.right += -rcWin.left;
     rcWin.bottom += -rcWin.top;
 
-    hw_window = (void*)CreateWindowEx(0, pszWindowClass, (caption + " (DX11)").c_str(), WS_OVERLAPPEDWINDOW,
+    hw_window = (void*)CreateWindowEx(0, pszWindowClass, (caption + " (DX12)").c_str(), WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, CW_USEDEFAULT, (int)rcWin.right, (int)rcWin.bottom, NULL, NULL, hInstance, NULL);
   }
 
@@ -586,45 +629,17 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
   return hw_window;
 }
 
-void sample::present_frame(void* window) { pDX12.fr_end(); }
+void sample::present_frame(void* window)
+{ 
+    pDX12.fr_end();
+}
+
 void sample::clear_frame(Color background) 
 {
   if (!pDX12.isRunning)
     return;
 
   pDX12.fr_start(); 
-}
-
-/* Calculate pixel ratio for hi-dpi devices. */
-static float get_pixel_ratio(HWND window) {
-  HMONITOR monitor = nullptr;
-  static HMONITOR(WINAPI *MonitorFromWindow_)(HWND, DWORD);
-  static bool MonitorFromWindow_tried = false;
-  if (!MonitorFromWindow_tried) {
-    auto user32 = LoadLibrary(TEXT("user32"));
-    if (user32)
-      MonitorFromWindow_ = (decltype(MonitorFromWindow_))GetProcAddress(user32, "MonitorFromWindow");
-    MonitorFromWindow_tried = true;
-  }
-  if (MonitorFromWindow_)
-    monitor = MonitorFromWindow_(hWndmain, 2);
-  /* The following function only exists on Windows 8.1+, but we don't want to make that a dependency */
-  static HRESULT(WINAPI *GetDpiForMonitor_)(HMONITOR, UINT, UINT*, UINT*) = nullptr;
-  static bool GetDpiForMonitor_tried = false;
-
-  if (!GetDpiForMonitor_tried) {
-    auto shcore = LoadLibrary(TEXT("shcore"));
-    if (shcore)
-      GetDpiForMonitor_ = (decltype(GetDpiForMonitor_))GetProcAddress(shcore, "GetDpiForMonitor");
-    GetDpiForMonitor_tried = true;
-  }
-
-  if (GetDpiForMonitor_ && monitor) {
-    uint32_t dpiX, dpiY;
-    if (GetDpiForMonitor_(monitor, 0 /* effective DPI */, &dpiX, &dpiY) == S_OK)
-      return dpiX / 96.0;
-  }
-  return 1.f;
 }
 
 void sample::create_context() {
@@ -634,7 +649,6 @@ void sample::create_context() {
 }
 
 void sample::destroy_window(sample::WindowHandle) { UnInitializeDX(); }
-
 
 void sample::setup_window_params(WindowHandle hw_window, Screen* screen)
 {
@@ -722,6 +736,8 @@ LPSTR translateCursorShape(int shape)
 
   return nullptr;
 }
+
+void __nanogui_destroy_cursor(intptr_t cursor) { DestroyCursor((HCURSOR)cursor); }
 intptr_t __nanogui_create_cursor(int shape) { return (intptr_t)CopyCursor(LoadCursorA(NULL, translateCursorShape(shape))); }
 
 
