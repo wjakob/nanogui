@@ -337,10 +337,6 @@ public:
 
     struct {
       struct {
-        bool enable = false;
-      } keyboard;
-
-      struct {
         bool enable = true;
         bool drawCursor = true;
       } mouse;

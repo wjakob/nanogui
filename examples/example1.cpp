@@ -772,7 +772,7 @@ void createAllWidgetsDemo(Screen* screen)
     .header("PROGRAMMER GUIDE:")
     .bulletLine("Please see the createAllWidgetsDemo() code in example1.cpp. <- you are here!")
     .bulletLine("Please see the examples/example1.cpp.")
-    .bulletLine("Enable 'theme.nav.keyboard.enable = true' for keyboard controls.")
+    .bulletLine("Enable 'theme.keyboardNavigation = true' for keyboard controls.")
     .bulletLine("Enable 'theme.nav.gamepad.enable= true' for gamepad controls.")
     .separator("")
     .header("USER GUIDE:")
@@ -803,7 +803,6 @@ void createAllWidgetsDemo(Screen* screen)
 
   auto& iocfg = pw.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
   auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
-  nav.checkbox(Caption{ "theme.nav.keyboard.enable" }, CheckboxRef{ screen->theme()->nav.keyboard.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ screen->theme()->nav.mouse.enable });
   nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ screen->theme()->nav.mouse.drawCursor });
   nav.checkbox(Caption{ "theme.textAreaBlinkCursor" }, CheckboxRef{ screen->theme()->textAreaBlinkCursor });
