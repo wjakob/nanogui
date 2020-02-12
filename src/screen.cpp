@@ -14,6 +14,7 @@
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanogui/popup.h>
+#include <nanogui/keyboard.h>
 #include <set>
 #include <nanovg.h>
 #include <algorithm>
@@ -343,13 +344,13 @@ bool Screen::keyCallbackEvent(int key, int scancode, int action, int mods)
     if (!mFocusPath.empty())
       resolved = mFocusPath.front()->keyboardEvent(key, scancode, action, mods);
 
-    if (!resolved)
+    if (theme()->keyboardNavigation && !resolved)
     {
       if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) 
       {
         Widget* selected = getCurrentSelection();
-        bool kbup = isKeyboardKey(key, "KBUP");
-        bool kbdown = isKeyboardKey(key, "DOWN");
+        bool kbup = isKeyboardKey(key, kbkey::up);
+        bool kbdown = isKeyboardKey(key, kbkey::down);
         if (kbup || kbdown) 
         {
           std::vector<Widget*> tabSequence;

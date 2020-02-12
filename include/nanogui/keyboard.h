@@ -20,6 +20,8 @@ namespace kbkey
   extern const char* left;
   extern const char* space;
   extern const char* enter;
+  extern const char* up;
+  extern const char* down;
 };
 
 NAMESPACE_END(nanogui)
