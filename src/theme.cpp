@@ -72,6 +72,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mTooltipOpacity)
   CHECK(mTextBoxCornerRadius)
   CHECK(mWindowDragLine)
+  CHECK_S(innerSpacingCommon)
   CHECK_S(windowPaddingLeft)
   CHECK_S(framePaddingLeft)
   CHECK_S(framePaddingTop)
@@ -101,6 +102,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mTooltipOpacity)
   CHECKSET(mTextBoxCornerRadius)
   CHECKSET(mWindowDragLine)
+  CHECKSET_S(innerSpacingCommon)
   CHECKSET_S(windowPaddingLeft)
   CHECKSET_S(framePaddingLeft)
   CHECKSET_S(framePaddingTop)
@@ -272,6 +274,8 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mPanelCollapsedIcon = ENTYPO_ICON_RIGHT_DIR;
   theme.mPanelExpandedIcon = ENTYPO_ICON_DOWN_DIR;
   theme.mPanelFontSize = 14;
+
+  theme.innerSpacingCommon = std::make_shared<float>(2.f);
 
   theme.frameBorderColor = Color(64, 128);
 

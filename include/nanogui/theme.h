@@ -284,6 +284,8 @@ public:
     shared_float framePaddingLeft;
     shared_float framePaddingTop;
 
+    shared_float innerSpacingCommon;
+
     bool frameDrawBorder = false;
     bool debugHighlightMouseover = false;
     bool keyboardNavigation = true;

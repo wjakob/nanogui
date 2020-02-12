@@ -96,7 +96,9 @@ void CheckBox::draw(NVGcontext *ctx)
     nvgFontFaceSize(ctx, "sans", fontSize());
     nvgFillColor(ctx, mEnabled ? mTheme->mTextColor : mTheme->mDisabledTextColor);
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-    nvgText(ctx, mPos + Vector2i( 0.6f * fontSize() + height(), height() / 2 ), mCaption);
+    nvgText(ctx, mPos + Vector2i( 0.6f * fontSize() + height() + *theme()->innerSpacingCommon, 
+                                  height() / 2 ), 
+            mCaption);
 
     const Color& pushedColor = mPushedColor.notW(mTheme->mCheckboxPushedColor);
     const Color& bgColor = mChecked
