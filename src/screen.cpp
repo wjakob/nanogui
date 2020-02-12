@@ -51,10 +51,6 @@ void Screen::_setupStartParams()
 
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
       mCursors[i] = createStandardCursor(i);
-
-    /// Fixes retina display-related font rendering issue (#185)
-    nvgBeginFrame(nvgContext(), mSize.x(), mSize.y(), mPixelRatio);
-    nvgEndFrame(nvgContext());
 }
 
 void Screen::drawAll() 
@@ -418,14 +414,17 @@ void Screen::updateFocus(Widget *widget) {
     // Generate new focus path
     Widget *window = nullptr;
     mSelectedWidget = nullptr;
-    while (widget != this) {
-      if (!mSelectedWidget)
-        mSelectedWidget = widget;
-      
-      mFocusPath.push_back(widget);
-      if (Window::cast(widget))
-        window = widget;
-      widget = widget->parent();
+    if (widget)
+    {
+      while (widget != this) {
+        if (!mSelectedWidget)
+          mSelectedWidget = widget;
+
+        mFocusPath.push_back(widget);
+        if (Window::cast(widget))
+          window = widget;
+        widget = widget->parent();
+      }
     }
     // Send unfocus events to widgets losing focus.
     for (auto w : oldFocusPath) {
