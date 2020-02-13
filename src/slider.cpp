@@ -66,7 +66,8 @@ bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, in
     return true;
 }
 
-void Slider::draw(NVGcontext* ctx) {
+void Slider::draw(NVGcontext* ctx) 
+{
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
     float kr = (int) (mSize.y() * 0.4f), kshadow = 3;
 
@@ -86,7 +87,8 @@ void Slider::draw(NVGcontext* ctx) {
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 
-    if (mHighlightedRange.second != mHighlightedRange.first) {
+    if (mHighlightedRange.second != mHighlightedRange.first) 
+    {
         nvgBeginPath(ctx);
         nvgRoundedRect(ctx, startX + mHighlightedRange.first * mSize.x(),
                        center.y() - kshadow + 1,
@@ -138,9 +140,12 @@ void Slider::draw(NVGcontext* ctx) {
     nvgStrokePaint(ctx, knobReverse);
     nvgStroke(ctx);
     nvgFill(ctx);
+
+    Widget::draw(ctx);
 }
 
-void Slider::save(Json::value &save) const {
+void Slider::save(Json::value &save) const
+{
   Widget::save(save);
   Json::object obj = save.get_obj();
   obj["value"] = Json::hobject().$("value", mValue).$("type", "float").$("name", "Value");

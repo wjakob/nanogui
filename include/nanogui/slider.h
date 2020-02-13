@@ -53,6 +53,8 @@ public:
     void setValueColorVisible(bool v) { mShowValueWithColor = v; }
     void setValueColor(const Color& c) { mValueColor = c; }
 
+    bool tabstop(CanTabStop) const override { return true; }
+
     std::pair<float, float> highlightedRange() const { return mHighlightedRange; }
     void setHighlightedRange(std::pair<float, float> highlightedRange) { mHighlightedRange = highlightedRange; }
 
