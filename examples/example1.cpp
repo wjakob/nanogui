@@ -54,6 +54,7 @@
 #include <nanogui/picflow.h>
 #include <nanogui/textarea.h>
 #include <nanogui/searchbox.h>
+#include <nanogui/editproperties.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -824,7 +825,7 @@ void createAllWidgetsDemo(Screen* screen)
       else if (item == "White") screen->setTheme<WhiteTheme>();
     }});
   auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); } };
-  stcfg.label("Window padding left");
+  stcfg.label("Window border size");
   stcfg.slider(SliderObservable{ gs()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Window border size");
   stcfg.slider(SliderObservable{ gs()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform);
@@ -849,6 +850,16 @@ void createAllWidgetsDemo(Screen* screen)
                                                             [=](bool v) { dwf(Window::DrawTitle, !v); } });
   wopt.checkbox(Caption{ "No collapse icon" }, CheckboxObservable{ [=] {return !dwf(Window::DrawCollapseIcon); },
                                                            [=](bool v) { dwf(Window::DrawCollapseIcon, !v); } });
+
+}
+
+void makePropEditor(Screen* screen)
+{
+  auto& cwindow = screen->wdg<PropertiesEditor>(Caption{ "Properties" },
+                                 WidgetId{ "#prop_editor" },
+                                 Position{ screen->width() - 300, 0 },
+                                 FixedSize{ 300, screen->height() },
+                                 WindowMovable{ Theme::dgFixed });
 
 }
 
@@ -1034,6 +1045,7 @@ public:
   ExampleScreen(const Vector2i& size, const std::string& caption) : Screen(size, caption, false) {
       initGPUTimer(&gpuTimer);
 
+      makePropEditor(this);
       createButtonDemoWindow(this);
       createBasicWidgets(this);
       createMiscWidgets(this);
@@ -1074,6 +1086,16 @@ public:
           progress->setValue(value);
         if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
           progress->setValue( std::fmod(value * 2, 1.0f));
+
+        if (auto editor = findWidget<PropertiesEditor>("#prop_editor"))
+        {
+          if (lastSelected != mSelectedWidget 
+              && !editor->isMyChildRecursive(mSelectedWidget))
+          {
+            lastSelected = mSelectedWidget;
+            editor->parse(mSelectedWidget);
+          }
+        }
 
         startGPUTimer(&gpuTimer);
 
@@ -1158,6 +1180,7 @@ private:
     nanogui::PerfGraph *cpuGraph = nullptr;
     nanogui::PerfGraph *gpuGraph = nullptr;
     double previousFrameTime = 0, cpuTime = 0;
+    Widget* lastSelected = nullptr;
 };
 
 int main(int /* argc */, char ** /* argv */) 
