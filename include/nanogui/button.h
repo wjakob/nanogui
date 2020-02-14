@@ -97,6 +97,8 @@ public:
     /// Sets the background color of this Button.
     void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
 
+    bool tabstop(CanTabStop) const override { return true; }
+
     /// Returns the text color of the caption of this Button.
     const Color &textColor() const { return mTextColor; }
 
