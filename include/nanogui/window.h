@@ -34,7 +34,7 @@ DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 class NANOGUI_EXPORT Window : public Widget 
 {
 public:
-  RTTI_CLASS_UID("WNDW")
+  RTTI_CLASS_UID(Window)
   RTTI_DECLARE_INFO(Window)
 
   enum DrawFlag {
@@ -175,7 +175,7 @@ DECLSETTER(PanelHighlightHeader, bool)
 class NANOGUI_EXPORT Panel : public Window
 {
 public:
-    RTTI_CLASS_UID("PANL")
+    RTTI_CLASS_UID(Panel)
     RTTI_DECLARE_INFO(Panel)
 
     explicit Panel(Widget *parent, const std::string &title);

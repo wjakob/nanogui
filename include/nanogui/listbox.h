@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ListboxItem : public Button
 {
 public:
-  RTTI_CLASS_UID("LBIT")
+  RTTI_CLASS_UID(ListboxItem)
   RTTI_DECLARE_INFO(ListboxItem)
 
   ListboxItem(Widget* parent, const std::string& str);
@@ -24,7 +24,7 @@ DECLSETTER(ListboxContent, std::function<void(Listbox&)>)
 class NANOGUI_EXPORT Listbox : public Widget
 {
 public:
-  RTTI_CLASS_UID("LSBX")
+  RTTI_CLASS_UID(Listbox)
   RTTI_DECLARE_INFO(Listbox)
 
   Listbox(Widget* parent);

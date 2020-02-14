@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 
 class NANOGUI_EXPORT ProgressBar : public Widget {
 public:
-    RTTI_CLASS_UID("PRGB")
+    RTTI_CLASS_UID(ProgressBar)
     RTTI_DECLARE_INFO(ProgressBar)
 
     explicit ProgressBar(Widget *parent);
@@ -50,7 +50,7 @@ public:
 
 class NANOGUI_EXPORT CircleProgressBar : public ProgressBar {
 public:
-  RTTI_CLASS_UID("PRGC")
+  RTTI_CLASS_UID(CircleProgressBar)
   RTTI_DECLARE_INFO(CircleProgressBar)
 
   CircleProgressBar(Widget *parent);

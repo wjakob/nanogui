@@ -30,7 +30,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT PopupButton : public Button {
 public:
-    RTTI_CLASS_UID("PPBT")
+    RTTI_CLASS_UID(PopupButton)
     RTTI_DECLARE_INFO(PopupButton)
 
     PopupButton(Widget *parent, const std::string &caption = "Untitled",

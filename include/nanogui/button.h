@@ -37,7 +37,7 @@ class NANOGUI_EXPORT Button : public Widget
 public:
     //property(ButtonCallback, std::function<void()>, setCallback)
 
-    RTTI_CLASS_UID("BTTN")
+    RTTI_CLASS_UID(Button)
     RTTI_DECLARE_INFO(Button)
 
     /// Flags to specify the button behavior (can be combined with binary OR)
@@ -241,7 +241,7 @@ public:
 class NANOGUI_EXPORT LedButton : public Button
 {
 public:
-  RTTI_CLASS_UID("LEDB")
+  RTTI_CLASS_UID(LedButton)
   RTTI_DECLARE_INFO(LedButton)
 
   enum Mode { circleCustom=0, rectCustom, triangleCustom, roundrectCustom,
@@ -259,7 +259,7 @@ private:
 class NANOGUI_EXPORT LinkButton : public Button
 {
 public:
-  RTTI_CLASS_UID("LNKB")
+  RTTI_CLASS_UID(LinkButton)
   RTTI_DECLARE_INFO(LinkButton)
 
   LinkButton(Widget* parent);

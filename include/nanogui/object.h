@@ -23,7 +23,7 @@ struct RttiClass
   const char *mRttiName;
   int mRttiObjSize;
   RttiClass* mRttiBase;
-  int mRttiUid;
+  uint32_t mRttiUid;
 
   //RttiClass* createObject();
   bool inherited(const RttiClass* base) const
@@ -93,7 +93,21 @@ private:
     mutable std::atomic<int> m_refCount { 0 };
 };
 
-#define RTTI_CLASS_UID(s) static const int RTTI_CLASS_UID = (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0]));
+struct StrHashNamingParams
+{
+  static constexpr uint32_t basis = 3277247372U;
+  static constexpr uint32_t salt = 84190203;
+};
+
+constexpr uint32_t ClsNameHashRecursive(const char *s, uint32_t h = StrHashNamingParams::basis)
+{
+  return *s == 0 ? h
+            : ClsNameHashRecursive(s + 1, ((int64_t)h * (int64_t)StrHashNamingParams::salt) ^ uint32_t(*s));
+}
+
+constexpr uint32_t StrNameFnHash(const char* str) { return ClsNameHashRecursive(str); }
+
+#define RTTI_CLASS_UID(class_name) static const uint32_t RTTI_CLASS_UID = std::integral_constant<uint32_t, StrNameFnHash(#class_name)>::value;
 
 #define RTTI_CLASS_INFO(class_name) ((RttiClass*)(&class_name::rttiInfo##class_name))
 #define RTTI_CLASS(class_name) RTTI_CLASS_INFO(class_name)

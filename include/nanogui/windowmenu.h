@@ -43,7 +43,7 @@ class BoxLayout;
  */
 class NANOGUI_EXPORT WindowMenu : public ContextMenu {
 public:
-    RTTI_CLASS_UID("WNDM")
+    RTTI_CLASS_UID(WindowMenu)
     RTTI_DECLARE_INFO(WindowMenu)
 
     /**

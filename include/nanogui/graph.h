@@ -23,7 +23,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Graph : public Widget {
 public:
-    RTTI_CLASS_UID("GRPH")
+    RTTI_CLASS_UID(Graph)
     RTTI_DECLARE_INFO(Graph)
 
     Graph(Widget *parent, const std::string &caption = "Untitled");

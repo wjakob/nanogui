@@ -32,6 +32,7 @@
 #include <cmath>
 #include <memory>
 #include <functional>
+#include <type_traits>
 #include <vector>
 
 /* Set to 1 to draw boxes around widgets */
@@ -753,8 +754,6 @@ class CheckBox;
 class ColorWheel;
 class ColorPicker;
 class ComboBox;
-class GLFramebuffer;
-class GLShader;
 class GridLayout;
 class GroupLayout;
 class ImagePanel;

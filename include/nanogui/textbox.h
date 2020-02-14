@@ -40,7 +40,7 @@ DECLSETTER(TextBoxUpdateCallback, std::function<void(TextBox*)>)
 
 class NANOGUI_EXPORT TextBox : public Widget {
 public:
-    RTTI_CLASS_UID("TXTB")
+    RTTI_CLASS_UID(TextBox)
     RTTI_DECLARE_INFO(TextBox)
 
     /// How to align the text in the text box.

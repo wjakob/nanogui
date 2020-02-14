@@ -18,7 +18,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ExplicitColorPicker : public ColorPicker
 {
 public:
-  RTTI_CLASS_UID("ECPK")
+  RTTI_CLASS_UID(ExplicitColorPicker)
   RTTI_DECLARE_INFO(ExplicitColorPicker)
 
   Color MARKED_COLOR = Color(0, 0, 0, 0);

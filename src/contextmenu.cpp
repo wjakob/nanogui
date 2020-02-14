@@ -26,7 +26,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ContextMenuDummy : public ContextMenu
 {
 public:
-  RTTI_CLASS_UID("CMDM")
+  RTTI_CLASS_UID(ContextMenuDummy)
   RTTI_DECLARE_INFO(ContextMenuDummy)
 
   ContextMenuDummy() : ContextMenu(nullptr, "", false) {}
@@ -48,7 +48,7 @@ public:
 class NANOGUI_EXPORT ContextMenuArea : public Widget
 {
 public:
-  RTTI_CLASS_UID("CMNA")
+  RTTI_CLASS_UID(ContextMenuArea)
   RTTI_DECLARE_INFO(ContextMenuArea)
 
   ContextMenuArea(Widget* w) : Widget(w) {}

@@ -37,7 +37,7 @@ DECLSETTER(UnindentWidth, int)
 class NANOGUI_EXPORT TextArea : public Widget 
 {
 public:
-    RTTI_CLASS_UID("TXTA")
+    RTTI_CLASS_UID(TextArea)
     RTTI_DECLARE_INFO(TextArea)
 
     explicit TextArea(Widget *parent);

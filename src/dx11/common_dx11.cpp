@@ -916,7 +916,7 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* screen)
   });
 
   // notify when the screen has lost focus (e.g. application switch)
-  dx11SetWindowFocusCallback([](void *w, int focused) {
+  dx11SetWindowFocusCallback([](void*, int focused) {
     // focused: 0 when false, 1 when true
     s->focusEvent(focused != 0);
   });

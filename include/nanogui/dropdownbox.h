@@ -28,7 +28,7 @@ DECLSETTER(DropdownBoxStrCallback, std::function<void(std::string)>)
 
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
-    RTTI_CLASS_UID("DNBX")
+    RTTI_CLASS_UID(DropdownBox)
     RTTI_DECLARE_INFO(DropdownBox)
 
     using Items = std::vector<std::string>;

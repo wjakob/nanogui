@@ -21,7 +21,7 @@ NAMESPACE_BEGIN(nanogui)
 class DropdownListItem : public Button
 {
 public:
-  RTTI_CLASS_UID("DLSI")
+  RTTI_CLASS_UID(DropdownListItem)
   RTTI_DECLARE_INFO(DropdownListItem)
 
   bool mInlist = true;
@@ -180,7 +180,7 @@ public:
 class DropdownPopup : public Popup
 {
 public:
-  RTTI_CLASS_UID("DPOP")
+  RTTI_CLASS_UID(DropdownPopup)
   RTTI_DECLARE_INFO(DropdownPopup)
 
   int preferredWidth = 0;

@@ -19,7 +19,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT EditorWorkspace : public Widget
 {
 public:
-    RTTI_CLASS_UID("EDWS")
+    RTTI_CLASS_UID(EditorWorkspace)
     RTTI_DECLARE_INFO(EditorWorkspace)
 
     enum EditMode

@@ -28,7 +28,7 @@ DECLSETTER(SliderCallback, std::function<void(float)>)
  */
 class NANOGUI_EXPORT Slider : public Widget {
 public:
-    RTTI_CLASS_UID("SLDR")
+    RTTI_CLASS_UID(Slider)
     RTTI_DECLARE_INFO(Slider)
 
     explicit Slider(Widget *parent);

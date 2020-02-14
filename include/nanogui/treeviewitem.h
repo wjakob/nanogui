@@ -16,7 +16,7 @@ class NANOGUI_EXPORT TreeViewItem : public Label
   int mNodeId;
 
 public:
-  RTTI_CLASS_UID("TRVI")
+  RTTI_CLASS_UID(TreeViewItem)
   RTTI_DECLARE_INFO(TreeViewItem)
 
   using NodeId = int;

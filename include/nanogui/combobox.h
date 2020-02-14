@@ -29,7 +29,7 @@ DECLSETTER(ComboBoxStrCallback, std::function<void(std::string)>)
 
 class NANOGUI_EXPORT ComboBox : public PopupButton {
 public:
-    RTTI_CLASS_UID("CMBX")
+    RTTI_CLASS_UID(ComboBox)
     RTTI_DECLARE_INFO(ComboBox)
 
     using Items = std::vector<std::string>;

@@ -24,7 +24,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT SearchBox : public TextBox
 {
 public:
-  RTTI_CLASS_UID("SRCH")
+  RTTI_CLASS_UID(SearchBox)
   RTTI_DECLARE_INFO(SearchBox)
 
   explicit SearchBox(Widget* parent);

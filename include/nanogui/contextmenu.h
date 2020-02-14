@@ -20,7 +20,7 @@ NAMESPACE_BEGIN(nanogui)
 class NANOGUI_EXPORT ContextMenuLabel : public Label
 {
 public:
-  RTTI_CLASS_UID("CMLB")
+  RTTI_CLASS_UID(ContextMenuLabel)
   RTTI_DECLARE_INFO(ContextMenuLabel)
 
   ContextMenuLabel(Widget* parent, const std::string& caption)
@@ -71,7 +71,7 @@ private:
  */
 class NANOGUI_EXPORT ContextMenu : public Widget {
 public:
-    RTTI_CLASS_UID("CTMN")
+    RTTI_CLASS_UID(ContextMenu)
     RTTI_DECLARE_INFO(ContextMenu)
 
     /**

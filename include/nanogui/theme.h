@@ -30,7 +30,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Theme : public Object {
 public:
-    RTTI_CLASS_UID("THEM")
+    RTTI_CLASS_UID(Theme)
     RTTI_DECLARE_INFO(Theme)
 
     enum WindowDraggable { dgAuto = -1, dgFixed = 0, dgDraggable = 1 };

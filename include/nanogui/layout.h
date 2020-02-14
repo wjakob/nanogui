@@ -52,7 +52,7 @@ enum class Orientation {
  */
 class NANOGUI_EXPORT Layout : public Object {
 public:
-    RTTI_CLASS_UID("LAYT")
+    RTTI_CLASS_UID(Layout)
     RTTI_DECLARE_INFO(Layout)
     /**
      * Performs any and all resizing applicable.
@@ -102,7 +102,7 @@ protected:
  */
 class NANOGUI_EXPORT BoxLayout : public Layout {
 public:
-    RTTI_CLASS_UID("LTBX")
+    RTTI_CLASS_UID(BoxLayout)
     RTTI_DECLARE_INFO(BoxLayout)
 
     /**
@@ -171,7 +171,7 @@ protected:
 class NANOGUI_EXPORT StretchLayout : public BoxLayout
 {
 public:
-  RTTI_CLASS_UID("SHLT")
+  RTTI_CLASS_UID(StretchLayout)
   RTTI_DECLARE_INFO(StretchLayout)
 
   StretchLayout(Orientation orientation) : BoxLayout(orientation) {}
@@ -196,7 +196,7 @@ public:
  */
 class NANOGUI_EXPORT GroupLayout : public Layout {
 public:
-  RTTI_CLASS_UID("GRLT")
+  RTTI_CLASS_UID(GroupLayout)
   RTTI_DECLARE_INFO(GroupLayout)
 
     /**
@@ -288,7 +288,7 @@ DECLSETTER(LayoutHorSpacing, int)
 
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
-  RTTI_CLASS_UID("GRLT")
+  RTTI_CLASS_UID(GridLayout)
   RTTI_DECLARE_INFO(GridLayout)
 
     /**
@@ -452,7 +452,7 @@ public:
  */
 class NANOGUI_EXPORT AdvancedGridLayout : public Layout {
 public:
-    RTTI_CLASS_UID("AGLT")
+    RTTI_CLASS_UID(AdvancedGridLayout)
     RTTI_DECLARE_INFO(AdvancedGridLayout)
     /**
      * \struct Anchor layout.h nanogui/layout.h

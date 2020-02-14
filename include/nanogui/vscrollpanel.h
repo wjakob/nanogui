@@ -25,7 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT VScrollPanel : public Widget {
 public:
-    RTTI_CLASS_UID("VSPN")
+    RTTI_CLASS_UID(VScrollPanel)
     RTTI_DECLARE_INFO(VScrollPanel)
 
     VScrollPanel(Widget *parent);

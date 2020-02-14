@@ -27,7 +27,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Popup : public Window {
 public:
-    RTTI_CLASS_UID("POPP")
+    RTTI_CLASS_UID(Popup)
     RTTI_DECLARE_INFO(Popup)
 
     enum Side { Left = 0, Right };

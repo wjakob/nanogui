@@ -12,7 +12,7 @@ class ScrollBar;
 class NANOGUI_EXPORT Foldout : public Widget
 {
 public:
-  RTTI_CLASS_UID("FLDO")
+  RTTI_CLASS_UID(Foldout)
   RTTI_DECLARE_INFO(Foldout)
 
   struct Page

@@ -12,7 +12,7 @@ class ScrollBar;
 class NANOGUI_EXPORT TreeView : public Widget
 {
 public:
-    RTTI_CLASS_UID("TRVW")
+    RTTI_CLASS_UID(TreeView)
     RTTI_DECLARE_INFO(TreeView)
 
     enum IconState { IconCollapsed=0, IconExpanded, IconCount };

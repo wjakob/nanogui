@@ -30,7 +30,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
-    RTTI_CLASS_UID("TBHR")
+    RTTI_CLASS_UID(TabHeader)
     RTTI_DECLARE_INFO(TabHeader)
 
     TabHeader(Widget *parent, const std::string &font = "sans-bold");

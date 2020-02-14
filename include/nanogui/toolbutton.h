@@ -23,7 +23,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ToolButton : public Button {
 public:
-    RTTI_CLASS_UID("TLBT")
+    RTTI_CLASS_UID(ToolButton)
     RTTI_DECLARE_INFO(ToolButton)
 
     explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
@@ -43,7 +43,7 @@ public:
 
 class NANOGUI_EXPORT ToggleButton : public Button {
 public:
-  RTTI_CLASS_UID("TGBT")
+  RTTI_CLASS_UID(ToggleButton)
   RTTI_DECLARE_INFO(ToggleButton)
 
   explicit ToggleButton(Widget *parent, int icon);

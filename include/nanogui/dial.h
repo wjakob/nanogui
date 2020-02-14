@@ -23,7 +23,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Dial : public Widget {
 public:
-    RTTI_CLASS_UID("DIAL")
+    RTTI_CLASS_UID(Dial)
     RTTI_DECLARE_INFO(Dial)
 
     Dial(Widget *parent);

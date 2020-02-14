@@ -14,7 +14,7 @@ enum GraphrenderStyle {
 class NANOGUI_EXPORT PerfGraph : public Widget
 {
 public:
-  RTTI_CLASS_UID("PHGR")
+  RTTI_CLASS_UID(PerfGraph)
   RTTI_DECLARE_INFO(PerfGraph)
 
   PerfGraph(Widget* parent, int style, const std::string& name, const Vector2i& pos);

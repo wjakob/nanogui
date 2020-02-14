@@ -36,7 +36,7 @@ DECLSETTERARGS(CheckboxObservable, BoolObservable)
 
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
-    RTTI_CLASS_UID("CHCX")
+    RTTI_CLASS_UID(CheckBox)
     RTTI_DECLARE_INFO(CheckBox)
 
     /**

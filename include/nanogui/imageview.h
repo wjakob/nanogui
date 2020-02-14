@@ -26,7 +26,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
-    RTTI_CLASS_UID("IMVW")
+    RTTI_CLASS_UID(ImageView)
     RTTI_DECLARE_INFO(ImageView)
 
     ImageView(Widget* parent, uint32_t imageID);
