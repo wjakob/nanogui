@@ -233,43 +233,25 @@ const char* dx12GetClipboardString(HWND window)
   return clipboardString;
 }
 
-
-
 bool sample::post_empty_event(void) { PostMessage(hWndmain, WM_NULL, 0, 0); return false; }
+bool sample::wait_events(void) { sample::poll_events(); return false; }
 
-bool sample::wait_events(void)
+void sample::frame_loop(std::function<void()> &f)
 {
-  WaitMessage();
+  dx11SetDrawCallback(f);
 
-  sample::poll_events();
-  return false;
-}
-
-static bool dx12showCloseScreen = false;
-bool sample::poll_events(void)
-{
   MSG msg;
   HWND handle;
 
-  //while
-  (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE));
+  while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
   {
-    if (msg.message == WM_QUIT)
-    {
-      // Treat WM_QUIT as a close on all windows
-      // While GLFW does not itself post WM_QUIT, other processes may post
-      // it to this one, for example Task Manager
-
-      dx12showCloseScreen = true;
-    }
-    else
-    {
-      TranslateMessage(&msg);
-      DispatchMessageW(&msg);
-    }
+    TranslateMessage(&msg);
+    DispatchMessageW(&msg);
   }
-  return false;
 }
+
+bool sample::poll_events(void) { return false; }
+
 #define VK_KEY_A                  65
 #define VK_KEY_X                  88
 #define VK_KEY_N                  78
@@ -527,7 +509,7 @@ void init() {
 
 void shutdown() {}
 
-bool appIsShouldCloseScreen(Screen* screen) { return dx12showCloseScreen; }
+bool appIsShouldCloseScreen(Screen* screen) { return false; }
 
 float getTimeFromStart(void)
 {

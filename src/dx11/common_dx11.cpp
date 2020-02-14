@@ -61,6 +61,7 @@ std::function<void(void *, int)> charCallback;
 std::function<void(void *, double x, double y)> scrollCallback;
 std::function<void(void *, int, int)> resizeCallback;
 std::function<void(void *, int)> focusCallback;
+std::function<void()> drawCallback;
 
 void dx11SetCursorPosCallback(const std::function<void (void *, double, double)>& f) { cursorPosCallback = f; }
 void dx11SetMouseButtonCallback(const std::function<void(void *, int, int, int)>& f) { mouseButtonCallback = f; }
@@ -70,6 +71,8 @@ void dx11SetDropCallback(const std::function<void(void *, int , const char **)> 
 void dx11SetScrollCallback(const std::function<void(void *, double , double )> &f) { scrollCallback = f; }
 void dx11SetFramebufferSizeCallback(const std::function<void(void *, int, int)> &f) { resizeCallback = f; }
 void dx11SetWindowFocusCallback(const std::function<void(void *, int )> &f) { focusCallback = f; }
+void dx11SetDrawCallback(const std::function<void()> &f) { drawCallback = f; }
+
 
 /* Calculate pixel ratio for hi-dpi devices. */
 static float get_pixel_ratio(HWND window) {
@@ -249,39 +252,9 @@ const char* dx11GetClipboardString(HWND window)
 }
 
 bool sample::post_empty_event() { PostMessage(hWndmain, WM_NULL, 0, 0); return false; }
-bool sample::wait_events()
-{
-  WaitMessage();
+bool sample::wait_events() { poll_events(); return false; }
+bool sample::poll_events() { return false; }
 
-  poll_events();
-  return false;
-}
-
-static bool dx11showCloseScreen = false;
-bool sample::poll_events()
-{
-  MSG msg;
-  HWND handle;
-
-  //while
-  (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE));
-  {
-    if (msg.message == WM_QUIT)
-    {
-      // Treat WM_QUIT as a close on all windows
-      // While GLFW does not itself post WM_QUIT, other processes may post
-      // it to this one, for example Task Manager
-
-      dx11showCloseScreen = true;
-    }
-    else
-    {
-      TranslateMessage(&msg);
-      DispatchMessageW(&msg);
-    }
-  }
-  return false;
-}
 #define VK_KEY_A                  65
 #define VK_KEY_X                  88
 #define VK_KEY_N                  78
@@ -348,6 +321,20 @@ static int getKeyMods(void)
 
 void __nanogui_destroy_cursor(intptr_t) {}
 void sample::destroy_window(sample::WindowHandle) {}
+
+void sample::frame_loop(std::function<void()> &f)
+{
+  dx11SetDrawCallback(f);
+
+  MSG msg;
+  HWND handle;
+
+  while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+  {
+    TranslateMessage(&msg);
+    DispatchMessageW(&msg);
+  }
+}
 
 BOOL InitializeDX(void* window, unsigned int x, unsigned int y)
 {
@@ -646,7 +633,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             if (cursorPosCallback)
               cursorPosCallback(hWnd, xm, ym);
         }
-        break;
+break;
 
         case WM_LBUTTONDOWN:
         case WM_RBUTTONDOWN:
@@ -667,7 +654,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             button = MOUSE_BUTTON_MIDDLE;
 
           if (message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN ||
-              message == WM_MBUTTONDOWN || message == WM_XBUTTONDOWN)
+            message == WM_MBUTTONDOWN || message == WM_XBUTTONDOWN)
           {
             action = MOUSE_PRESS;
             SetCapture(hWnd);
@@ -689,35 +676,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
         // Painting
-      case WM_PAINT:
+        case WM_PAINT:
         {
-            //Draw(hWnd);
-            //ValidateRect(hWnd, NULL);
+          if (drawCallback)
+            drawCallback();
         }
-      break;
+        break;
 
         // Sizing
-      case WM_SIZE:
+        case WM_SIZE:
         {
-            nanogui::resizeWindow(LOWORD(lParam), HIWORD(lParam));
+          nanogui::resizeWindow(LOWORD(lParam), HIWORD(lParam));
         }
-      break;
+        break;
 
-      case WM_SETFOCUS:
-      {
-        if (focusCallback)
-          focusCallback(hWnd, 1);
+        case WM_SETFOCUS:
+        {
+          if (focusCallback)
+            focusCallback(hWnd, 1);
 
-        return 0;
-      }
+          return 0;
+        }
 
-      case WM_MOUSEWHEEL:
+        case WM_MOUSEWHEEL:
         {
           scrollCallback(hWnd, 0.0, (SHORT)HIWORD(wParam) / (double)WHEEL_DELTA);
           return 0;
         }
 
-      case WM_MOUSEHWHEEL:
+        case WM_MOUSEHWHEEL:
         {
           // This message is only sent on Windows Vista and later
           // NOTE: The X-axis is inverted for consistency with OS X and X11.
@@ -725,25 +712,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
           return 0;
         }
 
-      case WM_ERASEBKGND:
+        case WM_ERASEBKGND:
         {
-            // No need to erase background
-        return 1;
+          // No need to erase background
+          return 1;
         }
-      break;
+        break;
 
-      case WM_DESTROY:
+        case WM_DESTROY:
         {
-            nanogui::UnInitializeDX();
+          nanogui::UnInitializeDX();
 
-            // Quit the app
-            PostQuitMessage(0);
+          // Quit the app
+          PostQuitMessage(0);
         }
-      break;
+        break;
 
-      default: return DefWindowProc(hWnd, message, wParam, lParam);
+        default: return DefWindowProc(hWnd, message, wParam, lParam);
     }
-  return 0;
+    return 0;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
@@ -777,7 +764,7 @@ void init() {
 
 void shutdown() {}
 
-bool appIsShouldCloseScreen(Screen* screen) { return dx11showCloseScreen; }
+bool appIsShouldCloseScreen(Screen* screen) { return false; }
 
 float getTimeFromStart(void)
 {

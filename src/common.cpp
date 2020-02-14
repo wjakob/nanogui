@@ -68,8 +68,6 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
   return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
 }
 
-static bool mainloop_active = false;
-
 void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
 void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
 void nvgTranslate(NVGcontext* ctx, const Vector2i& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
@@ -90,7 +88,7 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 
 namespace sample
 {
-
+  bool mainloop_active = false;
   void run(std::function<void()> frame_func, int refresh)
   {
     if (mainloop_active)
@@ -99,7 +97,7 @@ namespace sample
     mainloop_active = true;
 
     std::thread refresh_thread;
-    if (refresh > 0) {
+    if (refresh < 0) {
       /* If there are no mouse/keyboard events, try to refresh the
          view roughly every 50 ms (default); this is to support animations
          such as progress bars while keeping the system load
@@ -115,32 +113,13 @@ namespace sample
       );
     }
 
-#if NANOGUI_USING_EXCEPTION
-    try {
-#endif
-      while (mainloop_active)
-        frame_func();
-#if NANOGUI_USING_EXCEPTION
-    }
-    catch (const std::exception &e) {
-      std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-      leave();
-    }
-#endif
+    frame_loop(frame_func);
 
     if (refresh > 0)
       refresh_thread.join();
   }
 
 } //end namespace sample
-
-void leave() {
-    mainloop_active = false;
-}
-
-bool active() {
-    return mainloop_active;
-}
 
 std::array<char, 8> utf8(int c) {
     std::array<char, 8> seq;

@@ -342,6 +342,8 @@ void sample::destroy_window(WindowHandle wnd)
 void __nanogui_destroy_cursor(intptr_t cursor) { glfwDestroyCursor((GLFWcursor*)cursor); }
 intptr_t __nanogui_create_cursor(int shape) { return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape); }
 
+void sample::frame_loop(std::function<void()> &f) { while (true) { f(); }; }
+
 void sample::create_context()
 {
   VKNVGCreateInfo create_info = { 0 };
