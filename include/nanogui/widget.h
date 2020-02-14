@@ -542,11 +542,8 @@ public:
     template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
     template<typename... Args>TextArea& text(const Args&... args) { return wdg<TextArea>(args...); }
     template<typename... Args>Panel& panel(const Args&... args) { return wdg<Panel>(args...); }
-    template<typename... Args>Panel& hgrid2(float split, const Args&... args) {
-      auto& w = wdg<Panel>(args...); 
-      w.withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill});
-      return w;
-    }
+    template<typename... Args>Panel& hgrid2(float split, const Args&... args) { auto& w=wdg<Panel>(args...); w.withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill}); return w; }
+    template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
 
 protected:

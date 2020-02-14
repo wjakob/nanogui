@@ -70,85 +70,74 @@ void PropertiesEditor::parse(Widget* w)
     w->save(*_data);
     Json::object& objects = _data->get_obj();
 
+    int hh = 20;
+    auto titleSize = FixedSize{ width() * mNameColumnWidthPerc, hh };
+    auto valueSize = FixedSize{ width() * mValueColumnWidthPerc, hh };
+
+    auto& typeProp = panel.widget(WidgetGridLayout{});
+    typeProp.label(Caption{ "Widget type" }, titleSize);
+    typeProp.textbox(TextValue{ w->rttiClass()->mRttiName }, valueSize);
+
     for (auto& obj : objects)
     {
       Json::value& jval = obj.second;
-      auto& grid = panel.widget();
-      grid.withLayout<GridLayout>();
+      auto& grid = panel.widget(WidgetGridLayout{});
 
       auto capvalue = jval.get_str("name");
       auto typevalue = jval.get_str("type");
 
       //_data->get(keyCaption, keyCaptionValue);
-      auto& wcaption = grid.label(Caption{ capvalue.empty() ? obj.first : capvalue });
+      auto& wcaption = grid.label(Caption{ capvalue.empty() ? obj.first : capvalue },
+                                  titleSize);
       std::cout << capvalue << std::endl;
 
-      int wname = width() * mNameColumnWidthPerc;
-      int ww = width() * mValueColumnWidthPerc;
-      int hh = 20;
-      wcaption.setWidth(wname);
-      wcaption.setFixedWidth(ww);
       if (typevalue == "position")
       {
-        auto& ex = grid.intbox<int>(InitialValue{ (float)jval.get_int("x") });
+        auto& ex = grid.intbox<int>(InitialValue{ (float)jval.get_int("x") }, valueSize);
         ex.setCallback([&](int v) { jval.set_int("x", v); updateAttribs(); });
         ex.setEditCallback( [&](int v, bool c) { if (c) { jval.set_int("x", v); updateAttribs(); } });
         ex.setEditable(true);
-        ex.setSize(ww, hh);
-        ex.setFixedSize({ ww, hh });
         grid.label("");
-        auto& ey = grid.intbox<int>(InitialValue{ (float)jval.get_int("y") });
+        auto& ey = grid.intbox<int>(InitialValue{ (float)jval.get_int("y") }, valueSize);
         ey.setCallback([&](int v) { jval.set_int("y", v); updateAttribs(); });
         ey.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("y", v); updateAttribs(); } });
         ey.setEditable(true);
-        ey.setSize(ww, hh);
-        ey.setFixedSize({ ww, hh });
       }
       else if (typevalue == "size")
       {
-        auto& ew = grid.intbox<int>(InitialValue{ (float)jval.get_int("w") });
+        auto& ew = grid.intbox<int>(InitialValue{ (float)jval.get_int("w") }, valueSize);
         ew.setCallback([&](int v) { jval.set_int("w", v); updateAttribs(); });
         ew.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("w", v); updateAttribs(); } });
         ew.setEditable(true);
-        ew.setSize(ww, hh);
-        ew.setFixedSize({ ww, hh });
         grid.label("");
-        auto& eh = grid.intbox<int>(InitialValue{ (float)jval.get_int("h") });
+        auto& eh = grid.intbox<int>(InitialValue{ (float)jval.get_int("h") }, valueSize);
         eh.setCallback([&](int v) { jval.set_int("h", v); updateAttribs(); });
         eh.setEditCallback([&](int v, bool c) { if (c) { jval.set_int("h", v); updateAttribs(); } });
         eh.setEditable(true);
-        eh.setSize(ww, hh);
-        eh.setFixedSize({ ww, hh });
       }
       else if (typevalue == "boolean")
       {
         auto& ch = grid.checkbox(Caption{ "" },
                                  CheckboxCallback{ [&](bool v) { jval.set_bool("value", v); updateAttribs(); } }, 
-                                 CheckboxState{ jval.get_bool("value") });
-        ch.setSize(ww, hh);
-        ch.setFixedSize({ ww, hh });
+                                 CheckboxState{ jval.get_bool("value") },
+                                 valueSize);
       }
       else if (typevalue == "integer")
       {
-        auto& e = grid.intbox<int>(InitialValue{ (float)jval.get_int("value") });
+        auto& e = grid.intbox<int>(InitialValue{ (float)jval.get_int("value") }, valueSize);
         e.setCallback([&](int v) { jval.set_int("value", v); updateAttribs(); });
         e.setEditable(true);
-        e.setSize(ww, hh);
-        e.setFixedSize({ ww, hh });
       }
       else if (typevalue == "string")
       {
-        auto& e = grid.wdg<TextBox>(TextValue{ jval.get_str("value") });
+        auto& e = grid.textbox(TextValue{ jval.get_str("value") }, valueSize);
         e.setCallback([&](const std::string& v) -> bool { jval.set_str("value", v); updateAttribs(); return true; });
         e.setEditCallback([&](const std::string& v, bool) { jval.set_str("value", v); updateAttribs(); } );
         e.setEditable(true);
-        e.setSize(ww, hh);
-        e.setFixedSize({ ww, hh });
       }
       else if (typevalue == "color")
       {
-        auto& cp = grid.wdg<ColorPicker>(Color(jval.get_int("color")));
-        cp.setFixedSize({ww, hh});
+        auto& cp = grid.wdg<ColorPicker>(InitialColor{ jval.get_int("color") }, valueSize);
         cp.setSide(Popup::Side::Left);
         cp.setFinalCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
         cp.setCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });

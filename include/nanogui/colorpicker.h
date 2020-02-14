@@ -25,9 +25,11 @@ NAMESPACE_BEGIN(nanogui)
  * \brief Push button with a popup to tweak a color value.  This widget was
  *        contributed by Christian Schueller.
  */
+DECLSETTERARGS(InitialColor, Color)
+
 class NANOGUI_EXPORT ColorPicker : public PopupButton {
 public:
-    RTTI_CLASS_UID(ColorPicker)
+  RTTI_CLASS_UID(ColorPicker)
     RTTI_DECLARE_INFO(ColorPicker)
 
     /**
@@ -39,7 +41,13 @@ public:
      * \param color
      *     The color initially selected by this ColorPicker (default: Red).
      */
-    ColorPicker(Widget *parent, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f));
+    explicit ColorPicker(Widget *parent, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f));
+
+    using PopupButton::set;
+    template<typename... Args>
+    ColorPicker(Widget* parent, const Args&... args)
+      : ColorPicker(parent, Color(1.0f, 0.0f, 0.0f, 1.0f)) { set<ColorPicker, Args...>(args...); }
+
 
     /// The callback executed when the ColorWheel changes.
     std::function<void(const Color &)> callback() const { return mCallback; }
@@ -124,6 +132,7 @@ protected:
     Button *mResetButton;
 
 public:
+  PROPSETTER(InitialColor,setColor)
 };
 
 NAMESPACE_END(nanogui)
