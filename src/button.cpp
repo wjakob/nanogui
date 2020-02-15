@@ -14,7 +14,6 @@
 #include <nanovg.h>
 #include <nanogui/common.h>
 #include <nanogui/serializer/json.h>
-#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -269,18 +268,8 @@ void Button::draw(NVGcontext *ctx)
     Widget::draw(ctx);
 }
 
-void Button::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("caption", mCaption);
-    s.set("icon", mIcon);
-    s.set("iconPosition", (int) mIconPosition);
-    s.set("pushed", mPushed);
-    s.set("flags", mFlags);
-    s.set("backgroundColor", mBackgroundColor);
-    s.set("textColor", mTextColor);
-}
-
-void Button::save(Json::value &save) const {
+void Button::save(Json::value &save) const 
+{
   Widget::save(save);
   Json::object obj = save.get_obj();
   obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
@@ -293,7 +282,8 @@ void Button::save(Json::value &save) const {
   save = Json::value(obj);
 }
 
-bool Button::load(Json::value &save) {
+bool Button::load(Json::value &save) 
+{
   Widget::load(save);
   auto c = save.get("caption"); mCaption = c.get_str("value");
   auto i = save.get("icon"); mIcon = i.get_int("value");
@@ -301,18 +291,6 @@ bool Button::load(Json::value &save) {
   auto ph = save.get("pushed"); mPushed = ph.get_bool("value");
   auto bg = save.get("backgroundColor"); mBackgroundColor = Color(bg.get_int("color"));
   auto tc = save.get("textColor"); mTextColor = Color(tc.get_int("color"));
-  return true;
-}
-
-bool Button::load(Serializer &s) {
-  if (!Widget::load(s)) return false;
-  if (!s.get("caption", mCaption)) return false;
-  if (!s.get("icon", mIcon)) return false;
-  if (!s.get("iconPosition", mIconPosition)) return false;
-  if (!s.get("pushed", mPushed)) return false;
-  if (!s.get("flags", mFlags)) return false;
-  if (!s.get("backgroundColor", mBackgroundColor)) return false;
-  if (!s.get("textColor", mTextColor)) return false;
   return true;
 }
 

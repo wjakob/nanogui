@@ -165,11 +165,9 @@ public:
     void draw(NVGcontext *ctx) override;
 
     /// Saves the state of this Button provided the given Serializer.
-    void save(Serializer &s) const override;
     void save(Json::value &s) const override;
 
     /// Sets the state of this Button provided the given Serializer.
-    bool load(Serializer &s) override;
     bool load(Json::value &s) override;
 
     void setDrawFlags(int flags) { mDrawFlags = flags; }

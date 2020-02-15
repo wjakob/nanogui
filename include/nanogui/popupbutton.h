@@ -48,12 +48,12 @@ public:
 
     Popup& popupref() { return *popup(); }
 
-    virtual void draw(NVGcontext* ctx) override;
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
-    virtual void performLayout(NVGcontext *ctx) override;
+    void draw(NVGcontext* ctx) override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+    void performLayout(NVGcontext *ctx) override;
 
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    void save(Json::value &save) const override;
+    bool load(Json::value &save) override;
 protected:
     Popup *mPopup;
     int mChevronIcon;
