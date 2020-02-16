@@ -13,24 +13,15 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <type_traits>
 
 NAMESPACE_BEGIN(nanogui)
 
 using FloatPair = std::pair<float, float>;
-DECLSETTER(SliderObservable, FloatObservable)
+DECLSETTERARGS(SliderObservable, FloatObservable)
 DECLSETTERILIST(SliderRange, FloatPair)
 DECLSETTER(SliderCallback, std::function<void(float)>)
 
-struct SliderValueRef : public FloatObservable
-{
-  SliderValueRef& value;
-
-  template<class Scalar>
-  SliderValueRef(Scalar& ref) :
-    FloatObservable([&ref]() { return static_cast<float>(ref); }, [&ref](float v) { ref = v; }),
-    value (*this)
-  {}
-};
 
 /**
  * \class Slider slider.h nanogui/slider.h
@@ -95,7 +86,7 @@ protected:
 public:
   PROPSETTER(InitialValue, setValue)
   PROPSETTER(SliderObservable, setObservable)
-  PROPSETTER(SliderValueRef, setObservable)
+  PROPSETTERVAL(FloatObservableFunc, setObservable)
   PROPSETTER(SliderRange, setRange)
   PROPSETTER(SliderCallback, setCallback)
 };

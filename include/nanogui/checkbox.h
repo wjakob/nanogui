@@ -31,8 +31,6 @@ NAMESPACE_BEGIN(nanogui)
 
 DECLSETTER(CheckboxState, bool)
 DECLSETTER(CheckboxCallback, std::function<void(bool)>)
-DECLSETTER(CheckboxRef, bool&)
-DECLSETTERARGS(CheckboxObservable, BoolObservable)
 
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
@@ -99,7 +97,6 @@ public:
 
     /// Sets the callback to be executed when this CheckBox is checked / unchecked.
     void setCallback(const std::function<void(bool)> &callback) { mCallback = callback; }
-    void setRefCallback(bool &ref) { mCallback = [&](bool c) { ref = c; }; mChecked = ref; }
 
     /**
      * The mouse button callback will return ``true`` when all three conditions are met:
@@ -157,8 +154,8 @@ public:
   PROPSETTER(CheckboxState, setChecked)
   PROPSETTER(Caption, setCaption)
   PROPSETTER(CheckboxCallback, setCallback)
-  PROPSETTER(CheckboxRef, setRefCallback)
-  PROPSETTER(CheckboxObservable, setObservable)
+  PROPSETTERVAL(BoolObservableRef, setObservable)
+  PROPSETTERVAL(BoolObservable, setObservable)
   PROPSETTER(FontSize,setFontSize)
 };
 

@@ -582,12 +582,21 @@ struct BoolObservable {
   std::function<bool()> _get;
   std::function<void(bool)> _set;
   BoolObservable() : _b(std::make_shared<bool>()) {}
-  BoolObservable(shared_bool b) : _b(b) {}
-  BoolObservable(std::function<bool()> g, std::function<void(bool)> s = nullptr)
+  explicit BoolObservable(shared_bool b) : _b(b) {}
+  explicit BoolObservable(std::function<bool()> g, std::function<void(bool)> s = nullptr)
     : _get(g), _set(s) {}
+
+  explicit BoolObservable(std::function<bool& ()> _gs)
+    : _get([_gs]() {return static_cast<bool>(_gs()); }),
+      _set([_gs](bool v) { _gs() = v; }) {}
 
   operator bool() const { return _b ? *_b : _get ? _get() : false; }
   void operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; }
+};
+
+struct BoolObservableRef : public BoolObservable {
+  explicit BoolObservableRef(bool& ref)
+    : BoolObservable([&]() {return ref;}, [&](bool v){ref = v;}) {}
 };
 
 template<class Scalar>
@@ -595,17 +604,34 @@ struct ScalarObservable {
   std::shared_ptr<Scalar> _v;
   std::function<Scalar()> _get;
   std::function<void(Scalar)> _set;
-  ScalarObservable(const Scalar& v = Scalar()) : _v(std::make_shared<Scalar>()) { *_v = v; }
-  ScalarObservable(std::shared_ptr<Scalar> v) : _v(v) {}
-  ScalarObservable(std::function<Scalar()> g, std::function<void(const Scalar&)> s = nullptr)
+  explicit ScalarObservable(const Scalar& v = Scalar()) : _v(std::make_shared<Scalar>()) { *_v = v; }
+  explicit ScalarObservable(std::shared_ptr<Scalar> v) : _v(v) {}
+  explicit ScalarObservable(std::function<Scalar()> g, std::function<void(Scalar)> s)
     : _get(g), _set(s) {}
+
+  
 
   operator typename Scalar() const { return _v ? *_v : _get ? _get() : Scalar(); }
   void operator=(typename Scalar v) { _v ? *_v = v : _set ? _set(v) : Scalar(); }
 };
 
+template<class Scalar>
+struct ScalarObservableFunc : public ScalarObservable<Scalar>
+{
+  template<typename T>
+  ScalarObservableFunc(std::initializer_list<T> il)
+  {
+    _v = nullptr;
+    T _gs = *il.begin();
+    _get = [_gs]() { return static_cast<Scalar>(_gs()); };
+    _set = [_gs](Scalar v) mutable { _gs() = v; };
+  }
+};
+
 using IntObservable = ScalarObservable<int>;
 using FloatObservable = ScalarObservable<float>;
+using FloatObservableFunc = ScalarObservableFunc<float>;
+
 
 //! Calculates the angle of this vector in degrees in the trigonometric sense.
 /** 0 is to the right (3 o'clock), values increase counter-clockwise.

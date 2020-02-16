@@ -805,16 +805,25 @@ void createAllWidgetsDemo(Screen* screen)
   auto& iocfg = pw.panel(Caption{ "Configuration" }, WindowCollapsed{ true });
   auto& nav = iocfg.panel(Caption{ "Configuration" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto gs = [screen] { return screen->theme(); };
-  nav.checkbox(Caption{ "theme.nav.mouse.enable" }, CheckboxRef{ gs()->nav.mouse.enable });
-  nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, CheckboxRef{ gs()->nav.mouse.drawCursor });
-  nav.checkbox(Caption{ "theme.textAreaBlinkCursor" }, CheckboxRef{ gs()->textAreaBlinkCursor });
-  nav.checkbox(Caption{ "theme.windowMoveFromTitlebarOnly" }, CheckboxRef{ gs()->windowMoveFromTitlebarOnly });
-  nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, CheckboxRef{ gs()->windowResizeFromEdge });
-  nav.checkbox(Caption{ "theme.windowMoveInParent" }, CheckboxRef{ gs()->windowMoveInParent });
-  nav.checkbox(Caption{ "theme.windowDrawBorder" }, CheckboxObservable{ gs()->windowDrawBorder });
-  nav.checkbox(Caption{ "theme.frameDrawBorder" }, CheckboxRef{ gs()->frameDrawBorder });
-  nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, CheckboxRef{ gs()->debugHighlightMouseover });
-  nav.checkbox(Caption{ "theme.keyboardNavigation" }, CheckboxRef{ gs()->keyboardNavigation });
+  nav.checkbox(Caption{ "theme.nav.mouse.enable" }, BoolObservable{ [gs]{return gs()->nav.mouse.enable; },
+                                                                    [gs](bool v) { gs()->nav.mouse.enable = v; }});
+  nav.checkbox(Caption{ "theme.nav.mouse.drawCursor" }, BoolObservable{ [gs] {return gs()->nav.mouse.drawCursor; },
+                                                                        [gs](bool v) { gs()->nav.mouse.drawCursor = v; }});
+  nav.checkbox(Caption{ "theme.textAreaBlinkCursor" }, BoolObservable{ [gs] {return gs()->textAreaBlinkCursor; },
+                                                                       [gs](bool v) { gs()->textAreaBlinkCursor = v; }});
+  nav.checkbox(Caption{ "theme.windowMoveFromTitlebarOnly" }, BoolObservable{ [gs] {return gs()->windowMoveFromTitlebarOnly; },
+                                                                              [gs](bool v) { gs()->windowMoveFromTitlebarOnly = v; }});
+  nav.checkbox(Caption{ "theme.windowEesizeFromEdge" }, BoolObservable{ [gs] {return gs()->windowResizeFromEdge; },
+                                                                        [gs](bool v) { gs()->windowResizeFromEdge = v; }});
+  nav.checkbox(Caption{ "theme.windowMoveInParent" }, BoolObservable{ [gs] {return gs()->windowMoveInParent; },
+                                                                      [gs](bool v) { gs()->windowMoveInParent = v; }});
+  nav.checkbox(Caption{ "theme.windowDrawBorder" }, BoolObservable{ gs()->windowDrawBorder });
+  nav.checkbox(Caption{ "theme.frameDrawBorder" }, BoolObservable{ [gs] {return gs()->frameDrawBorder; },
+                                                                   [gs](bool v) { gs()->frameDrawBorder = v; }});
+  nav.checkbox(Caption{ "theme.debugHighlightMouseover" }, BoolObservable{ [gs] {return gs()->debugHighlightMouseover; },
+                                                                           [gs](bool v) { gs()->debugHighlightMouseover = v; }});
+  nav.checkbox(Caption{ "theme.keyboardNavigation" }, BoolObservable{ [gs] {return gs()->keyboardNavigation; },
+                                                                      [gs](bool v) { gs()->keyboardNavigation = v; }});
 
   auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto& stcfg = iocfg.hgrid2(0.3f, Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
@@ -838,7 +847,7 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.label("Inner spacing left");
   stcfg.slider(SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Tool button side");
-  stcfg.slider(SliderValueRef{ gs()->toolButtonSide }, SliderRange{ 15.f, 50.f }, screenPerform);
+  stcfg.slider(FloatObservableFunc{ [gs]() -> auto& { return gs()->toolButtonSide; } }, SliderRange{ 15.f, 50.f }, screenPerform);
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 
@@ -846,12 +855,12 @@ void createAllWidgetsDemo(Screen* screen)
     w->setDrawFlag(f, v); 
     screen->needPerformLayout(screen);
   };
-  wopt.checkbox(Caption{ "No header" }, CheckboxObservable{ [=] {return !dwf(Window::DrawHeader); },
-                                                            [=] (bool v) { dwf(Window::DrawHeader, !v); } });
-  wopt.checkbox(Caption{ "No title" },  CheckboxObservable{ [=] {return !dwf(Window::DrawTitle); },
-                                                            [=](bool v) { dwf(Window::DrawTitle, !v); } });
-  wopt.checkbox(Caption{ "No collapse icon" }, CheckboxObservable{ [=] {return !dwf(Window::DrawCollapseIcon); },
-                                                           [=](bool v) { dwf(Window::DrawCollapseIcon, !v); } });
+  wopt.checkbox(Caption{ "No header" }, BoolObservable{ [=] {return !dwf(Window::DrawHeader); },
+                                                        [=] (bool v) { dwf(Window::DrawHeader, !v); } });
+  wopt.checkbox(Caption{ "No title" },  BoolObservable{ [=] {return !dwf(Window::DrawTitle); },
+                                                        [=](bool v) { dwf(Window::DrawTitle, !v); } });
+  wopt.checkbox(Caption{ "No collapse icon" }, BoolObservable{ [=] {return !dwf(Window::DrawCollapseIcon); },
+                                                               [=](bool v) { dwf(Window::DrawCollapseIcon, !v); } });
 
 }
 
