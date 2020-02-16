@@ -837,6 +837,8 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.slider(SliderObservable{ gs()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Inner spacing left");
   stcfg.slider(SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform);
+  stcfg.label("Tool button side");
+  stcfg.slider(SliderValueRef{ gs()->toolButtonSide }, SliderRange{ 15.f, 50.f }, screenPerform);
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 

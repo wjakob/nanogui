@@ -111,6 +111,8 @@ public:
     int mPanelExpandedIcon;
     int mPanelFontSize;
 
+    int toolButtonSide = 25;
+
     int mContextMenuShortcutOffset;
     Color mContextMenuShortcutTextColor;
     int mContextMenuMinWidth;

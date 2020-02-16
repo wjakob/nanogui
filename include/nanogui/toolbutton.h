@@ -30,10 +30,10 @@ public:
         : Button(parent, caption, icon)
     {
         setFlags(Flag::RadioButton | Flag::ToggleButton);
-        setFixedSize(Vector2i(25, 25));
     }
 
     std::string wtypename() const override { return "toolbutton"; }
+    Vector2i preferredSize(NVGcontext *ctx) const override;
 
     using Button::set;
     template<typename... Args>
@@ -56,6 +56,7 @@ public:
 
   Color getIconColor() const override;
   void draw(NVGcontext* ctx) override;
+  Vector2i preferredSize(NVGcontext *ctx) const override;
 
 private:
   Color mActiveColor, mInactiveColor;

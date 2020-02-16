@@ -21,6 +21,17 @@ DECLSETTER(SliderObservable, FloatObservable)
 DECLSETTERILIST(SliderRange, FloatPair)
 DECLSETTER(SliderCallback, std::function<void(float)>)
 
+struct SliderValueRef : public FloatObservable
+{
+  SliderValueRef& value;
+
+  template<class Scalar>
+  SliderValueRef(Scalar& ref) :
+    FloatObservable([&ref]() { return static_cast<float>(ref); }, [&ref](float v) { ref = v; }),
+    value (*this)
+  {}
+};
+
 /**
  * \class Slider slider.h nanogui/slider.h
  *
@@ -84,6 +95,7 @@ protected:
 public:
   PROPSETTER(InitialValue, setValue)
   PROPSETTER(SliderObservable, setObservable)
+  PROPSETTER(SliderValueRef, setObservable)
   PROPSETTER(SliderRange, setRange)
   PROPSETTER(SliderCallback, setCallback)
 };
