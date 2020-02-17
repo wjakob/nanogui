@@ -19,6 +19,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class ColorWheel;
 /**
  * \class ColorPicker colorpicker.h nanogui/colorpicker.h
  *

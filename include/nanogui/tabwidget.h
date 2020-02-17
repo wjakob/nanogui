@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class TabHeader;
+class StackedWidget;
 /**
  * \class TabWidget tabwidget.h nanogui/tabwidget.h
  *

@@ -50,6 +50,7 @@ enum class Orientation {
  *
  * \brief Basic interface of a layout engine.
  */
+class Widget;
 class NANOGUI_EXPORT Layout : public Object {
 public:
     RTTI_CLASS_UID(Layout)

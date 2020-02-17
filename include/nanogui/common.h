@@ -773,37 +773,6 @@ private:
 
 /* Forward declarations */
 template <typename T> class ref;
-class AdvancedGridLayout;
-class BoxLayout;
-class Button;
-class CheckBox;
-class ColorWheel;
-class ColorPicker;
-class ComboBox;
-class GridLayout;
-class GroupLayout;
-class ImagePanel;
-class ImageView;
-class Label;
-class Layout;
-class MessageDialog;
-class Object;
-class Popup;
-class PopupButton;
-class ProgressBar;
-class Screen;
-class Serializer;
-class Slider;
-class StackedWidget;
-class TabHeader;
-class TabWidget;
-class TextBox;
-class GLCanvas;
-class Theme;
-class ToolButton;
-class VScrollPanel;
-class Widget;
-class Window;
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -822,13 +791,6 @@ NANOGUI_EXPORT void init();
 
 /// Static shutdown; should be called before the application terminates.
 NANOGUI_EXPORT void shutdown();
-
-
-/// Request the application main loop to terminate (e.g. if you detached mainloop).
-NANOGUI_EXPORT void leave();
-
-/// Return whether or not a main loop is currently active
-NANOGUI_EXPORT bool active();
 
 /**
  * \brief Open a native file open/save dialog.
@@ -966,6 +928,7 @@ void NANOGUI_EXPORT logic_error(const char* err, const char* file, int line);
 /// Helper function used by nvgImageIcon
 int NANOGUI_EXPORT __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 
+class Screen;
 namespace sample
 {
   using WindowHandle = void*;

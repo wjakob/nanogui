@@ -19,6 +19,7 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class Serializer;
 class Window;
 class Label;
 class ToolButton;
@@ -42,6 +43,7 @@ class TreeView;
 class ToleranceBar;
 class TextArea;
 class Panel;
+class ColorPicker;
 template<class X> class IntBox;
 template<class X> class FloatBox;
 template<class X> class NumberPicker;
