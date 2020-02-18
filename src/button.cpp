@@ -272,12 +272,12 @@ void Button::save(Json::value &save) const
 {
   Widget::save(save);
   Json::object obj = save.get_obj();
-  obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
-  obj["icon"] = Json::hobject().$("value", mIcon).$("type", "integer").$("name", "Icon");
-  obj["iconPosition"] = Json::hobject().$("value", (int)mIconPosition).$("type", "integer").$("name", "Icon position");
-  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Pushed");
-  obj["backgroundColor"] = Json::hobject().$("color", mBackgroundColor.toInt()).$("type", "color").$("name", "Background color");
-  obj["textColor"] = Json::hobject().$("color", mTextColor.toInt()).$("type", "color").$("name", "Text color");
+  obj["caption"] = Json::hobject().set(mCaption).name("Caption");
+  obj["icon"] = Json::hobject().set(mIcon).name("Icon");
+  obj["iconPosition"] = Json::hobject().set((int)mIconPosition).name("Icon position");
+  obj["pushed"] = Json::hobject().set(mPushed).name("Pushed");
+  obj["backgroundColor"] = Json::hobject().set(mBackgroundColor.toInt()).type("color").name("Background color");
+  obj["textColor"] = Json::hobject().set(mTextColor.toInt()).type("color").name("Text color");
 
   save = Json::value(obj);
 }
@@ -285,12 +285,13 @@ void Button::save(Json::value &save) const
 bool Button::load(Json::value &save) 
 {
   Widget::load(save);
-  auto c = save.get("caption"); mCaption = c.get_str("value");
-  auto i = save.get("icon"); mIcon = i.get_int("value");
-  auto ip = save.get("iconPosition"); mIconPosition = (IconPosition)ip.get_int("value");
-  auto ph = save.get("pushed"); mPushed = ph.get_bool("value");
-  auto bg = save.get("backgroundColor"); mBackgroundColor = Color(bg.get_int("color"));
-  auto tc = save.get("textColor"); mTextColor = Color(tc.get_int("color"));
+  Json::hobject s{ save.get_obj() };
+  mCaption = s.get<std::string>("caption");
+  mIcon = s.get<int>("icon");
+  mIconPosition = (IconPosition)s.get<int>("iconPosition");
+  mPushed = s.get<bool>("pushed");
+  mBackgroundColor = Color( s.get<int>("backgroundColor"));
+  mTextColor = Color( s.get<int>("textColor"));
   return true;
 }
 

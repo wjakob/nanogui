@@ -137,10 +137,10 @@ void PropertiesEditor::parse(Widget* w)
       }
       else if (typevalue == "color")
       {
-        auto& cp = grid.wdg<ColorPicker>(InitialColor{ jval.get_int("color") }, valueSize);
+        auto& cp = grid.wdg<ColorPicker>(InitialColor{ jval.get_int("value") }, valueSize);
         cp.setSide(Popup::Side::Left);
-        cp.setFinalCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
-        cp.setCallback([&, this](const Color &c) {jval.set_int("color", c.toInt()); updateAttribs(); });
+        cp.setFinalCallback([&, this](const Color &c) {jval.set_int("value", c.toInt()); updateAttribs(); });
+        cp.setCallback([&, this](const Color &c) {jval.set_int("value", c.toInt()); updateAttribs(); });
       }
     }
 
