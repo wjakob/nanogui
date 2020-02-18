@@ -54,22 +54,22 @@ public:
     void setColor(const Color& color);
 
     /// The preferred size of this ColorWheel.
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
 
     /// Draws the ColorWheel.
-    virtual void draw(NVGcontext *ctx) override;
+    void draw(NVGcontext *ctx) override;
 
     /// Handles mouse button click events for the ColorWheel.
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
 
     /// Handles mouse drag events for the ColorWheel.
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
 
     /// Saves the current state of this ColorWheel to the specified Serializer.
-    virtual void save(Serializer &s) const override;
+    void save(Json::value &s) const override;
 
     /// Sets the state of this ColorWheel using the specified Serializer.
-    virtual bool load(Serializer &s) override;
+    bool load(Json::value &s) override;
 
 private:
     // Used to describe where the mouse is interacting

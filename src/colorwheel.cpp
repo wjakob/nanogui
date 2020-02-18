@@ -14,7 +14,7 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/serializer/json.h>
 #include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
@@ -288,18 +288,21 @@ void ColorWheel::setColor(const Color &rgb) {
     }
 }
 
-void ColorWheel::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("hue", mHue);
-    s.set("white", mWhite);
-    s.set("black", mBlack);
+void ColorWheel::save(Json::value &save) const {
+    Widget::save(save);
+    Json::object obj = save.get_obj();
+    obj["hue"] = Json::hobject().$("value", mHue).$("type", "float").$("name", "Hue");
+    obj["white"] = Json::hobject().$("value", mHue).$("type", "float").$("name", "White");
+    obj["black"] = Json::hobject().$("value", mHue).$("type", "float").$("name", "Black");
+
+    save = Json::value(obj);
 }
 
-bool ColorWheel::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("hue", mHue)) return false;
-    if (!s.get("white", mWhite)) return false;
-    if (!s.get("black", mBlack)) return false;
+bool ColorWheel::load(Json::value &save) {
+    Widget::load(save);
+    auto h = save.get("hue"); mHue = h.get_float("value");
+    auto w = save.get("white"); mWhite = w.get_float("value");
+    auto b = save.get("black"); mBlack = b.get_float("value");
     mDragRegion = Region::None;
     return true;
 }
