@@ -382,13 +382,15 @@ inline bool value::evaluate_as_boolean() const {
 
 inline const value &value::get(const size_t idx) const {
   static value s_null;
-  PICOJSON_ASSERT(is<array>());
+  //PICOJSON_ASSERT(is<array>());
+  if (!is<array>()) return s_null;
   return idx < u_.array_->size() ? (*u_.array_)[idx] : s_null;
 }
 
 inline value &value::get(const size_t idx) {
   static value s_null;
-  PICOJSON_ASSERT(is<array>());
+  //PICOJSON_ASSERT(is<array>());
+  if (!is<array>()) return s_null;
   return idx < u_.array_->size() ? (*u_.array_)[idx] : s_null;
 }
 

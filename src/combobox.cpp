@@ -11,7 +11,7 @@
 
 #include <nanogui/combobox.h>
 #include <nanogui/layout.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/serializer/json.h>
 #include <cassert>
 
 NAMESPACE_BEGIN(nanogui)
@@ -100,18 +100,47 @@ bool ComboBox::scrollEvent(const Vector2i &p, const Vector2f &rel)
     return Widget::scrollEvent(p, rel);
 }
 
-void ComboBox::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("items", mItems);
-    s.set("itemsShort", mItemsShort);
-    s.set("selectedIndex", mSelectedIndex);
+void ComboBox::save(Json::value &save) const {
+    Widget::save(save);
+    Json::object obj = save.get_obj();
+    Json::value::array items;
+    for (auto& e : mItems) items.push_back(Json::value(e));
+    obj["items"] = Json::hobject().$("value", items).$("type", "array").$("name", "Items");
+    Json::value::array itemsShort;
+    for (auto& e : mItemsShort) itemsShort.push_back(Json::value(e));
+    obj["itemsShort"] = Json::hobject().$("value", itemsShort).$("type", "array").$("name", "Items short");
+    obj["selectedIndex"] = Json::hobject().$("value", mSelectedIndex).$("type", "integer").$("name", "Selected");
+
+    save = Json::value(obj);
 }
 
-bool ComboBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("items", mItems)) return false;
-    if (!s.get("itemsShort", mItemsShort)) return false;
-    if (!s.get("selectedIndex", mSelectedIndex)) return false;
+bool ComboBox::load(Json::value &save) {
+    Widget::load(save);
+    mItems.clear();
+    auto items = save.get("items"); 
+    { 
+      int i = 0; 
+      Json::value e = items.get(i);
+      while(!e.is<Json::null>())
+      {
+        mItems.push_back(e.to_str());
+        e = items.get(i++);
+      }
+    }
+
+    auto shortItems = save.get("items");
+    mItemsShort.clear();
+    {
+      int i = 0;
+      Json::value e = items.get(i);
+      while (!e.is<Json::null>())
+      {
+        mItemsShort.push_back(e.to_str());
+        e = items.get(i++);
+      }
+    }
+
+    auto s = save.get("selectedIndex"); mSelectedIndex = s.get_int("value");
     return true;
 }
 

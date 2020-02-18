@@ -78,13 +78,13 @@ public:
     const ShortItems &itemsShort() const { return mItemsShort; }
 
     /// Handles mouse scrolling events for this ComboBox.
-    virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
+    bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
 
     /// Saves the state of this ComboBox to the specified Serializer.
-    virtual void save(Serializer &s) const override;
+    void save(Json::value &save) const override;
 
     /// Sets the state of this ComboBox from the specified Serializer.
-    virtual bool load(Serializer &s) override;
+    bool load(Json::value &save) override;
 
 protected:
     /// The items associated with this ComboBox.
