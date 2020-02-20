@@ -12,7 +12,7 @@
 #include <nanogui/popupbutton.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/json.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -94,7 +94,7 @@ void PopupButton::save(Json::value &save) const
 {
   Button::save(save);
   Json::object obj = save.get_obj();
-  obj["chevronIcon"] = Json::hobject().$("value", mChevronIcon).$("type", "integer").$("name", "Chevron");
+  obj["chevronIcon"] = json().set(mChevronIcon).name("Chevron");
 
   save = Json::value(obj);
 }
@@ -102,7 +102,9 @@ void PopupButton::save(Json::value &save) const
 bool PopupButton::load(Json::value &save) 
 {
   Button::load(save);
-  auto i = save.get("chevronIcon"); mChevronIcon = i.get_int("value");
+  json s{ save.get_obj() };
+
+  mChevronIcon = s.get<int>("chevronIcon");
   return true;
 }
 

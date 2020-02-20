@@ -12,8 +12,7 @@
 #include <nanogui/checkbox.h>
 #include <nanovg.h>
 #include <nanogui/theme.h>
-#include <nanogui/serializer/core.h>
-#include <nanogui/serializer/json.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -125,17 +124,22 @@ void CheckBox::draw(NVGcontext *ctx)
 
 void CheckBox::save(Json::value &save) const {
   Widget::save(save);
-  Json::object obj = save.get_obj();
-  obj["caption"] = Json::hobject().$("value", mCaption).$("type", "string").$("name", "Caption");
-  obj["pushed"] = Json::hobject().$("value", mPushed).$("type", "boolean").$("name", "Pushed");
-  obj["checked"] = Json::hobject().$("value", mChecked).$("type", "boolean").$("name", "Checked");
+  auto obj = save.get_obj();
+  obj["caption"] = json().set(mCaption).name("Caption");
+  obj["pushed"] = json().set(mPushed).name("Pushed");
+  obj["checked"] = json().set(mChecked).name("Checked");
+
+  save = Json::value(obj);
 }
 
 bool CheckBox::load(Json::value &save) {
   Widget::load(save);
-  auto c = save.get("caption"); mCaption = c.get_str("value");
-  auto ph = save.get("pushed"); mPushed = ph.get_bool("value");
-  auto ch = save.get("checked"); mChecked = ch.get_bool("value");
+  json s{ save.get_obj() };
+
+  mCaption = s.get<std::string>("caption");  
+  mPushed = s.get<bool>("pushed");
+  mChecked = s.get<bool>("checked");
+
   return true;
 }
 

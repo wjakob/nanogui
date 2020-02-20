@@ -15,8 +15,7 @@
 #include <nanogui/window.h>
 #include <nanovg.h>
 #include <nanogui/screen.h>
-#include <nanogui/serializer/core.h>
-#include <nanogui/serializer/json.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -431,57 +430,41 @@ void Widget::afterDraw(NVGcontext *ctx) {
     child->afterDraw(ctx);
 }
 
-void Widget::save(Serializer &s) const {
-  s.set("position", mPos);
-  s.set("size", mSize);
-  s.set("fixedSize", mFixedSize);
-  s.set("visible", mVisible);
-  s.set("enabled", mEnabled);
-  s.set("focused", mFocused);
-  s.set("tooltip", mTooltip);
-  s.set("fontSize", mFontSize);
-  s.set("cursor", (int) mCursor);
-}
+void Widget::save(Serializer &s) const {}
 
-void Widget::save(Json::value &save) const {
+void Widget::save(Json::value &save) const 
+{
   Json::object obj;
-  obj["position"] = Json::hobject().$("x", mPos.x()).$("y", mPos.y()).$("type", "position").$("name", "Position");
-  obj["size"] = Json::hobject().$("w", mSize.x()).$("h", (int)mSize.y()).$("type", "size").$("name", "Size");
-  obj["fixedSize"] = Json::hobject().$("w", mFixedSize.x()).$("h", mFixedSize.y()).$("type", "size").$("name", "Fixed size");
-  obj["visible"] = Json::hobject().$("value", mVisible).$("type", "boolean").$("name", "Visible");
-  obj["enabled"] = Json::hobject().$("value", mEnabled).$("type", "boolean").$("name", "Enabled");
-  obj["focused"] = Json::hobject().$("value", mFocused).$("type", "boolean").$("name", "Focused");
-  obj["tooltip"] = Json::hobject().$("value", mTooltip).$("type", "string").$("name", "Tooltip");
-  obj["fontSize"] = Json::hobject().$("value", mFontSize).$("type", "integer").$("name", "Font size");
-  obj["cursor"] = Json::hobject().$("value", (int)mCursor).$("type", "integer").$("name", "Cursor");
+
+  obj["position"] = json().set(mPos).name("Position");
+  obj["size"] = json().set(mSize).name("Size");
+  obj["fixedSize"] = json().set(mFixedSize).name("Fixed size");
+  obj["visible"] = json().set(mVisible).name("Visible");
+  obj["enabled"] = json().set(mEnabled).name("Enabled");
+  obj["focused"] = json().set(mFocused).name("Focused");
+  obj["tooltip"] = json().set(mTooltip).name("Tooltip");
+  obj["fontSize"] = json().set(mFontSize).name("Font size");
+  obj["cursor"] = json().set((int)mCursor).name("Cursor");
 
   save = Json::value(obj);
 }
 
-bool Widget::load(Json::value &save) {
-  auto p = save.get("position"); mPos = { p.get_int("x"), p.get_int("y") };
-  auto s = save.get("size"); mSize = { s.get_int("w"), s.get_int("h") };
-  auto fs = save.get("fixedSize"); mFixedSize = { fs.get_int("w"), fs.get_int("h") };
-  auto v = save.get("visible"); mVisible = v.get_bool("value");
-  auto e = save.get("enabled"); mEnabled = e.get_bool("value");
-  auto fc = save.get("focused"); mFocused = fc.get_bool("value");
-  auto t = save.get("tooltip"); mTooltip = t.get_str("value");
-  auto fh = save.get("fontSize"); mFontSize = fh.get_int("value");
-  auto cr = save.get("cursor"); mCursor = (Cursor)cr.get_int("value");
+bool Widget::load(Json::value &save) 
+{
+  json s{ save.get_obj() };
+
+  mPos = s.get<Vector2i>("position"); 
+  mSize = s.get<Vector2i>("size");
+  mFixedSize = s.get<Vector2i>("fixedSize");
+  mVisible = s.get<bool>("visible");
+  mEnabled = s.get<bool>("enabled");
+  mFocused = s.get<bool>("focused"); 
+  mTooltip = s.get<std::string>("tooltip");  
+  mFontSize = s.get<int>("fontSize"); 
+  mCursor = (Cursor)s.get<int>("cursor");
   return true;
 }
 
-bool Widget::load(Serializer &s) {
-  if (!s.get("position", mPos)) return false;
-  if (!s.get("size", mSize)) return false;
-  if (!s.get("fixedSize", mFixedSize)) return false;
-  if (!s.get("visible", mVisible)) return false;
-  if (!s.get("enabled", mEnabled)) return false;
-  if (!s.get("focused", mFocused)) return false;
-  if (!s.get("tooltip", mTooltip)) return false;
-  if (!s.get("fontSize", mFontSize)) return false;
-  if (!s.get("cursor", mCursor)) return false;
-  return true;
-}
+bool Widget::load(Serializer &s) { return true; }
 
 NAMESPACE_END(nanogui)

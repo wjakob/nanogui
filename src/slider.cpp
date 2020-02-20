@@ -12,8 +12,7 @@
 #include <nanogui/slider.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
-#include <nanogui/serializer/json.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -148,18 +147,24 @@ void Slider::save(Json::value &save) const
 {
   Widget::save(save);
   Json::object obj = save.get_obj();
-  obj["value"] = Json::hobject().$("value", mValue).$("type", "float").$("name", "Value");
-  obj["range"] = Json::hobject().$("min", mRange.first).$("max", mRange.second).$("type", "range").$("name", "Range");
-  obj["highlightedRange"] = Json::hobject().$("min", mHighlightedRange.first).$("max", mHighlightedRange.second).$("type", "range").$("name", "Highligh range color");
-  obj["highlightColor"] = Json::hobject().$("color", mHighlightColor.toInt()).$("type", "color").$("name", "Highlight color");
+  obj["value"] = json().set(mValue).name("Value");
+  obj["range"] = json().$("min", mRange.first).$("max", mRange.second).type("range").name("Range");
+  obj["highlightedRange"] = json().$("min", mHighlightedRange.first).$("max", mHighlightedRange.second).type("range").name("Highligh range color");
+  obj["highlightColor"] = json().set(mHighlightColor).name("Highlight color");
+
+  save = Json::value(obj);
 }
 
 bool Slider::load(Json::value &save) {
   Widget::load(save);
-  mValue = save.get_float("value"); 
-  auto r = save.get("range"); mRange = { r.get_float("min"), r.get_float("max") };
-  auto hr = save.get("highlightedRange"); mHighlightedRange = { hr.get_float("min"), hr.get_float("max") };
-  auto bg = save.get("highlightColor"); mHighlightColor = Color(bg.get_int("color"));
+  json s{ save.get_obj() };
+
+  mValue = s.get<float>("value"); 
+  auto r = save.get("range");
+  mRange = { r.get_float("min"), r.get_float("max") };
+  auto hr = save.get("highlightedRange");
+  mHighlightedRange = { hr.get_float("min"), hr.get_float("max") };
+  mHighlightColor = s.get<Color>("highlightColor");
 
   return true;
 }

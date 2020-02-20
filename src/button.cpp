@@ -12,8 +12,7 @@
 #include <nanogui/button.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/common.h>
-#include <nanogui/serializer/json.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -271,13 +270,13 @@ void Button::draw(NVGcontext *ctx)
 void Button::save(Json::value &save) const 
 {
   Widget::save(save);
-  Json::object obj = save.get_obj();
-  obj["caption"] = Json::hobject().set(mCaption).name("Caption");
-  obj["icon"] = Json::hobject().set(mIcon).name("Icon");
-  obj["iconPosition"] = Json::hobject().set((int)mIconPosition).name("Icon position");
-  obj["pushed"] = Json::hobject().set(mPushed).name("Pushed");
-  obj["backgroundColor"] = Json::hobject().set(mBackgroundColor.toInt()).type("color").name("Background color");
-  obj["textColor"] = Json::hobject().set(mTextColor.toInt()).type("color").name("Text color");
+  auto obj = save.get_obj();
+  obj["caption"] = json().set(mCaption).name("Caption");
+  obj["icon"] = json().set(mIcon).name("Icon");
+  obj["iconPosition"] = json().set((int)mIconPosition).name("Icon position");
+  obj["pushed"] = json().set(mPushed).name("Pushed");
+  obj["backgroundColor"] = json().set(mBackgroundColor).name("Background color");
+  obj["textColor"] = json().set(mTextColor).name("Text color");
 
   save = Json::value(obj);
 }
@@ -285,13 +284,13 @@ void Button::save(Json::value &save) const
 bool Button::load(Json::value &save) 
 {
   Widget::load(save);
-  Json::hobject s{ save.get_obj() };
+  json s{ save.get_obj() };
   mCaption = s.get<std::string>("caption");
   mIcon = s.get<int>("icon");
   mIconPosition = (IconPosition)s.get<int>("iconPosition");
   mPushed = s.get<bool>("pushed");
-  mBackgroundColor = Color( s.get<int>("backgroundColor"));
-  mTextColor = Color( s.get<int>("textColor"));
+  mBackgroundColor = s.get<Color>("backgroundColor");
+  mTextColor = s.get<Color>("textColor");
   return true;
 }
 

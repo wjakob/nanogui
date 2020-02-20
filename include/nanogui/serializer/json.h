@@ -218,32 +218,6 @@ inline value::value(int type, bool) : type_(type), u_() {
   }
 }
 
-struct hobject {
-  Json::object obj;
-  using _v = Json::value;
-  using _s = std::string;
-
-  hobject() {};
-  hobject(Json::object o) : obj(o) {};
-  template<typename... Args>
-  hobject& $(const _s& key, const Args&... args) { obj[key] = _v(args...); return *this; }
-  template<typename T>
-  hobject& set(const T& v) { return $("value", v); }
-  template<> hobject& set<_s>(const _s& v) { $("value", v); return $("type", "string"); }
-  template<> hobject& set<int>(const int& v) { $("value", v); return $("type", "integer"); }
-  template<> hobject& set<bool>(const bool& v) { $("value", v); return $("type", "boolean"); }
-
-  hobject& name(const _s& n) { obj["name"] = _v(n); return *this; }
-  hobject& type(const _s& n) { obj["type"] = _v(n); return *this; }
-
-  template<typename T> T get(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get("value") : Json::null; }
-  template<> _s get<_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
-  template<> int get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
-  template<> bool get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
-
-  inline operator Json::value() const { return Json::value(obj); }
-};
-
 inline value::value(bool b) : type_(boolean_type), u_() { u_.boolean_ = b; }
 inline value::value(int64_t i) : type_(int64_type), u_() { u_.int64_ = i; }
 inline value::value(int i) : type_(int64_type), u_() { u_.int64_ = static_cast<int64_t>(i); }
