@@ -79,8 +79,8 @@ public:
     /// Draw the label
     void draw(NVGcontext *ctx) override;
 
-    void save(Serializer &s) const override;
-    bool load(Serializer &s) override;
+    void save(Json::value &s) const override;
+    bool load(Json::value &s) override;
 protected:
     std::string mCaption;
     std::string mFont;

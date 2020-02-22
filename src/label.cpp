@@ -12,7 +12,7 @@
 #include <nanogui/label.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -90,19 +90,25 @@ void Label::draw(NVGcontext *ctx)
     Widget::draw(ctx);
 }
 
-void Label::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("caption", mCaption);
-    s.set("font", mFont);
-    s.set("color", mColor);
+void Label::save(Json::value &s) const {
+  Widget::save(s);
+  auto obj = s.get_obj();
+
+  obj["caption"] = json().set(mCaption).name("Caption");
+  obj["font"] = json().set(mFont).name("Font");
+  obj["color"] = json().set(mColor).name("Color");
+
+  s = Json::value(obj);
 }
 
-bool Label::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("caption", mCaption)) return false;
-    if (!s.get("font", mFont)) return false;
-    if (!s.get("color", mColor)) return false;
-    return true;
+bool Label::load(Json::value &save) {
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mCaption = s.get<std::string>("caption");
+  mFont = s.get<std::string>("font");
+  mColor = s.get<Color>("color");
+  return true;
 }
 
 NAMESPACE_END(nanogui)
