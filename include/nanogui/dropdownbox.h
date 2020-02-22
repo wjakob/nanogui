@@ -83,10 +83,10 @@ public:
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
 
     /// Saves the state of this dropdownbox to the specified Serializer.
-    virtual void save(Serializer &s) const override;
+    virtual void save(Json::value &s) const override;
 
     /// Sets the state of this dropdownbox from the specified Serializer.
-    virtual bool load(Serializer &s) override;
+    virtual bool load(Json::value &s) override;
 
     virtual void draw(NVGcontext* ctx) override;
     virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;

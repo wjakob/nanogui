@@ -12,7 +12,7 @@
 #include <nanogui/dropdownbox.h>
 #include <nanogui/layout.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <algorithm>
 #include <cassert>
 
@@ -441,19 +441,26 @@ void DropdownBox::draw(NVGcontext* ctx)
   }
 }
 
-void DropdownBox::save(Serializer &s) const {
+void DropdownBox::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("items", mItems);
-    s.set("itemsShort", mItemsShort);
-    s.set("selectedIndex", mSelectedIndex);
+    auto obj = s.get_obj();
+
+    obj["items"] = json().set(mItems).name("Items");
+    obj["itemsShort"] = json().set(mItemsShort).name("Short items");
+    obj["selectedIndex"] = json().set(mSelectedIndex).name("Selected");
+
+    s = Json::value(obj);
 }
 
-bool DropdownBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("items", mItems)) return false;
-    if (!s.get("itemsShort", mItemsShort)) return false;
-    if (!s.get("selectedIndex", mSelectedIndex)) return false;
-    return true;
+bool DropdownBox::load(Json::value &save) 
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+  mItems = s.get<decltype(mItems)>("items");
+  mItemsShort = s.get<decltype(mItemsShort)>("itemsShort");
+  mSelectedIndex = s.get<int>("selectedIndex");
+  return true;
 }
 
 RTTI_IMPLEMENT_INFO(DropdownBox, PopupButton)
