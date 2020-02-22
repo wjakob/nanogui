@@ -11,7 +11,7 @@
 
 #include <nanogui/tolerancebar.h>
 
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
 

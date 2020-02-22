@@ -13,7 +13,7 @@
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -157,17 +157,23 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgFill(ctx);
 }
 
-void VScrollPanel::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("childPreferredHeight", mChildPreferredHeight);
-    s.set("scroll", mScroll);
+void VScrollPanel::save(Json::value &s) const 
+{
+  Widget::save(s);
+  auto obj = s.get_obj();
+  obj["childPreferredHeight"] = json().set(mChildPreferredHeight).name("Child height");
+  obj["scroll"] = json().set(mScroll).name("Scroll");
+
+  s = Json::value(obj);
 }
 
-bool VScrollPanel::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("childPreferredHeight", mChildPreferredHeight)) return false;
-    if (!s.get("scroll", mScroll)) return false;
-    return true;
+bool VScrollPanel::load(Json::value &save) 
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+  mChildPreferredHeight = s.get<int>("childPreferredHeight");
+  mScroll = s.get<float>("scroll");
+  return true;
 }
 
 NAMESPACE_END(nanogui)

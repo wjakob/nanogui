@@ -13,8 +13,7 @@
 #include <nanogui/toolbutton.h>
 #include <nanovg.h>
 #include <nanogui/common.h>
-#include <nanogui/serializer/json.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
