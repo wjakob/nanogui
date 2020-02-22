@@ -60,7 +60,7 @@ struct json {
   template<> _vi get<_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
   template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_int("min"), it->second.get_int("max")) : _r{ 0, 0 }; }
 
-  template<typename T, typename Func=std::function<T (const _v&)>> std::vector<T> get_array(const _s& n, Func& conv) const {
+  template<typename T> std::vector<T> get_array(const _s& n, std::function<T (const _v&)> conv) const {
     auto items = obj.find(n);
     auto it = obj.find(n); 
     if (it == obj.end())
@@ -70,8 +70,7 @@ struct json {
     int i = 0;
     Json::value e = it->second.get(i);
     while (!e.is<Json::null>()) { 
-      T ls = conv(e);
-      ret.push_back(ls); 
+      ret.push_back(conv(e));
       e = it->second.get(i++); 
     }
     return ret;

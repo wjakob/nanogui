@@ -17,7 +17,7 @@
 #include <nanogui/screen.h>
 #include <nanogui/windowmenu.h>
 #include <nanogui/layout.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
@@ -477,19 +477,26 @@ int Window::getHeaderHeight() const
                   : (theme()->mWindowHeaderHeight + *theme()->framePaddingTop);
 }
 
-void Window::save(Serializer &s) const 
+void Window::save(Json::value &s) const
 {
   Widget::save(s);
-  s.set("title", mTitle);
-  s.set("modal", mModal);
+  auto obj = s.get_obj();
+
+  obj["title"] = json().set(mTitle).name("title");
+  obj["modal"] = json().set(mModal).name("modal");
+
+  s = Json::value(obj);
 }
 
-bool Window::load(Serializer &s) 
+bool Window::load(Json::value &save)
 {
-  if (!Widget::load(s)) return false;
-  if (!s.get("title", mTitle)) return false;
-  if (!s.get("modal", mModal)) return false;
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mTitle = s.get<std::string>("title");
+  mModal = s.get<bool>("modal");
   mDrag = dragNone;
+
   return true;
 }
 

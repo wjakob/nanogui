@@ -62,8 +62,8 @@ public:
     /// Draw the popup window
     void draw(NVGcontext* ctx) override;
 
-    void save(Serializer &s) const override;
-    bool load(Serializer &s) override;
+    void save(Json::value &s) const override;
+    bool load(Json::value &s) override;
 protected:
     /// Internal helper function to maintain nested window position values
     virtual void refreshRelativePlacement() override;

@@ -106,8 +106,8 @@ public:
     /// Invoke the associated layout generator to properly place child widgets, if any
     bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
     void performLayout(NVGcontext *ctx) override;
-    void save(Serializer &s) const override;
-    bool load(Serializer &s) override;
+    void save(Json::value &s) const override;
+    bool load(Json::value &s) override;
     const Vector2i &size() const override;
     bool tabstop(CanTabStop mode) const;
 

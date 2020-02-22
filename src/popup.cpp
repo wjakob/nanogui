@@ -13,7 +13,7 @@
 #include <nanogui/popup.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -94,18 +94,26 @@ void Popup::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
 }
 
-void Popup::save(Serializer &s) const {
+void Popup::save(Json::value &s) const 
+{
     Window::save(s);
-    s.set("anchorPos", mAnchorPos);
-    s.set("anchorHeight", mAnchorHeight);
-    s.set("side", mSide);
+    auto obj = s.get_obj();
+
+    obj["anchorPos"] = json().set(mAnchorPos).name("Anchor pos");
+    obj["anchorHeight"] = json().set(mAnchorHeight).name("Anchor height");
+    obj["side"] = json().set<int>(mSide).name("Side");
+
+    s = Json::value(obj);
 }
 
-bool Popup::load(Serializer &s) {
-    if (!Window::load(s)) return false;
-    if (!s.get("anchorPos", mAnchorPos)) return false;
-    if (!s.get("anchorHeight", mAnchorHeight)) return false;
-    if (!s.get("side", mSide)) return false;
+bool Popup::load(Json::value &save) 
+{
+    Window::load(save);
+    json s{ save.get_obj() };
+
+    mAnchorPos = s.get<Vector2i>("anchorPos");
+    mAnchorHeight = s.get<int>("anchorHeight");
+    mSide = (Side)s.get<int>("side");
     return true;
 }
 
