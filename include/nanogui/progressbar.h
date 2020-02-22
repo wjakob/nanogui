@@ -40,8 +40,8 @@ public:
     Vector2i preferredSize(NVGcontext *ctx) const override;
     void draw(NVGcontext* ctx) override;
 
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    void save(Json::value &s) const override;
+    bool load(Json::value &s) override;
 protected:
     float mValue;
 public:

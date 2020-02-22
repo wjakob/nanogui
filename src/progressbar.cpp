@@ -11,7 +11,7 @@
 
 #include <nanogui/progressbar.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -52,17 +52,23 @@ void ProgressBar::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 }
 
-void ProgressBar::save(Serializer &s) const {
+void ProgressBar::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("value", mValue);
+    auto obj = s.get_obj();
+
+    obj["value"] = json().set(mValue).name("Value");
+
+    s = Json::value(obj);
 }
 
-bool ProgressBar::load(Serializer &s) {
-    if (!Widget::load(s))
-        return false;
-    if (!s.get("value", mValue))
-        return false;
-    return true;
+bool ProgressBar::load(Json::value &save)
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mValue = s.get<float>("value");
+  return true;
 }
 
 Vector2i CircleProgressBar::preferredSize(NVGcontext *) const {
