@@ -12,7 +12,7 @@
 #include <nanogui/dial.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -126,16 +126,23 @@ void Dial::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 }
 
-void Dial::save(Serializer &s) const {
+void Dial::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("value", mValue);
-    s.set("range", mRange);
+    auto obj = s.get_obj();
+    obj["value"] = json().set(mValue).name("Value");
+    obj["range"] = json().set(mRange).name("Range");
+
+    s = Json::value(s);
 }
 
-bool Dial::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("value", mValue)) return false;
-    if (!s.get("range", mRange)) return false;
+bool Dial::load(Json::value &save)
+{
+    Widget::load(save);
+    json s{ save.get_obj() };
+
+    mValue = s.get<float>("value");
+    mRange = s.get<decltype(mRange)>("range");
     return true;
 }
 

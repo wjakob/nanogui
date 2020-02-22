@@ -23,6 +23,8 @@ struct json {
   using _s = std::string;
   using _ss = std::vector<std::string>;
   using _a = Json::value::array;
+  using _r = std::pair<float, float>;
+  using _vi = Vector2i;
 
   json() {};
   json(Json::object o) : obj(o) {};
@@ -38,7 +40,8 @@ struct json {
   template<> json& set<FloatObservable>(const FloatObservable& v) { $("value", (float)v); return type("boolean"); }
   template<> json& set<Color>(const Color& v) { $("value", v.toInt()); return type("color"); }
   template<> json& set<_a>(const _a& v) { $("value", v); return type("array"); }
-  template<> json& set<Vector2i>(const Vector2i& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
+  template<> json& set<_vi>(const _vi& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
+  template<> json& set<_r>(const _r& v) { $("min", v.first).$("max", v.second); return type("rangef"); }
 
   template<> json& set<_ss>(const _ss& v) {
     _a items; for (auto& e : v) items.push_back(_v(e));
@@ -54,8 +57,8 @@ struct json {
   template<> float get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
   template<> bool get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
   template<> Color get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color(it->second.get_int("value")): Color(); }
-  template<> Vector2i get<Vector2i>(const _s& n) const { auto it = obj.find(n); 
-    return it != obj.end() ? Vector2i(it->second.get_int("x"), it->second.get_int("y")) : Vector2i(0,0); }
+  template<> _vi get<_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
+  template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_int("min"), it->second.get_int("max")) : _r{ 0, 0 }; }
 
   template<> _ss get<_ss>(const _s& n) const {
     auto items = obj.find(n);

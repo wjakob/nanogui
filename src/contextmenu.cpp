@@ -13,7 +13,7 @@
 #include <nanogui/screen.h>
 #include <nanovg.h>
 #include <nanogui/layout.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <nanogui/entypo.h>
 #include "nanogui/label.h"
 #include "nanogui/screen.h"
