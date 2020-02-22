@@ -3,7 +3,7 @@
 #include <nanogui/button.h>
 #include <nanogui/entypo.h>
 #include <nanogui/theme.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <regex>
 #include <iostream>
 
