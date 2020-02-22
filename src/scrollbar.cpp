@@ -13,7 +13,7 @@
 #include <nanogui/scrollbar.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -178,18 +178,25 @@ void ScrollBar::draw(NVGcontext *ctx) {
   }
 }
 
-void ScrollBar::save(Serializer &s) const {
+void ScrollBar::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("sliderPreferredSide", mSliderPreferredSide);
-    s.set("alignment", mAlign);
-    s.set("scroll", mScroll);
+    auto obj = s.get_obj();
+    obj["sliderPreferredSide"] = json().set(mSliderPreferredSide).name("Side");
+    obj["alignment"] = json().set(mAlign).name("Alignment");
+    obj["scroll"] = json().set(mScroll).name("Scroll");
+
+    s = Json::value(obj);
 }
 
-bool ScrollBar::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("sliderPreferredSide", mSliderPreferredSide)) return false;
-    if (!s.get("alignment", mAlign)) return false;
-    if (!s.get("scroll", mScroll)) return false;
+bool ScrollBar::load(Json::value &save) 
+{
+    Widget::load(save);
+    json s{ save.get_obj() };
+
+    mSliderPreferredSide = s.get<int>("sliderPreferredSide");
+    mAlign = s.get<int>("alignment");
+    mScroll = s.get<float>("scroll");
     return true;
 }
 
