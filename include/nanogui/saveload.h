@@ -25,6 +25,7 @@ struct json {
   using _a = Json::value::array;
   using _r = std::pair<float, float>;
   using _vi = Vector2i;
+  using _vf = VectorXf;
 
   json() {};
   json(Json::object o) : obj(o) {};
@@ -43,10 +44,9 @@ struct json {
   template<> json& set<_vi>(const _vi& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
   template<> json& set<_r>(const _r& v) { $("min", v.first).$("max", v.second); return type("rangef"); }
 
-  template<> json& set<_ss>(const _ss& v) {
-    _a items; for (auto& e : v) items.push_back(_v(e));
-    return set(items);
-  }
+  template<> json& set<_ss>(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
+  template<> json& set<_vf>(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
+
 
   json& name(const _s& n) { obj["name"] = _v(n); return *this; }
   json& type(const _s& n) { obj["type"] = _v(n); return *this; }
@@ -60,22 +60,25 @@ struct json {
   template<> _vi get<_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
   template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_int("min"), it->second.get_int("max")) : _r{ 0, 0 }; }
 
-  template<> _ss get<_ss>(const _s& n) const {
+  template<typename T, typename Func=std::function<T (const _v&)>> std::vector<T> get_array(const _s& n, Func& conv) const {
     auto items = obj.find(n);
     auto it = obj.find(n); 
     if (it == obj.end())
       return{};
 
-    _ss ret;
+    std::vector<T> ret;
     int i = 0;
     Json::value e = it->second.get(i);
-    while (!e.is<Json::null>()) {
-      ret.push_back(e.to_str());
-      e = it->second.get(i++);
+    while (!e.is<Json::null>()) { 
+      T ls = conv(e);
+      ret.push_back(ls); 
+      e = it->second.get(i++); 
     }
     return ret;
   }
 
+  template<> _ss get<_ss>(const _s& n) const { return get_array<_s>(n, [](const _v& v) { return v.to_str(); }); }
+  template<> _vf get<_vf>(const _s& n) const { return get_array<float>(n, [](const _v& v) { return v.get_float(); }); }
 
   inline operator Json::value() const { return Json::value(obj); }
 };
