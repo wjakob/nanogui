@@ -24,6 +24,7 @@ option(NANOGUI_DX11_BACKEND  "Use DX11 backend?" OFF)
 option(NANOGUI_DX12_BACKEND  "Use DX12 backend?" OFF)
 OPTION(NANOGUI_BGFX_BACKEND  "Use BGFX backend?" OFF)
 option(NANOGUI_BUILD_EDITOR  "Build NanoGUI editor application?" ON)
+option(NANOGUI_BUILD_HONSU   "Build NanoGUI timetracker application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
 option(NANOGUI_USE_GLAD      "Use Glad OpenGL loader library?" ${NANOGUI_USE_GLAD_DEFAULT})
@@ -568,6 +569,14 @@ if(NANOGUI_BUILD_EDITOR)
   add_executable(editorl      
     editor/editor.cpp editor/widgetctor.cpp)
   target_link_libraries(editorl   nanogui ${NANOGUI_EXTRA_LIBS})
+
+  file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+if(NANOGUI_BUILD_HONSU)
+  add_executable(honsu      
+    honsu/honsu_main.cpp )
+  target_link_libraries(honsu nanogui ${NANOGUI_EXTRA_LIBS})
 
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()

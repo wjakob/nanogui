@@ -72,7 +72,7 @@ float getTimeFromStart() { return glfwGetTime(); }
 bool sample::post_empty_event() { glfwPostEmptyEvent(); return true; }
 bool sample::wait_events() { glfwWaitEvents(); return true; }
 bool sample::poll_events() { glfwPollEvents(); return true; }
-void sample::frame_loop(std::function<void()> &f) { while (true) { f(); }; }
+void sample::frame_loop(std::function<void()> &f) { while (is_main_loop_active()) { f(); }; }
 
 void __nanogui_destroy_cursor(intptr_t cursor) { glfwDestroyCursor((GLFWcursor*)cursor); }
 intptr_t __nanogui_create_cursor(int shape) { return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape); }

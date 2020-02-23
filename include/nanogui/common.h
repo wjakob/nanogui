@@ -940,6 +940,7 @@ namespace sample
   void NANOGUI_EXPORT setup_window_params(WindowHandle window, Screen* screen);
   void NANOGUI_EXPORT present_frame(WindowHandle window);
   void NANOGUI_EXPORT frame_loop(std::function<void()> &f);
+  bool NANOGUI_EXPORT is_main_loop_active();
   void NANOGUI_EXPORT destroy_context();
 }
 

@@ -89,6 +89,9 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 namespace sample
 {
   bool mainloop_active = false;
+  void stop_frame_loop() { mainloop_active = false; }
+  bool is_main_loop_active() { return mainloop_active; }
+
   void run(std::function<void()> frame_func, int refresh)
   {
     if (mainloop_active)
@@ -97,20 +100,18 @@ namespace sample
     mainloop_active = true;
 
     std::thread refresh_thread;
-    if (refresh < 0) {
+    if (refresh > 0) {
       /* If there are no mouse/keyboard events, try to refresh the
-         view roughly every 50 ms (default); this is to support animations
-         such as progress bars while keeping the system load
-         reasonably low */
-      refresh_thread = std::thread(
-        [refresh]() {
+          view roughly every 50 ms (default); this is to support animations
+          such as progress bars while keeping the system load
+          reasonably low */
+      refresh_thread = std::thread([refresh]() {
         std::chrono::milliseconds time(refresh);
-        while (mainloop_active) {
+        while (is_main_loop_active()) {
           std::this_thread::sleep_for(time);
           post_empty_event();
         }
-      }
-      );
+      });
     }
 
     frame_loop(frame_func);
