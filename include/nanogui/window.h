@@ -31,6 +31,7 @@ DECLSETTER(WindowCollapsed, bool)
 DECLSETTER(WindowHaveHeader, bool)
 DECLSETTER(HeaderHeight, int)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
+DECLSETTERARGSNEW(WindowBoxLayout, BoxLayout)
 
 class NANOGUI_EXPORT Window : public Widget 
 {
@@ -168,6 +169,7 @@ public:
     PROPSETTER(Caption,setTitle)
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
     PROPSETTER(WindowGroupLayout,setLayout)
+    PROPSETTER(WindowBoxLayout,setLayout)
     PROPSETTER(WindowCollapsed,setCollapsed)
     PROPSETTER(WindowHaveHeader,setDrawHeader)
     PROPSETTER(HeaderHeight, setHeaderHeight)

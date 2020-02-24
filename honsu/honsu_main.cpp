@@ -107,9 +107,9 @@ void showWaitingWindow(Screen* screen)
                            WindowMovable{ Theme::WindowDraggable::dgFixed },
                            WindowHaveHeader{ false },
                            WidgetId{ "#waiting_window" },
-                           WindowGroupLayout{});
+                           WindowBoxLayout{Orientation::Horizontal, Alignment::Middle, 0, 6});
 
-  w.spinner( FixedSize{ 70, 70 },
+  w.spinner( SpinnerRadius{ 0.5f },
              BackgroundColor{ 1 } );
   screen->performLayout();
   //w.waitForAction(10, "#autoremove", [](Widget* w) {w->remove(); });

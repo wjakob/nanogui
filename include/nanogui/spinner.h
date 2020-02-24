@@ -26,6 +26,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 
 DECLSETTER(SpinnerSpeed,float)
+DECLSETTER(SpinnerRadius,float)
 
 class NANOGUI_EXPORT Spinner : public Widget {
 public:
@@ -44,6 +45,7 @@ public:
    }
 
    void setBackgroundColor(const Color& c) { setBackgroundColor(c, c); }
+   void setRadius(float r) { mRadius = r; }
 
    using Widget::set;
 
@@ -57,6 +59,7 @@ private:
 
 public:
    PROPSETTER(SpinnerSpeed,setSpeed)
+   PROPSETTER(SpinnerRadius,setRadius)
    PROPSETTER(BackgroundColor,setBackgroundColor)
 };
 
