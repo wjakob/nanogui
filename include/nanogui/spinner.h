@@ -38,6 +38,12 @@ public:
    Vector2i preferredSize(NVGcontext *ctx) const override;
 
    void setSpeed(float speed) { mSpeed = speed; }
+   void setBackgroundColor(const Color& top, const Color& bottom) {
+     mBackgroundTop = top;
+     mBackgroundBottom = bottom;
+   }
+
+   void setBackgroundColor(const Color& c) { setBackgroundColor(c, c); }
 
    using Widget::set;
 
@@ -47,9 +53,11 @@ public:
 private:
    float mSpeed = 1.f;
    float mRadius = 0.75f;
+   Color mBackgroundTop, mBackgroundBottom;
 
 public:
    PROPSETTER(SpinnerSpeed,setSpeed)
+   PROPSETTER(BackgroundColor,setBackgroundColor)
 };
 
 NAMESPACE_END(nanogui)

@@ -109,7 +109,8 @@ void showWaitingWindow(Screen* screen)
                            WidgetId{ "#waiting_window" },
                            WindowGroupLayout{});
 
-  w.spinner(FixedSize{ 70, 70 }, );
+  w.spinner( FixedSize{ 70, 70 },
+             BackgroundColor{ 1 } );
   screen->performLayout();
   //w.waitForAction(10, "#autoremove", [](Widget* w) {w->remove(); });
 }

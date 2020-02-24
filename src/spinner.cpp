@@ -36,8 +36,8 @@ void Spinner::draw(NVGcontext* ctx)
 
   nvgSave(ctx);
 
-  Color gradTop = mTheme->mButtonGradientTopUnfocused;
-  Color gradBot = mTheme->mButtonGradientBotUnfocused;
+  Color gradTop = mBackgroundTop.notW(mTheme->mButtonGradientTopUnfocused);
+  Color gradBot = mBackgroundBottom.notW(mTheme->mButtonGradientBotUnfocused);
 
   nvgBeginPath(ctx);
   nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
