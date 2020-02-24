@@ -28,6 +28,7 @@ class ContextMenu;
 DECLSETTER(WindowSimpleLayout, Orientation)
 DECLSETTER(WindowMovable, Theme::WindowDraggable)
 DECLSETTER(WindowCollapsed, bool)
+DECLSETTER(WindowHaveHeader, bool)
 DECLSETTER(HeaderHeight, int)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 
@@ -121,6 +122,8 @@ public:
       else mDrawFlags &= ~flag;
     }
 
+    void setDrawHeader(bool v) { setDrawFlag(DrawHeader, v); }
+
     /// Internal helper function to maintain nested window position values; overridden in \ref Popup
     virtual void refreshRelativePlacement();
     virtual int getHeaderHeight() const;
@@ -166,6 +169,7 @@ public:
     PROPSETTER(WindowSimpleLayout,setSimpleLayout)
     PROPSETTER(WindowGroupLayout,setLayout)
     PROPSETTER(WindowCollapsed,setCollapsed)
+    PROPSETTER(WindowHaveHeader,setDrawHeader)
     PROPSETTER(HeaderHeight, setHeaderHeight)
     PROPSETTER(FontSize, setFontSize)
 };

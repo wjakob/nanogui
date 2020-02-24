@@ -100,88 +100,62 @@ using namespace nanogui;
 
 GPUtimer gpuTimer;
 
-void createButtonDemoWindow(Screen* screen)
+void showWaitingWindow(Screen* screen) 
 {
   auto& w = screen->window(Position{ 0, 0 },
                            FixedSize{ screen->size() },
                            WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           Caption{ "Button demo" },
+                           WindowHaveHeader{ false },
+                           WidgetId{ "#waiting_window" },
                            WindowGroupLayout{});
+
+  w.spinner(FixedSize{ 70, 70 }, );
+  screen->performLayout();
+  //w.waitForAction(10, "#autoremove", [](Widget* w) {w->remove(); });
+}
+
+void createStartupScreen(Screen* screen)
+{
+  auto& w = screen->window(Position{ 0, 0 },
+                           FixedSize{ screen->size() },
+                           WindowMovable{ Theme::WindowDraggable::dgFixed },
+                           WindowHaveHeader{ false },
+                           WidgetId{ "#login_window" },
+                           WindowGroupLayout{});
+
   //w.withTheme<WhiteTheme>(screen->nvgContext());
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
-  w.label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
-  w.button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
-           Caption{ "Plain button" },
-           TooltipText{ "short tooltip" });
+  w.textbox(FontSize{ 20 },
+            TextAlignment::Left,
+            TextDefaultValue{ "account name" },
+            WidgetId{ "#account_name" },
+            TextBoxUpdateCallback{ [](TextBox* tb) {}});
+  w.textbox(FontSize{ 20 },
+            TextAlignment::Left,
+            TextDefaultValue{ "youtrack url" },
+            WidgetId{ "#youtrack_url" },
+            TextBoxUpdateCallback{ [](TextBox* tb) {} });
+  w.textbox(FontSize{ 20 },
+            TextAlignment::Left,
+            TextDefaultValue{ "youtrack token" },
+            WidgetId{ "#youtrack_token" },
+            TextBoxUpdateCallback{ [](TextBox* tb) {} });
 
   /* Alternative construction notation using variadic template */
-  w.button(Caption{ "Styled" },
+  w.button(Caption{ "Login" },
            Icon{ ENTYPO_ICON_ROCKET },
            BackgroundColor{ 0, 0, 255, 25 },
-           ButtonCallback{ [] { cout << "pushed!" << endl; } },
-           TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                        "fact, that the shown text will span several lines." });
-
-  w.label("Toggle buttons", "sans-bold");
-  w.button(Caption{ "Toggle me" },
-           ButtonFlags{ Button::ToggleButton },
-           ButtonChangeCallback{ [](bool state) { cout << "Toggle button state: " << state << endl; } });
-
-  w.label("Radio buttons", "sans-bold");
-  w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } );
-  w.button(Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } );
-
-  w.label("A tool palette", "sans-bold");
-  auto& tools = w.widget();
-  tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-  tools.toolbutton(Icon{ ENTYPO_ICON_CLOUD });
-  tools.toolbutton(Icon{ ENTYPO_ICON_FAST_FORWARD });
-  tools.toolbutton(Icon{ ENTYPO_ICON_VOLUME_UP });
-  tools.toolbutton(Icon{ ENTYPO_ICON_INSTALL });
-
-  w.label("Popup buttons", "sans-bold");
-  auto& popupBtn = w.wdg<PopupButton>("Popup", ENTYPO_ICON_EXPORT);
-  auto& popup = popupBtn.popupref();
-  popup.withLayout<GroupLayout>();
-  popup.label("Arbitrary widgets can be placed here");
-  popup.checkbox(Caption{ "A check box" });
-  // popup right
-  auto& popupBtnR = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
-  auto& popupRight = popupBtnR.popupref();
-  popupRight.withLayout<GroupLayout>();
-  popupRight.checkbox(Caption{ "Another check box" });
-  // popup left
-  auto& popupBtnL = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
-  popupBtnL.setSide(Popup::Side::Left);
-  auto& popupLeft = popupBtnL.popupref();
-  popupLeft.withLayout<GroupLayout>();
-  popupLeft.checkbox(Caption{ "Another check box" });
-
-  w.label("A switch boxes", "sans-bold");
-  auto& switchboxArea = w.widget();
-  switchboxArea.withLayout<GridLayout>(Orientation::Horizontal, 2);
-
-  auto& switchboxHorizontal = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-  switchboxHorizontal.setFixedSize(Vector2i(80, 30));
-  switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
-
-  auto& switchboxVerticalColored = switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
-  switchboxVerticalColored.setFixedSize(Vector2i(28, 60));
-  switchboxVerticalColored.setBackgroundColor({ 0,0,129,255 });
-
-  auto& switchboxHorizontalColored = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-  switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
-  switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
+           ButtonCallback{ [=] { showWaitingWindow(screen); } });
 }
 
-class ExampleScreen : public Screen {
+class HonsuScreen : public Screen {
 public:
-  ExampleScreen(const Vector2i& size, const std::string& caption) : Screen(size, caption, false) {
+    HonsuScreen(const Vector2i& size, const std::string& caption) : Screen(size, caption, false) {
       initGPUTimer(&gpuTimer);
 
-      createButtonDemoWindow(this);
+      createStartupScreen(this);
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));
@@ -191,8 +165,6 @@ public:
 
       performLayout();
     }
-
-    ~ExampleScreen() {}
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
@@ -315,7 +287,7 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::sample::create_context();
 
   {
-    ExampleScreen screen({ 300, 900 }, "");
+    HonsuScreen screen({ 300, 900 }, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
     screen.performLayout();
