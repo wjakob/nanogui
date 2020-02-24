@@ -128,19 +128,22 @@ void createStartupScreen(Screen* screen)
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
-  w.textbox(FontSize{ 20 },
+  w.textbox(FontSize{ 24 },
+            IsEditable{ true },
             TextAlignment::Left,
-            TextDefaultValue{ "account name" },
+            TextPlaceholder{ "account name" },
             WidgetId{ "#account_name" },
             TextBoxUpdateCallback{ [](TextBox* tb) {}});
-  w.textbox(FontSize{ 20 },
+  w.textbox(FontSize{ 24 },
+            IsEditable{ true },
             TextAlignment::Left,
-            TextDefaultValue{ "youtrack url" },
+            TextPlaceholder{ "youtrack url" },
             WidgetId{ "#youtrack_url" },
             TextBoxUpdateCallback{ [](TextBox* tb) {} });
-  w.textbox(FontSize{ 20 },
+  w.textbox(FontSize{ 24 },
+            IsEditable{ true },
             TextAlignment::Left,
-            TextDefaultValue{ "youtrack token" },
+            TextPlaceholder{ "youtrack token" },
             WidgetId{ "#youtrack_token" },
             TextBoxUpdateCallback{ [](TextBox* tb) {} });
 

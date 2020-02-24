@@ -37,6 +37,7 @@ DECLSETTER(IsEditable,bool)
 DECLSETTER(TextValue,std::string)
 DECLSETTER(TextDefaultValue,std::string)
 DECLSETTER(TextBoxUnits,std::string)
+DECLSETTER(TextPlaceholder,std::string)
 DECLSETTER(TextBoxUpdateCallback, std::function<void(TextBox*)>)
 
 class NANOGUI_EXPORT TextBox : public Widget {
@@ -160,6 +161,7 @@ public:
     PROPSETTER(IsSpinnable,setSpinnable)
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)
+    PROPSETTER(TextPlaceholder,setPlaceholder)
     PROPSETTER(TextDefaultValue,setDefaultValue)
     PROPSETTER(TextBoxUnits,setUnits)
     PROPSETTER(TextBoxUpdateCallback,setUpdateCallback)
