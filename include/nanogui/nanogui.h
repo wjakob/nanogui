@@ -32,6 +32,7 @@
 #include <nanogui/imagepanel.h>
 #include <nanogui/imageview.h>
 #include <nanogui/vscrollpanel.h>
+#include <nanogui/scrollbar.h>
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
 #include <nanogui/formhelper.h>

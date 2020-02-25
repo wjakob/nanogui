@@ -178,11 +178,12 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
 #else
     WIN32_FIND_DATA ffd;
     std::string searchPath = path + "/*.*";
-    HANDLE handle = FindFirstFileA(searchPath.c_str(), &ffd);
+    HANDLE handle = FindFirstFileA(searchPath.c_str(), (LPWIN32_FIND_DATAA)&ffd);
     if (handle == INVALID_HANDLE_VALUE)
         throw std::runtime_error("Could not open image directory!");
     do {
-        const char *fname = ffd.cFileName;
+        std::wstring temp = std::wstring((wchar_t*)ffd.cFileName);
+        const char* fname = std::string(temp.begin(), temp.end()).c_str();
 #endif
         if (strstr(fname, "png") == nullptr)
             continue;
@@ -196,7 +197,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     }
     closedir(dp);
 #else
-    } while (FindNextFileA(handle, &ffd) != 0);
+    } while (FindNextFileA(handle, (LPWIN32_FIND_DATAA)&ffd) != 0);
     FindClose(handle);
 #endif
     return result;
