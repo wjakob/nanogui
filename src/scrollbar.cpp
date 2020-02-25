@@ -54,9 +54,7 @@ void ScrollBar::performLayout(NVGcontext* ctx) {
         catch (const std::exception & e) {
             std::cerr << "Caught exception in event handler: " << e.what()
                 << std::endl;
-            
         }
-        
         //std::cout << "prefered: " + std::to_string(mSliderPreferredSide) + ", " + std::to_string(p->width())  << std::endl;
     }
 }
