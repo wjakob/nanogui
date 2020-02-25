@@ -27,7 +27,7 @@ void ScrollBar::performLayout(NVGcontext* ctx) {
     Widget::performLayout(ctx);
 
     Widget* p = parent();
-    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight){
+    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight) {
         setSize({ scrollBarWidth, p->height() } );
         if (mAlign == Alignment::VerticalRight)
             setPosition({ p->width() - height(), 0 });
@@ -60,7 +60,7 @@ void ScrollBar::performLayout(NVGcontext* ctx) {
 }
 
 Vector2i ScrollBar::preferredSize(NVGcontext* ctx) const {
-    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight){
+    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight) {
         return Vector2i(scrollBarWidth, parent()->height());
     }
     else
@@ -68,7 +68,7 @@ Vector2i ScrollBar::preferredSize(NVGcontext* ctx) const {
 }
 
 bool ScrollBar::scrollMethod(const Vector2i& p, const Vector2f& rel) {
-    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight){
+    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight) {
         if (mSliderPreferredSide > mSize.y()) {
             float scrollh = height() * std::min(1.0f, height() / (float)mSliderPreferredSide);
 
@@ -78,7 +78,7 @@ bool ScrollBar::scrollMethod(const Vector2i& p, const Vector2f& rel) {
             return true;
         }
     }
-    else if (mAlign == Alignment::HorizontalBottom || mAlign == Alignment::HorizontalTop){
+    else if (mAlign == Alignment::HorizontalBottom || mAlign == Alignment::HorizontalTop) {
         if (mSliderPreferredSide > mSize.x()) {
             float scrollw = width() * std::min(1.0f, width() / (float)mSliderPreferredSide);
 
@@ -110,7 +110,7 @@ bool ScrollBar::scrollEvent(const Vector2i& p, const Vector2f& rel) {
 }
 
 void ScrollBar::draw(NVGcontext* ctx) {
-    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight){
+    if (mAlign == Alignment::VerticalLeft || mAlign == Alignment::VerticalRight) {
         float scrollh = height() * std::min(1.0f, height() / (float)mSliderPreferredSide);
 
         if (mSliderPreferredSide <= mSize.y())
@@ -140,7 +140,7 @@ void ScrollBar::draw(NVGcontext* ctx) {
         nvgFillPaint(ctx, paint);
         nvgFill(ctx);
     }
-    else if (mAlign == Alignment::HorizontalBottom || mAlign == Alignment::HorizontalTop){
+    else if (mAlign == Alignment::HorizontalBottom || mAlign == Alignment::HorizontalTop) {
         float scrollw = width() * std::min(1.0f, width() / (float)mSliderPreferredSide);
 
         if (mSliderPreferredSide <= mSize.x())

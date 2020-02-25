@@ -107,7 +107,7 @@ bool Widget::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button
         bool contained = child->contains(p - mPos), prevContained = child->contains(p - mPos - rel);
         if (contained && !prevContained && !childContainedAlready)
                 child->mouseEnterEvent(p, contained);
-        else if (contained && prevContained){
+        else if (contained && prevContained) {
             child->mouseEnterEvent(p, !childContainedAlready);
             childContainedAlready = true;
         }
