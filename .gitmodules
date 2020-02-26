@@ -7,3 +7,6 @@
 [submodule "ext/pybind"]
     path = ext/pybind11
     url = https://github.com/pybind/pybind11
+[submodule "ext/cpp-httplib"]
+	path = ext/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib

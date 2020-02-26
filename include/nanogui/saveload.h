@@ -14,6 +14,7 @@ BSD-style license that can be found in the LICENSE.txt file.
 
 #include <nanogui/common.h>
 #include <nanogui/serializer/json.h>
+#include <fstream>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -58,7 +59,7 @@ struct json {
   template<> bool get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
   template<> Color get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color(it->second.get_int("value")): Color(); }
   template<> _vi get<_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
-  template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_int("min"), it->second.get_int("max")) : _r{ 0, 0 }; }
+  template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_float("min"), it->second.get_float("max")) : _r{ 0.f, 0.f }; }
 
   template<typename T> std::vector<T> get_array(const _s& n, std::function<T (const _v&)> conv) const {
     auto items = obj.find(n);
@@ -80,6 +81,23 @@ struct json {
   template<> _vf get<_vf>(const _s& n) const { return get_array<float>(n, [](const _v& v) { return v.get_float(); }); }
 
   inline operator Json::value() const { return Json::value(obj); }
+
+  void load(const _s& filename)
+  {
+    std::ifstream t(filename, std::ifstream::binary);
+    Json::value x;
+    t >> x;
+    obj = (x.is<Json::null>() ? Json::value("") : x).get_obj();
+    t.close();
+  }
+
+  void save(const _s& filename)
+  {
+    std::ofstream t(filename, std::ofstream::binary);
+    Json::value x(obj);
+    t << x;
+    t.close();
+  }
 };
 
 NAMESPACE_END(nanogui)
