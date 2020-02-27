@@ -291,9 +291,7 @@ void showTasksWindow(Screen* screen, bool show)
 
   for (auto& issue : account.issues)
   {
-    vstack.button(Caption{ issue.id },
-                  ButtonFlags{ Button::RadioButton },
-                  ButtonCallback{ [=] {} });
+    auto& f = vstack.frame(FixedHeight{ 200 });
   }
   screen->performLayout();
 }

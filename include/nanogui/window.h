@@ -30,8 +30,36 @@ DECLSETTER(WindowMovable, Theme::WindowDraggable)
 DECLSETTER(WindowCollapsed, bool)
 DECLSETTER(WindowHaveHeader, bool)
 DECLSETTER(HeaderHeight, int)
+DECLSETTER(CornerRadius, float)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 DECLSETTERARGSNEW(WindowBoxLayout, BoxLayout)
+
+class NANOGUI_EXPORT Frame : public Widget
+{
+public:
+  RTTI_CLASS_UID(Frame)
+  RTTI_DECLARE_INFO(Frame)
+
+  explicit Frame(Widget* parent) : Widget(parent) {}
+
+  using Widget::set;
+  template<typename... Args>
+  Frame(Widget* parent, const Args&... args)
+      : Frame(parent) { set<Frame, Args...>(args...); }
+
+  void draw(NVGcontext *ctx) override;
+  void setBorderSize(float b) { mBorderSize = b; }
+  void setCornerRadius(float r) { mCornerRadius = r; }
+
+private:
+  float mCornerRadius = 0.f;
+  float mBorderSize = 0.f;
+  Color mBodyColor;
+  Color mBorderColor;
+
+public:
+  PROPSETTER(CornerRadius, setCornerRadius)
+};
 
 class NANOGUI_EXPORT Window : public Widget 
 {

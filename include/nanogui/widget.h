@@ -21,6 +21,7 @@ NAMESPACE_BEGIN(nanogui)
 
 class Serializer;
 class Window;
+class Frame;
 class Label;
 class ToolButton;
 class LinkButton;
@@ -547,6 +548,7 @@ public:
     template<typename... Args>Panel& hgrid2(float split, const Args&... args) { auto& w=wdg<Panel>(args...); w.withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill}); return w; }
     template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
+    template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
 
 protected:
     /// Free all resources used by the widget and any children
