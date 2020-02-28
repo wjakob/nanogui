@@ -58,8 +58,7 @@ void TextArea::appendIcon(int icon)
 {
   NVGcontext *ctx = screen()->nvgContext();
 
-  nvgFontSize(ctx, fontSize());
-  nvgFontFace(ctx, "icons");
+  nvgFontFaceSize(ctx, "icons", fontSize());
 
   std::string str = utf8(icon).data();
   int width = nvgTextBounds(ctx, 0, 0, str.c_str(), nullptr, nullptr);

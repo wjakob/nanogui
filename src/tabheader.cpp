@@ -26,10 +26,9 @@ TabHeader::TabButton::TabButton(TabHeader &header, const std::string &label)
 
 Vector2i TabHeader::TabButton::preferredSize(NVGcontext *ctx) const {
     // No need to call nvg font related functions since this is done by the tab header implementation
-    float bounds[4];
-    int labelWidth = nvgTextBounds(ctx, 0, 0, mLabel.c_str(), nullptr, bounds);
-    int buttonWidth = labelWidth + 2 * mHeader->theme()->mTabButtonHorizontalPadding;
-    int buttonHeight = bounds[3] - bounds[1] + 2 * mHeader->theme()->mTabButtonVerticalPadding;
+    auto capsize = nvgTextBounds(ctx, 0, 0, mLabel.c_str(), nullptr);
+    int buttonWidth = capsize.x() + 2 * mHeader->theme()->mTabButtonHorizontalPadding;
+    int buttonHeight = capsize.y() + 2 * mHeader->theme()->mTabButtonVerticalPadding;
     return Vector2i(buttonWidth, buttonHeight);
 }
 
