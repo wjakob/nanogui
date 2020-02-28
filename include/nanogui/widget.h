@@ -80,6 +80,7 @@ DECLSETTER(CaptionHAlign, TextHAlign)
 DECLSETTER(InitialValue, float)
 DECLSETTER(MinValue, float)
 DECLSETTER(MaxValue, float)
+DECLSETTER(IsSubElement, bool)
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -491,20 +492,6 @@ public:
     inline void hide() { setVisible(false); }
 
     void setDebugDraw(bool en) { mDebugDraw = en; }
-
-    PROPSETTER(FixedHeight, setFixedHeight)
-    PROPSETTER(FixedWidth, setFixedWidth)
-    PROPSETTER(WidgetId,setId)
-    PROPSETTER(Position,setPosition)
-    PROPSETTER(WidgetSize,setSize)
-    PROPSETTER(MinimumSize,setMinSize)
-    PROPSETTER(RelativeSize,setRelativeSize)
-    PROPSETTER(FixedSize,setFixedSize)
-    PROPSETTER(WidgetLayout,setLayout)
-    PROPSETTER(WidgetStretchLayout,setLayout)
-    PROPSETTER(WidgetGridLayout,setLayout)
-    PROPSETTER(WidgetBoxLayout,setLayout)
-
     template<typename FF, typename none = void> void set() {}
 
     template<typename WidgetClass, typename... Args>
@@ -549,6 +536,22 @@ public:
     template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
     template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
+
+public:
+    PROPSETTER(FixedHeight, setFixedHeight)
+    PROPSETTER(FixedWidth, setFixedWidth)
+    PROPSETTER(WidgetId, setId)
+    PROPSETTER(Position, setPosition)
+    PROPSETTER(WidgetSize, setSize)
+    PROPSETTER(MinimumSize, setMinSize)
+    PROPSETTER(RelativeSize, setRelativeSize)
+    PROPSETTER(FixedSize, setFixedSize)
+    PROPSETTER(WidgetLayout, setLayout)
+    PROPSETTER(WidgetStretchLayout, setLayout)
+    PROPSETTER(WidgetGridLayout, setLayout)
+    PROPSETTER(WidgetBoxLayout, setLayout)
+    PROPSETTER(IsSubElement, setSubElement)
+    PROPSETTER(FontSize, setFontSize)
 
 protected:
     /// Free all resources used by the widget and any children
