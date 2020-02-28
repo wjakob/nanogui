@@ -191,8 +191,10 @@ protected:
 
     virtual void beforeDoCallback() {}
     virtual void beforeDoChangeCallback(bool) {}
+    Vector2f Button::getCaptionSize(NVGcontext *ctx);
     /// The caption of this Button.
     std::string mCaption;
+    Vector2f mCaptionSize;
 
     /**
      * \brief The icon of this Button (``0`` means no icon).

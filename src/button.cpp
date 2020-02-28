@@ -28,13 +28,23 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
 {
   setFlags(NormalButton);
   setDrawFlags(DrawAll);
-  setStyleTextFlags(StyleTextNone);
+  setTextStyleFlags(StyleTextNone);
+  mCaptionSize = { -1.f, -1.f };
 }
 
-Vector2i Button::preferredSize(NVGcontext *ctx) const {
+Vector2f Button::getCaptionSize(NVGcontext *ctx)
+{
+  if (mCaptionSize.x() < 0)
+    mCaptionSize = nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr);
+ 
+  return mCaptionSize;
+}
+
+Vector2i Button::preferredSize(NVGcontext *ctx) const 
+{
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     nvgFontFaceSize(ctx, "sans-bold", fontSize);
-    float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
+    auto capsize = const_cast<Button*>(this)->getCaptionSize(ctx);
     float iw = 0.0f, ih = (float)fontSize;
 
     if (mIcon) 
@@ -53,7 +63,7 @@ Vector2i Button::preferredSize(NVGcontext *ctx) const {
             iw = w * ih / h;
         }
     }
-    return Vector2i((int)(tw + iw) + 20 + (*theme()->framePaddingLeft * 2), fontSize + 10);
+    return Vector2i((int)(capsize.x() + iw) + 20 + (*theme()->framePaddingLeft * 2), fontSize + 10);
 }
 
 bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
@@ -181,24 +191,24 @@ void Button::draw(NVGcontext *ctx)
     {
       nvgBeginPath(ctx);
       nvgStrokeWidth(ctx, 1.0f);
-      nvgRoundedRect(ctx, mPos.cast<float>() + Vector2f{ 0.5f, mPushed ? 0.5f : 1.5f }, 
-                          mSize.cast<float>() - Vector2f{ 1, 1 + mPushed ? 0.0f : 1.0f}, mTheme->mButtonCornerRadius);
+      nvgRoundedRect(ctx, mPos + Vector2f{ 0.5f, mPushed ? 0.5f : 1.5f }, 
+                          mSize - Vector2f{ 1, 1 + mPushed ? 0.0f : 1.0f}, mTheme->mButtonCornerRadius);
       nvgStrokeColor(ctx, mTheme->mBorderLight);
       nvgStroke(ctx);
 
       nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos.cast<float>() + Vector2f{ 0.5f, 0.5f }, 
-                          mSize.cast<float>() - Vector2f{ 1, 2 }, mTheme->mButtonCornerRadius);
+      nvgRoundedRect(ctx, mPos + Vector2f{ 0.5f, 0.5f }, 
+                          mSize - Vector2f{ 1, 2 }, mTheme->mButtonCornerRadius);
       nvgStrokeColor(ctx, mTheme->mBorderDark);
       nvgStroke(ctx);
     }
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
     nvgFontFaceSize(ctx, "sans-bold", fontSize);
-    float tw = nvgTextBounds(ctx, 0,0, mCaption.c_str(), nullptr, nullptr);
+    auto capsize = getCaptionSize(ctx);
 
     Vector2f center = (mPos + mSize / 2).cast<float>();
-    Vector2f textPos = center - Vector2f(tw / 2, 1);
+    Vector2f textPos = center - Vector2f(capsize.x() / 2, 1);
     NVGcolor textColor = getTextColor();
 
     if (mIcon && haveDrawFlag(DrawIcon)) {
@@ -225,13 +235,13 @@ void Button::draw(NVGcontext *ctx)
 
         if (mIconPosition == IconPosition::LeftCentered) 
         {
-            iconPos.x() -= (tw + iw) * 0.5f;
+            iconPos.x() -= (capsize.x() + iw) * 0.5f;
             textPos.x() += iw * 0.5f;
         } 
         else if (mIconPosition == IconPosition::RightCentered) 
         {
             textPos.x() -= iw * 0.5f;
-            iconPos.x() += tw * 0.5f;
+            iconPos.x() += capsize.x() * 0.5f;
         } 
         else if (mIconPosition == IconPosition::Left) 
         {
@@ -267,6 +277,9 @@ void Button::draw(NVGcontext *ctx)
 
       nvgFillColor(ctx, textColor);
       nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
+
+      if (haveTextStyleFlag(StyleTextUnderline))
+        nvgLine(ctx, textPos + capsize._0y(), textPos + capsize);
     }
 
     Widget::draw(ctx);
