@@ -77,7 +77,7 @@ void sample::frame_loop(std::function<void()> &f) { while (is_main_loop_active()
 void __nanogui_destroy_cursor(intptr_t cursor) { glfwDestroyCursor((GLFWcursor*)cursor); }
 intptr_t __nanogui_create_cursor(int shape) { return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape); }
 
-void sample::clear_frame(Color background)
+void sample::clear_frame(const Color& background)
 {
   glClearColor(background.r(), background.g(), background.b(), background.a());
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

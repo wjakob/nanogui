@@ -442,6 +442,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/meter.h src/meter.cpp
   include/nanogui/checkbox.h src/checkbox.cpp
   include/nanogui/spinner.h src/spinner.cpp
+  include/nanogui/color.h src/color.cpp
   include/nanogui/switchbox.h src/switchbox.cpp
   include/nanogui/tolerancebar.h src/tolerancebar.cpp
   include/nanogui/dropdownbox.h src/dropdownbox.cpp

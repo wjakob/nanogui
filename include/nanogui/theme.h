@@ -18,6 +18,7 @@
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
+#include <nanogui/color.h>
 #include <memory>
 #include <string.h>
 

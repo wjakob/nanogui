@@ -137,30 +137,6 @@ enum class Cursor {
     CursorCount ///< Not a cursor --- should always be last: enables a loop over the cursor types.
 };
 
-/*
- * \class Color common.h nanogui/common.h
- *
- * \brief Stores an RGBA floating point color value.
- *
- * This class simply wraps around an ``Eigen::Vector4f``, providing some convenient
- * methods and terminology for thinking of it as a color.  The data operates in the
- * same way as ``Eigen::Vector4f``, and the following values are identical:
- *
- * \rst
- * +---------+-------------+-------------+
- * | Channel | Array Index | Color Value |
- * +=========+=============+=============+
- * | Red     | ``0``       | r()         |
- * +---------+-------------+-------------+
- * | Green   | ``1``       | g()         |
- * +---------+-------------+-------------+
- * | Blue    | ``2``       | b()         |
- * +---------+-------------+-------------+
- * | Alpha   | ``3``       | w()         |
- * +---------+-------------+-------------+
- *
- */
-
 namespace math
 {
     const float ROUNDING_ERROR_f32 = 0.000001f;
@@ -661,114 +637,6 @@ inline float getAnglePointToAxis(const Vector2f& p)
   }
 }
 
-class Color
-{
-public:
-  Color() : Color(0, 0, 0, 0) {}
-
-  Color(float intensity, float alpha)
-  {
-    r() = intensity; g() = intensity;
-    b() = intensity; a() = alpha;
-  }
-
-  Color(int intensity, int alpha)
-  {
-    r() = (intensity / 255.f); g() = (intensity / 255.f);
-    b() = (intensity / 255.f); a() = alpha / 255.f;
-  }
-
-  Color(float _r, float _g, float _b, float _a)
-  {
-    r() = _r; g() = _g; b() = _b; a() = _a;
-  }
-
-  Color(int _r, int _g, int _b, int _a)
-  {
-    r() = _r / 255.f; g() = _g / 255.f; b() = _b / 255.f; a() = _a / 255.f;
-  }
-
-  Color(int v)
-  {
-    r() = ((v >> 24) & 0xff)/255.f;
-    g() = ((v >> 16) & 0xff) / 255.f;
-    b() = ((v >> 8) & 0xff) / 255.f;
-    a() = (v & 0xff) / 255.f;
-  }
-
-  Color(const Color& rgb, float _a) { *this = rgb; a() = _a; }
-
-  Color& operator/=(float v) {
-    for (auto& a : rgba) a /= v;
-    return *this;
-  }
-  /// Return a reference to the red channel
-  float &r() { return rgba[0]; }
-  /// Return a reference to the red channel (const version)
-  const float &r() const { return rgba[0]; }
-  /// Return a reference to the green channel
-  float &g() { return rgba[1]; }
-  /// Return a reference to the green channel (const version)
-  const float &g() const { return rgba[1]; }
-  /// Return a reference to the blue channel
-  float &b() { return rgba[2]; }
-  /// Return a reference to the blue channel (const version)
-  const float &b() const { return rgba[2]; }
-
-  float &a() { return rgba[3]; }
-  const float &a() const { return rgba[3]; }
-
-  float &w() { return rgba[3]; }
-  const float &w() const { return rgba[3]; }
-
-  const Color& notW(const Color& c) const { return w() == 0 ? c : *this; }
-
-  Color rgb() const { return Color(rgba[0], rgba[1], rgba[2], 0.f); }
-
-  void setAlpha(float a) { rgba[3] = a; }
-
-  Color withAlpha(float a) const { Color c = *this; c.rgba[3] = a; return c; }
-
-  bool operator!=(const Color& c)
-  {
-    return !(c.a() == a() && c.r() == r() && c.g() == g() && c.b() == b());
-  }
-
-  Color contrastingColor() const {
-    float luminance = r() * 0.299f + g() * 0.587f + b() * 0.144f;
-    return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
-  }
-
-  Color operator*(float m) const
-  {
-    return Color(r()*m, g()*m, b()*m, a()*m);
-  }
-
-  Color operator+(const Color& c) const
-  {
-    return Color(r() + c.r(), g() + c.g(), b() + c.b(), a() + c.a());
-  }
-
-  inline operator const NVGcolor &() const { return reinterpret_cast<const NVGcolor &>(rgba); }
-  inline Color mul_a(float mul) { Color ret = *this; ret.w() *= mul; return ret; }
-  inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }
-
-  inline const float* data() const { return rgba; }
-  inline float* data() { return rgba; }
-
-  Color transpose() const
-  {
-    Color out;
-    for (int i = 0; i < 2; i++)
-      for (int j = 0; j < 2; j++)
-        out.rgba[j*2+i] = rgba[i*2+j];
-    return out;
-  }
-
-private:
-  float rgba[4];
-};
-
 // skip the forward declarations for the docs
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -935,6 +803,7 @@ void NANOGUI_EXPORT logic_error(const char* err, const char* file, int line);
 int NANOGUI_EXPORT __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size);
 
 class Screen;
+class Color;
 namespace sample
 {
   using WindowHandle = void*;
@@ -943,7 +812,7 @@ namespace sample
   void NANOGUI_EXPORT destroy_window(WindowHandle wnd);
   void NANOGUI_EXPORT create_context();
   void NANOGUI_EXPORT run(std::function<void ()> func, int refresh = 50);
-  void NANOGUI_EXPORT clear_frame(Color background);
+  void NANOGUI_EXPORT clear_frame(const Color& background);
   void NANOGUI_EXPORT setup_window_params(WindowHandle window, Screen* screen);
   void NANOGUI_EXPORT present_frame(WindowHandle window);
   void NANOGUI_EXPORT frame_loop(std::function<void()> &f);
@@ -964,9 +833,3 @@ NAMESPACE_END(nanogui)
 
 inline nanogui::Vector2i operator*(float v, const nanogui::Vector2i& t) { return (t.cast<float>() * v).cast<int>(); }
 inline nanogui::Vector2f operator*(float v, const nanogui::Vector2f& t) { return t * v; }
-
-inline std::ostream& operator<<(std::ostream& os, const nanogui::Color& c)
-{
-  os << c.r() << '.' << c.g() << '.' << c.b() << '.' << c.a();
-  return os;
-}

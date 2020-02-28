@@ -31,6 +31,7 @@ DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
+DECLSETTER(InactiveColor, Color)
 DECLSETTER(HoveredColor, Color)
 
 class NANOGUI_EXPORT Button : public Widget 

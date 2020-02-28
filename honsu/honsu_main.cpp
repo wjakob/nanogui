@@ -447,6 +447,16 @@ void showStartupScreen(Screen* screen, bool show)
                            WindowGroupLayout{});
 
   //w.withTheme<WhiteTheme>(screen->nvgContext());
+  w.label(FixedHeight{ 100 }, 
+          Caption{ "Add new account" },
+          CaptionHAlign{ hCenter },
+          FontSize{ 26 })
+   .toolbutton(Icon{ ENTYPO_ICON_OFF }, 
+               IsSubElement{ true },
+               Position{ 15, 15 },
+               FontSize{ 32 },
+               ButtonDrawFlags{ Button::DrawBody|Button::DrawIcon },
+               HoveredColor{ Color::red });
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
@@ -492,6 +502,8 @@ public:
       previousFrameTime = getTimeFromStart();
 
       performLayout();
+
+      theme()->keyboardNavigation = false;
     }
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
@@ -611,15 +623,17 @@ private:
 int main(int /* argc */, char ** /* argv */) 
 {
   nanogui::init();
-  auto window = nanogui::sample::create_window(300, 900, "Honsu", true, false);
+  Vector2i size{ 400, 600 };
+  auto window = nanogui::sample::create_window(size.x(), size.y(), "Honsu", true, false);
+  nanogui::sample::remove_window_border(window);
   nanogui::sample::create_context();
 
   {
-    HonsuScreen screen({ 300, 900 }, "");
+    HonsuScreen screen(size + Vector2i{13, 36}, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
     screen.performLayout();
-
+  
     nanogui::sample::run([&] {
         nanogui::sample::clear_frame(screen.background());
 
