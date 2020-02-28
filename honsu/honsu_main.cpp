@@ -291,7 +291,14 @@ void showTasksWindow(Screen* screen, bool show)
 
   for (auto& issue : account.issues)
   {
-    auto& f = vstack.frame(FixedHeight{ 200 });
+    auto& f = vstack.frame(FixedHeight{ 200 }, 
+                           WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
+    auto& header = f.hlayer(FixedHeight{ 30 });
+    header.link(Caption{ issue.entityId });
+    header.link(Caption{ issue.state });
+    header.button(Caption{ "REC" }, Icon{ ENTYPO_ICON_RECORD });
+
+    f.label(Caption{ issue.summary }, FixedHeight{ 150 });
   }
   screen->performLayout();
 }

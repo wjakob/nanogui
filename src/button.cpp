@@ -28,6 +28,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
 {
   setFlags(NormalButton);
   setDrawFlags(DrawAll);
+  setStyleTextFlags(StyleTextNone);
 }
 
 Vector2i Button::preferredSize(NVGcontext *ctx) const {
@@ -258,8 +259,12 @@ void Button::draw(NVGcontext *ctx)
     {
       nvgFontFaceSize(ctx, "sans-bold", fontSize);
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-      nvgFillColor(ctx, mTheme->mTextColorShadow);
-      nvgText(ctx, textPos, mCaption);
+      if (haveTextStyleFlag(StyleTextShadow))
+      {
+        nvgFillColor(ctx, mTheme->mTextColorShadow);
+        nvgText(ctx, textPos, mCaption);
+      }
+
       nvgFillColor(ctx, textColor);
       nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
     }

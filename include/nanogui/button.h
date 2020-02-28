@@ -25,6 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
+DECLSETTER(ButtonStyleTextFlags, int)
 DECLSETTER(ButtonDrawFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
 DECLSETTER(ButtonDragCallback, std::function<void ()>)
@@ -57,11 +58,18 @@ public:
     };
 
     enum DrawFlag {
+        DrawNone =   0,
         DrawBody =   1<<0,
         DrawText =   1<<1,
         DrawBorder = 1<<2,
         DrawIcon =   1<<3,
         DrawAll  =   0xff
+    };
+
+    enum StyleTextFlags {
+        StyleTextNone      = 0,
+        StyleTextUnderline = 1<<0,
+        StyleTextShadow    = 1<<1
     };
 
     /**
@@ -173,6 +181,9 @@ public:
     void setDrawFlags(int flags) { mDrawFlags = flags; }
     bool haveDrawFlag(int flag) { return (mDrawFlags & flag)==flag; }
 
+    void setTextStyleFlags(int flags) { mTextStyleFlags = flags; }
+    bool haveTextStyleFlag(int flag) { return (mTextStyleFlags & flag) == flag; }
+
     virtual Color getTextColor() const;
     virtual Color getIconColor() const;
 
@@ -205,6 +216,7 @@ protected:
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
     int mFlags;
     int mDrawFlags;
+    int mTextStyleFlags;
 
     /// The background color of this Button.
     Color mBackgroundColor;
@@ -229,6 +241,7 @@ public:
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(ButtonDrawFlags, setDrawFlags)
+    PROPSETTER(ButtonStyleTextFlags, setTextStyleFlags)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
     PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)
