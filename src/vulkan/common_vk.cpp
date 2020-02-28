@@ -286,6 +286,22 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
 
 void errorcb(int error, const char *desc) { printf("GLFW error %d: %s\n", error, desc); }
 
+void sample::remove_window_border(WindowHandle wnd)
+{
+#if defined(_WIN32)	
+  auto handle = glfwGetWin32Window((GLFWwindow*)wnd);
+  long Style = GetWindowLong(handle, GWL_STYLE);
+  Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
+  Style &= ~WS_CAPTION;
+  Style &= ~WS_SYSMENU;
+  Style &= ~WS_BORDER;
+  Style &= ~WS_SYSMENU;
+  Style &= ~WS_THICKFRAME;
+  //Style &= ~WS_GROUP;
+  SetWindowLong(handle, GWL_STYLE, Style);
+#endif
+}
+
 sample::WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
 {
   WindowHandle hw_window = nullptr;

@@ -69,6 +69,13 @@ bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
 }
 
 void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
+Vector2f nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end)
+{
+  float bounds[4];
+  nvgTextBounds(ctx, x, y, string, end, bounds);
+  return {bounds[2]-bounds[0], bounds[3] - bounds[1]};
+}
+
 void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
 void nvgTranslate(NVGcontext* ctx, const Vector2i& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
 void nvgTranslate(NVGcontext* ctx, const Vector2f& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }

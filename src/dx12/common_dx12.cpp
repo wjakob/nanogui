@@ -570,6 +570,20 @@ static float get_pixel_ratio(HWND window) {
     return 1.f;
 }
 
+void sample::remove_window_border(WindowHandle wnd)
+{
+  auto handle = (HWND)wnd;
+  long Style = GetWindowLong(handle, GWL_STYLE);
+  Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
+  Style &= ~WS_CAPTION;
+  Style &= ~WS_SYSMENU;
+  Style &= ~WS_BORDER;
+  Style &= ~WS_SYSMENU;
+  Style &= ~WS_THICKFRAME;
+  //Style &= ~WS_GROUP;
+  SetWindowLong(handle, GWL_STYLE, Style);
+}
+
 sample::WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
 {
   RECT rcWin;

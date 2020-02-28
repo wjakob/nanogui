@@ -274,9 +274,10 @@ public:
   /** \return The length of the vector. */
   float getLength() const { return std::sqrt(x()*x() + y()*y()); }
 
-  Vector2 yy() const { return{ y(), y() }; }
-  Vector2 xx() const { return{ x(), x() }; }
-  Vector2 yx() const { return{ y(), x() }; }
+  inline Vector2 yy() const { return{ y(), y() }; }
+  inline Vector2 _0y()const { return{ 0,   y() }; }
+  inline Vector2 xx() const { return{ x(), x() }; }
+  inline Vector2 yx() const { return{ y(), x() }; }
 
   //! Get the squared length of this vector
   /** This is useful because it is much faster than getLength().
@@ -877,6 +878,7 @@ inline bool nvgIsImageIcon(int value) { return value < 1024; }
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
+Vector2f NANOGUI_EXPORT nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end);
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size);
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector4i& r);
 void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2i& pos);
@@ -888,6 +890,10 @@ void NANOGUI_EXPORT nvgText(NVGcontext* ctx, const Vector2f& p, const std::strin
 void NANOGUI_EXPORT nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int dir);
 void NANOGUI_EXPORT nvgCircle(NVGcontext* ctx, const Vector2f& c, float r);
 void NANOGUI_EXPORT nvgFontFaceSize(NVGcontext* ctx, const char* font, float size);
+
+template<class T> void nvgMoveTo(NVGcontext* ctx, const T& pos) { nvgMoveTo(ctx, pos.x(), pos.y()); }
+template<class T> void nvgLineTo(NVGcontext* ctx, const T& pos) { nvgLineTo(ctx, pos.x(), pos.y()); }
+template<class T> void nvgLine(NVGcontext* ctx, const T& from, const T& to) { nvgMoveTo(ctx, from); nvgLineTo(ctx, to); }
 
 #if defined(__APPLE__) || defined(DOXYGEN_DOCUMENTATION_BUILD)
 /**
@@ -933,7 +939,8 @@ namespace sample
 {
   using WindowHandle = void*;
   WindowHandle NANOGUI_EXPORT create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen);
-  void NANOGUI_EXPORT destroy_window(WindowHandle w);
+  void NANOGUI_EXPORT remove_window_border(WindowHandle wnd);
+  void NANOGUI_EXPORT destroy_window(WindowHandle wnd);
   void NANOGUI_EXPORT create_context();
   void NANOGUI_EXPORT run(std::function<void ()> func, int refresh = 50);
   void NANOGUI_EXPORT clear_frame(Color background);
