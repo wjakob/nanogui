@@ -20,8 +20,12 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(ToolButton, Button)
 RTTI_IMPLEMENT_INFO(ToggleButton, Button)
 
-Vector2i ToolButton::preferredSize(NVGcontext *ctx) const {
-  int side = theme()->toolButtonSide;
+Vector2i ToolButton::preferredSize(NVGcontext *ctx) const 
+{
+  int side = 0;
+  if (mFontSize > 0) side = mFontSize * 1.2;
+  else side = theme()->toolButtonSide;
+
   return{ side, side };
 }
 
@@ -32,9 +36,13 @@ Color ToggleButton::getIconColor() const
           : mInactiveColor.notW(theme()->mToggleButtonInactiveColor);
 }
 
-Vector2i ToggleButton::preferredSize(NVGcontext *ctx) const {
-  int side = theme()->toolButtonSide;
-  return{ side, side };
+Vector2i ToggleButton::preferredSize(NVGcontext *ctx) const 
+{
+  int side = 0;
+  if (mFontSize > 0) side = mFontSize * 1.2;
+  else side = theme()->toolButtonSide;
+
+  return { side, side };
 }
 
 ToggleButton::ToggleButton(Widget *parent, int icon)
