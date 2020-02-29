@@ -456,7 +456,8 @@ void showStartupScreen(Screen* screen, bool show)
                Position{ 15, 15 },
                FontSize{ 32 },
                ButtonDrawFlags{ Button::DrawBody|Button::DrawIcon },
-               HoveredColor{ Color::red });
+               BackgroundColor{ Color::transparent },
+               BackgroundHoverColor{ Color::red });
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
