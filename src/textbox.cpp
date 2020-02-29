@@ -99,38 +99,47 @@ void TextBox::afterDraw(NVGcontext* ctx)
     mUpdateCallback(this);
 }
 
+void TextBox::createBoxGradient(NVGcontext* ctx, NVGpaint& fg, const Color& c1, const Color& c2, int cr)
+{
+  fg = nvgBoxGradient(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f,
+                           mSize.x() - 2, mSize.y() - 2,
+                           cr, 4, c1, c2);
+}
+
 void TextBox::draw(NVGcontext* ctx) 
 {
-  int cornerRadius = getCornerRadius();
-    NVGpaint fg1 = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-      cornerRadius, 4, Color(150, 32), Color(32, 32));
+    int cornerRadius = getCornerRadius();
+    NVGpaint fg1;
+    createBoxGradient(ctx, fg1,
+                      mBackgroundHoverColor.notW(theme()->textBoxFocusedColorIn), 
+                      mBackgroundHoverColor.notW(theme()->textBoxFocusedColorOut), 
+                      cornerRadius);
 
     //background fill
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2,
-                   mSize.y() - 2, cornerRadius);
+    nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f,
+                        mSize.x() - 2, mSize.y() - 2, cornerRadius);
 
     if (mEditable && focused())
     {
-      NVGpaint fg2 = nvgBoxGradient(ctx,
-                            mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        cornerRadius, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
-       
-      nvgFillPaint(ctx, mValidFormat ? fg1 : fg2);
+      if (!mValidFormat)
+        createBoxGradient(ctx, fg1, 
+                          theme()->textBoxInvalidFormatColorIn, theme()->textBoxInvalidFormatColorOut,
+                          cornerRadius);
     }
     else if (mSpinnable && mMouseDownPos.x() != -1)
     {
-      nvgFillPaint(ctx, fg1);
+      ;
     }
     else
     {
-      NVGpaint bg = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        cornerRadius, 4, Color(255, 32), Color(32, 32));
-      nvgFillPaint(ctx, bg);
+      createBoxGradient(ctx, fg1, 
+                        mBackgrodunColor.notW(theme()->textBoxUnfocusedColorIn), 
+                        mBackgrodunColor.notW(theme()->textBoxUnfocusedColorOut), 
+                        cornerRadius);
     }
 
+    nvgFillPaint(ctx, fg1);
     nvgFill(ctx);
 
     //background line
@@ -142,7 +151,7 @@ void TextBox::draw(NVGcontext* ctx)
     nvgRoundedRect(ctx, mPos.x() + (-bs/2+0.5f), mPos.y() + (-bs/2+0.5f), 
                         mSize.x() + (bs/2+0.5f), mSize.y() + (bs/2+0.5f), 
                         cornerRadius - 0.5f);
-    nvgStrokeColor(ctx, Color(0, 48));
+    nvgStrokeColor(ctx, mBorderColor.notW(theme()->textBoxBorderColor));
     nvgStroke(ctx);
     nvgRestore(ctx);
 

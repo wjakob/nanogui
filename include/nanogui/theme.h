@@ -94,6 +94,13 @@ public:
     int mTabButtonVerticalPadding;
 
     int textBoxBorderSize;
+    Color textBoxBorderColor;
+    Color textBoxInvalidFormatColorIn;
+    Color textBoxInvalidFormatColorOut;
+    Color textBoxFocusedColorIn;
+    Color textBoxFocusedColorOut;
+    Color textBoxUnfocusedColorIn;
+    Color textBoxUnfocusedColorOut;
     int mTextBoxCornerRadius;
     int mTextBoxUpIcon;      /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
     int mTextBoxDownIcon;    /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).                            

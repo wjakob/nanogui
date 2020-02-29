@@ -107,6 +107,7 @@
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 struct NVGcontext { /* Opaque handle type, never de-referenced within NanoGUI */ };
+struct NVGpaint;
 struct GLFWwindow { /* Opaque handle type, never de-referenced within NanoGUI */ };
 
 struct NVGcolor;

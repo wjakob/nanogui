@@ -444,7 +444,7 @@ void showStartupScreen(Screen* screen, bool show)
                            WindowMovable{ Theme::WindowDraggable::dgFixed },
                            WindowHaveHeader{ false },
                            WidgetId{ "#login_window" },
-                           WindowGroupLayout{});
+                           WindowGroupLayout{20, 20});
 
   //w.withTheme<WhiteTheme>(screen->nvgContext());
   w.label(FixedHeight{ 100 }, 
@@ -467,19 +467,30 @@ void showStartupScreen(Screen* screen, bool show)
             TextAlignment::Left,
             TextPlaceholder{ "account name" },
             TextValue{ account.title },
+            BorderColor{ Color::dimGrey },
             BorderSize{ 3 },
+            BackgroundHoverColor{ Color::transparent },
+            BackgroundColor{ Color::transparent },
             WidgetId{ "#account_name" });
   w.textbox(FontSize{ 24 },
             IsEditable{ true },
             TextAlignment::Left,
             TextPlaceholder{ "youtrack url" },
             WidgetId{ "#youtrack_url" },
+            BorderColor{ Color::dimGrey },
+            BorderSize{ 3 },
+            BackgroundHoverColor{ Color::transparent },
+            BackgroundColor{ Color::transparent },
             TextValue{ account.url });
   w.textbox(FontSize{ 24 },
             IsEditable{ true },
             TextAlignment::Left,
             TextPlaceholder{ "youtrack token" },
             TextValue{ account.token },
+            BorderColor{ Color::dimGrey },
+            BorderSize{ 3 },
+            BackgroundHoverColor{ Color::transparent },
+            BackgroundColor{ Color::transparent },
             WidgetId{ "#youtrack_token" });
 
   /* Alternative construction notation using variadic template */

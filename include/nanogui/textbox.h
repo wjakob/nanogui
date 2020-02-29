@@ -36,6 +36,7 @@ DECLSETTER(IsSpinnable,bool)
 DECLSETTER(IsEditable,bool)
 DECLSETTER(TextValue,std::string)
 DECLSETTER(BorderSize, int)
+DECLSETTER(BorderColor, Color)
 DECLSETTER(TextDefaultValue,std::string)
 DECLSETTER(TextBoxUnits,std::string)
 DECLSETTER(TextPlaceholder,std::string)
@@ -118,6 +119,7 @@ protected:
     bool copySelection();
     void pasteFromClipboard();
     bool deleteSelection();
+    void createBoxGradient(NVGcontext* ctx, NVGpaint& fg, const Color& c1, const Color& c2, int cr);
 
     void updateCursor(NVGcontext *ctx, float lastx,
                       const NVGglyphPosition *glyphs, int size);
@@ -131,6 +133,9 @@ protected:
     SpinArea spinArea(const Vector2i & pos);
 
     void setBorderSize(int v) { mBorderSize = v; }
+    void setBorderColor(const Color& color) { mBorderColor = color; }
+    void setBackgroundColor(const Color& color) { mBackgrodunColor = color; }
+    void setBackgroundHoverColor(const Color& color) { mBackgroundHoverColor = color; }
 
     template<typename FF, typename First, typename... Args>
     void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
@@ -146,6 +151,7 @@ protected:
     std::string mFormat;
     int mUnitsImage;
     int mBorderSize;
+    Color mBorderColor, mBackgrodunColor, mBackgroundHoverColor;
     std::function<bool(const std::string&)> mCallback;
     std::function<void(const std::string&, bool)> mEditCallback;
     std::function<void(Widget*)> mComitCallback;
@@ -171,6 +177,9 @@ public:
     PROPSETTER(TextBoxUnits,setUnits)
     PROPSETTER(TextBoxUpdateCallback,setUpdateCallback)
     PROPSETTER(FontSize,setFontSize)
+    PROPSETTER(BackgroundHoverColor,setBackgroundHoverColor)
+    PROPSETTER(BackgroundColor,setBackgroundColor)
+    PROPSETTER(BorderColor,setBorderColor)
 };
 
 /**

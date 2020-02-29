@@ -170,6 +170,9 @@ Color Theme::get(const std::string& name, const Color&)
   CHECK(mPanelHeaderGradientTopFocus)
   CHECK(mPanelHeaderGradientBotFocus)
   CHECK(frameBorderColor)
+  CHECK(textBoxBorderColor)
+  CHECK(textBoxInvalidFormatColorIn)
+  CHECK(textBoxInvalidFormatColorOut)
 
   printf("No get prop for name %s", name.c_str());
   return Color(0x800080ff);
@@ -232,6 +235,9 @@ void Theme::set(const std::string& name, const Color& value)
   CHECKSET(mPanelHeaderGradientTopFocus)
   CHECKSET(mPanelHeaderGradientBotFocus)
   CHECKSET(frameBorderColor)
+  CHECKSET(textBoxBorderColor)
+  CHECKSET(textBoxInvalidFormatColorIn)
+  CHECKSET(textBoxInvalidFormatColorOut)
 
   printf("No set prop for name %s", name.c_str());
 }
@@ -257,6 +263,14 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowFontSize = 18;
 
   theme.textBoxBorderSize = 1;
+  theme.textBoxBorderColor = Color(0, 48);
+  theme.textBoxInvalidFormatColorIn = Color(255, 0, 0, 100);
+  theme.textBoxInvalidFormatColorOut = Color(255, 0, 0, 50);
+  theme.textBoxFocusedColorIn = Color(150, 32);
+  theme.textBoxFocusedColorOut = Color(32, 32);
+  theme.textBoxUnfocusedColorIn = Color(255, 32);
+  theme.textBoxUnfocusedColorOut = Color(32, 32);
+
   theme.mTextBoxFontSize = 20;
   theme.mTextBoxCornerRadius = 3;
   theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;
