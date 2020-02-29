@@ -460,38 +460,24 @@ void showStartupScreen(Screen* screen, bool show)
                BackgroundHoverColor{ Color::red },
                ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
 
+  auto textfield = [&](std::string placeholder, std::string value, std::string id) {
+    w.textbox(FontSize{ 24 },
+      IsEditable{ true },
+      TextAlignment::Left,
+      TextPlaceholder{ placeholder },
+      TextValue{ value },
+      BorderColor{ Color::dimGrey },
+      BorderSize{ 3 },
+      BackgroundHoverColor{ Color::transparent },
+      BackgroundColor{ Color::transparent },
+      WidgetId{ id });
+  };
+
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
-  w.textbox(FontSize{ 24 },
-            IsEditable{ true },
-            TextAlignment::Left,
-            TextPlaceholder{ "account name" },
-            TextValue{ account.title },
-            BorderColor{ Color::dimGrey },
-            BorderSize{ 3 },
-            BackgroundHoverColor{ Color::transparent },
-            BackgroundColor{ Color::transparent },
-            WidgetId{ "#account_name" });
-  w.textbox(FontSize{ 24 },
-            IsEditable{ true },
-            TextAlignment::Left,
-            TextPlaceholder{ "youtrack url" },
-            WidgetId{ "#youtrack_url" },
-            BorderColor{ Color::dimGrey },
-            BorderSize{ 3 },
-            BackgroundHoverColor{ Color::transparent },
-            BackgroundColor{ Color::transparent },
-            TextValue{ account.url });
-  w.textbox(FontSize{ 24 },
-            IsEditable{ true },
-            TextAlignment::Left,
-            TextPlaceholder{ "youtrack token" },
-            TextValue{ account.token },
-            BorderColor{ Color::dimGrey },
-            BorderSize{ 3 },
-            BackgroundHoverColor{ Color::transparent },
-            BackgroundColor{ Color::transparent },
-            WidgetId{ "#youtrack_token" });
+  textfield("account name", account.title, "#account_name");
+  textfield("youtrack url", account.url, "#youtrack_url");
+  textfield("youtrack token", account.token, "#youtrack_token");
 
   /* Alternative construction notation using variadic template */
   w.button(Caption{ "Login" },
