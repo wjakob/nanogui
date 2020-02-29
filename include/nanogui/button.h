@@ -32,6 +32,7 @@ DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
 DECLSETTER(InactiveColor, Color)
+DECLSETTER(BackgroundHoverColor, Color)
 DECLSETTER(HoveredColor, Color)
 
 class NANOGUI_EXPORT Button : public Widget 
@@ -104,7 +105,8 @@ public:
     const Color &backgroundColor() const { return mBackgroundColor; }
 
     /// Sets the background color of this Button.
-    void setBackgroundColor(const Color &backgroundColor) { mBackgroundColor = backgroundColor; }
+    void setBackgroundColor(const Color &color) { mBackgroundColor = color; }
+    void setBackgroundHoverColor(const Color &color) { mBackgroundHoverColor = color; }
 
     bool tabstop(CanTabStop) const override { return true; }
 
@@ -222,7 +224,7 @@ protected:
     int mTextStyleFlags;
 
     /// The background color of this Button.
-    Color mBackgroundColor;
+    Color mBackgroundColor, mBackgroundHoverColor;
 
     /// The color of the caption text of this Button.
     Color mTextColor, mHoverTextColor, mPressedTextColor;
@@ -242,6 +244,7 @@ public:
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
     PROPSETTER(BackgroundColor,setBackgroundColor)
+    PROPSETTER(BackgroundHoverColor, setBackgroundHoverColor)
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(ButtonDrawFlags, setDrawFlags)
     PROPSETTER(ButtonStyleTextFlags, setTextStyleFlags)

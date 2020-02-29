@@ -152,31 +152,52 @@ void Button::draw(NVGcontext *ctx)
 {
     if (haveDrawFlag(DrawBody))
     {
-      NVGcolor gradTop = mTheme->mButtonGradientTopUnfocused;
-      NVGcolor gradBot = mTheme->mButtonGradientBotUnfocused;
-
-      if (mPushed) {
-        gradTop = mTheme->mButtonGradientTopPushed;
-        gradBot = mTheme->mButtonGradientBotPushed;
-      }
-      else if (mMouseFocus && mEnabled) {
-        gradTop = mTheme->mButtonGradientTopFocused;
-        gradBot = mTheme->mButtonGradientBotFocused;
-      }
+      NVGcolor gradTop;
+      NVGcolor gradBot;
 
       nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos + Vector2i{ 1, 1 }, mSize - Vector2i{ 2, 2 }, mTheme->mButtonCornerRadius - 1);
 
-      nvgRoundedRect(ctx, mPos + Vector2i{1, 1}, mSize - Vector2i{2, 2}, mTheme->mButtonCornerRadius - 1);
-
-      if (mBackgroundColor.w() != 0) {
-        nvgFillColor(ctx, Color(mBackgroundColor.rgb(), 1.f));
-        nvgFill(ctx);
-        if (mPushed) {
-          gradTop.a = gradBot.a = 0.8f;
+      if (mBackgroundHoverColor.w() != 0)
+      {
+        gradTop = Color::transparent;
+        gradBot = Color::transparent;
+        
+        if (mPushed || (mMouseFocus && mEnabled))
+        {
+          gradTop = mBackgroundHoverColor;
+          gradBot = mBackgroundHoverColor;
         }
-        else {
-          double v = 1 - mBackgroundColor.w();
-          gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
+
+        nvgFillColor(ctx, mBackgroundColor);
+        nvgFill(ctx);
+      }
+      else
+      {
+        gradTop = mTheme->mButtonGradientTopUnfocused;
+        gradBot = mTheme->mButtonGradientBotUnfocused;
+        if (mPushed)
+        {
+          gradTop = mTheme->mButtonGradientTopPushed;
+          gradBot = mTheme->mButtonGradientBotPushed;
+        }
+        else if (mMouseFocus && mEnabled)
+        {
+          gradTop = mTheme->mButtonGradientTopFocused;
+          gradBot = mTheme->mButtonGradientBotFocused;
+        }
+
+        if (mBackgroundColor.w() != 0)
+        {
+          nvgFillColor(ctx, Color(mBackgroundColor.rgb(), 1.f));
+          nvgFill(ctx);
+          if (mPushed) {
+            gradTop.a = gradBot.a = 0.8f;
+          }
+          else {
+            double v = 1 - mBackgroundColor.w();
+            gradTop.a = gradBot.a = mEnabled ? v : v * .5f + .5f;
+          }
         }
       }
 
