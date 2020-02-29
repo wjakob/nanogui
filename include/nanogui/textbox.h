@@ -35,6 +35,7 @@ NAMESPACE_BEGIN(nanogui)
 DECLSETTER(IsSpinnable,bool)
 DECLSETTER(IsEditable,bool)
 DECLSETTER(TextValue,std::string)
+DECLSETTER(BorderSize, int)
 DECLSETTER(TextDefaultValue,std::string)
 DECLSETTER(TextBoxUnits,std::string)
 DECLSETTER(TextPlaceholder,std::string)
@@ -129,6 +130,8 @@ protected:
     enum class SpinArea { None, Top, Bottom };
     SpinArea spinArea(const Vector2i & pos);
 
+    void setBorderSize(int v) { mBorderSize = v; }
+
     template<typename FF, typename First, typename... Args>
     void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
 
@@ -142,6 +145,7 @@ protected:
     std::string mUnits;
     std::string mFormat;
     int mUnitsImage;
+    int mBorderSize;
     std::function<bool(const std::string&)> mCallback;
     std::function<void(const std::string&, bool)> mEditCallback;
     std::function<void(Widget*)> mComitCallback;
@@ -158,6 +162,7 @@ protected:
     float mTextOffset;
     double mLastClick;
 public:
+    PROPSETTER(BorderSize, setBorderSize)
     PROPSETTER(IsSpinnable,setSpinnable)
     PROPSETTER(IsEditable,setEditable)
     PROPSETTER(TextValue,setValue)

@@ -48,6 +48,7 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mLastClick(0)
 {
     mIconExtraScale = 0.8f;// widget override
+    mBorderSize = 0;
 }
 
 void TextBox::setEditable(bool editable) {
@@ -133,14 +134,19 @@ void TextBox::draw(NVGcontext* ctx)
     nvgFill(ctx);
 
     //background line
+    nvgSave(ctx);
+    nvgResetScissor(ctx);
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
-                   mSize.y() - 1, cornerRadius - 0.5f);
+    int bs = mBorderSize > 0 ? mBorderSize : theme()->textBoxBorderSize;
+    nvgStrokeWidth(ctx, bs );
+    nvgRoundedRect(ctx, mPos.x() + (-bs/2+0.5f), mPos.y() + (-bs/2+0.5f), 
+                        mSize.x() + (bs/2+0.5f), mSize.y() + (bs/2+0.5f), 
+                        cornerRadius - 0.5f);
     nvgStrokeColor(ctx, Color(0, 48));
     nvgStroke(ctx);
+    nvgRestore(ctx);
 
-    nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFaceSize(ctx, "sans", fontSize());
     Vector2i drawPos(mPos.x(), mPos.y() + mSize.y() * 0.5f + 1);
 
     float xSpacing = mSize.y() * 0.3f;

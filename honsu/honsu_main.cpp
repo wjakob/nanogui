@@ -467,6 +467,7 @@ void showStartupScreen(Screen* screen, bool show)
             TextAlignment::Left,
             TextPlaceholder{ "account name" },
             TextValue{ account.title },
+            BorderSize{ 3 },
             WidgetId{ "#account_name" });
   w.textbox(FontSize{ 24 },
             IsEditable{ true },

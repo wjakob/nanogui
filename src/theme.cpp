@@ -73,6 +73,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mTextBoxCornerRadius)
   CHECK(mWindowDragLine)
   CHECK(toolButtonSide)
+  CHECK(textBoxBorderSize)
   CHECK_S(innerSpacingCommon)
   CHECK_S(windowPaddingLeft)
   CHECK_S(framePaddingLeft)
@@ -104,6 +105,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mTextBoxCornerRadius)
   CHECKSET(mWindowDragLine)
   CHECKSET(toolButtonSide)
+  CHECKSET(textBoxBorderSize)
   CHECKSET_S(innerSpacingCommon)
   CHECKSET_S(windowPaddingLeft)
   CHECKSET_S(framePaddingLeft)
@@ -254,6 +256,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowMenuHeaderOffset = -3;
   theme.mWindowFontSize = 18;
 
+  theme.textBoxBorderSize = 1;
   theme.mTextBoxFontSize = 20;
   theme.mTextBoxCornerRadius = 3;
   theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;
