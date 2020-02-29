@@ -457,7 +457,8 @@ void showStartupScreen(Screen* screen, bool show)
                FontSize{ 32 },
                ButtonDrawFlags{ Button::DrawBody|Button::DrawIcon },
                BackgroundColor{ Color::transparent },
-               BackgroundHoverColor{ Color::red });
+               BackgroundHoverColor{ Color::red },
+               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */

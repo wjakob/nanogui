@@ -690,12 +690,6 @@ NANOGUI_EXPORT bool isMouseButtonRight(int button);
 #define FOURCCS(s) ( (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0])) )
 NANOGUI_EXPORT uint32_t key2fourcc(int key);
 
-namespace sample
-{
-  NANOGUI_EXPORT bool wait_events();
-  NANOGUI_EXPORT bool poll_events();
-  NANOGUI_EXPORT bool post_empty_event();
-}
 NANOGUI_EXPORT float getTimeFromStart();
 
 NANOGUI_EXPORT bool isKeyboardActionRelease(int action);
@@ -818,6 +812,10 @@ namespace sample
   void NANOGUI_EXPORT frame_loop(std::function<void()> &f);
   bool NANOGUI_EXPORT is_main_loop_active();
   void NANOGUI_EXPORT destroy_context();
+  bool NANOGUI_EXPORT wait_events();
+  bool NANOGUI_EXPORT poll_events();
+  void NANOGUI_EXPORT stop_frame_loop();
+  bool NANOGUI_EXPORT post_empty_event();
 }
 
 // Measures the specified text string height.
