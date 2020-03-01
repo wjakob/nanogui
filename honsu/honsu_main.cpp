@@ -432,7 +432,7 @@ void showStartupScreen(Screen* screen)
 {
   while (screen->children().size()>0) screen->children().front()->remove();
 
-  auto& w = createWindow(screen, "#login_window", WindowGroupLayout{ 20, 20 });
+  auto& w = createWindow(screen, "#login_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
     //w.withTheme<WhiteTheme>(screen->nvgContext());
   w.label(FixedHeight{ 100 }, 
           Caption{ "Add new account" },
@@ -440,7 +440,6 @@ void showStartupScreen(Screen* screen)
           FontSize{ 26 })
    .toolbutton(Icon{ ENTYPO_ICON_OFF }, 
                IsSubElement{ true },
-               Position{ 15, 15 },
                FontSize{ 32 },
                ButtonDrawFlags{ Button::DrawBody|Button::DrawIcon },
                BackgroundColor{ Color::transparent },
@@ -521,14 +520,6 @@ public:
 
         cpuTime = getTimeFromStart() - t;
 
-        if (auto meter = findWidget<Meter>("#meter"))
-        {
-          static int i = 0;
-          static int v[30] = { 0 };
-          v[(++i)%30] = (int)(1 / dt);
-          meter->setValue(std::accumulate(std::begin(v), std::end(v), 0) / 30);
-        }
-
         if (fpsGraph) fpsGraph->update(dt);
         if (cpuGraph) cpuGraph->update(cpuTime);
         if (gpuGraph && gpuTimer.supported)
@@ -585,7 +576,7 @@ int main(int /* argc */, char ** /* argv */)
         nanogui::sample::wait_events();
     });
 
-    //requests_thread_active = false;
+    requests_thread_active = false;
     nanogui::sample::poll_events();
   }
 

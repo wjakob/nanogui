@@ -246,10 +246,10 @@ public:
 
     /* Implementation of the layout interface */
     /// See \ref Layout::preferredSize.
-    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
 
     /// See \ref Layout::performLayout.
-    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
+    void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     /// The margin of this GroupLayout.
