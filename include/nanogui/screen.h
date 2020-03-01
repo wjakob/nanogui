@@ -191,6 +191,7 @@ public:
     void setPrepareFrameHandler(std::function<void(Screen*)> handler) { mPrepareFrameFunc = handler; }
 
     Widget* getCurrentSelection() const override;
+    void removeChild(const Widget *widget) override;
 
     intptr_t createStandardCursor(int shape);
 

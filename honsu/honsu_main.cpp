@@ -139,7 +139,7 @@ struct IssueInfo
       else if (name == "summary")
         summary = info.get("value").to_str();
 
-      info = field.get(i++);
+info = field.get(i++);
     }
 
   }
@@ -175,39 +175,21 @@ struct AccountData
   std::vector<IssueInfo> issues;
 } account;
 
-void showWaitingScreen(Screen* screen, bool show) 
-{
-  if (Window* waitingScr = screen->findWidgetGlobal<Window>("#waiting_window"))
-  {
-    waitingScr->setVisible(show);
-    waitingScr->bringToFront();
-    return;
-  }
+struct SSLRequest {
+  std::string request;
+  std::function< void(int status, std::string)> answer;
+};
+std::vector<SSLRequest> sslrequests;
 
-  auto& w = screen->window(Position{ 0, 0 },
-                           FixedSize{ screen->size() },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           WindowHaveHeader{ false },
-                           WidgetId{ "#waiting_window" },
-                           WindowBoxLayout{Orientation::Horizontal, Alignment::Middle, 0, 6});
-
-  w.spinner( SpinnerRadius{ 0.5f },
-             BackgroundColor{ 1 } );
-  screen->performLayout();
-  //w.waitForAction(10, "#autoremove", [](Widget* w) {w->remove(); });
-}
-
-void resolveAdminData(std::shared_ptr<httplib::Response> response)
-{
-
-}
+void showStartupScreen(Screen*);
+void requestAgilesAndResolve(Screen*);
 
 bool checkAccountUrl(TextBox* url)
 {
   if (!url)
     return false;
 
-  if (url->value().empty()) 
+  if (url->value().empty())
   {
     //url->animate<TextColorAnimator>();
     return false;
@@ -234,59 +216,36 @@ bool checkAccountToken(TextBox* token)
   return true;
 }
 
-void requestAgiles()
+WidgetId lastWindowId{ "" };
+
+template<typename ... Args>
+Window& createWindow(Screen* screen, std::string id, const Args&... args)
 {
-  httplib::SSLClient cli(account.url);
-  cli.set_ca_cert_path(CA_CERT_FILE);
-  cli.enable_server_certificate_verification(true);
-
-  httplib::Headers headers{
-    { "Accept", "application/json" },
-    { "Authorization", std::string("Bearer ") + account.token },
-    { "Cache-Control", "no-cache" },
-    { "Content-Type", "application/json" }
-  };
-
-  auto res = cli.Get("/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100", headers);
-  if (res && res->status == 200)
+  if (!lastWindowId.value.empty())
   {
-    account.agiles.clear();
-
-    Json::value response;
-    Json::parse(response, res->body);
-
-    int i = 0;
-    Json::value info = response.get(i++);
-    while (!info.is<Json::null>())
-    {
-      if (info.get("$type").get_str() == "Agile")
-      {
-        AgileInfo agInfo;
-        agInfo.id = info.get("id").get_str();
-        agInfo.name = info.get("name").get_str();
-        account.agiles.push_back(agInfo);
-      }
-      info = response.get(i++);
-    }
+    if (auto rm = screen->findWidget(lastWindowId.value, false))
+      rm->remove();
   }
+  lastWindowId.value = id;
+  return screen->window(Position{ 0, 0 },
+                        FixedSize{ screen->size() },
+                        WindowMovable{ Theme::WindowDraggable::dgFixed },
+                        WindowHaveHeader{ false },
+                        WidgetId{ id },
+                        args... );
 }
 
-void showTasksWindow(Screen* screen, bool show)
+void showWaitingScreen(Screen* screen)
 {
-  if (Window* tasksScr = screen->findWidgetGlobal<Window>("#tasks_window"))
-  {
-    tasksScr->setVisible(show);
-    tasksScr->bringToFront();
-    return;
-  }
+  auto& w = createWindow(screen, "#waiting_window", WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
 
-  auto& w = screen->window(Position{ 0, 0 },
-                           FixedSize{ screen->size() },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           WindowHaveHeader{ false },
-                           WidgetId{ "#tasks_window" },
-                           WidgetStretchLayout{ Orientation::Vertical });
+  w.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
+  screen->needPerformLayout(screen);
+}
 
+void showTasksWindow(Screen* screen)
+{
+  auto& w = createWindow(screen, "#tasks_window", WidgetStretchLayout{ Orientation::Vertical });
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
   for (auto& issue : account.issues)
@@ -300,7 +259,7 @@ void showTasksWindow(Screen* screen, bool show)
 
     f.label(Caption{ issue.summary }, FixedHeight{ 150 });
   }
-  screen->performLayout();
+  screen->needPerformLayout(screen);
 }
 
 std::string encodeQueryData(std::string data)
@@ -312,141 +271,169 @@ std::string encodeQueryData(std::string data)
   return r;
 }
 
-void requestTasks(std::string board)
+void requestTasksAndResolve(Screen* screen, std::string board)
 {
-  httplib::SSLClient cli(account.url);
-  cli.set_ca_cert_path(CA_CERT_FILE);
-  cli.enable_server_certificate_verification(true);
+  std::string body = "/youtrack/rest/issue?filter=for:me%20Board%20";
+  body += encodeQueryData(board);
+  body += ":%7BCurrent%20sprint%7D%20%23Unresolved%20";
 
-  httplib::Headers headers{
-      { "Accept", "application/json" },
-      { "Authorization", std::string("Bearer ") + account.token },
-      { "Cache-Control", "no-cache" },
-      { "Content-Type", "application/json" }
-  };
-
-  std::string request = "/youtrack/rest/issue?filter=for:me%20Board%20";
-  request += encodeQueryData(board);
-  request += ":%7BCurrent%20sprint%7D%20%23Unresolved%20";
-  auto res = cli.Get(request.c_str(), headers);
-  if (res && res->status == 200)
-  {
-    account.issues.clear();
-
-    Json::value response;
-    Json::parse(response, res->body);
-
-    Json::value issues = response.get("issue");
-
-    int i = 0;
-    Json::value info = issues.get(i++);
-    while (!info.is<Json::null>())
+  showWaitingScreen(screen);
+  SSLRequest request{ body,
+    [screen](int status, std::string body)
     {
-      IssueInfo issue;
-      issue.js = info;
-      issue.id = info.get("id").get_str();
-      issue.entityId = info.get("entityId").get_str();
-      issue.readField();
-      
-      account.issues.push_back(issue);
-      info = issues.get(i++);
+      account.issues.clear();
+
+      if (status == 200)
+      {
+        account.issues.clear();
+
+        Json::value response;
+        Json::parse(response, body);
+
+        Json::value issues = response.get("issue");
+
+        int i = 0;
+        Json::value info = issues.get(i++);
+        while (!info.is<Json::null>())
+        {
+          IssueInfo issue;
+          issue.js = info;
+          issue.id = info.get("id").get_str();
+          issue.entityId = info.get("entityId").get_str();
+          issue.readField();
+
+          account.issues.push_back(issue);
+          info = issues.get(i++);
+        }
+      }
+
+      if (account.issues.empty()) requestAgilesAndResolve(screen);
+      else showTasksWindow(screen);
     }
-  }
+  };
+  sslrequests.push_back(request);
 }
 
-void showAgilesScreen(Screen* screen, bool show)
+void showAgilesScreen(Screen* screen)
 {
-  if (Window* agilesScr = screen->findWidgetGlobal<Window>("#agiles_window"))
-  {
-    agilesScr->setVisible(show);
-    agilesScr->bringToFront();
-    return;
-  }
-
-  auto& w = screen->window(Position{ 0, 0 },
-                           FixedSize{ screen->size() },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           WindowHaveHeader{ false },
-                           WidgetId{ "#agiles_window" },
-                           WidgetStretchLayout{ Orientation::Vertical });
-
+  auto& w = createWindow(screen, "#agiles_window", WidgetStretchLayout{ Orientation::Vertical });
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
   for (auto& a : account.agiles)
   {
-    vstack.button(Caption{ a.name }, 
-                  ButtonFlags{ Button::RadioButton },
-                  ButtonCallback{ [=] { account.activeAgile = a.name;} });
+    vstack.button(Caption{ a.name },
+      ButtonFlags{ Button::RadioButton },
+      ButtonCallback{ [=] { account.activeAgile = a.name; } });
   }
 
-  w.button(Caption{ "Save" }, 
-           FixedHeight{30},
-           ButtonCallback{ [=] { 
-              requestTasks(account.activeAgile); 
-              showTasksWindow(screen, true);
-           }});
-  screen->performLayout();
+  w.button(Caption{ "Save" },
+           FixedHeight{ 30 },
+           ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
+  screen->needPerformLayout(screen);
 }
 
-void requestAdminData(Screen* screen) 
+void requestAgilesAndResolve(Screen* screen)
+{
+  showWaitingScreen(screen);
+  SSLRequest request{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100",
+           [screen](int status, std::string body) {
+              account.agiles.clear();
+
+              if (status == 200)
+              {
+                Json::value agiles;
+                Json::parse(agiles, body);
+
+                int i = 0;
+                Json::value info = agiles.get(i++);
+                while (!info.is<Json::null>())
+                {
+                  if (info.get("$type").get_str() == "Agile")
+                  {
+                    AgileInfo agInfo;
+                    agInfo.id = info.get("id").get_str();
+                    agInfo.name = info.get("name").get_str();
+                    account.agiles.push_back(agInfo);
+                  }
+                  info = agiles.get(i++);
+                }
+              }
+
+              if (account.agiles.empty()) showStartupScreen(screen);
+              else showAgilesScreen(screen);
+            }
+  };
+  sslrequests.push_back(request);
+}
+
+using namespace std::chrono_literals;
+httplib::SSLClient* sslClient = nullptr;
+httplib::Headers sslHeaders;
+void createSSLClient() 
+{
+  if (sslClient)
+    return;
+
+  sslClient = new httplib::SSLClient(account.url);
+  //sslClient->set_ca_cert_path(CA_CERT_FILE);
+  //sslClient->enable_server_certificate_verification(true);
+
+  sslHeaders = httplib::Headers{
+    { "Accept", "application/json" },
+    { "Authorization", std::string("Bearer ") + account.token },
+    { "Cache-Control", "no-cache" },
+    { "Content-Type", "application/json" }
+  };
+}
+
+void requestAdminData(Screen* screen)
 {
   if (!checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url")))
+  {
+    showStartupScreen(screen);
     return;
+  }
 
   if (!checkAccountToken(screen->findWidget<TextBox>("#youtrack_token")))
+  {
+    showStartupScreen(screen);
     return;
-
-  showWaitingScreen(screen, true);
+  }
 
   account.save();
-
-  httplib::SSLClient cli(account.url);
-  cli.set_ca_cert_path(CA_CERT_FILE);
-  cli.enable_server_certificate_verification(true);
-
- /* std::thread refresh_thread = std::thread([screen]() {
-        std::chrono::milliseconds time(refresh);
-        while (is_main_loop_active()) {
-          std::this_thread::sleep_for(time);
-          post_empty_event();
-        }
-      }); 
-    }*/
-
-  httplib::Headers headers{
-    {"Accept", "application/json"},
-    {"Authorization", std::string("Bearer ") + account.token},
-    {"Cache-Control", "no-cache"},
-    {"Content-Type", "application/json"}
+ 
+  SSLRequest sslr{
+    "/youtrack/api/admin/users/me?fields=id,login,name,email",
+    [screen](int status, std::string) {
+      if (status == 200) requestAgilesAndResolve(screen);
+      else showStartupScreen(screen);
+    }
   };
 
-  auto res = cli.Get("/youtrack/api/admin/users/me?fields=id,login,name,email", headers);
-  showWaitingScreen(screen, false);
+  sslrequests.push_back(sslr);
+}
 
-  if (res && res->status == 200) 
+void update_requests()
+{
+  if (!sslrequests.empty())
   {
-    requestAgiles();
-    showAgilesScreen(screen, true);
+    createSSLClient();
+
+    SSLRequest r = sslrequests.front();
+    sslrequests.erase(sslrequests.begin());
+
+    std::shared_ptr<httplib::Response> nn = sslClient->Get(r.request.c_str(), sslHeaders);
+    auto answer = r.answer;
+    answer(nn ? nn->status : -1, nn ? nn->body : "");
   }
 }
 
-void showStartupScreen(Screen* screen, bool show)
+void showStartupScreen(Screen* screen)
 {
-  if (Window* startupScr = screen->findWidgetGlobal<Window>("#login_window"))
-  {
-    startupScr->setVisible(show);
-    startupScr->bringToFront();
-    return;
-  }
+  while (screen->children().size()>0) screen->children().front()->remove();
 
-  auto& w = screen->window(Position{ 0, 0 },
-                           FixedSize{ screen->size() },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           WindowHaveHeader{ false },
-                           WidgetId{ "#login_window" },
-                           WindowGroupLayout{20, 20});
-
-  //w.withTheme<WhiteTheme>(screen->nvgContext());
+  auto& w = createWindow(screen, "#login_window", WindowGroupLayout{ 20, 20 });
+    //w.withTheme<WhiteTheme>(screen->nvgContext());
   w.label(FixedHeight{ 100 }, 
           Caption{ "Add new account" },
           CaptionHAlign{ hCenter },
@@ -479,11 +466,15 @@ void showStartupScreen(Screen* screen, bool show)
   textfield("youtrack url", account.url, "#youtrack_url");
   textfield("youtrack token", account.token, "#youtrack_token");
 
+  w.link(Caption{ "How to obtain a new permament token?" });
+
   /* Alternative construction notation using variadic template */
   w.button(Caption{ "Login" },
+           FontSize{ 32 },
            Icon{ ENTYPO_ICON_ROCKET },
            BackgroundColor{ 0, 0, 255, 25 },
-           ButtonCallback{ [=] { requestAdminData(screen); } });
+           ButtonCallback{ [screen] { requestAdminData(screen); }});
+  screen->needPerformLayout(screen);
 }
 
 class HonsuScreen : public Screen {
@@ -493,7 +484,7 @@ public:
       initGPUTimer(&gpuTimer);
 
       account.load();
-      showStartupScreen(this, true);
+      showStartupScreen(this);
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));
@@ -501,7 +492,7 @@ public:
 
       previousFrameTime = getTimeFromStart();
 
-      performLayout();
+      needPerformLayout(this);
 
       theme()->keyboardNavigation = false;
     }
@@ -519,21 +510,6 @@ public:
     virtual void draw(NVGcontext *ctx) {
       using namespace nanogui;
       float value = std::fmod((float)getTimeFromStart() / 10, 1.0f);
-        if (auto progress = findWidget<ProgressBar>("#lineprogressbar"))
-          progress->setValue(value);
-        if (auto progress = findWidget<CircleProgressBar>("#circleprogressbar"))
-          progress->setValue( std::fmod(value * 2, 1.0f));
-
-        if (auto editor = findWidget<PropertiesEditor>("#prop_editor"))
-        {
-          if (lastSelected != mSelectedWidget 
-              && !editor->isMyChildRecursive(mSelectedWidget))
-          {
-            lastSelected = mSelectedWidget;
-            editor->parse(mSelectedWidget);
-          }
-        }
-
         startGPUTimer(&gpuTimer);
 
         double t = getTimeFromStart();
@@ -562,54 +538,10 @@ public:
           for (int i = 0; i < n; i++)
             gpuGraph->update(gpuTimes[i]);
         }
-
-        if (auto led = findWidget<LedMatrix>("#led"))
-        {
-          static std::list<int> ledvalues;
-          int value = 1.f / dt;
-
-          ledvalues.push_back(value);
-          if (ledvalues.size() > led->columnCount())
-            ledvalues.pop_front();
-          int k = 0;
-          for (auto& c : ledvalues)
-          {
-            led->clearColumn(k);
-            int t = led->rowCount() * c / 50;
-            for (int i = 0; i <= t; i++)
-            {
-              int rk = 0xff * (i / (float)led->rowCount());
-              led->setColorAt(led->rowCount() - i, k, Color(0xff, 0, 0, rk));
-            }
-            k++;
-          }
-        }
-
     }
 
     virtual void drawContents() {
         using namespace nanogui;
-    }
-
-    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
-        if (Widget::mouseButtonEvent(p, button, down, modifiers))
-            return true;
-        if (down && isMouseButtonRight(button) && findWidget(p)==this) {
-            auto menu = new ContextMenu(this, "", true);
-            menu->addItem("Item 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
-
-            auto submenu = menu->addSubMenu("Submenu");
-            submenu->addItem("Subitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
-            auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
-            submenu->addItem("Subitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
-
-            subsubmenu->addItem("Subsubitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
-            subsubmenu->addItem("Subsubitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
-
-            menu->activate(p-mPos);
-            performLayout();
-        }
-        return true;
     }
 
 private:
@@ -632,7 +564,15 @@ int main(int /* argc */, char ** /* argv */)
     HonsuScreen screen(size + Vector2i{13, 36}, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
-    screen.performLayout();
+    
+    bool requests_thread_active = true;
+    auto requests_thread = std::thread([&] {
+      while (requests_thread_active)
+      {
+        update_requests();
+        std::this_thread::sleep_for(1s);
+      }
+    });
   
     nanogui::sample::run([&] {
         nanogui::sample::clear_frame(screen.background());
@@ -645,6 +585,7 @@ int main(int /* argc */, char ** /* argv */)
         nanogui::sample::wait_events();
     });
 
+    //requests_thread_active = false;
     nanogui::sample::poll_events();
   }
 
