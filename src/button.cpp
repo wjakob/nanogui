@@ -30,6 +30,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
   setDrawFlags(DrawAll);
   setTextStyleFlags(StyleTextNone);
   mCaptionSize = { -1.f, -1.f };
+  mBorderSize = -1;
 }
 
 Vector2f Button::getCaptionSize(NVGcontext *ctx)
@@ -210,17 +211,20 @@ void Button::draw(NVGcontext *ctx)
 
     if (haveDrawFlag(DrawBorder))
     {
+      float bs = mBorderSize < 0 ? mBorderSize : theme()->buttonBorderSize;
+
       nvgBeginPath(ctx);
-      nvgStrokeWidth(ctx, 1.0f);
-      nvgRoundedRect(ctx, mPos + Vector2f{ 0.5f, mPushed ? 0.5f : 1.5f }, 
-                          mSize - Vector2f{ 1, 1 + mPushed ? 0.0f : 1.0f}, mTheme->mButtonCornerRadius);
-      nvgStrokeColor(ctx, mTheme->mBorderLight);
+      nvgStrokeWidth(ctx, bs);
+      nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs + (mPushed ? -.5f : .5f) }, 
+                          mSize - Vector2f{ bs, bs + (mPushed ? 0.0f : 1.0f)}, theme()->mButtonCornerRadius);
+      nvgStrokeColor(ctx, theme()->mBorderLight);
       nvgStroke(ctx);
 
       nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos + Vector2f{ 0.5f, 0.5f }, 
-                          mSize - Vector2f{ 1, 2 }, mTheme->mButtonCornerRadius);
-      nvgStrokeColor(ctx, mTheme->mBorderDark);
+      nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs - 0.5f }, 
+                          mSize - Vector2f{ bs, bs + 1 }, theme()->mButtonCornerRadius);
+      nvgStrokeColor(ctx, theme()->mBorderDark);
+     
       nvgStroke(ctx);
     }
 

@@ -74,6 +74,7 @@ int Theme::get(const std::string& name, const int&)
   CHECK(mWindowDragLine)
   CHECK(toolButtonSide)
   CHECK(textBoxBorderSize)
+  CHECK(buttonBorderSize)
   CHECK_S(innerSpacingCommon)
   CHECK_S(windowPaddingLeft)
   CHECK_S(framePaddingLeft)
@@ -106,6 +107,7 @@ void Theme::set(const std::string& name, const int& value)
   CHECKSET(mWindowDragLine)
   CHECKSET(toolButtonSide)
   CHECKSET(textBoxBorderSize)
+  CHECKSET(buttonBorderSize)
   CHECKSET_S(innerSpacingCommon)
   CHECKSET_S(windowPaddingLeft)
   CHECKSET_S(framePaddingLeft)
@@ -261,6 +263,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mTabButtonVerticalPadding = 2;
   theme.mWindowMenuHeaderOffset = -3;
   theme.mWindowFontSize = 18;
+  theme.buttonBorderSize = 1;
 
   theme.textBoxBorderSize = 1;
   theme.textBoxBorderColor = Color(0, 48);

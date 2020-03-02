@@ -179,6 +179,11 @@ struct SSLRequest {
   std::string request;
   std::function< void(int status, std::string)> answer;
 };
+
+using namespace std::chrono_literals;
+httplib::SSLClient* sslClient = nullptr;
+httplib::Headers sslHeaders;
+
 std::vector<SSLRequest> sslrequests;
 
 void showStartupScreen(Screen*);
@@ -317,24 +322,37 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 void showAgilesScreen(Screen* screen)
 {
   auto& w = createWindow(screen, "#agiles_window", WidgetStretchLayout{ Orientation::Vertical });
+  w.widget(RelativeSize{ 0, 0.1f });
+  w.label(FixedHeight{ 40 },
+          Caption{ "Select agile boards" },
+          CaptionHAlign{ hCenter },
+          CaptionFont{ "sans-bold" },
+          FontSize{ 42 });
+  w.label(Caption{ "You will be able to edit this selection later" },
+          CaptionHAlign{ hCenter },
+          FixedHeight{ 20 });
+  w.widget(RelativeSize{ 0, 0.1f });
+
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
-  for (auto& a : account.agiles)
-  {
-    vstack.button(Caption{ a.name },
-      ButtonFlags{ Button::RadioButton },
-      ButtonCallback{ [=] { account.activeAgile = a.name; } });
-  }
+  auto agilebtn = [&vstack] (std::string name) {
+    vstack.button(Caption{ name },
+                  ButtonFlags{ Button::ToggleButton },
+                  BorderSize{ 2 },
+                  ButtonCallback{ [=] { account.activeAgile = name; } });
+  };
 
-  w.button(Caption{ "Save" },
-           FixedHeight{ 30 },
-           ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
+  for (auto& a : account.agiles)
+    agilebtn(a.name);
+    
+  vstack.button(Caption{ "Save" },
+                FixedHeight{ 30 },
+                ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
   screen->needPerformLayout(screen);
 }
 
 void requestAgilesAndResolve(Screen* screen)
 {
-  showWaitingScreen(screen);
   SSLRequest request{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100",
            [screen](int status, std::string body) {
               account.agiles.clear();
@@ -366,9 +384,6 @@ void requestAgilesAndResolve(Screen* screen)
   sslrequests.push_back(request);
 }
 
-using namespace std::chrono_literals;
-httplib::SSLClient* sslClient = nullptr;
-httplib::Headers sslHeaders;
 void createSSLClient() 
 {
   if (sslClient)
@@ -401,6 +416,7 @@ void requestAdminData(Screen* screen)
   }
 
   account.save();
+  showWaitingScreen(screen);
  
   SSLRequest sslr{
     "/youtrack/api/admin/users/me?fields=id,login,name,email",
@@ -453,7 +469,7 @@ void showStartupScreen(Screen* screen)
       TextPlaceholder{ placeholder },
       TextValue{ value },
       BorderColor{ Color::dimGrey },
-      BorderSize{ 3 },
+      BorderSize{ 2 },
       BackgroundHoverColor{ Color::transparent },
       BackgroundColor{ Color::transparent },
       WidgetId{ id });
@@ -577,6 +593,7 @@ int main(int /* argc */, char ** /* argv */)
     });
 
     requests_thread_active = false;
+    requests_thread.join();
     nanogui::sample::poll_events();
   }
 

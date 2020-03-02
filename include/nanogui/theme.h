@@ -75,6 +75,7 @@ public:
     int mStandardFontSize;
     /// The font size for buttons (default: ``20``).
     int mButtonFontSize;
+    int buttonBorderSize;
     
     /// Rounding radius for Button (and derived types) widgets (default: ``2``).
     int mButtonCornerRadius;

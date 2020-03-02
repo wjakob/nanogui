@@ -151,6 +151,8 @@ public:
     /// Set the push callback (for any type of button).
     void setCallback(const std::function<void()> &callback) { mCallback = callback; }
 
+    void setBorderSize(int v) { mBorderSize = v; }
+
     /// The current callback to execute (for toggle buttons).
     std::function<void(bool)> changeCallback() const { return mChangeCallback; }
 
@@ -197,6 +199,8 @@ protected:
     /// The caption of this Button.
     std::string mCaption;
     Vector2f mCaptionSize;
+
+    int mBorderSize;
 
     /**
      * \brief The icon of this Button (``0`` means no icon).
@@ -252,6 +256,7 @@ public:
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
     PROPSETTER(HoveredColor, setHoveredTextColor)
+    PROPSETTER(BorderSize, setBorderSize)
 };
 
 class NANOGUI_EXPORT LedButton : public Button
