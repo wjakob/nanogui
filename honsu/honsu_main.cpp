@@ -337,9 +337,13 @@ void showAgilesScreen(Screen* screen)
 
   auto agilebtn = [&vstack] (std::string name) {
     vstack.button(Caption{ name },
-                  ButtonFlags{ Button::ToggleButton },
+                  FixedHeight{ 30 },
+                  ButtonFlags{ Button::RadioButton },
                   BorderSize{ 2 },
+                  FontSize{ 24 },
                   BorderColor{ Color::dimGrey },
+                  BackgroundColor{ Color::transparent },
+                  BackgroundHoverColor{ Color::transparent },
                   ButtonCallback{ [=] { account.activeAgile = name; } });
   };
 
