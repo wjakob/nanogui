@@ -339,6 +339,7 @@ void showAgilesScreen(Screen* screen)
     vstack.button(Caption{ name },
                   ButtonFlags{ Button::ToggleButton },
                   BorderSize{ 2 },
+                  BorderColor{ Color::dimGrey },
                   ButtonCallback{ [=] { account.activeAgile = name; } });
   };
 

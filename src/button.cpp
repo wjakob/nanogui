@@ -202,8 +202,9 @@ void Button::draw(NVGcontext *ctx)
         }
       }
 
-      NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
-        mPos.y() + mSize.y(), gradTop, gradBot);
+      NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), 
+                                           mPos.x(), mPos.y() + mSize.y(), 
+                                           gradTop, gradBot);
 
       nvgFillPaint(ctx, bg);
       nvgFill(ctx);
@@ -211,19 +212,19 @@ void Button::draw(NVGcontext *ctx)
 
     if (haveDrawFlag(DrawBorder))
     {
-      float bs = mBorderSize < 0 ? mBorderSize : theme()->buttonBorderSize;
+      float bs = mBorderSize >= 0 ? mBorderSize : theme()->buttonBorderSize;
 
       nvgBeginPath(ctx);
       nvgStrokeWidth(ctx, bs);
       nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs + (mPushed ? -.5f : .5f) }, 
                           mSize - Vector2f{ bs, bs + (mPushed ? 0.0f : 1.0f)}, theme()->mButtonCornerRadius);
-      nvgStrokeColor(ctx, theme()->mBorderLight);
+      nvgStrokeColor(ctx, mBorderColor.notW(theme()->mBorderLight));
       nvgStroke(ctx);
 
       nvgBeginPath(ctx);
       nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs - 0.5f }, 
                           mSize - Vector2f{ bs, bs + 1 }, theme()->mButtonCornerRadius);
-      nvgStrokeColor(ctx, theme()->mBorderDark);
+      nvgStrokeColor(ctx, mBorderColor.notW(theme()->mBorderDark));
      
       nvgStroke(ctx);
     }
