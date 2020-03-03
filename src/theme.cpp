@@ -264,6 +264,7 @@ void fillThemeDefaultValues(Theme& theme)
   theme.mWindowMenuHeaderOffset = -3;
   theme.mWindowFontSize = 18;
   theme.buttonBorderSize = 1;
+  theme.buttonFont = "sans-bold";
 
   theme.textBoxBorderSize = 1;
   theme.textBoxBorderColor = Color(0, 48);
