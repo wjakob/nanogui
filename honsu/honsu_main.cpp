@@ -321,37 +321,43 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
 void showAgilesScreen(Screen* screen)
 {
-  auto& w = createWindow(screen, "#agiles_window", WidgetStretchLayout{ Orientation::Vertical });
-  w.widget(RelativeSize{ 0, 0.1f });
+  auto& w = createWindow(screen, "#agiles_window", WidgetStretchLayout{ Orientation::Vertical, 0, 20 });
+  w.widget(FixedHeight{ 20 });
   w.label(FixedHeight{ 40 },
           Caption{ "Select agile boards" },
-          CaptionHAlign{ hCenter },
+          CaptionAlign{ hCenter, vBottom },
           CaptionFont{ "sans-bold" },
           FontSize{ 42 });
   w.label(Caption{ "You will be able to edit this selection later" },
-          CaptionHAlign{ hCenter },
+          CaptionAlign{ hCenter, vTop },
           FixedHeight{ 20 });
-  w.widget(RelativeSize{ 0, 0.1f });
+  w.widget(FixedHeight{ 20 });
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
-  auto agilebtn = [&vstack] (std::string name) {
+  auto agilebtn = [&vstack] (std::string name, int index) {
     vstack.button(Caption{ name },
-                  FixedHeight{ 30 },
+                  FixedHeight{ 50 },
                   ButtonFlags{ Button::RadioButton },
                   BorderSize{ 2 },
                   FontSize{ 24 },
+                  CaptionFont{ "sans" },
+                  Icon{ ENTYPO_ICON_OK },
+                  IconColor{ Color::dimGrey },
+                  IconPushedColor{ Color::aquamarine },
                   BorderColor{ Color::dimGrey },
                   BackgroundColor{ Color::transparent },
                   BackgroundHoverColor{ Color::transparent },
-                  ButtonCallback{ [=] { account.activeAgile = name; } });
+                  ButtonCallback{ [=] { account.activeAgile = name; }});
   };
 
-  for (auto& a : account.agiles)
-    agilebtn(a.name);
+  for (int i=0; i < account.agiles.size(); i++)
+    agilebtn(account.agiles[i].name, i);
     
   vstack.button(Caption{ "Save" },
-                FixedHeight{ 30 },
+                FixedHeight{ 50 },
+                BackgroundColor{ Color::indianRed },
+                BackgroundHoverColor{ Color::indianRed },
                 ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
   screen->needPerformLayout(screen);
 }

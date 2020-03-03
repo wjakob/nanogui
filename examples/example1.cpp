@@ -126,7 +126,7 @@ void createButtonDemoWindow(Screen* screen)
   w.label("Toggle buttons", "sans-bold");
   w.button(Caption{ "Toggle me" },
            ButtonFlags{ Button::ToggleButton },
-           ButtonChangeCallback{ [](bool state) { cout << "Toggle button state: " << state << endl; } });
+           ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } });
 
   w.label("Radio buttons", "sans-bold");
   w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } );

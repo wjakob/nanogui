@@ -420,17 +420,17 @@ void TreeViewItem::draw(NVGcontext *ctx)
 
   nvgFillColor(ctx, color);
 
-  int halign = (mFixedSize.x() > 0 ? (1 << mTextHAlign) : (1 << TextHAlign::hLeft));
-  int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
+  int halign = (mFixedSize.x() > 0 ? (1 << mTextAlign.h) : (1 << TextHAlign::hLeft));
+  int valign = (mFixedSize.y() > 0 ? (1 << mTextAlign.v) : (1 << TextVAlign::vTop));
 
   int xpos = 15, ypos = 0;
-  switch (mTextHAlign)
+  switch (mTextAlign.h)
   {
   case TextHAlign::hCenter: xpos = (mSize.x() - mTextRealSize.x()) / 2; break;
   case TextHAlign::hRight: xpos = (mSize.x() - mTextRealSize.x()); break;
   }
 
-  switch (mTextVAlign)
+  switch (mTextAlign.v)
   {
   case TextVAlign::vMiddle: ypos = (mSize.y() - mTextRealSize.y()) / 2; break;
   case TextVAlign::vBottom: ypos = (mSize.y() - mTextRealSize.y()); break;

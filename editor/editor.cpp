@@ -251,15 +251,15 @@ public:
         bool editable = editor->isWidgetEditable((intptr_t)w);
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_LOCK },
           ButtonPushed{ !editable },
-          ButtonChangeCallback{ [this,w](bool pressed) {
+          ButtonChangeCallback{ [this,w](Button* b) {
             if (auto workspace = findWidget<EditorWorkspace>(ID.workspace))
-              workspace->setWidgetEditable((intptr_t)w, !pressed);
+              workspace->setWidgetEditable((intptr_t)w, !b->pushed());
           }
         });
 
         parea->add<ToggleButton>(Icon{ ENTYPO_ICON_EYE },
           ButtonPushed{ !w->visible() },
-          ButtonChangeCallback{ [w](bool pressed) { w->setVisible(!pressed); }
+          ButtonChangeCallback{ [w](Button* b) { w->setVisible(!b->pushed()); }
         });
       }
 
