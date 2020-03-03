@@ -27,7 +27,7 @@ DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
 DECLSETTER(ButtonStyleTextFlags, int)
 DECLSETTER(ButtonDrawFlags, int)
-DECLSETTER(ButtonChangeCallback, std::function<void (bool)>)
+DECLSETTER(ButtonChangeCallback, std::function<void (Button*)>)
 DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
@@ -144,6 +144,9 @@ public:
 
     /// Sets whether or not this Button is currently pushed.
     void setPushed(bool pushed) { mPushed = pushed; }
+   
+    BoolObservable observable() { return mPushed; }
+    void setObservable(BoolObservable value) { mPushed = value; }
 
     /// The current callback to execute (for any type of button).
     std::function<void()> callback() const { return mCallback; }
@@ -155,10 +158,10 @@ public:
     void setBorderColor(const Color& c) { mBorderColor = c; }
 
     /// The current callback to execute (for toggle buttons).
-    std::function<void(bool)> changeCallback() const { return mChangeCallback; }
+    std::function<void(Button*)> changeCallback() const { return mChangeCallback; }
 
     /// Set the change callback (for toggle buttons).
-    void setChangeCallback(const std::function<void(bool)> &callback) { mChangeCallback = callback; }
+    void setChangeCallback(const std::function<void(Button*)> &callback) { mChangeCallback = callback; }
     
     /// Set the button group (for radio buttons).
     void setButtonGroup(const std::vector<Button *> &buttonGroup) { mButtonGroup = buttonGroup; }
@@ -167,6 +170,7 @@ public:
     const std::vector<Button *> &buttonGroup() const { return mButtonGroup; }
 
     std::string wtypename() const override { return "button"; }
+    void setFontName(const std::string& font) { mFontName = font; }
 
     /// The preferred size of this Button.
     Vector2i preferredSize(NVGcontext *ctx) const override;
@@ -189,10 +193,12 @@ public:
     void setTextStyleFlags(int flags) { mTextStyleFlags = flags; }
     bool haveTextStyleFlag(int flag) { return (mTextStyleFlags & flag) == flag; }
 
-    virtual Color getTextColor() const;
-    virtual Color getIconColor() const;
+    void setIconColor(const Color& c) { mIconColor = c; }
+    void setPushedIconColor(const Color& c) { mPushedIconColor = c; }
 
 protected:
+    virtual Color getTextColor() const;
+    virtual Color getIconColor() const;
 
     virtual void beforeDoCallback() {}
     virtual void beforeDoChangeCallback(bool) {}
@@ -215,17 +221,20 @@ protected:
      * \endrst
      */
     int mIcon;
+    Color mIconColor, mPushedIconColor;
 
     /// The position to draw the icon at.
     IconPosition mIconPosition;
 
     /// Whether or not this Button is currently pushed.
-    bool mPushed;
+    BoolObservable mPushed;
 
     /// The current flags of this button (see \ref nanogui::Button::Flags for options).
     int mFlags;
     int mDrawFlags;
     int mTextStyleFlags;
+
+    std::string mFontName;
 
     /// The background color of this Button.
     Color mBackgroundColor, mBackgroundHoverColor;
@@ -237,7 +246,7 @@ protected:
     std::function<void()> mCallback;
 
     /// The callback issued for toggle buttons.
-    std::function<void(bool)> mChangeCallback;
+    std::function<void(Button*)> mChangeCallback;
 
     /// The button group for radio buttons.
     std::vector<Button *> mButtonGroup;
@@ -245,8 +254,11 @@ protected:
 public:
     PROPSETTER(ButtonCallback, setCallback)
     PROPSETTER(Caption, setCaption)
+    PROPSETTER(CaptionFont, setFontName)
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
+    PROPSETTER(IconColor, setIconColor)
+    PROPSETTER(IconPushedColor, setPushedIconColor)
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(BackgroundHoverColor, setBackgroundHoverColor)
     PROPSETTER(ButtonFlags,setFlags)
@@ -256,6 +268,7 @@ public:
     PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
+    PROPSETTER(BoolObservable, setObservable)
     PROPSETTER(HoveredColor, setHoveredTextColor)
     PROPSETTER(BorderSize, setBorderSize)
     PROPSETTER(BorderColor, setBorderColor)

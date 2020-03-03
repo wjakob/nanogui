@@ -22,7 +22,7 @@ RTTI_IMPLEMENT_INFO(LinkButton, Button)
 
 Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
-      mIconPosition(IconPosition::LeftCentered), mPushed(false),
+      mIconPosition(IconPosition::LeftCentered), 
       mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0))
 {
@@ -31,6 +31,7 @@ Button::Button(Widget *parent, const std::string &caption, int icon)
   setTextStyleFlags(StyleTextNone);
   mCaptionSize = { -1.f, -1.f };
   mBorderSize = -1;
+  mPushed = false;
 }
 
 Vector2f Button::getCaptionSize(NVGcontext *ctx)
@@ -83,7 +84,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                         if (b != this && b && (b->haveFlag(RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
-                                b->mChangeCallback(false);
+                                b->mChangeCallback(this);
                         }
                     }
                 } else {
@@ -91,7 +92,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                         if (b != this && (b->haveFlag(RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
-                                b->mChangeCallback(false);
+                                b->mChangeCallback(this);
                         }
                     }
                 }
@@ -102,7 +103,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                     if (b != this && b && (b->haveFlag(PopupButton)) && b->mPushed) {
                         b->mPushed = false;
                         if (b->mChangeCallback)
-                            b->mChangeCallback(false);
+                            b->mChangeCallback(this);
                     }
                 }
             }
@@ -125,7 +126,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
         if (pushedBackup != mPushed && mChangeCallback)
         {
           beforeDoChangeCallback(mPushed);
-          mChangeCallback(mPushed);
+          mChangeCallback(this);
         }
 
         return true;
@@ -147,7 +148,12 @@ Color Button::getTextColor() const
   }
 }
 
-Color Button::getIconColor() const { return getTextColor(); }
+Color Button::getIconColor() const 
+{ 
+  if (mPushed && mPushedIconColor.w() > 0)
+    return mPushedIconColor;
+  return mIconColor.notW(getTextColor()); 
+}
 
 void Button::draw(NVGcontext *ctx) 
 {
@@ -230,14 +236,15 @@ void Button::draw(NVGcontext *ctx)
     }
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
-    nvgFontFaceSize(ctx, "sans-bold", fontSize);
+    nvgFontFaceSize(ctx, (mFontName.empty() ? theme()->buttonFont : mFontName).c_str(), fontSize);
     auto capsize = getCaptionSize(ctx);
 
     Vector2f center = (mPos + mSize / 2).cast<float>();
     Vector2f textPos = center - Vector2f(capsize.x() / 2, 1);
     NVGcolor textColor = getTextColor();
 
-    if (mIcon && haveDrawFlag(DrawIcon)) {
+    if (mIcon && haveDrawFlag(DrawIcon)) 
+    {
         auto icon = utf8(mIcon);
         Color iconColor = getIconColor();
 
