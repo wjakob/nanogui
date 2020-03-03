@@ -55,6 +55,8 @@ namespace Json { class value; }
 
 enum TextHAlign { hLeft = 0, hCenter, hRight };
 enum TextVAlign { vTop = 3, vMiddle, vBottom };
+struct TextAlign { TextHAlign h; TextVAlign v; };
+
 enum Corner { cLeftTop = 0, cLeftBottom, cRigthTop, cRightBottom };
 
 DECLSETTER(MaxHeight, int)
@@ -68,6 +70,8 @@ DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
 DECLSETTER(FloatValue, float)
 DECLSETTER(Icon, int)
+DECLSETTER(IconColor, Color)
+DECLSETTER(IconPushedColor, Color)
 DECLSETTER(BorderSize, int)
 DECLSETTER(BorderColor, Color)
 DECLSETTER(Caption, std::string)
@@ -81,6 +85,7 @@ DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
 DECLSETTER(CaptionHAlign, TextHAlign)
+DECLSETTER(CaptionAlign, TextAlign)
 DECLSETTER(InitialValue, float)
 DECLSETTER(MinValue, float)
 DECLSETTER(MaxValue, float)
