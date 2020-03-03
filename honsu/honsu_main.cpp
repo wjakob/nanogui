@@ -321,9 +321,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
 void showAgilesScreen(Screen* screen)
 {
-  auto& w = createWindow(screen, "#agiles_window", WidgetStretchLayout{ Orientation::Vertical, 0, 20 });
-  w.widget(FixedHeight{ 20 });
-  w.label(FixedHeight{ 40 },
+  auto& w = createWindow(screen, "#agiles_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  w.label(FixedHeight{ 60 },
           Caption{ "Select agile boards" },
           CaptionAlign{ hCenter, vBottom },
           CaptionFont{ "sans-bold" },
@@ -331,9 +330,8 @@ void showAgilesScreen(Screen* screen)
   w.label(Caption{ "You will be able to edit this selection later" },
           CaptionAlign{ hCenter, vTop },
           FixedHeight{ 20 });
-  w.widget(FixedHeight{ 20 });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
 
   auto agilebtn = [&vstack] (std::string name, int index) {
     vstack.button(Caption{ name },
@@ -357,7 +355,7 @@ void showAgilesScreen(Screen* screen)
   vstack.button(Caption{ "Save" },
                 FixedHeight{ 50 },
                 BackgroundColor{ Color::indianRed },
-                BackgroundHoverColor{ Color::indianRed },
+                BackgroundHoverColor{ Color::caesarRed },
                 ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
   screen->needPerformLayout(screen);
 }

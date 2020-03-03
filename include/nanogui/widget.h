@@ -514,7 +514,7 @@ public:
     template<typename... Args>Widget& hlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal }, args...); }
     template<typename... Args>Widget& vlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical }, args...); }
     template<typename... Args>Widget& hstack(const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, args...); }
-    template<typename... Args>Widget& vstack(const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 }, args...); }
+    template<typename... Args>Widget& vstack(int margin=2, int spacing=2, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, margin, spacing }, args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
     template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }
