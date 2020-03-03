@@ -60,14 +60,11 @@ public:
     void setColor(const Color& color) { mColor = color; }
     void setDisabledColor(const Color& color) { mDisabledColor = color; }
 
-    void setTextHAlign(TextHAlign align) { mTextHAlign = align; }
-    void setTextVAlign(TextVAlign align) { mTextVAlign = align; }
+    void setTextHAlign(TextHAlign align) { mTextAlign.h = align; }
+    void setTextVAlign(TextVAlign align) { mTextAlign.v = align; }
 
     bool tabstop(CanTabStop) const override { return false; }
-
-    void setTextAlign(TextHAlign halign, TextVAlign valign) {
-      mTextHAlign = halign; mTextVAlign = valign;
-    }
+    void setTextAlign(TextAlign talign) { mTextAlign = talign; }
 
     /// Set the \ref Theme used to draw this widget
     void setTheme(Theme *theme) override;
@@ -85,8 +82,7 @@ protected:
     std::string mCaption;
     std::string mFont;
     Color mColor, mDisabledColor;
-    TextHAlign mTextHAlign = hLeft;
-    TextVAlign mTextVAlign = vMiddle;
+    TextAlign mTextAlign = { hLeft, vMiddle };
     Vector2i mTextRealSize;
 
 public:
@@ -94,6 +90,7 @@ public:
     PROPSETTER(CaptionFont,setFont)
     PROPSETTER(FontSize,setFontSize)
     PROPSETTER(CaptionHAlign,setTextHAlign)
+    PROPSETTER(CaptionAlign, setTextAlign)
 };
 
 NAMESPACE_END(nanogui)

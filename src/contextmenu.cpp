@@ -67,7 +67,7 @@ void ContextMenuLabel::draw(NVGcontext* ctx)
 
     Vector2i opos = { mSize.x() - mTheme->mContextMenuShortcutOffset, 0 };
 
-    switch (mTextVAlign)
+    switch (mTextAlign.v)
     {
     case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
     case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;

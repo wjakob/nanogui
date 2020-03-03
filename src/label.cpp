@@ -69,13 +69,13 @@ void Label::draw(NVGcontext *ctx)
     //int valign = (mFixedSize.y() > 0 ? (1 << mTextVAlign) : (1 << TextVAlign::vTop));
 
     Vector2i opos;
-    switch (mTextHAlign)
+    switch (mTextAlign.h)
     {
     case TextHAlign::hCenter: opos.x() = (mSize.x() - mTextRealSize.x()) / 2; break;
     case TextHAlign::hRight: opos.x() = (mSize.x() - mTextRealSize.x()); break;
     }
 
-    switch (mTextVAlign)
+    switch (mTextAlign.v)
     {
     case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
     case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;
