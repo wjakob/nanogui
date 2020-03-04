@@ -236,7 +236,8 @@ void Button::draw(NVGcontext *ctx)
     }
 
     int fontSize = mFontSize == -1 ? mTheme->mButtonFontSize : mFontSize;
-    nvgFontFaceSize(ctx, (mFontName.empty() ? theme()->buttonFont : mFontName).c_str(), fontSize);
+    const char* fontName = (mFontName.empty() ? theme()->buttonFont : mFontName).c_str();
+    nvgFontFaceSize(ctx, fontName, fontSize);
     auto capsize = getCaptionSize(ctx);
 
     Vector2f center = (mPos + mSize / 2).cast<float>();
@@ -300,7 +301,7 @@ void Button::draw(NVGcontext *ctx)
 
     if (haveDrawFlag(DrawText))
     {
-      nvgFontFaceSize(ctx, "sans-bold", fontSize);
+      nvgFontFaceSize(ctx, fontName, fontSize);
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
       if (haveTextStyleFlag(StyleTextShadow))
       {
@@ -312,7 +313,14 @@ void Button::draw(NVGcontext *ctx)
       nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
 
       if (haveTextStyleFlag(StyleTextUnderline))
-        nvgLine(ctx, textPos + capsize._0y(), textPos + capsize);
+      {
+        nvgBeginPath(ctx);
+        nvgStrokeColor(ctx, textColor);
+        nvgStrokeWidth(ctx, 1.f);
+        Vector2f tofs(0, height() - capsize.y());
+        nvgLine(ctx, textPos + capsize._0y() - tofs, textPos + capsize - tofs);
+        nvgStroke(ctx);
+      }
     }
 
     Widget::draw(ctx);
@@ -349,6 +357,7 @@ LinkButton::LinkButton(Widget* parent)
   : Button(parent)
 {
   setDrawFlags(DrawText);
+  setTextStyleFlags(StyleTextUnderline);
 }
 
 void LinkButton::draw(NVGcontext* ctx)
