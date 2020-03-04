@@ -339,15 +339,16 @@ void showAgilesScreen(Screen* screen)
 
   createWindowHeader(w);
 
-  w.label(FixedHeight{ 60 },
-          Caption{ "Select agile boards" },
-          FontColor{ Color::white },
-          CaptionAlign{ hCenter, vBottom },
-          CaptionFont{ "sans-bold" },
-          FontSize{ 42 });
-  w.label(Caption{ "You will be able to edit this selection later" },
-          CaptionAlign{ hCenter, vTop },
-          FixedHeight{ 20 });
+  auto& header = w.vstack();
+  header.label(FixedHeight{ 60 },
+               Caption{ "Select agile boards" },
+               FontColor{ Color::white },
+               CaptionAlign{ hCenter, vBottom },
+               CaptionFont{ "sans-bold" },
+               FontSize{ 42 });
+  header.label(Caption{ "You will be able to edit this selection later" },
+               CaptionAlign{ hCenter, vTop },
+               FixedHeight{ 20 });
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
 
@@ -532,6 +533,7 @@ public:
       needPerformLayout(this);
 
       theme()->keyboardNavigation = false;
+      //theme()->debugHighlightMouseover = true;
     }
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {

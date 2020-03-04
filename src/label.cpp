@@ -79,6 +79,7 @@ void Label::draw(NVGcontext *ctx)
     {
     case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
     case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;
+    case TextVAlign::vTop: opos.y() = 0; break;
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
