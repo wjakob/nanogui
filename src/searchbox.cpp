@@ -21,7 +21,7 @@ SearchBox::SearchBox(Widget* parent)
   auto& btn = button(Caption{ "" }, 
                      WidgetId{ "#cancel_btn"},
                      Icon{ ENTYPO_ICON_CANCEL_CIRCLED },
-                     HoveredColor{ Color(0xff0000ff) },
+                     HoveredTextColor{ Color(0xff0000ff) },
                      ButtonDrawFlags{ Button::DrawIcon },
                      ButtonCallback{ [this] { clearText();} });
 }

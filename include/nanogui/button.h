@@ -32,7 +32,7 @@ DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
 DECLSETTER(ButtonPushed, bool)
 DECLSETTER(InactiveColor, Color)
-DECLSETTER(HoveredColor, Color)
+DECLSETTER(HoveredTextColor, Color)
 
 class NANOGUI_EXPORT Button : public Widget 
 {
@@ -269,7 +269,8 @@ public:
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
     PROPSETTER(BoolObservable, setObservable)
-    PROPSETTER(HoveredColor, setHoveredTextColor)
+    PROPSETTER(TextColor, setTextColor)
+    PROPSETTER(HoveredTextColor, setHoveredTextColor)
     PROPSETTER(BorderSize, setBorderSize)
     PROPSETTER(BorderColor, setBorderColor)
 };
