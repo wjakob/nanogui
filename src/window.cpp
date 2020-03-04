@@ -28,8 +28,6 @@ RTTI_IMPLEMENT_INFO(Frame, Widget)
 
 void Frame::draw(NVGcontext *ctx)
 {
-  Widget::draw(ctx);
-
   float cr = mCornerRadius > 0 ? mCornerRadius : theme()->mWindowCornerRadius;
   float bs = mBorderSize > 0 ? mBorderSize : theme()->windowBorderSize;
 
@@ -45,6 +43,8 @@ void Frame::draw(NVGcontext *ctx)
   nvgRoundedRect(ctx, mPos, size(), cr);
   nvgStrokeColor(ctx, mBorderColor.notW(mTheme->windowBorderColorFocused));
   nvgStroke(ctx);
+
+  Widget::draw(ctx);
 }
 
 Window::Window(Widget *parent, const std::string &title)
