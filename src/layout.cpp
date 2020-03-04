@@ -47,7 +47,7 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
     }
 
     bool first = true;
-    int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
+    int axis1 = (int) mOrientation % 2, axis2 = ((int) mOrientation + 1)%2;
     for (auto w : widget->children()) {
         if (!w->visible())
             continue;
@@ -74,7 +74,7 @@ void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const
     Vector4i warea = widget->getWidgetsArea();
     Vector2i containerSize = warea.size();
 
-    int axis1 = (int) mOrientation, axis2 = ((int) mOrientation + 1)%2;
+    int axis1 = (int) mOrientation % 2, axis2 = ((int) mOrientation + 1)%2;
     int position = mMargin;
     int yOffset = 0, xOffset = 0;
 

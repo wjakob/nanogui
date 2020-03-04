@@ -354,6 +354,7 @@ void showAgilesScreen(Screen* screen)
     
   vstack.button(Caption{ "Save" },
                 FixedHeight{ 50 },
+                BorderSize{ 0 },
                 BackgroundColor{ Color::indianRed },
                 BackgroundHoverColor{ Color::caesarRed },
                 ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
@@ -455,21 +456,24 @@ void update_requests()
 
 void showStartupScreen(Screen* screen)
 {
-  while (screen->children().size()>0) screen->children().front()->remove();
-
   auto& w = createWindow(screen, "#login_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
     //w.withTheme<WhiteTheme>(screen->nvgContext());
-  w.label(FixedHeight{ 100 }, 
-          Caption{ "Add new account" },
-          CaptionHAlign{ hCenter },
-          FontSize{ 26 })
-   .toolbutton(Icon{ ENTYPO_ICON_OFF }, 
-               IsSubElement{ true },
+
+  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
+  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
                FontSize{ 32 },
-               ButtonDrawFlags{ Button::DrawBody|Button::DrawIcon },
+               ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
                BackgroundColor{ Color::transparent },
                BackgroundHoverColor{ Color::red },
                ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
+  c.label(Caption{ "H" });
+  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{15}, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
+  c.label(Caption{ "N S U" });
+
+  w.label(FixedHeight{ 100 },
+    Caption{ "Add new account" },
+    CaptionHAlign{ hCenter },
+    FontSize{ 26 });
 
   auto textfield = [&](std::string placeholder, std::string value, std::string id) {
     w.textbox(FontSize{ 24 },
