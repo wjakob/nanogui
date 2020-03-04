@@ -319,11 +319,29 @@ void requestTasksAndResolve(Screen* screen, std::string board)
   sslrequests.push_back(request);
 }
 
+void createWindowHeader(Widget& w)
+{
+  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
+  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
+    FontSize{ 32 },
+    ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
+    BackgroundColor{ Color::transparent },
+    BackgroundHoverColor{ Color::red },
+    ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
+  c.label(Caption{ "H" });
+  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
+  c.label(Caption{ "N S U" });
+}
+
 void showAgilesScreen(Screen* screen)
 {
   auto& w = createWindow(screen, "#agiles_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+
+  createWindowHeader(w);
+
   w.label(FixedHeight{ 60 },
           Caption{ "Select agile boards" },
+          FontColor{ Color::white },
           CaptionAlign{ hCenter, vBottom },
           CaptionFont{ "sans-bold" },
           FontSize{ 42 });
@@ -459,16 +477,7 @@ void showStartupScreen(Screen* screen)
   auto& w = createWindow(screen, "#login_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
     //w.withTheme<WhiteTheme>(screen->nvgContext());
 
-  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
-  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
-               FontSize{ 32 },
-               ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
-               BackgroundColor{ Color::transparent },
-               BackgroundHoverColor{ Color::red },
-               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
-  c.label(Caption{ "H" });
-  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{15}, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
-  c.label(Caption{ "N S U" });
+  createWindowHeader(w);
 
   w.label(FixedHeight{ 100 },
     Caption{ "Add new account" },

@@ -88,6 +88,7 @@ protected:
 public:
     PROPSETTER(Caption,setCaption)
     PROPSETTER(CaptionFont,setFont)
+    PROPSETTER(FontColor, setColor)
     PROPSETTER(FontSize,setFontSize)
     PROPSETTER(CaptionHAlign,setTextHAlign)
     PROPSETTER(CaptionAlign, setTextAlign)
