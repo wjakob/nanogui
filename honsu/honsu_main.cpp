@@ -248,22 +248,46 @@ void showWaitingScreen(Screen* screen)
   screen->needPerformLayout(screen);
 }
 
+void createWindowHeader(Widget& w)
+{
+  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
+  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
+    FontSize{ 32 },
+    ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
+    BackgroundColor{ Color::transparent },
+    BackgroundHoverColor{ Color::red },
+    ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
+  c.label(Caption{ "H" });
+  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
+  c.label(Caption{ "N S U" });
+}
+
 void showTasksWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#tasks_window", WidgetStretchLayout{ Orientation::Vertical });
+  auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
+  
+  createWindowHeader(w);
+  
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
-  for (auto& issue : account.issues)
-  {
-    auto& f = vstack.frame(FixedHeight{ 200 }, 
+  auto& createTaskPanel = [&vstack] (const IssueInfo& issue) {
+    auto& f = vstack.frame(FixedHeight{ 200 },
                            WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
+    
     auto& header = f.hlayer(FixedHeight{ 30 });
-    header.link(Caption{ issue.entityId });
-    header.link(Caption{ issue.state });
-    header.button(Caption{ "REC" }, Icon{ ENTYPO_ICON_RECORD });
+    header.link(Caption{ issue.entityId }, TextColor{ Color::white });
+    header.link(Caption{ issue.state }, TextColor{ Color::white });
+    header.button(Caption{ "REC" }, 
+                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
+                  BackgroundColor{ Color::transparent },
+                  BackgroundHoverColor{ Color::hotPink });
 
     f.label(Caption{ issue.summary }, FixedHeight{ 150 });
-  }
+  };
+
+  for (auto& issue : account.issues)
+    createTaskPanel(issue);
+
   screen->needPerformLayout(screen);
 }
 
@@ -317,20 +341,6 @@ void requestTasksAndResolve(Screen* screen, std::string board)
     }
   };
   sslrequests.push_back(request);
-}
-
-void createWindowHeader(Widget& w)
-{
-  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
-  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
-    FontSize{ 32 },
-    ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
-    BackgroundColor{ Color::transparent },
-    BackgroundHoverColor{ Color::red },
-    ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
-  c.label(Caption{ "H" });
-  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
-  c.label(Caption{ "N S U" });
 }
 
 void showAgilesScreen(Screen* screen)
