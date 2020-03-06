@@ -19,6 +19,7 @@
 #include <nanogui/dial.h>
 #include <nanogui/button.h>
 #include <nanogui/toolbutton.h>
+#include <nanogui/separator.h>
 #include <nanogui/popupbutton.h>
 #include <nanogui/combobox.h>
 #include <nanogui/progressbar.h>
@@ -262,25 +263,68 @@ void createWindowHeader(Widget& w)
   c.label(Caption{ "N S U" });
 }
 
+void showTasksWindow(Screen* screen);
+void showRecordsWindow(Screen* screen)
+{
+  auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
+
+  createWindowHeader(w);
+
+  auto& buttons = w.hlayer();
+
+  buttons
+    .button(Caption{ "Boards" }, ButtonDrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
+            ButtonCallback{ [screen] { showTasksWindow(screen); } })
+    .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
+          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
+  buttons
+    .button(Caption{ "Records" }, ButtonDrawFlags{ Button::DrawCaption })
+    .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
+      RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
+
+  screen->needPerformLayout(screen);
+}
+
 void showTasksWindow(Screen* screen)
 {
   auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
   
   createWindowHeader(w);
-  
+
+  auto& buttons = w.hlayer();
+
+  buttons
+    .button(Caption{ "Boards" }, ButtonDrawFlags{ Button::DrawCaption })
+    .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
+          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
+  buttons
+    .button(Caption{ "Records" }, ButtonDrawFlags{ Button::DrawCaption }, HoveredTextColor{ Color::red }, 
+            ButtonCallback{ [screen] { showRecordsWindow(screen); }})
+    .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
+          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
+
+  w.line(DrawFlags{ Line::Horizontal });
+
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
-  auto& createTaskPanel = [&vstack] (const IssueInfo& issue) {
+  vstack.button(Caption{ account.activeAgile })
+        .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal|Line::CenterV});
+
+  auto& actions = vstack.hstack();
+  actions.button(Caption{ "create issue" });
+  actions.toolbutton( Icon{ENTYPO_ICON_CCW} );
+
+  auto& createTaskPanel = [&vstack](const IssueInfo& issue) {
     auto& f = vstack.frame(FixedHeight{ 200 },
-                           WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
-    
+      WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
+
     auto& header = f.hlayer(FixedHeight{ 30 });
     header.link(Caption{ issue.entityId }, TextColor{ Color::white });
     header.link(Caption{ issue.state }, TextColor{ Color::white });
-    header.button(Caption{ "REC" }, 
-                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
-                  BackgroundColor{ Color::transparent },
-                  BackgroundHoverColor{ Color::hotPink });
+    header.button(Caption{ "REC" },
+      Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
+      BackgroundColor{ Color::transparent },
+      BackgroundHoverColor{ Color::hotPink });
 
     f.label(Caption{ issue.summary }, FixedHeight{ 150 });
   };
