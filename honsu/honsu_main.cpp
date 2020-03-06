@@ -254,12 +254,12 @@ void createWindowHeader(Widget& w)
   auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
   c.toolbutton(Icon{ ENTYPO_ICON_OFF },
     FontSize{ 32 },
-    ButtonDrawFlags{ Button::DrawBody | Button::DrawIcon },
+    DrawFlags{ Button::DrawBody | Button::DrawIcon },
     BackgroundColor{ Color::transparent },
     BackgroundHoverColor{ Color::red },
     ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
   c.label(Caption{ "H" });
-  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, ButtonDrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
+  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
   c.label(Caption{ "N S U" });
 }
 
@@ -273,12 +273,12 @@ void showRecordsWindow(Screen* screen)
   auto& buttons = w.hlayer();
 
   buttons
-    .button(Caption{ "Boards" }, ButtonDrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
+    .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
             ButtonCallback{ [screen] { showTasksWindow(screen); } })
     .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
           RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
   buttons
-    .button(Caption{ "Records" }, ButtonDrawFlags{ Button::DrawCaption })
+    .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption })
     .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
       RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
 
@@ -294,21 +294,22 @@ void showTasksWindow(Screen* screen)
   auto& buttons = w.hlayer();
 
   buttons
-    .button(Caption{ "Boards" }, ButtonDrawFlags{ Button::DrawCaption })
+    .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption })
     .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
           RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
   buttons
-    .button(Caption{ "Records" }, ButtonDrawFlags{ Button::DrawCaption }, HoveredTextColor{ Color::red }, 
+    .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ Color::red }, 
             ButtonCallback{ [screen] { showRecordsWindow(screen); }})
     .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
           RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
 
-  w.line(DrawFlags{ Line::Horizontal });
-
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
-  vstack.button(Caption{ account.activeAgile })
-        .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal|Line::CenterV});
+  vstack
+    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_DOWN },
+            DrawFlags{ Button::DrawCaption | Button::DrawIcon },
+            HoveredTextColor{ Color::grey })
+    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, LineWidth{ 2 });
 
   auto& actions = vstack.hstack();
   actions.button(Caption{ "create issue" });

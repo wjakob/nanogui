@@ -22,7 +22,7 @@ SearchBox::SearchBox(Widget* parent)
                      WidgetId{ "#cancel_btn"},
                      Icon{ ENTYPO_ICON_CANCEL_CIRCLED },
                      HoveredTextColor{ Color(0xff0000ff) },
-                     ButtonDrawFlags{ Button::DrawIcon },
+                     DrawFlags{ Button::DrawIcon },
                      ButtonCallback{ [this] { clearText();} });
 }
 
