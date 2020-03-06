@@ -299,7 +299,7 @@ void Button::draw(NVGcontext *ctx)
         }
     }
 
-    if (haveDrawFlag(DrawText))
+    if (haveDrawFlag(DrawCaption))
     {
       nvgFontFaceSize(ctx, fontName, fontSize);
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
@@ -356,7 +356,7 @@ bool Button::load(Json::value &save)
 LinkButton::LinkButton(Widget* parent)
   : Button(parent)
 {
-  setDrawFlags(DrawText);
+  setDrawFlags(DrawCaption);
   setTextStyleFlags(StyleTextUnderline);
 }
 

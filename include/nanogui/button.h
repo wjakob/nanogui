@@ -61,7 +61,7 @@ public:
     enum DrawFlag {
         DrawNone =   0,
         DrawBody =   1<<0,
-        DrawText =   1<<1,
+        DrawCaption =   1<<1,
         DrawBorder = 1<<2,
         DrawIcon =   1<<3,
         DrawAll  =   0xff
