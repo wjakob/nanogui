@@ -30,6 +30,7 @@ class MessageDialog;
 class PopupButton;
 class Button;
 class ComboBox;
+class Line;
 class CheckBox;
 class TabWidget;
 class VScrollPanel;
@@ -84,6 +85,7 @@ DECLSETTERARGS(BackgroundHoverColor, Color)
 DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
+DECLSETTER(DrawFlags, int)
 DECLSETTER(FontColor, Color)
 DECLSETTER(TextColor, Color)
 DECLSETTER(CaptionHAlign, TextHAlign)
@@ -547,6 +549,8 @@ public:
     template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
     template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
+    template<typename... Args>Line& line(const Args&... args) { return wdg<Line>(args...); }
+
 
 public:
     PROPSETTER(FixedHeight, setFixedHeight)

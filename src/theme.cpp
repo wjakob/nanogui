@@ -275,6 +275,9 @@ void fillThemeDefaultValues(Theme& theme)
   theme.textBoxUnfocusedColorIn = Color(255, 32);
   theme.textBoxUnfocusedColorOut = Color(32, 32);
 
+  theme.separatorWidth = 1;
+  theme.separatorColor = Color(0, 38, 0, 255);
+
   theme.mTextBoxFontSize = 20;
   theme.mTextBoxCornerRadius = 3;
   theme.mTextBoxUpIcon = ENTYPO_ICON_UP_1;

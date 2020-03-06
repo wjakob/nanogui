@@ -77,6 +77,9 @@ public:
     int mButtonFontSize;
     int buttonBorderSize;
     std::string buttonFont;
+
+    int separatorWidth;
+    Color separatorColor;
     
     /// Rounding radius for Button (and derived types) widgets (default: ``2``).
     int mButtonCornerRadius;
