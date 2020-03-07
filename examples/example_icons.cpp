@@ -24,7 +24,7 @@ using namespace nanogui;
 // the button label will be the string that represents this
 #define ADD_BUTTON(icon)                                   \
     auto b_##icon = new Button(wrapper, std::string(#icon), icon);      \
-    b_##icon->setIconPosition(Button::IconPosition::Left); \
+    b_##icon->setIconAlign(IconAlign::Left); \
     b_##icon->setFixedWidth(btn_width);
 
 int main(int /* argc */, char ** /* argv */) {
