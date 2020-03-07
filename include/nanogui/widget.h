@@ -56,6 +56,13 @@ namespace Json { class value; }
 
 enum TextHAlign { hLeft = 0, hCenter, hRight };
 enum TextVAlign { vTop = 3, vMiddle, vBottom };
+enum IconAlign {
+  Left = 0,         ///< Button icon on the far left.
+  LeftCentered = 1, ///< Button icon on the left, centered (depends on caption text length).
+  RightCentered = 2,///< Button icon on the right, centered (depends on caption text length).
+  Right = 3         ///< Button icon on the far right.
+};
+
 struct TextAlign { TextHAlign h; TextVAlign v; };
 
 enum Corner { cLeftTop = 0, cLeftBottom, cRigthTop, cRightBottom };
@@ -86,6 +93,8 @@ DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
 DECLSETTER(DrawFlags, int)
+DECLSETTER(IconAlignment,IconAlign)
+DECLSETTER(TextStyle, int)
 DECLSETTER(FontColor, Color)
 DECLSETTER(TextColor, Color)
 DECLSETTER(CaptionHAlign, TextHAlign)

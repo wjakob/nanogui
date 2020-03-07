@@ -25,7 +25,6 @@ NAMESPACE_BEGIN(nanogui)
  */
 DECLSETTER(ButtonCallback, std::function<void()>)
 DECLSETTER(ButtonFlags, int)
-DECLSETTER(ButtonStyleTextFlags, int)
 DECLSETTER(ButtonChangeCallback, std::function<void (Button*)>)
 DECLSETTER(ButtonDragCallback, std::function<void ()>)
 DECLSETTER(ButtonToggleFlag, bool)
@@ -47,14 +46,6 @@ public:
         RadioButton  = 1<<1, ///< A radio Button.
         ToggleButton = 1<<2, ///< A toggle Button.
         PopupButton  = 1<<3  ///< A popup Button.
-    };
-
-    /// The available icon positions.
-    enum class IconPosition {
-        Left,         ///< Button icon on the far left.
-        LeftCentered, ///< Button icon on the left, centered (depends on caption text length).
-        RightCentered,///< Button icon on the right, centered (depends on caption text length).
-        Right         ///< Button icon on the far right.
     };
 
     enum DrawFlag {
@@ -133,10 +124,10 @@ public:
                                     else mFlags &= ~Button::ToggleButton; }
 
     /// The position of the icon for this Button.
-    IconPosition iconPosition() const { return mIconPosition; }
+    IconAlign iconAlign() const { return mIconAlign; }
 
     /// Sets the position of the icon for this Button.
-    void setIconPosition(IconPosition iconPosition) { mIconPosition = iconPosition; }
+    void setIconAlign(IconAlign iconAlign) { mIconAlign = iconAlign; }
 
     /// Whether or not this Button is currently pushed.
     bool pushed() const { return mPushed; }
@@ -189,8 +180,8 @@ public:
     void setDrawFlags(int flags) { mDrawFlags = flags; }
     bool haveDrawFlag(int flag) { return (mDrawFlags & flag)==flag; }
 
-    void setTextStyleFlags(int flags) { mTextStyleFlags = flags; }
-    bool haveTextStyleFlag(int flag) { return (mTextStyleFlags & flag) == flag; }
+    void setTextStyle(int style) { mTextStyleFlags = style; }
+    bool haveTextStyle(int flag) { return (mTextStyleFlags & flag) == flag; }
 
     void setIconColor(const Color& c) { mIconColor = c; }
     void setPushedIconColor(const Color& c) { mPushedIconColor = c; }
@@ -223,7 +214,7 @@ protected:
     Color mIconColor, mPushedIconColor;
 
     /// The position to draw the icon at.
-    IconPosition mIconPosition;
+    IconAlign mIconAlign;
 
     /// Whether or not this Button is currently pushed.
     BoolObservable mPushed;
@@ -262,7 +253,8 @@ public:
     PROPSETTER(BackgroundHoverColor, setBackgroundHoverColor)
     PROPSETTER(ButtonFlags,setFlags)
     PROPSETTER(DrawFlags, setDrawFlags)
-    PROPSETTER(ButtonStyleTextFlags, setTextStyleFlags)
+    PROPSETTER(TextStyle, setTextStyle)
+    PROPSETTER(IconAlignment, setIconAlign)
     PROPSETTER(ButtonChangeCallback,setChangeCallback)
     PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)

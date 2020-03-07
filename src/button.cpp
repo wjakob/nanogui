@@ -22,13 +22,13 @@ RTTI_IMPLEMENT_INFO(LinkButton, Button)
 
 Button::Button(Widget *parent, const std::string &caption, int icon)
     : Widget(parent), mCaption(caption), mIcon(icon),
-      mIconPosition(IconPosition::LeftCentered), 
+      mIconAlign(IconAlign::LeftCentered), 
       mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0))
 {
   setFlags(NormalButton);
   setDrawFlags(DrawAll);
-  setTextStyleFlags(StyleTextNone);
+  setTextStyle(StyleTextNone);
   mCaptionSize = { -1.f, -1.f };
   mBorderSize = -1;
   mPushed = false;
@@ -267,21 +267,21 @@ void Button::draw(NVGcontext *ctx)
         Vector2f iconPos = center;
         iconPos.y() -= 1;
 
-        if (mIconPosition == IconPosition::LeftCentered) 
+        if (mIconAlign == IconAlign::LeftCentered) 
         {
             iconPos.x() -= (capsize.x() + iw) * 0.5f;
             textPos.x() += iw * 0.5f;
         } 
-        else if (mIconPosition == IconPosition::RightCentered) 
+        else if (mIconAlign == IconAlign::RightCentered) 
         {
             textPos.x() -= iw * 0.5f;
             iconPos.x() += capsize.x() * 0.5f;
         } 
-        else if (mIconPosition == IconPosition::Left) 
+        else if (mIconAlign == IconAlign::Left) 
         {
             iconPos.x() = mPos.x() + 8;
         } 
-        else if (mIconPosition == IconPosition::Right) 
+        else if (mIconAlign == IconAlign::Right) 
         {
             iconPos.x() = mPos.x() + mSize.x() - iw - 8;
         }
@@ -303,7 +303,7 @@ void Button::draw(NVGcontext *ctx)
     {
       nvgFontFaceSize(ctx, fontName, fontSize);
       nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-      if (haveTextStyleFlag(StyleTextShadow))
+      if (haveTextStyle(StyleTextShadow))
       {
         nvgFillColor(ctx, mTheme->mTextColorShadow);
         nvgText(ctx, textPos, mCaption);
@@ -312,7 +312,7 @@ void Button::draw(NVGcontext *ctx)
       nvgFillColor(ctx, textColor);
       nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
 
-      if (haveTextStyleFlag(StyleTextUnderline))
+      if (haveTextStyle(StyleTextUnderline))
       {
         nvgBeginPath(ctx);
         nvgStrokeColor(ctx, textColor);
@@ -332,7 +332,7 @@ void Button::save(Json::value &save) const
   auto obj = save.get_obj();
   obj["caption"] = json().set(mCaption).name("Caption");
   obj["icon"] = json().set(mIcon).name("Icon");
-  obj["iconPosition"] = json().set((int)mIconPosition).name("Icon position");
+  obj["iconPosition"] = json().set((int)mIconAlign).name("Icon align");
   obj["pushed"] = json().set(mPushed).name("Pushed");
   obj["backgroundColor"] = json().set(mBackgroundColor).name("Background color");
   obj["textColor"] = json().set(mTextColor).name("Text color");
@@ -346,7 +346,7 @@ bool Button::load(Json::value &save)
   json s{ save.get_obj() };
   mCaption = s.get<std::string>("caption");
   mIcon = s.get<int>("icon");
-  mIconPosition = (IconPosition)s.get<int>("iconPosition");
+  mIconAlign = (IconAlign)s.get<int>("iconAlign");
   mPushed = s.get<bool>("pushed");
   mBackgroundColor = s.get<Color>("backgroundColor");
   mTextColor = s.get<Color>("textColor");
@@ -357,7 +357,7 @@ LinkButton::LinkButton(Widget* parent)
   : Button(parent)
 {
   setDrawFlags(DrawCaption);
-  setTextStyleFlags(StyleTextUnderline);
+  setTextStyle(StyleTextUnderline);
 }
 
 void LinkButton::draw(NVGcontext* ctx)
