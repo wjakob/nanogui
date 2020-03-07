@@ -276,13 +276,18 @@ void showRecordsWindow(Screen* screen)
     .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
             ButtonCallback{ [screen] { showTasksWindow(screen); } })
     .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
-          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
+          RelativeSize{ 0.9f, 0.f }, LineWidth{ 2 });
   buttons
     .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption })
     .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
-      RelativeSize{ 0.7f, 0.f }, LineWidth{ 2 });
+          RelativeSize{ 0.9f, 0.f }, LineWidth{ 2 });
 
   screen->needPerformLayout(screen);
+}
+
+void openAgileUrl(const std::string& agile)
+{
+
 }
 
 void showTasksWindow(Screen* screen)
@@ -293,27 +298,27 @@ void showTasksWindow(Screen* screen)
 
   auto& buttons = w.hlayer();
 
+  auto linestyle = DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH };
   buttons
     .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption })
-    .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
-          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
+    .line(BackgroundColor{ Color::red }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, linestyle);
+
   buttons
     .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ Color::red }, 
             ButtonCallback{ [screen] { showRecordsWindow(screen); }})
-    .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal|Line::Bottom|Line::CenterH },
-          RelativeSize{ 0.7f, 0.f }, LineWidth{ 2});
+    .line(BackgroundColor{ Color::grey }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, linestyle);
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
   vstack
-    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_DOWN },
-            DrawFlags{ Button::DrawCaption | Button::DrawIcon },
-            HoveredTextColor{ Color::grey })
-    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, LineWidth{ 2 });
+    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE },
+            DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
+            HoveredTextColor{ Color::white }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
+    .line(BackgroundColor{ Color::black }, linestyle);
 
   auto& actions = vstack.hstack();
   actions.button(Caption{ "create issue" });
-  actions.toolbutton( Icon{ENTYPO_ICON_CCW} );
+  actions.toolbutton(Icon{ENTYPO_ICON_CCW} );
 
   auto& createTaskPanel = [&vstack](const IssueInfo& issue) {
     auto& f = vstack.frame(FixedHeight{ 200 },
