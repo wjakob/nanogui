@@ -101,18 +101,18 @@ void ListboxItem::draw(NVGcontext *ctx)
     Vector2f iconPos = center;
     iconPos.y() -= 1;
 
-    if (mIconPosition == IconPosition::LeftCentered) {
+    if (mIconAlign == IconAlign::LeftCentered) {
       iconPos.x() -= (tw + iw) * 0.5f;
       textPos.x() += iw * 0.5f;
     }
-    else if (mIconPosition == IconPosition::RightCentered) {
+    else if (mIconAlign == IconAlign::RightCentered) {
       textPos.x() -= iw * 0.5f;
       iconPos.x() += tw * 0.5f;
     }
-    else if (mIconPosition == IconPosition::Left) {
+    else if (mIconAlign == IconAlign::Left) {
       iconPos.x() = mPos.x() + 8;
     }
-    else if (mIconPosition == IconPosition::Right) {
+    else if (mIconAlign == IconAlign::Right) {
       iconPos.x() = mPos.x() + mSize.x() - iw - 8;
     }
 
