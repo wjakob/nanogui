@@ -311,7 +311,7 @@ void showTasksWindow(Screen* screen)
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
 
   vstack
-    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE },
+    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
             DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
             HoveredTextColor{ Color::white }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
     .line(BackgroundColor{ Color::black }, linestyle);
@@ -542,7 +542,7 @@ void showStartupScreen(Screen* screen)
 
   w.label(FixedHeight{ 100 },
     Caption{ "Add new account" },
-    CaptionHAlign{ hCenter },
+    CaptionHAlign{ TextHAlign::hCenter },
     FontSize{ 26 });
 
   auto textfield = [&](std::string placeholder, std::string value, std::string id) {

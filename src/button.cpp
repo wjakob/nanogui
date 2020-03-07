@@ -240,8 +240,19 @@ void Button::draw(NVGcontext *ctx)
     nvgFontFaceSize(ctx, fontName, fontSize);
     auto capsize = getCaptionSize(ctx);
 
-    Vector2f center = (mPos + mSize / 2).cast<float>();
-    Vector2f textPos = center - Vector2f(capsize.x() / 2, 1);
+    Vector2f textPos = { 0, 0 };
+    switch (mTextAlign.h)
+    {
+    case TextHAlign::hCenter: textPos.x() = (mSize.x() - mCaptionSize.x()) / 2; break;
+    case TextHAlign::hRight: textPos.x() = (mSize.x() - mCaptionSize.x()); break;
+    }
+
+    switch (mTextAlign.v)
+    {
+    case TextVAlign::vMiddle: textPos.y() = (mSize.y() - mCaptionSize.y()) / 2; break;
+    case TextVAlign::vBottom: textPos.y() = (mSize.y() - mCaptionSize.y()); break;
+    case TextVAlign::vTop: textPos.y() = 0; break;
+    }
     NVGcolor textColor = getTextColor();
 
     if (mIcon && haveDrawFlag(DrawIcon)) 
@@ -264,7 +275,7 @@ void Button::draw(NVGcontext *ctx)
             iw += mSize.y() * 0.15f;
         nvgFillColor(ctx, iconColor);
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-        Vector2f iconPos = center;
+        Vector2f iconPos = (mPos + mSize / 2).cast<float>();;
         iconPos.y() -= 1;
 
         if (mIconAlign == IconAlign::LeftCentered) 
@@ -302,15 +313,16 @@ void Button::draw(NVGcontext *ctx)
     if (haveDrawFlag(DrawCaption))
     {
       nvgFontFaceSize(ctx, fontName, fontSize);
-      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
+
+      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
       if (haveTextStyle(StyleTextShadow))
       {
         nvgFillColor(ctx, mTheme->mTextColorShadow);
-        nvgText(ctx, textPos, mCaption);
+        nvgText(ctx, mPos + textPos, mCaption);
       }
 
       nvgFillColor(ctx, textColor);
-      nvgText(ctx, textPos + Vector2f{ 0, 1 }, mCaption);
+      nvgText(ctx, mPos + textPos + Vector2f{ 0, 1 }, mCaption);
 
       if (haveTextStyle(StyleTextUnderline))
       {
@@ -318,7 +330,7 @@ void Button::draw(NVGcontext *ctx)
         nvgStrokeColor(ctx, textColor);
         nvgStrokeWidth(ctx, 1.f);
         Vector2f tofs(0, height() - capsize.y());
-        nvgLine(ctx, textPos + capsize._0y() - tofs, textPos + capsize - tofs);
+        nvgLine(ctx, mPos + textPos + capsize._0y(), mPos + textPos + capsize);
         nvgStroke(ctx);
       }
     }

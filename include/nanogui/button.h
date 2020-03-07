@@ -174,6 +174,9 @@ public:
     /// Saves the state of this Button provided the given Serializer.
     void save(Json::value &s) const override;
 
+    void setTextAlign(TextAlign align) { mTextAlign = align; }
+    void setTextHAlign(TextHAlign h) { mTextAlign.h = h; }
+
     /// Sets the state of this Button provided the given Serializer.
     bool load(Json::value &s) override;
 
@@ -223,6 +226,7 @@ protected:
     int mFlags;
     int mDrawFlags;
     int mTextStyleFlags;
+    TextAlign mTextAlign = { hCenter, vMiddle };
 
     std::string mFontName;
 
@@ -245,6 +249,8 @@ public:
     PROPSETTER(ButtonCallback, setCallback)
     PROPSETTER(Caption, setCaption)
     PROPSETTER(CaptionFont, setFontName)
+    PROPSETTER(CaptionAlign, setTextAlign)
+    PROPSETTER(CaptionHAlign, setTextHAlign)
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
     PROPSETTER(IconColor, setIconColor)
