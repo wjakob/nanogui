@@ -122,8 +122,19 @@ struct IssueInfo
   std::string sprint;
   std::string type;
   std::string summary;
-  BoolObservable rec;
+  bool rec;
+  int recordTimeSec;
+  int recordTimeTodaySec;
   Json::value js;
+
+  void updateTime(float dtSec)
+  {
+    if (rec)
+    {
+      recordTimeSec += dtSec;
+      recordTimeTodaySec += dtSec;
+    }
+  }
 
   void readField()
   {
@@ -297,6 +308,68 @@ void createNewIssue(Screen* screen)
 
 }
 
+void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
+{
+  for (auto& i : account.issues)
+    issue->rec = false;
+  issue->rec = rec;
+}
+
+class TaskRecordPanel : public Frame
+{
+public:
+  TaskRecordPanel(Widget* parent)
+    : Frame(parent)
+  {
+    setSubElement(true);
+
+    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
+    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH});
+
+    auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
+    header.label(Caption{ "No task recording" }, FontSize{ 28 });
+    header.button(Caption{ "REC" }, ButtonFlags{ Button::ToggleButton }, FixedWidth{ 80 },
+                  DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
+                  TextColor{ Color::red }, HoveredTextColor{ Color::white }, 
+                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white },
+                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red });
+  
+    auto& timeline = hlayer();
+    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hLeft },
+                   FontSize{ 28 });
+    timeline.label(WidgetId{ "#dtime" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hRight });
+  }
+
+  void performLayout(NVGcontext* ctx) override
+  {
+    setSize(parent()->width(), preferredSize(ctx).y());
+    setPosition(0, parent()->height() - height());
+
+    Frame::performLayout(ctx);
+  }
+
+  void afterDraw(NVGcontext* ctx) override
+  {
+    IssueInfo::Ptr issue;
+    for (auto& i : account.issues)
+      if (i->rec) { issue = i; break; }
+
+    auto sec2str = [](int sec) {
+      int minutes = sec / 60;
+      char str[16] = { 0 };
+      snprintf(str, 16, "%02d:%02d:%02d", (minutes / 60), minutes % 60, sec % 60);
+      return std::string(str);
+    };
+
+    int time = issue ? issue->recordTimeSec : 0;
+    int dtime = issue ? issue->recordTimeTodaySec : 0;
+    if (auto lb = findWidget<Label>("#time")) lb->setCaption(sec2str(time));
+    if (auto lb = findWidget<Label>("#dtime")) lb->setCaption("TODAY:" + sec2str(dtime));
+
+    Frame::afterDraw(ctx);
+  }
+};
+
 class TaskPanel : public Frame 
 {
 public:
@@ -307,17 +380,18 @@ public:
     : Frame(parent), issue(_issue)
   {
     rec_visible = true;
-    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
+    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
     auto& header = hlayer(FixedHeight{ 30 });
     header.link(Caption{ issue->entityId }, TextColor{ Color::white });
     header.link(Caption{ issue->state }, TextColor{ Color::white });
+    header.widget();
     header.button(Caption{ "REC" }, DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
                   TextColor{ Color::red }, HoveredTextColor{ Color::white },
-                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
-                  BackgroundColor{ Color::transparent },
-                  BackgroundHoverColor{ Color::red },                   
-                  VisibleObservable{ rec_visible });
+                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white }, 
+                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },                   
+                  VisibleObservable{ rec_visible },
+                  ButtonChangeCallback{ [this] (bool v) { changeTaskRecordStatus(issue, v); }});
 
     label(Caption{ issue->summary });
   }
@@ -328,7 +402,6 @@ public:
     return Frame::mouseEnterEvent(p, enter);
   }
 };
-
 
 void showTasksWindow(Screen* screen)
 {
@@ -367,6 +440,7 @@ void showTasksWindow(Screen* screen)
   for (auto& issue : account.issues)
     vstack.wdg<TaskPanel>(issue);
 
+  w.wdg<TaskRecordPanel>();
   screen->needPerformLayout(screen);
 }
 
@@ -693,6 +767,16 @@ int main(int /* argc */, char ** /* argv */)
         std::this_thread::sleep_for(1s);
       }
     });
+
+    auto timerec_thread = std::thread([&] {
+      int lasttime = getTimeFromStart();
+      while (requests_thread_active)
+      {
+        for (auto& issue : account.issues)
+          issue->updateTime(0.5);
+        std::this_thread::sleep_for(0.5s);
+      }
+    });
   
     nanogui::sample::run([&] {
         nanogui::sample::clear_frame(screen.background());
@@ -707,6 +791,7 @@ int main(int /* argc */, char ** /* argv */)
 
     requests_thread_active = false;
     requests_thread.join();
+    timerec_thread.join();
     nanogui::sample::poll_events();
   }
 
