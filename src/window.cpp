@@ -34,7 +34,7 @@ void Frame::draw(NVGcontext *ctx)
   //Body  
   nvgBeginPath(ctx);
   nvgRoundedRect(ctx, mPos, size(), cr);
-  nvgFillColor(ctx, mBodyColor.notW(mTheme->mWindowFillFocused));
+  nvgFillColor(ctx, mBackgroundColor.notW(mTheme->mWindowFillFocused));
   nvgFill(ctx);
 
   //Border  

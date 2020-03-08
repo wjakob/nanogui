@@ -50,16 +50,19 @@ public:
   void setBorderSize(float b) { mBorderSize = b; }
   void setCornerRadius(float r) { mCornerRadius = r; }
 
+  void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
+
   bool inFocusChain() const;
 
 private:
   float mCornerRadius = 0.f;
   float mBorderSize = 0.f;
-  Color mBodyColor;
   Color mBorderColor;
+  Color mBackgroundColor;
 
 public:
   PROPSETTER(CornerRadius, setCornerRadius)
+  PROPSETTER(BackgroundColor, setBackgroundColor)
 };
 
 class NANOGUI_EXPORT Window : public Widget 
