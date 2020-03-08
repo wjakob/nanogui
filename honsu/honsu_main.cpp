@@ -115,12 +115,14 @@ struct AgileInfo
 
 struct IssueInfo
 {
+  using Ptr = std::shared_ptr<IssueInfo>;
   std::string id;
   std::string entityId;
   std::string state;
   std::string sprint;
   std::string type;
   std::string summary;
+  BoolObservable rec;
   Json::value js;
 
   void readField()
@@ -173,7 +175,7 @@ struct AccountData
 
   std::vector<AgileInfo> agiles;
   std::string activeAgile;
-  std::vector<IssueInfo> issues;
+  std::vector<IssueInfo::Ptr> issues;
 } account;
 
 struct SSLRequest {
@@ -295,6 +297,39 @@ void createNewIssue(Screen* screen)
 
 }
 
+class TaskPanel : public Frame 
+{
+public:
+  BoolObservable rec_visible;
+  IssueInfo::Ptr issue;
+
+  TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
+    : Frame(parent), issue(_issue)
+  {
+    rec_visible = true;
+    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 2, 2);
+
+    auto& header = hlayer(FixedHeight{ 30 });
+    header.link(Caption{ issue->entityId }, TextColor{ Color::white });
+    header.link(Caption{ issue->state }, TextColor{ Color::white });
+    header.button(Caption{ "REC" }, DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
+                  TextColor{ Color::red }, HoveredTextColor{ Color::white },
+                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
+                  BackgroundColor{ Color::transparent },
+                  BackgroundHoverColor{ Color::red },                   
+                  VisibleObservable{ rec_visible });
+
+    label(Caption{ issue->summary });
+  }
+
+  bool mouseEnterEvent(const Vector2i &p, bool enter) override
+  {
+    rec_visible = (enter || issue->rec);
+    return Frame::mouseEnterEvent(p, enter);
+  }
+};
+
+
 void showTasksWindow(Screen* screen)
 {
   auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
@@ -329,22 +364,8 @@ void showTasksWindow(Screen* screen)
                      DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 },
                      ButtonCallback{ [screen] { showTasksWindow(screen); }});
 
-  auto& createTaskPanel = [&vstack](const IssueInfo& issue) {
-    auto& f = vstack.frame(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
-
-    auto& header = f.hlayer(FixedHeight{ 30 });
-    header.link(Caption{ issue.entityId }, TextColor{ Color::white });
-    header.link(Caption{ issue.state }, TextColor{ Color::white });
-    header.button(Caption{ "REC" },
-                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
-                  BackgroundColor{ Color::transparent },
-                  BackgroundHoverColor{ Color::hotPink });
-
-    f.label(Caption{ issue.summary }, FixedHeight{ 150 });
-  };
-
   for (auto& issue : account.issues)
-    createTaskPanel(issue);
+    vstack.wdg<TaskPanel>(issue);
 
   screen->needPerformLayout(screen);
 }
@@ -383,11 +404,11 @@ void requestTasksAndResolve(Screen* screen, std::string board)
         Json::value info = issues.get(i++);
         while (!info.is<Json::null>())
         {
-          IssueInfo issue;
-          issue.js = info;
-          issue.id = info.get("id").get_str();
-          issue.entityId = info.get("entityId").get_str();
-          issue.readField();
+          auto issue = std::make_shared<IssueInfo>();
+          issue->js = info;
+          issue->id = info.get("id").get_str();
+          issue->entityId = info.get("entityId").get_str();
+          issue->readField();
 
           account.issues.push_back(issue);
           info = issues.get(i++);

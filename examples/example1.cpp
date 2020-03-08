@@ -854,6 +854,7 @@ void createAllWidgetsDemo(Screen* screen)
     if (v < 0) return w->haveDrawFlag(f);
     w->setDrawFlag(f, v); 
     screen->needPerformLayout(screen);
+    return false;
   };
   wopt.checkbox(Caption{ "No header" }, BoolObservable{ [=] {return !dwf(Window::DrawHeader); },
                                                         [=] (bool v) { dwf(Window::DrawHeader, !v); } });
