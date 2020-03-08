@@ -123,8 +123,8 @@ struct IssueInfo
   std::string type;
   std::string summary;
   bool rec;
-  int recordTimeSec;
-  int recordTimeTodaySec;
+  float recordTimeSec;
+  float recordTimeTodaySec;
   Json::value js;
 
   void updateTime(float dtSec)
@@ -394,7 +394,7 @@ public:
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH});
 
     auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
-    header.label(Caption{ "No task recording" }, FontSize{ 28 });
+    header.label(WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 });
     header.wdg<TaskRecordButton>([] { return account.getActiveIssue(); });
   
     auto& timeline = hlayer();
@@ -411,6 +411,8 @@ public:
     Frame::performLayout(ctx);
   }
 
+  void setCaptionSafe(std::string id, std::string txt) { if (auto lb = findWidget<Label>(id)) lb->setCaption(txt); }
+
   void afterDraw(NVGcontext* ctx) override
   {
     IssueInfo::Ptr issue = account.getActiveIssue();
@@ -421,11 +423,10 @@ public:
       snprintf(str, 16, "%02d:%02d:%02d", (minutes / 60), minutes % 60, sec % 60);
       return std::string(str);
     };
-
-    int time = issue ? issue->recordTimeSec : 0;
-    int dtime = issue ? issue->recordTimeTodaySec : 0;
-    if (auto lb = findWidget<Label>("#time")) lb->setCaption(sec2str(time));
-    if (auto lb = findWidget<Label>("#dtime")) lb->setCaption("TODAY:" + sec2str(dtime));
+  
+    setCaptionSafe("#time", sec2str(issue ? issue->recordTimeSec : 0));
+    setCaptionSafe("#dtime", "TODAY:" + sec2str(issue ? issue->recordTimeTodaySec : 0));
+    setCaptionSafe("#txt", issue ? issue->summary : "No task recording");
 
     Frame::afterDraw(ctx);
   }
