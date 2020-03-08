@@ -719,9 +719,7 @@ void showStartupScreen(Screen* screen)
   w.link(Caption{ "How to obtain a new permament token?" });
 
   /* Alternative construction notation using variadic template */
-  w.button(Caption{ "Login" },
-           FontSize{ 32 },
-           Icon{ ENTYPO_ICON_ROCKET },
+  w.button(Caption{ "Login" }, FontSize{ 32 },
            BackgroundColor{ 0, 0, 255, 25 },
            ButtonCallback{ [screen] { requestAdminData(screen); }});
   screen->needPerformLayout(screen);
@@ -736,9 +734,8 @@ public:
       account.load();
       showStartupScreen(this);
 
-      fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));
-      cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(5, height() - 40 * 2));
-      gpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "GPU Time", Vector2i(5, height() - 40 * 3));
+      //fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(width() - 210, 5));
+      cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(width() - 205, 10));
 
       previousFrameTime = getTimeFromStart();
 
@@ -751,10 +748,6 @@ public:
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
-        if (nanogui::isKeyboardKeyEscape(key) && nanogui::isKeyboardActionPress(action)) {
-            setVisible(false);
-            return true;
-        }
         return false;
     }
 
@@ -772,27 +765,14 @@ public:
 
         cpuTime = getTimeFromStart() - t;
 
-        if (fpsGraph) fpsGraph->update(dt);
+        //if (fpsGraph) fpsGraph->update(dt);
         if (cpuGraph) cpuGraph->update(cpuTime);
-        if (gpuGraph && gpuTimer.supported)
-        {
-          float gpuTimes[3];
-          int n = stopGPUTimer(&gpuTimer, gpuTimes, 3);
-          for (int i = 0; i < n; i++)
-            gpuGraph->update(gpuTimes[i]);
-        }
-    }
-
-    virtual void drawContents() {
-        using namespace nanogui;
     }
 
 private:
     nanogui::PerfGraph *fpsGraph = nullptr;
     nanogui::PerfGraph *cpuGraph = nullptr;
-    nanogui::PerfGraph *gpuGraph = nullptr;
     double previousFrameTime = 0, cpuTime = 0;
-    Widget* lastSelected = nullptr;
 };
 
 int main(int /* argc */, char ** /* argv */) 
