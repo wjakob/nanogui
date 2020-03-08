@@ -79,6 +79,7 @@ DECLSETTER(WidgetId, std::string)
 DECLSETTER(FloatValue, float)
 DECLSETTER(Icon, int)
 DECLSETTER(IconColor, Color)
+DECLSETTER(IconHoveredColor, Color)
 DECLSETTER(IconPushedColor, Color)
 DECLSETTER(BorderSize, int)
 DECLSETTER(BorderColor, Color)
@@ -93,7 +94,7 @@ DECLSETTER(TooltipText, std::string)
 DECLSETTER(CaptionFont, std::string)
 DECLSETTER(FontSize, int)
 DECLSETTER(DrawFlags, int)
-DECLSETTER(IconAlignment,IconAlign)
+DECLSETTER(IconAlignment, IconAlign)
 DECLSETTER(TextStyle, int)
 DECLSETTER(FontColor, Color)
 DECLSETTER(TextColor, Color)
@@ -104,6 +105,7 @@ DECLSETTER(MinValue, float)
 DECLSETTER(MaxValue, float)
 DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
+DECLSETTER(VisibleObservable, BoolObservable)
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -301,6 +303,7 @@ public:
     bool visible() const { return mVisible; }
     /// Set whether or not the widget is currently visible (assuming all parents are visible)
     void setVisible(bool visible);
+    void setVisible(BoolObservable observable) { mVisible = observable; }
 
     /// Check if this widget is currently visible, taking parent widgets into account
     bool visibleRecursive() const {
@@ -577,6 +580,7 @@ public:
     PROPSETTER(WidgetBoxLayout, setLayout)
     PROPSETTER(IsSubElement, setSubElement)
     PROPSETTER(FontSize, setFontSize)
+    PROPSETTER(VisibleObservable, setVisible)
 
 protected:
     /// Free all resources used by the widget and any children
@@ -608,7 +612,7 @@ protected:
      * Whether or not this Widget is currently visible.  When a Widget is not
      * currently visible, no time is wasted executing its drawing method.
      */
-    bool mVisible;
+    BoolObservable mVisible;
     bool mSubElement = false;
     bool mDebugDraw = false;
 

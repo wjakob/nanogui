@@ -191,6 +191,8 @@ public:
     void setIconColor(const Color& c) { mIconColor = c; }
     void setPushedIconColor(const Color& c) { mPushedIconColor = c; }
 
+    void setIconHoveredColor(const Color& c) { mIconHoveredColor = c; }
+
 protected:
     virtual Color getTextColor() const;
     virtual Color getIconColor() const;
@@ -216,7 +218,7 @@ protected:
      * \endrst
      */
     int mIcon;
-    Color mIconColor, mPushedIconColor;
+    Color mIconColor, mPushedIconColor, mIconHoveredColor;
 
     /// The position to draw the icon at.
     IconAlign mIconAlign;
@@ -257,6 +259,7 @@ public:
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
     PROPSETTER(IconColor, setIconColor)
+    PROPSETTER(IconHoveredColor, setIconHoveredColor)
     PROPSETTER(IconPushedColor, setPushedIconColor)
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(BackgroundHoverColor, setBackgroundHoverColor)

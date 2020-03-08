@@ -152,6 +152,8 @@ Color Button::getIconColor() const
 { 
   if (mPushed && mPushedIconColor.w() > 0)
     return mPushedIconColor;
+  if (mMouseFocus && mIconHoveredColor.w() > 0)
+    return mIconHoveredColor;
   return mIconColor.notW(getTextColor()); 
 }
 
