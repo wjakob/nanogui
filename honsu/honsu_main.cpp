@@ -493,6 +493,22 @@ void showTasksWindow(Screen* screen)
   screen->needPerformLayout(screen);
 }
 
+void open_url(const std::string& url, const std::string& prefix)
+{
+#ifdef __UNIX__
+  std::string command = prefix + "xdg-open '" + url + "'";
+  Logger::info(command);
+  auto result = ::system(command.c_str());
+  result;
+#elif defined(WIN32)
+  ShellExecuteA(0, "Open", url.c_str(), 0, 0, SW_SHOW);
+#elif defined(__DARWIN__)
+  std::string command = "open \"" + url + "\" &";
+  auto result = ::system(command.c_str());
+  result;
+#endif
+}
+
 std::string encodeQueryData(std::string data)
 {
   std::string r;
@@ -716,7 +732,8 @@ void showStartupScreen(Screen* screen)
   textfield("youtrack url", account.url, "#youtrack_url");
   textfield("youtrack token", account.token, "#youtrack_token");
 
-  w.link(Caption{ "How to obtain a new permament token?" });
+  w.link(Caption{ "How to obtain a new permament token?" },
+         ButtonCallback{ [] { open_url("https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html", ""); }});
 
   /* Alternative construction notation using variadic template */
   w.button(Caption{ "Login" }, FontSize{ 32 },
