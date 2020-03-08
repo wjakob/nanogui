@@ -184,6 +184,13 @@ struct AccountData
     data.save(filename);
   }
 
+  IssueInfo::Ptr getActiveIssue()
+  {
+    for (auto& i : issues) 
+      if (i->rec) return i;
+    return nullptr;
+  }
+
   std::vector<AgileInfo> agiles;
   std::string activeAgile;
   std::vector<IssueInfo::Ptr> issues;
@@ -315,6 +322,45 @@ void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
   issue->rec = rec;
 }
 
+class TaskRecordButton : public Button
+{
+public:
+  std::function<IssueInfo::Ptr()> getIssue = [] { return nullptr; };
+  std::function<bool()> forceShow = [] { return false; };
+  int lastIssueRec = -1;
+
+  using Button::set;
+  TaskRecordButton(Widget* parent, std::function<IssueInfo::Ptr()> _get, std::function<bool()> _watch = [] { return false; })
+    : Button(parent,
+      Caption{ "REC" }, TextColor{ Color::red }, HoveredTextColor{ Color::white },
+      ButtonFlags{ Button::ToggleButton }, FixedWidth{ 80 },
+      DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
+      Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white },
+      BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red })
+  {
+    getIssue = _get;
+    forceShow = _watch;
+    setChangeCallback( [this](bool v) { changeTaskRecordStatus(getIssue(), v); } );
+  }
+
+  void draw(NVGcontext* ctx) override
+  {
+    if (forceShow() || (getIssue() && getIssue()->rec))
+      Button::draw(ctx);
+  }
+
+  void afterDraw(NVGcontext* ctx) override
+  {
+    Button::afterDraw(ctx);
+
+    int state = getIssue() ? (getIssue()->rec?1:0) : 0;
+    if (lastIssueRec == state)
+      return;
+
+    lastIssueRec = state;
+  }
+};
+
 class TaskRecordPanel : public Frame
 {
 public:
@@ -328,11 +374,7 @@ public:
 
     auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
     header.label(Caption{ "No task recording" }, FontSize{ 28 });
-    header.button(Caption{ "REC" }, ButtonFlags{ Button::ToggleButton }, FixedWidth{ 80 },
-                  DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
-                  TextColor{ Color::red }, HoveredTextColor{ Color::white }, 
-                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white },
-                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red });
+    header.wdg<TaskRecordButton>([] { return account.getActiveIssue(); });
   
     auto& timeline = hlayer();
     timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hLeft },
@@ -350,9 +392,7 @@ public:
 
   void afterDraw(NVGcontext* ctx) override
   {
-    IssueInfo::Ptr issue;
-    for (auto& i : account.issues)
-      if (i->rec) { issue = i; break; }
+    IssueInfo::Ptr issue = account.getActiveIssue();
 
     auto sec2str = [](int sec) {
       int minutes = sec / 60;
@@ -373,33 +413,20 @@ public:
 class TaskPanel : public Frame 
 {
 public:
-  BoolObservable rec_visible;
   IssueInfo::Ptr issue;
 
   TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
     : Frame(parent), issue(_issue)
   {
-    rec_visible = true;
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
     auto& header = hlayer(FixedHeight{ 30 });
     header.link(Caption{ issue->entityId }, TextColor{ Color::white });
     header.link(Caption{ issue->state }, TextColor{ Color::white });
     header.widget();
-    header.button(Caption{ "REC" }, DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
-                  TextColor{ Color::red }, HoveredTextColor{ Color::white },
-                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white }, 
-                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },                   
-                  VisibleObservable{ rec_visible },
-                  ButtonChangeCallback{ [this] (bool v) { changeTaskRecordStatus(issue, v); }});
+    header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return underMouse(); });
 
     label(Caption{ issue->summary });
-  }
-
-  bool mouseEnterEvent(const Vector2i &p, bool enter) override
-  {
-    rec_visible = (enter || issue->rec);
-    return Frame::mouseEnterEvent(p, enter);
   }
 };
 

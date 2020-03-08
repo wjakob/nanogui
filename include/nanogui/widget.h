@@ -403,6 +403,8 @@ public:
     bool focused() const { return mFocused; }
     /// Set whether or not this widget is currently focused
     void setFocused(bool focused) { mFocused = focused; }
+
+    bool underMouse() const { return mMouseFocus; }
     /// Request the focus to be moved to this widget
     void requestFocus();
 
