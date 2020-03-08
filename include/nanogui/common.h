@@ -569,7 +569,8 @@ struct BoolObservable {
       _set([_gs](bool v) { _gs() = v; }) {}
 
   operator bool() const { return _b ? *_b : _get ? _get() : false; }
-  void operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; }
+  BoolObservable& operator &=(bool v) { bool t = *this; (*this) = t && v; return *this; }
+  BoolObservable& operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; return *this; }
 };
 
 struct BoolObservableRef : public BoolObservable {
