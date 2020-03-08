@@ -105,8 +105,10 @@ __ADD_COLOR( aquamarine     )
 __ADD_COLOR( seaGreen       )
 __ADD_COLOR( springGreen    )
 __ADD_COLOR( chartreuse     )
-__ADD_COLOR( plum         )
-__ADD_COLOR( thistle )
+__ADD_COLOR( plum           )
+__ADD_COLOR( thistle        )
+__ADD_COLOR( darkGrey       )
+__ADD_COLOR( heavyDarkGrey  )
 }
 
 } // end namespace
@@ -222,5 +224,8 @@ __ASSIGN_COLOR( springGreen,    0x00FF7Fff )
 __ASSIGN_COLOR( chartreuse,     0x7FFF00ff )
 __ASSIGN_COLOR( plum,           0xFFBBFFff )
 __ASSIGN_COLOR( thistle,        0xFFE1FFff )
+__ASSIGN_COLOR( darkGrey,       0x4a4a4aff )
+__ASSIGN_COLOR( heavyDarkGrey,  0x262626ff)
+
 
 NAMESPACE_END(nanogui)

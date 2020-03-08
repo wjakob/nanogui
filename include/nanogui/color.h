@@ -225,6 +225,8 @@ __DEFINE_COLOR( springGreen)
 __DEFINE_COLOR( chartreuse)
 __DEFINE_COLOR( plum)
 __DEFINE_COLOR( thistle)
+__DEFINE_COLOR( darkGrey)
+__DEFINE_COLOR( heavyDarkGrey)
 
 private:
   float rgba[4];
