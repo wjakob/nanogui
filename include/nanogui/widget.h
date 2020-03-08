@@ -102,6 +102,7 @@ DECLSETTER(CaptionAlign, TextAlign)
 DECLSETTER(InitialValue, float)
 DECLSETTER(MinValue, float)
 DECLSETTER(MaxValue, float)
+DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 
 /**
@@ -526,7 +527,7 @@ public:
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
     template<typename... Args>Widget& hlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal }, args...); }
     template<typename... Args>Widget& vlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical }, args...); }
-    template<typename... Args>Widget& hstack(const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, args...); }
+    template<typename... Args>Widget& hstack(int margin=2, int spacing=2, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, margin, spacing }, args...); }
     template<typename... Args>Widget& vstack(int margin=2, int spacing=2, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, margin, spacing }, args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }

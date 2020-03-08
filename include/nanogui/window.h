@@ -30,7 +30,6 @@ DECLSETTER(WindowMovable, Theme::WindowDraggable)
 DECLSETTER(WindowCollapsed, bool)
 DECLSETTER(WindowHaveHeader, bool)
 DECLSETTER(HeaderHeight, int)
-DECLSETTER(CornerRadius, float)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 DECLSETTERARGSNEW(WindowBoxLayout, BoxLayout)
 

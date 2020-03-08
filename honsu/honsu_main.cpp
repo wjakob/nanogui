@@ -290,6 +290,11 @@ void openAgileUrl(const std::string& agile)
 
 }
 
+void createNewIssue(Screen* screen)
+{
+
+}
+
 void showTasksWindow(Screen* screen)
 {
   auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
@@ -313,24 +318,27 @@ void showTasksWindow(Screen* screen)
   vstack
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
             DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
-            HoveredTextColor{ Color::white }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
+            HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
     .line(BackgroundColor{ Color::black }, linestyle);
 
-  auto& actions = vstack.hstack();
-  actions.button(Caption{ "create issue" });
-  actions.toolbutton(Icon{ENTYPO_ICON_CCW} );
+  auto& actions = vstack.hstack(2, 10);
+  actions.button(Caption{ "create issue" }, BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{Color::heavyDarkGrey},
+                 DrawFlags{ Button::DrawBody | Button::DrawCaption }, CornerRadius{ 4 },
+                 ButtonCallback{ [screen] { createNewIssue(screen); }});
+  actions.toolbutton(Icon{ ENTYPO_ICON_CCW }, BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
+                     DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 },
+                     ButtonCallback{ [screen] { showTasksWindow(screen); }});
 
   auto& createTaskPanel = [&vstack](const IssueInfo& issue) {
-    auto& f = vstack.frame(FixedHeight{ 200 },
-      WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
+    auto& f = vstack.frame(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 2, 2 });
 
     auto& header = f.hlayer(FixedHeight{ 30 });
     header.link(Caption{ issue.entityId }, TextColor{ Color::white });
     header.link(Caption{ issue.state }, TextColor{ Color::white });
     header.button(Caption{ "REC" },
-      Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
-      BackgroundColor{ Color::transparent },
-      BackgroundHoverColor{ Color::hotPink });
+                  Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red },
+                  BackgroundColor{ Color::transparent },
+                  BackgroundHoverColor{ Color::hotPink });
 
     f.label(Caption{ issue.summary }, FixedHeight{ 150 });
   };

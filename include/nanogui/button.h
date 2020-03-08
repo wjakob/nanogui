@@ -177,6 +177,8 @@ public:
     void setTextAlign(TextAlign align) { mTextAlign = align; }
     void setTextHAlign(TextHAlign h) { mTextAlign.h = h; }
 
+    void setCornerRadius(float r) { mCornerRadius = r; }
+
     /// Sets the state of this Button provided the given Serializer.
     bool load(Json::value &s) override;
 
@@ -226,6 +228,7 @@ protected:
     int mFlags;
     int mDrawFlags;
     int mTextStyleFlags;
+    float mCornerRadius = -1.f;
     TextAlign mTextAlign = { hCenter, vMiddle };
 
     std::string mFontName;
@@ -270,6 +273,7 @@ public:
     PROPSETTER(HoveredTextColor, setHoveredTextColor)
     PROPSETTER(BorderSize, setBorderSize)
     PROPSETTER(BorderColor, setBorderColor)
+    PROPSETTER(CornerRadius, setCornerRadius)
 };
 
 class NANOGUI_EXPORT LedButton : public Button

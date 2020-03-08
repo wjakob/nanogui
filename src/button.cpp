@@ -157,13 +157,14 @@ Color Button::getIconColor() const
 
 void Button::draw(NVGcontext *ctx) 
 {
+  float cr = mCornerRadius < 0.f ? mTheme->mButtonCornerRadius : mCornerRadius;
     if (haveDrawFlag(DrawBody))
     {
       NVGcolor gradTop;
       NVGcolor gradBot;
 
       nvgBeginPath(ctx);
-      nvgRoundedRect(ctx, mPos + Vector2i{ 1, 1 }, mSize - Vector2i{ 2, 2 }, mTheme->mButtonCornerRadius - 1);
+      nvgRoundedRect(ctx, mPos + Vector2i{ 1, 1 }, mSize - Vector2i{ 2, 2 }, cr - 1 );
 
       if (mBackgroundHoverColor.w() != 0)
       {
@@ -223,13 +224,13 @@ void Button::draw(NVGcontext *ctx)
       nvgBeginPath(ctx);
       nvgStrokeWidth(ctx, bs);
       nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs + (mPushed ? -.5f : .5f) }, 
-                          mSize - Vector2f{ bs, bs + (mPushed ? 0.0f : 1.0f)}, theme()->mButtonCornerRadius);
+                          mSize - Vector2f{ bs, bs + (mPushed ? 0.0f : 1.0f)}, cr);
       nvgStrokeColor(ctx, mBorderColor.notW(theme()->mBorderLight));
       nvgStroke(ctx);
 
       nvgBeginPath(ctx);
       nvgRoundedRect(ctx, mPos + Vector2f{ bs - 0.5f, bs - 0.5f }, 
-                          mSize - Vector2f{ bs, bs + 1 }, theme()->mButtonCornerRadius);
+                          mSize - Vector2f{ bs, bs + 1 }, cr);
       nvgStrokeColor(ctx, mBorderColor.notW(theme()->mBorderDark));
      
       nvgStroke(ctx);
