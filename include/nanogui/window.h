@@ -50,6 +50,8 @@ public:
   void setBorderSize(float b) { mBorderSize = b; }
   void setCornerRadius(float r) { mCornerRadius = r; }
 
+  bool inFocusChain() const;
+
 private:
   float mCornerRadius = 0.f;
   float mBorderSize = 0.f;
@@ -106,6 +108,7 @@ public:
     void setMayCollapse(Theme::WindowCollapse c) { mMayCollapse = c; }
 
     bool isCollapsed() const { return mCollapsed; }
+
     void collapse();
     void setCollapsed(bool c) { mCollapsed = c; }
 
@@ -163,6 +166,7 @@ protected:
     virtual void requestPerformLayout();
     virtual bool isClickInsideCollapseArea(const Vector2i& clkPnt);
     void changeCollapsed(bool newstate);
+    bool inFocusChain() const;
 
 protected:
     std::string mTitle;
@@ -237,8 +241,7 @@ protected:
 
   void requestPerformLayout() override;
   bool isClickInsideCollapseArea(const Vector2i& clkPnt) override;
-  bool inFocusChain() const;
-
+  
 public:
   PROPSETTER(PanelHighlightHeader, setHighlightHeader)
 

@@ -47,6 +47,11 @@ void Frame::draw(NVGcontext *ctx)
   Widget::draw(ctx);
 }
 
+bool Frame::inFocusChain() const
+{
+  return std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) != mFocusChain.end();
+}
+
 Window::Window(Widget *parent, const std::string &title)
     : Widget(parent), mTitle(title), mButtonPanel(nullptr),
       mModal(false), mDrag(dragNone)
@@ -490,6 +495,12 @@ void Window::refreshRelativePlacement() {
     /* Overridden in \ref Popup */
 }
 
+bool Window::inFocusChain() const
+{
+  return std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this)
+    != mFocusChain.end();
+}
+
 int Window::getHeaderHeight() const 
 { 
   if (!haveDrawFlag(DrawHeader))
@@ -567,12 +578,6 @@ int Panel::getHeaderHeight() const
   return mHeaderHeight 
               ? mHeaderHeight 
               : (theme()->mPanelHeaderHeight + *theme()->framePaddingTop);
-}
-
-bool Panel::inFocusChain() const
-{
-  return std::find(mFocusChain.begin(), mFocusChain.end(), (intptr_t)this) 
-                != mFocusChain.end();
 }
 
 bool Panel::isClickInsideCollapseArea(const Vector2i& clkPnt)

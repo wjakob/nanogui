@@ -191,6 +191,12 @@ struct AccountData
     return nullptr;
   }
 
+  void setIssueRecord(IssueInfo::Ptr issue, bool rec)
+  {
+    for (auto& i : issues) i->rec = false;
+    issue->rec = rec;
+  }
+
   std::vector<AgileInfo> agiles;
   std::string activeAgile;
   std::vector<IssueInfo::Ptr> issues;
@@ -272,12 +278,10 @@ void showWaitingScreen(Screen* screen)
 void createWindowHeader(Widget& w)
 {
   auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
-  c.toolbutton(Icon{ ENTYPO_ICON_OFF },
-    FontSize{ 32 },
-    DrawFlags{ Button::DrawBody | Button::DrawIcon },
-    BackgroundColor{ Color::transparent },
-    BackgroundHoverColor{ Color::red },
-    ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
+  c.toolbutton(Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 },
+               DrawFlags{ Button::DrawBody | Button::DrawIcon },
+               BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
+               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
   c.label(Caption{ "H" });
   c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
   c.label(Caption{ "N S U" });
@@ -332,21 +336,37 @@ public:
   using Button::set;
   TaskRecordButton(Widget* parent, std::function<IssueInfo::Ptr()> _get, std::function<bool()> _watch = [] { return false; })
     : Button(parent,
-      Caption{ "REC" }, TextColor{ Color::red }, HoveredTextColor{ Color::white },
-      ButtonFlags{ Button::ToggleButton }, FixedWidth{ 80 },
+      Caption{ "REC" }, FixedWidth{ 80 },
       DrawFlags{ Button::DrawBody | Button::DrawCaption | Button::DrawIcon },
-      Icon{ ENTYPO_ICON_RECORD }, IconColor{ Color::red }, IconHoveredColor{ Color::white },
-      BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red })
+      Icon{ ENTYPO_ICON_RECORD })
   {
     getIssue = _get;
     forceShow = _watch;
-    setChangeCallback( [this](bool v) { changeTaskRecordStatus(getIssue(), v); } );
+    setCallback( [this] { 
+      if (getIssue())
+        account.setIssueRecord(getIssue(), !getIssue()->rec); 
+    });
+    updateState(getIssue() ? getIssue()->rec : 0);
   }
 
   void draw(NVGcontext* ctx) override
   {
     if (forceShow() || (getIssue() && getIssue()->rec))
       Button::draw(ctx);
+  }
+
+  void updateState(int state)
+  {
+    setCaption(state > 0 ? "STOP" : "REC");
+    Color background = state > 0 ? Color::red : Color::transparent;
+    Color text = background == Color::red ? Color::white : Color::red;
+    Color hover = (text == Color::red || background == Color::red) ? Color::white : Color::red;
+    setIconColor(text);
+    setIconHoveredColor(hover);
+    setTextColor(text);
+    setTextHoverColor(hover);
+    setBackgroundColor(background);
+    setBackgroundHoverColor(Color::red);
   }
 
   void afterDraw(NVGcontext* ctx) override
@@ -358,6 +378,7 @@ public:
       return;
 
     lastIssueRec = state;
+    updateState(state);
   }
 };
 
@@ -424,7 +445,7 @@ public:
     header.link(Caption{ issue->entityId }, TextColor{ Color::white });
     header.link(Caption{ issue->state }, TextColor{ Color::white });
     header.widget();
-    header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return underMouse(); });
+    header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
 
     label(Caption{ issue->summary });
   }

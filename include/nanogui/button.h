@@ -105,7 +105,7 @@ public:
     /// Sets the text color of the caption of this Button.
     void setTextColor(const Color &color) { mTextColor = color; }
 
-    void setHoveredTextColor(const Color& color) { mHoverTextColor = color; }
+    void setTextHoverColor(const Color& color) { mHoverTextColor = color; }
 
     /// Returns the icon of this Button.  See \ref nanogui::Button::mIcon.
     int icon() const { return mIcon; }
@@ -189,8 +189,7 @@ public:
     bool haveTextStyle(int flag) { return (mTextStyleFlags & flag) == flag; }
 
     void setIconColor(const Color& c) { mIconColor = c; }
-    void setPushedIconColor(const Color& c) { mPushedIconColor = c; }
-
+    void setIconPushedColor(const Color& c) { mPushedIconColor = c; }
     void setIconHoveredColor(const Color& c) { mIconHoveredColor = c; }
 
 protected:
@@ -260,7 +259,7 @@ public:
     PROPSETTER(Icon, setIcon)
     PROPSETTER(IconColor, setIconColor)
     PROPSETTER(IconHoveredColor, setIconHoveredColor)
-    PROPSETTER(IconPushedColor, setPushedIconColor)
+    PROPSETTER(IconPushedColor, setIconPushedColor)
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(BackgroundHoverColor, setBackgroundHoverColor)
     PROPSETTER(ButtonFlags,setFlags)
@@ -273,7 +272,7 @@ public:
     PROPSETTER(ButtonPushed,setPushed)
     PROPSETTER(BoolObservable, setObservable)
     PROPSETTER(TextColor, setTextColor)
-    PROPSETTER(HoveredTextColor, setHoveredTextColor)
+    PROPSETTER(HoveredTextColor, setTextHoverColor)
     PROPSETTER(BorderSize, setBorderSize)
     PROPSETTER(BorderColor, setBorderColor)
     PROPSETTER(CornerRadius, setCornerRadius)

@@ -105,6 +105,8 @@ public:
     return Color(luminance < 0.5f ? 1.f : 0.f, 1.f);
   }
 
+  bool operator==(const Color& c) const { return toInt() == c.toInt(); }
+
   Color operator*(float m) const
   {
     return Color(r()*m, g()*m, b()*m, a()*m);
