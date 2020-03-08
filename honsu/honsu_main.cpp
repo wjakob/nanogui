@@ -361,6 +361,7 @@ public:
     Color background = state > 0 ? Color::red : Color::transparent;
     Color text = background == Color::red ? Color::white : Color::red;
     Color hover = (text == Color::red || background == Color::red) ? Color::white : Color::red;
+    setIcon(state > 0 ? ENTYPO_ICON_STOP_1 : ENTYPO_ICON_RECORD);
     setIconColor(text);
     setIconHoveredColor(hover);
     setTextColor(text);
