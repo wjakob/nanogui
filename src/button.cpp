@@ -373,6 +373,7 @@ LinkButton::LinkButton(Widget* parent)
 {
   setDrawFlags(DrawCaption);
   setTextStyle(StyleTextUnderline);
+  setCursor(Cursor::Hand);
 }
 
 void LinkButton::draw(NVGcontext* ctx)

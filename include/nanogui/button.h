@@ -302,7 +302,7 @@ public:
   RTTI_CLASS_UID(LinkButton)
   RTTI_DECLARE_INFO(LinkButton)
 
-  LinkButton(Widget* parent);
+  explicit LinkButton(Widget* parent);
 
   using Button::set;
   template<typename... Args>
