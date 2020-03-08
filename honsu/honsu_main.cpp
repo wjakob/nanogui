@@ -113,6 +113,14 @@ struct AgileInfo
   std::string id;
 };
 
+void open_url(const std::string& url, const std::string& prefix);
+
+struct Url
+{
+  const std::string http = "http://";
+  const std::string issues = "/youtrack/issue/";
+} y_url;
+
 struct IssueInfo
 {
   using Ptr = std::shared_ptr<IssueInfo>;
@@ -136,6 +144,8 @@ struct IssueInfo
     }
   }
 
+  void openUrl(std::string base) { open_url(y_url.http + base + y_url.issues + entityId, ""); }
+
   void readField()
   {
     int i = 0;
@@ -153,9 +163,8 @@ struct IssueInfo
       else if (name == "summary")
         summary = info.get("value").to_str();
 
-info = field.get(i++);
+      info = field.get(i++);
     }
-
   }
 };
 
@@ -215,6 +224,22 @@ std::vector<SSLRequest> sslrequests;
 
 void showStartupScreen(Screen*);
 void requestAgilesAndResolve(Screen*);
+
+void open_url(const std::string& url, const std::string& prefix)
+{
+#ifdef __UNIX__
+  std::string command = prefix + "xdg-open '" + url + "'";
+  Logger::info(command);
+  auto result = ::system(command.c_str());
+  result;
+#elif defined(WIN32)
+  ShellExecuteA(0, "Open", url.c_str(), 0, 0, SW_SHOW);
+#elif defined(__DARWIN__)
+  std::string command = "open \"" + url + "\" &";
+  auto result = ::system(command.c_str());
+  result;
+#endif
+}
 
 bool checkAccountUrl(TextBox* url)
 {
@@ -444,7 +469,8 @@ public:
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
     auto& header = hlayer(FixedHeight{ 30 });
-    header.link(Caption{ issue->entityId }, TextColor{ Color::white });
+    header.link(Caption{ issue->entityId }, TextColor{ Color::white },
+                ButtonCallback{ [this] { issue->openUrl(account.url); } });
     header.link(Caption{ issue->state }, TextColor{ Color::white });
     header.widget();
     header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
@@ -492,22 +518,6 @@ void showTasksWindow(Screen* screen)
 
   w.wdg<TaskRecordPanel>();
   screen->needPerformLayout(screen);
-}
-
-void open_url(const std::string& url, const std::string& prefix)
-{
-#ifdef __UNIX__
-  std::string command = prefix + "xdg-open '" + url + "'";
-  Logger::info(command);
-  auto result = ::system(command.c_str());
-  result;
-#elif defined(WIN32)
-  ShellExecuteA(0, "Open", url.c_str(), 0, 0, SW_SHOW);
-#elif defined(__DARWIN__)
-  std::string command = "open \"" + url + "\" &";
-  auto result = ::system(command.c_str());
-  result;
-#endif
 }
 
 std::string encodeQueryData(std::string data)
