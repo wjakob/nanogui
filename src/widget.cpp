@@ -346,7 +346,8 @@ void Widget::draw(NVGcontext *ctx)
   {
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
-    for (auto child : mChildren) {
+    for (int i = 0; i < mChildren.size(); i++) {
+      auto child = mChildren[i];
         if (child->visible()) {
             nvgSave(ctx);
             nvgIntersectScissor(ctx, child->mPos.x(), child->mPos.y(), child->mSize.x(), child->mSize.y());

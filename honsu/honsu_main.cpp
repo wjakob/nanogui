@@ -132,6 +132,7 @@ struct IssueInfo
   std::string type;
   std::string summary;
   bool rec;
+  int64_t workStartTime;
   float recordTimeSec;
   float recordTimeTodaySec;
   Json::value js;
@@ -212,16 +213,32 @@ struct AccountData
   std::vector<IssueInfo::Ptr> issues;
 } account;
 
-struct SSLRequest {
-  std::string request;
+struct SSLGet {
+  static std::vector<SSLGet> requests;
+
+  std::string path;
+  httplib::Headers headers;
   std::function< void(int status, std::string)> answer;
+  void execute() { requests.push_back(*this); }
 };
+
+struct SSLPost {
+  static std::vector<SSLPost> requests;
+
+  std::string path;
+  std::string body;
+  std::string content_type;
+  httplib::Headers headers;
+  std::function< void(int status, std::string)> answer;
+  void execute() { requests.push_back(*this); }
+};
+
+std::vector<SSLGet> SSLGet::requests;
+std::vector<SSLPost> SSLPost::requests;
 
 using namespace std::chrono_literals;
 httplib::SSLClient* sslClient = nullptr;
 httplib::Headers sslHeaders;
-
-std::vector<SSLRequest> sslrequests;
 
 void showStartupScreen(Screen*);
 void requestAgilesAndResolve(Screen*);
@@ -357,58 +374,94 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   if (!issue)
     return;
 
+  if (issue->recordTimeSec < 60)
+  {
+    account.setIssueRecord(issue, false);
+    return;
+  }
+
+  std::string path = "/youtrack/rest/issue/";
+  path += issue->entityId;
+  path += "/timetracking/workitem";
+  std::string payload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+  payload += "<workItem>";
+  payload += "<date>" + std::to_string(issue->workStartTime) + "</date>";
+  payload += "<duration>" + std::to_string(issue->recordTimeSec / 60) + "</duration>";
+  payload += "<description>added by dalerank</description>";
+  payload += "<worktype><name>Development</name></worktype>";
+  payload += "</workItem>";
+  auto headers = httplib::Headers{
+    { "Accept", "application/json" },
+    { "Authorization", std::string("Bearer ") + account.token },
+    { "Cache-Control", "no-cache" }};
+
+  showRecPanelWait(true);
+  SSLPost{ path, 
+    payload, "application/xml", 
+    sslHeaders,
+    [issue](int status, std::string body) {
+      showRecPanelWait(false);
+      if (status != 200)
+        return;
+    }
+  }.execute();
+
   account.setIssueRecord(issue, false);
 }
 
 void startIssueRecord(IssueInfo::Ptr issue)
 {
-  std::string body = "/youtrack/rest/issue/";
-  body += issue->entityId;
-  body += "/timetracking/workitem";
+  std::string path = "/youtrack/rest/issue/";
+  path += issue->entityId;
+  path += "/timetracking/workitem";
   showRecPanelWait(true);
-  SSLRequest request{ body, [issue](int status, std::string body) {
-    if (status != 200)
-      return;
+  SSLGet{ path, sslHeaders,
+    [issue](int status, std::string body) {
+      showRecPanelWait(false);
 
-    Json::value response;
-    Json::parse(response, body);
+      if (status != 200)
+        return;
 
-    std::time_t timet = std::time(nullptr);
-    std::tm* tmt = std::localtime(&timet);
-    std::tm tm_day_start = *tmt, 
-            tm_day_end = *tmt;
-    tm_day_start.tm_sec = 0;
-    tm_day_start.tm_min = 0;
-    tm_day_start.tm_hour = 0;
+      Json::value response;
+      Json::parse(response, body);
 
-    tm_day_end.tm_sec = 59;
-    tm_day_end.tm_min = 59;
-    tm_day_end.tm_hour = 23;
+      std::time_t timet = std::time(nullptr);
+      std::tm* tmt = std::localtime(&timet);
+      std::tm tm_day_start = *tmt, 
+              tm_day_end = *tmt;
+      tm_day_start.tm_sec = 0;
+      tm_day_start.tm_min = 0;
+      tm_day_start.tm_hour = 0;
+
+      tm_day_end.tm_sec = 59;
+      tm_day_end.tm_min = 59;
+      tm_day_end.tm_hour = 23;
     
-    //mktime convert tm to secs from epoch
-    std::time_t day_start = mktime(&tm_day_start) * 1000;
-    std::time_t day_end = mktime(&tm_day_end) * 1000;
+      //mktime convert tm to secs from epoch
+      std::time_t current_time = mktime(tmt) * 1000;
+      std::time_t day_start = mktime(&tm_day_start) * 1000;
+      std::time_t day_end = mktime(&tm_day_end) * 1000;
 
-    int i = 0;
-    int timeSpent = 0;
-    uint64_t timeSpentToday = 0;
-    Json::value info = response.get(i++);
-    while (!info.is<Json::null>())
-    {
-      int duration = info.get("duration").get_int();
-      uint64_t created = (uint64_t)info.get("created").get_int();
-      if (created >= day_start && created <= day_end)
-        timeSpentToday += duration;
-      timeSpent += duration;
-      info = response.get(i++);
+      int i = 0;
+      int timeSpent = 0;
+      uint64_t timeSpentToday = 0;
+      Json::value info = response.get(i++);
+      while (!info.is<Json::null>())
+      {
+        int duration = info.get("duration").get_int();
+        uint64_t created = (uint64_t)info.get("created").get_int();
+        if (created >= day_start && created <= day_end)
+          timeSpentToday += duration;
+        timeSpent += duration;
+        info = response.get(i++);
+      }
+      issue->recordTimeSec = 0;
+      issue->workStartTime = current_time;
+      issue->recordTimeTodaySec = timeSpentToday * 60;
+
+      account.setIssueRecord(issue, true);
     }
-    issue->recordTimeSec = 0;
-    issue->recordTimeTodaySec = timeSpentToday * 60;
-
-    account.setIssueRecord(issue, true);
-    showRecPanelWait(false);
-  }};
-  sslrequests.push_back(request);
+  }.execute();
 }
 
 class TaskRecordButton : public Button
@@ -622,7 +675,7 @@ void requestTasksAndResolve(Screen* screen, std::string board)
   body += ":%7BCurrent%20sprint%7D%20%23Unresolved%20";
 
   showWaitingScreen(screen);
-  SSLRequest request{ body,
+  SSLGet{ body, sslHeaders,
     [screen](int status, std::string body)
     {
       account.issues.clear();
@@ -654,8 +707,7 @@ void requestTasksAndResolve(Screen* screen, std::string board)
       if (account.issues.empty()) requestAgilesAndResolve(screen);
       else showTasksWindow(screen);
     }
-  };
-  sslrequests.push_back(request);
+  }.execute();
 }
 
 void showAgilesScreen(Screen* screen)
@@ -708,35 +760,35 @@ void showAgilesScreen(Screen* screen)
 
 void requestAgilesAndResolve(Screen* screen)
 {
-  SSLRequest request{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100",
-           [screen](int status, std::string body) {
-              account.agiles.clear();
+  SSLGet{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100",
+    sslHeaders,
+    [screen](int status, std::string body) {
+      account.agiles.clear();
 
-              if (status == 200)
-              {
-                Json::value agiles;
-                Json::parse(agiles, body);
+      if (status == 200)
+      {
+        Json::value agiles;
+        Json::parse(agiles, body);
 
-                int i = 0;
-                Json::value info = agiles.get(i++);
-                while (!info.is<Json::null>())
-                {
-                  if (info.get("$type").get_str() == "Agile")
-                  {
-                    AgileInfo agInfo;
-                    agInfo.id = info.get("id").get_str();
-                    agInfo.name = info.get("name").get_str();
-                    account.agiles.push_back(agInfo);
-                  }
-                  info = agiles.get(i++);
-                }
-              }
+        int i = 0;
+        Json::value info = agiles.get(i++);
+        while (!info.is<Json::null>())
+        {
+          if (info.get("$type").get_str() == "Agile")
+          {
+            AgileInfo agInfo;
+            agInfo.id = info.get("id").get_str();
+            agInfo.name = info.get("name").get_str();
+            account.agiles.push_back(agInfo);
+          }
+          info = agiles.get(i++);
+        }
+      }
 
-              if (account.agiles.empty()) showStartupScreen(screen);
-              else showAgilesScreen(screen);
-            }
-  };
-  sslrequests.push_back(request);
+      if (account.agiles.empty()) showStartupScreen(screen);
+      else showAgilesScreen(screen);
+    }
+  }.execute();
 }
 
 void createSSLClient() 
@@ -773,27 +825,37 @@ void requestAdminData(Screen* screen)
   account.save();
   showWaitingScreen(screen);
  
-  SSLRequest sslr{
-    "/youtrack/api/admin/users/me?fields=id,login,name,email",
+  SSLGet{ "/youtrack/api/admin/users/me?fields=id,login,name,email",
+    sslHeaders,
     [screen](int status, std::string) {
       if (status == 200) requestAgilesAndResolve(screen);
       else showStartupScreen(screen);
     }
-  };
-
-  sslrequests.push_back(sslr);
+  }.execute();
 }
 
 void update_requests()
 {
-  if (!sslrequests.empty())
+  createSSLClient();
+
+  if (!SSLGet::requests.empty())
   {
-    createSSLClient();
+    SSLGet r = SSLGet::requests.front();
+    SSLGet::requests.erase(SSLGet::requests.begin());
 
-    SSLRequest r = sslrequests.front();
-    sslrequests.erase(sslrequests.begin());
+    auto nn = sslClient->Get(r.path.c_str(), r.headers);
 
-    std::shared_ptr<httplib::Response> nn = sslClient->Get(r.request.c_str(), sslHeaders);
+    auto answer = r.answer;
+    answer(nn ? nn->status : -1, nn ? nn->body : "");
+  }
+
+  if (!SSLPost::requests.empty())
+  {
+    SSLPost r = SSLPost::requests.front();
+    SSLPost::requests.erase(SSLPost::requests.begin());
+
+    auto nn = sslClient->Post(r.path.c_str(), r.headers, r.body, r.content_type.c_str());
+
     auto answer = r.answer;
     answer(nn ? nn->status : -1, nn ? nn->body : "");
   }
