@@ -25,6 +25,8 @@ NAMESPACE_BEGIN(nanogui)
  * is used, the text is wrapped when it surpasses the specified width.
  */
 
+DECLSETTERARGS(TextOffset, Vector2i)
+
 class NANOGUI_EXPORT Label : public Widget {
 public:
     RTTI_CLASS_UID(Label)
@@ -60,6 +62,8 @@ public:
     void setColor(const Color& color) { mColor = color; }
     void setDisabledColor(const Color& color) { mDisabledColor = color; }
 
+    void setTextOffset(const Vector2i& offset) { mTextOffset = offset; }
+
     void setTextHAlign(TextHAlign align) { mTextAlign.h = align; }
     void setTextVAlign(TextVAlign align) { mTextAlign.v = align; }
 
@@ -81,6 +85,7 @@ public:
 protected:
     std::string mCaption;
     std::string mFont;
+    Vector2i mTextOffset;
     Color mColor, mDisabledColor;
     TextAlign mTextAlign = { hLeft, vMiddle };
     Vector2i mTextRealSize;
@@ -90,6 +95,7 @@ public:
     PROPSETTER(CaptionFont,setFont)
     PROPSETTER(FontColor, setColor)
     PROPSETTER(FontSize,setFontSize)
+    PROPSETTER(TextOffset, setTextOffset)
     PROPSETTER(CaptionHAlign,setTextHAlign)
     PROPSETTER(CaptionAlign, setTextAlign)
 };

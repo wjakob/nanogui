@@ -40,19 +40,16 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
   nvgFontFaceSize(ctx, mFont.c_str(), fontSize());
   if (mFixedSize.x() > 0 || mFixedSize.y() > 0) 
   {
-      float bounds[4];
-      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-      nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, bounds);
-      const_cast<Label*>(this)->mTextRealSize = Vector2i(bounds[2] - bounds[0], bounds[3] - bounds[1] );
-      return mFixedSize.fillZero(mTextRealSize);
+    const_cast<Label*>(this)->mTextRealSize = nvgTextBounds(ctx, 0, 0, mCaption.c_str()).cast<int>();
+    return mFixedSize.fillZero(mTextRealSize);
   } 
   else 
   {
-      nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-      int tw = nvgTextBounds(ctx, 0, 0, mCaption.c_str(), nullptr, nullptr) + 2;
-      int th = fontSize();
-      const_cast<Label*>(this)->mTextRealSize = Vector2i(tw, th);
-      return mMinSize.cwiseMax(tw, th);
+    nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+    Vector2f tsize = nvgTextBounds(ctx, 0, 0, mCaption.c_str()) + Vector2f(2, 0);
+    int th = fontSize();
+    const_cast<Label*>(this)->mTextRealSize = Vector2i(tsize.x(), th);
+    return mMinSize.cwiseMax(tsize.x(), th);
   }
 }
 
@@ -71,15 +68,16 @@ void Label::draw(NVGcontext *ctx)
     Vector2i opos;
     switch (mTextAlign.h)
     {
-    case TextHAlign::hCenter: opos.x() = (mSize.x() - mTextRealSize.x()) / 2; break;
-    case TextHAlign::hRight: opos.x() = (mSize.x() - mTextRealSize.x()); break;
+    case TextHAlign::hLeft: opos.x() = mTextOffset.x(); break;
+    case TextHAlign::hCenter: opos.x() = (mSize.x() - mTextRealSize.x()) / 2 + mTextOffset.x(); break;
+    case TextHAlign::hRight: opos.x() = (mSize.x() - mTextRealSize.x()) - mTextOffset.x(); break;
     }
 
     switch (mTextAlign.v)
     {
-    case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2; break;
-    case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()); break;
-    case TextVAlign::vTop: opos.y() = 0; break;
+    case TextVAlign::vMiddle: opos.y() = (mSize.y() - mTextRealSize.y()) / 2 + mTextOffset.y(); break;
+    case TextVAlign::vBottom: opos.y() = (mSize.y() - mTextRealSize.y()) - mTextOffset.y(); break;
+    case TextVAlign::vTop: opos.y() = mTextOffset.y(); break;
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);

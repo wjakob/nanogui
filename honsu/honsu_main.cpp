@@ -491,8 +491,10 @@ public:
     header.wdg<TaskRecordButton>([] { return account.getActiveIssue(); });
   
     auto& timeline = hlayer(2, 2);
-    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hLeft }, FontSize{ 28 });
-    timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, CaptionHAlign{ TextHAlign::hRight });
+    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, TextOffset{ 5, 0 },
+                   CaptionAlign{ TextHAlign::hLeft, TextVAlign::vBottom }, FontSize{ 28 });
+    timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, TextOffset { 5, 0 },
+                   CaptionAlign{ TextHAlign::hRight, TextVAlign::vBottom });
   }
 
   void performLayout(NVGcontext* ctx) override

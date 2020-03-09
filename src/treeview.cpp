@@ -163,7 +163,7 @@ bool TreeView::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int butt
   return Widget::mouseMotionEvent(p, rel, button, modifiers);
 }
 
-bool TreeView::scrollEvent(const Vector2i &p, const Vector2f &rel)
+bool TreeView::scrollEvent(const Vector2i& /*p*/, const Vector2f &rel)
 {
   if (mScrollBarV)
     mScrollBarV->setScroll( mScrollBarV->scroll() + (rel.y() < 0 ? -0.1 : 0.1) );
