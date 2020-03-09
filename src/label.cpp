@@ -55,6 +55,15 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
 
 void Label::draw(NVGcontext *ctx) 
 {
+    if (mBackgroundColor.w() > 0)
+    {
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, mPos + Vector2i{ 1, 1 }, mSize - Vector2i{ 2, 2 }, 3);
+
+      nvgFillColor(ctx, mBackgroundColor);
+      nvgFill(ctx);
+    }
+
     nvgFontFaceSize(ctx, mFont.c_str(), fontSize());
     const Color& color = enabled() 
                             ? mColor.notW(mTheme->mTextColor)

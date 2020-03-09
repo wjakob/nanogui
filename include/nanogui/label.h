@@ -33,7 +33,7 @@ public:
     RTTI_DECLARE_INFO(Label)
 
     enum TextState { tEnabled=0, tDisabled };
-    Label(Widget* parent);
+    explicit Label(Widget* parent);
 
     using Widget::set;
     template<typename... Args>
@@ -61,6 +61,7 @@ public:
     /// Set the label color
     void setColor(const Color& color) { mColor = color; }
     void setDisabledColor(const Color& color) { mDisabledColor = color; }
+    void setBackgroundColor(const Color& color) { mBackgroundColor = color; }
 
     void setTextOffset(const Vector2i& offset) { mTextOffset = offset; }
 
@@ -86,6 +87,7 @@ protected:
     std::string mCaption;
     std::string mFont;
     Vector2i mTextOffset;
+    Color mBackgroundColor;
     Color mColor, mDisabledColor;
     TextAlign mTextAlign = { hLeft, vMiddle };
     Vector2i mTextRealSize;
@@ -93,9 +95,10 @@ protected:
 public:
     PROPSETTER(Caption,setCaption)
     PROPSETTER(CaptionFont,setFont)
-    PROPSETTER(FontColor, setColor)
+    PROPSETTER(TextColor, setColor)
     PROPSETTER(FontSize,setFontSize)
     PROPSETTER(TextOffset, setTextOffset)
+    PROPSETTER(BackgroundColor, setBackgroundColor)
     PROPSETTER(CaptionHAlign,setTextHAlign)
     PROPSETTER(CaptionAlign, setTextAlign)
 };
