@@ -531,10 +531,10 @@ public:
     Widget& withTheme(const Args&... args) { setTheme(new ThemeClass(args...)); return *this; }
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
-    template<typename... Args>Widget& hlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal }, args...); }
-    template<typename... Args>Widget& vlayer(const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical }, args...); }
-    template<typename... Args>Widget& hstack(int margin=2, int spacing=2, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, margin, spacing }, args...); }
-    template<typename... Args>Widget& vstack(int margin=2, int spacing=2, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, margin, spacing }, args...); }
+    template<typename... Args>Widget& hlayer(int spacing, int margin, const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal, spacing, margin }, args...); }
+    template<typename... Args>Widget& vlayer(int spacing, int margin, const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical, spacing, margin }, args...); }
+    template<typename... Args>Widget& hstack(int spacing, int margin, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, spacing, margin }, args...); }
+    template<typename... Args>Widget& vstack(int spacing, int margin, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, spacing, margin }, args...); }
     template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
     template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
     template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }

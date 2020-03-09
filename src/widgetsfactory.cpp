@@ -126,8 +126,8 @@ WidgetFactory& WidgetFactory::instance()
     _mainf_->registerFactory(switchers);
 
     auto layers = new DummyFactory("layers");
-    layers->func("hlayer", [](Widget* w) { return &w->hlayer(); })
-      .func("vlayer", [](Widget* w) { return &w->vlayer(); });
+    layers->func("hlayer", [](Widget* w) { return &w->hlayer(2, 2); })
+      .func("vlayer", [](Widget* w) { return &w->vlayer(2, 2); });
     _mainf_->registerFactory(layers);
     //registerFactory( new ListboxesFactory() );
     //registerFactory( new LayoutsFactory() );

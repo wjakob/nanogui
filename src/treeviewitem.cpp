@@ -17,7 +17,7 @@ TreeViewItem::TreeViewItem( Widget* parent )
       mOwner = p;
   }
 
-  mPreviewArea = &hlayer(WidgetStretchLayout{ Orientation::ReverseHorizontal });
+  mPreviewArea = &hlayer(2, 2, WidgetStretchLayout{ Orientation::ReverseHorizontal });
   mPreviewArea->setRelativeSize({ 1, 1 });
 }
 

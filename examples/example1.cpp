@@ -767,7 +767,7 @@ void createAllWidgetsDemo(Screen* screen)
 
   dw.submenu("Help");
 
-  auto& pw = dw.vscrollpanel(RelativeSize{ 1.f, 1.f }).vstack();
+  auto& pw = dw.vscrollpanel(RelativeSize{ 1.f, 1.f }).vstack(2, 2);
   auto& help = pw.panel(Caption{ "Help" }, WindowCollapsed{ true });
   help.text()
     .header("PROGRAMMER GUIDE:")

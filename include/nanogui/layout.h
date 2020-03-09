@@ -85,7 +85,7 @@ public:
     void setId(int id) { mId = id; }
 
     int getId() const { return mId; }
-
+       
 protected:
     /// Default destructor (exists for inheritance).
     virtual ~Layout() { }
@@ -285,6 +285,7 @@ struct NANOGUI_EXPORT ColumnsAligment {
 DECLSETTER(GridLayoutColAlignment, Alignment)
 DECLSETTERILIST(GridLayoutSplit,std::vector<float>)
 DECLSETTER(LayoutMargin, int)
+DECLSETTER(LayoutSpacing, int)
 DECLSETTER(LayoutHorSpacing, int)
 
 class NANOGUI_EXPORT GridLayout : public Layout {
@@ -340,7 +341,6 @@ public:
 
     /// Sets the spacing for a specific axis.
     void setSpacing(int axis, int spacing) { mSpacing[axis] = spacing; }
-
     void setHorSpacing(int spacing) { mSpacing.x() = spacing; }
 
     /// Sets the spacing for all axes.
@@ -414,6 +414,7 @@ public:
     PROPSETTER(GridLayoutSplit,setRelWidth)
     PROPSETTER(GridLayoutColAlignment,setColAlignment)
     PROPSETTER(LayoutMargin,setMargin)
+    PROPSETTER(LayoutSpacing,setSpacing)
     PROPSETTER(LayoutHorSpacing,setHorSpacing)
 };
 

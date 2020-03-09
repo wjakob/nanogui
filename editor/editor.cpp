@@ -100,7 +100,7 @@ public:
     {
       auto& mmenu = createMainMenu();
 
-      auto& area = hlayer(ID.editor);
+      auto& area = hlayer(2, 2, ID.editor);
       area.layout()->setId(0xfa);
       area.setPosition(0, theme()->mWindowMenuHeight);
       area.setFixedSize(size() - Vector2i(0, theme()->mWindowMenuHeight));
@@ -191,15 +191,15 @@ public:
 
     void createControlWidgetsArea(Widget& area, float relw)
     {
-      auto& wa = area.vlayer(RelativeSize{ relw, 1.f });
-      auto& waheader = wa.hlayer(FixedHeight{ 30 });
+      auto& wa = area.vlayer(2, 2, RelativeSize{ relw, 1.f });
+      auto& waheader = wa.hlayer(2, 2, FixedHeight{ 30 });
 
-      auto& wawidgets = wa.vlayer(RelativeSize{ 1, 0 });
+      auto& wawidgets = wa.vlayer(2, 2, RelativeSize{ 1, 0 });
       auto& factoryview = wawidgets.wdg<Foldout>(ID.factoryview);
       auto& wfactory = WidgetFactory::instance();
       for (auto f : wfactory.factories())
       {
-        auto& layer = this->vlayer();
+        auto& layer = this->vlayer(0, 0);
         for (auto wdgtype : f->types())
         {
           auto& ctor = layer.wdg<WidgetCtor>(Caption{ wdgtype }, FixedHeight{ 22 },

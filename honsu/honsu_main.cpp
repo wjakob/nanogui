@@ -319,7 +319,7 @@ void showRecordsWindow(Screen* screen)
 
   createWindowHeader(w);
 
-  auto& buttons = w.hlayer();
+  auto& buttons = w.hlayer(2, 2);
 
   buttons
     .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
@@ -490,10 +490,9 @@ public:
     header.label(WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 });
     header.wdg<TaskRecordButton>([] { return account.getActiveIssue(); });
   
-    auto& timeline = hlayer();
-    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hLeft },
-                   FontSize{ 28 });
-    timeline.label(WidgetId{ "#dtime" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hRight });
+    auto& timeline = hlayer(2, 2);
+    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, CaptionHAlign{ TextHAlign::hLeft }, FontSize{ 28 });
+    timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, CaptionHAlign{ TextHAlign::hRight });
   }
 
   void performLayout(NVGcontext* ctx) override
@@ -535,7 +534,7 @@ public:
   {
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
-    auto& header = hlayer(FixedHeight{ 30 });
+    auto& header = hlayer(2, 2, FixedHeight{ 30 });
     header.link(Caption{ issue->entityId }, TextColor{ Color::white },
                 ButtonCallback{ [this] { issue->openUrl(account.url); } });
     header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
@@ -552,7 +551,7 @@ void showTasksWindow(Screen* screen)
   
   createWindowHeader(w);
 
-  auto& buttons = w.hlayer();
+  auto& buttons = w.hlayer(2, 2);
 
   auto linestyle = DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH };
   buttons
@@ -564,7 +563,7 @@ void showTasksWindow(Screen* screen)
             ButtonCallback{ [screen] { showRecordsWindow(screen); }})
     .line(BackgroundColor{ Color::grey }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, linestyle);
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack();
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(2, 2);
 
   vstack
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
@@ -572,7 +571,7 @@ void showTasksWindow(Screen* screen)
             HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
     .line(BackgroundColor{ Color::black }, linestyle);
 
-  auto& actions = vstack.hstack(2, 10);
+  auto& actions = vstack.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 10 });
   actions.button(Caption{ "create issue" }, BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{Color::heavyDarkGrey},
                  DrawFlags{ Button::DrawBody | Button::DrawCaption }, CornerRadius{ 4 },
                  ButtonCallback{ [screen] { createNewIssue(screen); }});
@@ -645,7 +644,7 @@ void showAgilesScreen(Screen* screen)
 
   createWindowHeader(w);
 
-  auto& header = w.vstack();
+  auto& header = w.vstack(2, 2);
   header.label(FixedHeight{ 60 },
                Caption{ "Select agile boards" },
                FontColor{ Color::white },
@@ -656,7 +655,8 @@ void showAgilesScreen(Screen* screen)
                CaptionAlign{ hCenter, vTop },
                FixedHeight{ 20 });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f })
+                    .widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
 
   auto agilebtn = [&vstack] (std::string name, int index) {
     vstack.button(Caption{ name },
