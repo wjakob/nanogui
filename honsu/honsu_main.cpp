@@ -374,7 +374,7 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   if (!issue)
     return;
 
-  if (issue->recordTimeSec < 60)
+  if (issue->recordTimeSec < 1)
   {
     account.setIssueRecord(issue, false);
     return;
@@ -386,19 +386,19 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   std::string payload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
   payload += "<workItem>";
   payload += "<date>" + std::to_string(issue->workStartTime) + "</date>";
-  payload += "<duration>" + std::to_string(issue->recordTimeSec / 60) + "</duration>";
-  payload += "<description>added by dalerank</description>";
+  payload += "<duration>" + std::to_string(std::max<int>(issue->recordTimeSec / 60, 1)) + "</duration>";
+  payload += "<description>added by Honsu</description>";
   payload += "<worktype><name>Development</name></worktype>";
   payload += "</workItem>";
   auto headers = httplib::Headers{
     { "Accept", "application/json" },
     { "Authorization", std::string("Bearer ") + account.token },
-    { "Cache-Control", "no-cache" }};
+    { "Cache-Control", "no-cache" } };
 
   showRecPanelWait(true);
   SSLPost{ path, 
     payload, "application/xml", 
-    sslHeaders,
+    headers,
     [issue](int status, std::string body) {
       showRecPanelWait(false);
       if (status != 200)
@@ -534,6 +534,8 @@ public:
 class TaskRecordPanel : public Frame
 {
 public:
+  Label* time = nullptr;
+  Label* dtime = nullptr;
   TaskRecordPanel(Widget* parent)
     : Frame(parent)
   {
@@ -551,6 +553,8 @@ public:
                    CaptionAlign{ TextHAlign::hLeft, TextVAlign::vBottom }, FontSize{ 28 });
     timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, TextOffset { 5, 0 },
                    CaptionAlign{ TextHAlign::hRight, TextVAlign::vBottom });
+    label(Caption{ "Records less 1 minute no send" }, CaptionHAlign{ TextHAlign::hCenter },
+          BackgroundColor{ Color::red }, TextColor{ Color::white }, WidgetId{ "#warn" });
 
     showRecPanelWait = [this](bool show) { showWaitNotification(show); };
   }
@@ -592,6 +596,9 @@ public:
     setCaptionSafe("#time", sec2str(issue ? issue->recordTimeSec : 0));
     setCaptionSafe("#dtime", "TODAY:" + sec2str(issue ? issue->recordTimeTodaySec : 0));
     setCaptionSafe("#txt", issue ? issue->summary : "No task recording");
+
+    if (auto lb = findWidget<Label>("#warn"))
+      lb->setVisible(issue && issue->recordTimeSec < 60);
 
     Frame::afterDraw(ctx);
   }
@@ -719,7 +726,7 @@ void showAgilesScreen(Screen* screen)
   auto& header = w.vstack(2, 2);
   header.label(FixedHeight{ 60 },
                Caption{ "Select agile boards" },
-               FontColor{ Color::white },
+               TextColor{ Color::white },
                CaptionAlign{ hCenter, vBottom },
                CaptionFont{ "sans-bold" },
                FontSize{ 42 });
