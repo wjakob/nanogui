@@ -118,7 +118,7 @@ public:
   }
 
   inline operator const NVGcolor &() const { return reinterpret_cast<const NVGcolor &>(rgba); }
-  inline Color mul_a(float mul) { Color ret = *this; ret.w() *= mul; return ret; }
+  inline Color mul_a(float mul) const { Color ret = *this; ret.w() *= mul; return ret; }
   inline int toInt() const { return ((int)(r() * 255) << 24) + ((int)(g() * 255) << 16) + ((int)(b() * 255) << 8) + (int)(w() * 255); }
 
   inline const float* data() const { return rgba; }
@@ -229,6 +229,7 @@ __DEFINE_COLOR( plum)
 __DEFINE_COLOR( thistle)
 __DEFINE_COLOR( darkGrey)
 __DEFINE_COLOR( heavyDarkGrey)
+__DEFINE_COLOR( ligthDarkGrey)
 
 private:
   float rgba[4];

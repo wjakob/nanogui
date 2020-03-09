@@ -44,8 +44,8 @@ ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(paren
     mResetButton->setTextColor(color.contrastingColor());
     mResetButton->setFixedSize(Vector2i(100, 20));
 
-    PopupButton::setChangeCallback([&](bool) {
-        if (this->mPickButton->pushed()) {
+    PopupButton::setChangeCallback([this](Button*) {
+        if (mPickButton->pushed()) {
             setColor(backgroundColor());
             mFinalCallback(backgroundColor());
         }

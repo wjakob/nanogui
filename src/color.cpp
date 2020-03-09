@@ -109,6 +109,7 @@ __ADD_COLOR( plum           )
 __ADD_COLOR( thistle        )
 __ADD_COLOR( darkGrey       )
 __ADD_COLOR( heavyDarkGrey  )
+__ADD_COLOR( ligthDarkGrey  )
 }
 
 } // end namespace
@@ -225,7 +226,8 @@ __ASSIGN_COLOR( chartreuse,     0x7FFF00ff )
 __ASSIGN_COLOR( plum,           0xFFBBFFff )
 __ASSIGN_COLOR( thistle,        0xFFE1FFff )
 __ASSIGN_COLOR( darkGrey,       0x4a4a4aff )
-__ASSIGN_COLOR( heavyDarkGrey,  0x262626ff)
+__ASSIGN_COLOR( heavyDarkGrey,  0x262626ff )
+__ASSIGN_COLOR( ligthDarkGrey,  0x4a4a4aff )
 
 
 NAMESPACE_END(nanogui)

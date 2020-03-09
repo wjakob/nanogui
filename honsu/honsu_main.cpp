@@ -114,6 +114,7 @@ struct AgileInfo
 };
 
 void open_url(const std::string& url, const std::string& prefix);
+std::function<void(bool)> showRecPanelWait = [](bool) {};
 
 struct Url
 {
@@ -364,6 +365,7 @@ void startIssueRecord(IssueInfo::Ptr issue)
   std::string body = "/youtrack/rest/issue/";
   body += issue->entityId;
   body += "/timetracking/workitem";
+  showRecPanelWait(true);
   SSLRequest request{ body, [issue](int status, std::string body) {
     if (status != 200)
       return;
@@ -404,6 +406,7 @@ void startIssueRecord(IssueInfo::Ptr issue)
     issue->recordTimeTodaySec = timeSpentToday * 60;
 
     account.setIssueRecord(issue, true);
+    showRecPanelWait(false);
   }};
   sslrequests.push_back(request);
 }
@@ -495,6 +498,21 @@ public:
                    CaptionAlign{ TextHAlign::hLeft, TextVAlign::vBottom }, FontSize{ 28 });
     timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, TextOffset { 5, 0 },
                    CaptionAlign{ TextHAlign::hRight, TextVAlign::vBottom });
+
+    showRecPanelWait = [this](bool show) { showWaitNotification(show); };
+  }
+
+  void showWaitNotification(bool show)
+  {
+    auto sp = findWidget<Spinner>("#wait", true);
+    if (show)
+    {
+      if (!sp)
+        spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+                WidgetId{ "#wait" }, IsSubElement{ true }, WidgetSize{ size() });
+    }
+    else if (sp)
+      sp->remove();
   }
 
   void performLayout(NVGcontext* ctx) override
