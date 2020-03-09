@@ -105,6 +105,7 @@ DECLSETTER(MinValue, float)
 DECLSETTER(MaxValue, float)
 DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
+DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(VisibleObservable, BoolObservable)
 
 /**
@@ -582,6 +583,7 @@ public:
     PROPSETTER(WidgetBoxLayout, setLayout)
     PROPSETTER(IsSubElement, setSubElement)
     PROPSETTER(FontSize, setFontSize)
+    PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
 
 protected:
