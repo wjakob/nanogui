@@ -351,6 +351,63 @@ void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
   issue->rec = rec;
 }
 
+void stopIssueRecord(IssueInfo::Ptr issue)
+{
+  if (!issue)
+    return;
+
+  account.setIssueRecord(issue, false);
+}
+
+void startIssueRecord(IssueInfo::Ptr issue)
+{
+  std::string body = "/youtrack/rest/issue/";
+  body += issue->entityId;
+  body += "/timetracking/workitem";
+  SSLRequest request{ body, [issue](int status, std::string body) {
+    if (status != 200)
+      return;
+
+    Json::value response;
+    Json::parse(response, body);
+
+    std::time_t timet = std::time(nullptr);
+    std::tm* tmt = std::localtime(&timet);
+    std::tm tm_day_start = *tmt, 
+            tm_day_end = *tmt;
+    tm_day_start.tm_sec = 0;
+    tm_day_start.tm_min = 0;
+    tm_day_start.tm_hour = 0;
+
+    tm_day_end.tm_sec = 59;
+    tm_day_end.tm_min = 59;
+    tm_day_end.tm_hour = 23;
+    
+    //mktime convert tm to secs from epoch
+    std::time_t day_start = mktime(&tm_day_start) * 1000;
+    std::time_t day_end = mktime(&tm_day_end) * 1000;
+
+    int i = 0;
+    int timeSpent = 0;
+    uint64_t timeSpentToday = 0;
+    Json::value info = response.get(i++);
+    while (!info.is<Json::null>())
+    {
+      int duration = info.get("duration").get_int();
+      uint64_t created = (uint64_t)info.get("created").get_int();
+      if (created >= day_start && created <= day_end)
+        timeSpentToday += duration;
+      timeSpent += duration;
+      info = response.get(i++);
+    }
+    issue->recordTimeSec = 0;
+    issue->recordTimeTodaySec = timeSpentToday * 60;
+
+    account.setIssueRecord(issue, true);
+  }};
+  sslrequests.push_back(request);
+}
+
 class TaskRecordButton : public Button
 {
 public:
@@ -369,7 +426,17 @@ public:
     forceShow = _watch;
     setCallback( [this] { 
       if (getIssue())
-        account.setIssueRecord(getIssue(), !getIssue()->rec); 
+      {
+        if (getIssue()->rec)
+        {
+          stopIssueRecord(getIssue());
+        }
+        else
+        {
+          stopIssueRecord(account.getActiveIssue());
+          startIssueRecord(getIssue());
+        }
+      }
     });
     updateState(getIssue() ? getIssue()->rec : 0);
   }
@@ -471,7 +538,7 @@ public:
     auto& header = hlayer(FixedHeight{ 30 });
     header.link(Caption{ issue->entityId }, TextColor{ Color::white },
                 ButtonCallback{ [this] { issue->openUrl(account.url); } });
-    header.link(Caption{ issue->state }, TextColor{ Color::white });
+    header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
     header.widget();
     header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
 
