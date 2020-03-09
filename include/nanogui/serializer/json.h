@@ -165,8 +165,8 @@ public:
   const std::string& get_str() const;
   const std::string& get_str(const std::string& key) const;
 
-  int get_int() const;
-  int get_int(const std::string& key) const;
+  int64_t get_int() const;
+  int64_t get_int(const std::string& key) const;
 
   float get_float() const;
   float get_float(const std::string& key) const;
@@ -393,8 +393,8 @@ inline const object& value::get_obj(const std::string& key) const { return get(k
 inline const std::string& value::get_str() const { return get<std::string>(); }
 inline const std::string& value::get_str(const std::string& key) const { return get(key).get<std::string>(); }
 
-inline int value::get_int() const { return get<int64_t>(); }
-inline int value::get_int(const std::string& key) const { return get(key).get<int64_t>(); }
+inline int64_t value::get_int() const { return get<int64_t>(); }
+inline int64_t value::get_int(const std::string& key) const { return get(key).get<int64_t>(); }
 
 inline float value::get_float() const { return get<double>(); }
 inline float value::get_float(const std::string& key) const { return get(key).get<double>(); }
