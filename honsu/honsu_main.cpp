@@ -175,6 +175,7 @@ struct AccountData
   std::string title;
   std::string url;
   std::string token;
+  std::mutex issuesGuard;
 
   const std::string filename = "account.txt";
 
@@ -197,6 +198,7 @@ struct AccountData
 
   IssueInfo::Ptr getActiveIssue()
   {
+    std::lock_guard<std::mutex> guard(issuesGuard);
     for (auto& i : issues) 
       if (i->rec) return i;
     return nullptr;
@@ -204,6 +206,7 @@ struct AccountData
 
   void setIssueRecord(IssueInfo::Ptr issue, bool rec)
   {
+    std::lock_guard<std::mutex> guard(issuesGuard);
     for (auto& i : issues) i->rec = false;
     issue->rec = rec;
   }
@@ -211,6 +214,8 @@ struct AccountData
   std::vector<AgileInfo> agiles;
   std::string activeAgile;
   std::vector<IssueInfo::Ptr> issues;
+  float inactiveTimeSec = 0;
+  float inactiveLastTimeSec = 0;
 } account;
 
 struct SSLGet {
@@ -262,6 +267,14 @@ void open_url(const std::string& url, const std::string& prefix)
   result;
 #endif
 }
+
+std::string sec2str(int sec)
+{
+  int minutes = sec / 60;
+  char str[16] = { 0 };
+  snprintf(str, 16, "%02d:%02d:%02d", (minutes / 60), minutes % 60, sec % 60);
+  return std::string(str);
+};
 
 bool checkAccountUrl(TextBox* url)
 {
@@ -535,6 +548,37 @@ public:
   }
 };
 
+void updateInactiveWarningWindow(Screen* screen)
+{
+  if (account.inactiveTimeSec < 5)
+    return;
+  
+  if (auto w = screen->findWidget("#inactive_warn"))
+    return;
+
+  auto& w = screen->window(Position{ 0, 0 },
+    FixedSize{ screen->size() },
+    WindowMovable{ Theme::WindowDraggable::dgFixed },
+    WindowHaveHeader{ false },
+    WidgetId{ "#inactive_warn" },
+    WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  w.label(Caption{ "You were inactive" });
+  w.label(Caption{ "What should I do with 00:00:00?" }, OnUpdate{ [](Widget* w) {
+    if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
+      return;
+
+    account.inactiveLastTimeSec = account.inactiveTimeSec;
+    if (auto lb = Label::cast(w))
+    {
+      std::string time = sec2str(account.inactiveTimeSec);
+      lb->setCaption("What should I do with" + time + "?");
+    }
+  } });
+  w.button(Caption{ "Add" });
+  w.button(Caption{ "Remove" });
+  screen->needPerformLayout(screen);
+}
+
 class TaskRecordPanel : public Frame
 {
 public:
@@ -589,13 +633,6 @@ public:
   void afterDraw(NVGcontext* ctx) override
   {
     IssueInfo::Ptr issue = account.getActiveIssue();
-
-    auto sec2str = [](int sec) {
-      int minutes = sec / 60;
-      char str[16] = { 0 };
-      snprintf(str, 16, "%02d:%02d:%02d", (minutes / 60), minutes % 60, sec % 60);
-      return std::string(str);
-    };
   
     setCaptionSafe("#time", sec2str(issue ? issue->recordTimeSec : 0));
     setCaptionSafe("#dtime", "TODAY:" + sec2str(issue ? issue->recordTimeTodaySec : 0));
@@ -973,22 +1010,25 @@ public:
         return false;
     }
 
-    virtual void draw(NVGcontext *ctx) {
+    virtual void draw(NVGcontext *ctx) 
+    {
       using namespace nanogui;
       float value = std::fmod((float)getTimeFromStart() / 10, 1.0f);
-        startGPUTimer(&gpuTimer);
+      startGPUTimer(&gpuTimer);
 
-        double t = getTimeFromStart();
-        double dt = t - previousFrameTime;
-        previousFrameTime = t;
+      double t = getTimeFromStart();
+      double dt = t - previousFrameTime;
+      previousFrameTime = t;
 
-        /* Draw the user interface */
-        Screen::draw(ctx);
+      /* Draw the user interface */
+      Screen::draw(ctx);
 
-        cpuTime = getTimeFromStart() - t;
+      cpuTime = getTimeFromStart() - t;
 
-        //if (fpsGraph) fpsGraph->update(dt);
-        if (cpuGraph) cpuGraph->update(cpuTime);
+      //if (fpsGraph) fpsGraph->update(dt);
+      if (cpuGraph) cpuGraph->update(cpuTime);
+
+      updateInactiveWarningWindow(this);
     }
 
 private:
@@ -1022,6 +1062,29 @@ int main(int /* argc */, char ** /* argv */)
       }
     });
 
+    auto user_inactive_thread = std::thread([&] {
+      Vector2i lastMousePos = sample::get_cursor_pos();
+      while (requests_thread_active) {
+        if (account.getActiveIssue())
+        {
+          Vector2i currentMousePos = sample::get_cursor_pos();
+          if (abs(lastMousePos.x() - currentMousePos.x()) < 3
+            && abs(lastMousePos.y() - currentMousePos.y() < 3))
+          {
+            account.inactiveTimeSec += 1.f;
+          }
+          else
+          {
+            account.inactiveTimeSec = 0.f;
+            account.inactiveLastTimeSec = 0.f;
+          }
+          lastMousePos = currentMousePos;
+        }
+
+        std::this_thread::sleep_for(1.0s);
+      }
+    });
+
     auto timerec_thread = std::thread([&] {
       int lasttime = getTimeFromStart();
       while (requests_thread_active)
@@ -1046,6 +1109,7 @@ int main(int /* argc */, char ** /* argv */)
     requests_thread_active = false;
     requests_thread.join();
     timerec_thread.join();
+    user_inactive_thread.join();
     nanogui::sample::poll_events();
   }
 
