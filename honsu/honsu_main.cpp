@@ -398,6 +398,14 @@ void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
   issue->rec = rec;
 }
 
+std::string _s(const char* t) { return std::string(t); }
+std::string _s(uint64_t t) { return std::to_string(t); }
+struct AllOf {
+  std::string str;
+  AllOf(std::initializer_list<std::string> l) { for (auto& i : l) str += i; }
+  operator std::string() const { return str; }
+};
+
 void stopIssueRecord(IssueInfo::Ptr issue)
 {
   if (!issue)
@@ -409,16 +417,10 @@ void stopIssueRecord(IssueInfo::Ptr issue)
     return;
   }
 
-  std::string path = "/youtrack/rest/issue/";
-  path += issue->entityId;
-  path += "/timetracking/workitem";
-  std::string payload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-  payload += "<workItem>";
-  payload += "<date>" + std::to_string(issue->workStartTime) + "</date>";
-  payload += "<duration>" + std::to_string(std::max<int>(issue->recordTimeSec / 60, 1)) + "</duration>";
-  payload += "<description>added by Honsu</description>";
-  payload += "<worktype><name>Development</name></worktype>";
-  payload += "</workItem>";
+  std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
+  std::string payload = AllOf{ "<?xml version=\"1.0\" encoding=\"UTF-8\"?><workItem><date>", _s(issue->workStartTime), "</date>",
+                               "<duration>", _s(std::max<uint64_t>(issue->recordTimeSec / 60, 1)), "</duration><description>added by Honsu</description>",
+                               "<worktype><name>Development</name></worktype></workItem>" };
   auto headers = httplib::Headers{
     { "Accept", "application/json" },
     { "Authorization", std::string("Bearer ") + account.token },
@@ -434,9 +436,7 @@ void stopIssueRecord(IssueInfo::Ptr issue)
 
 void startIssueRecord(IssueInfo::Ptr issue)
 {
-  std::string path = "/youtrack/rest/issue/";
-  path += issue->entityId;
-  path += "/timetracking/workitem";
+  std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
   showRecPanelWait(true);
     
   SSLGet{ path, sslHeaders }
@@ -740,9 +740,9 @@ std::string encodeQueryData(std::string data)
 
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
-  std::string body = "/youtrack/rest/issue?filter=for:me%20Board%20";
-  body += encodeQueryData(board);
-  body += ":%7BCurrent%20sprint%7D%20%23Unresolved%20";
+  std::string body = AllOf{ "/youtrack/rest/issue?filter=for:me%20Board%20", 
+                            encodeQueryData(board),
+                            ":%7BCurrent%20sprint%7D%20%23Unresolved%20" };
 
   showWaitingScreen(screen);
   SSLGet{ body, sslHeaders }

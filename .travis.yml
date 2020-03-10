@@ -21,6 +21,19 @@ matrix:
         - cmake --version 
         - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_PYTHON_VERSION=3.8 -DPYTHON_INCLUDE_DIRS:PATH="C:/Python38/include" -DPYTHON_LIBRARY:FILEPATH="C:/Python38/libs/python38.lib" ..
         - cmake --build .
+      deploy:
+        provider: releases # выкладываем на GitHub Releases
+
+        api_key:
+          secure: rzn258dan/03sUwChTxoaNHMz5/CRwpNK6PL5SbZ22Y2h80eqC510VbwUSB1ogc2MWcB2CH21hUpdM2PZtl4ayPyqtcB5CsrTKsAj38Yi70d262qPIX6orl+cQbbRtTePdvKoJwBkaD3PwYdq2GRSCgIlDBk8IMjIxHscpM0/K0K1h1DumyURpTCbfPcXCqRr8o0UF9/BiUtRDoBUsqc/XYmmKIfmJPIsXdDV9HQ5uXfY7IkTKrbIoRalnIGRgjReo8XAEElBlY8DqOhLxG2noa6PZCGY9Ue9tl9q4KpWT5bZwb/Jdjg1VYip6Z+HEmVe7kl9d634JUhz4UMMArHniGcaQri5l8vEaSnPwgIZ7Gi/6WwQ4BHSuCp4WlWhBMfVgjCDTEUpq7fGKM5Vi8zkDs4HOauwg75bURompPxiSSkCs+OQ/RdjNmATdTZIOOF52C0fWH+SyKZ+oJ4ujDMuVCvzcZEuay/oOjU2qFrWoAJStWj5cU4otQrgNzlP0QvLSExMCSSDtuJUSCTuY42QrJTp+jP07ZQ67SS032PuSiGw4uQmAq0W5vWMBoOggN5Fw1E4PyYBToeKVU5nKngcdR2GyXS3B86v6fqxe6FIiQw8kUrhHCeSmsaPmyE4M9ODgia5IcUDpWcHElkxW30mhe6jgJmyYZ8kkYKRtu+gLY=
+
+        file:
+          - build/file1.pkg
+
+        skip_cleanup: true # не удалять сгенерированные во время сборки файлы перед развёртыванием
+
+        on:
+          tags: true     # выполнять deploy только для tagged-commit
     # build vulkan render windows x64   
     - os: windows
       python: "3.7"
