@@ -86,8 +86,8 @@ void sample::clear_frame(const Color& background)
 void sample::present_frame(void* window) { glfwSwapBuffers((GLFWwindow*)window); }
 
 bool isKeyboardActionRelease(int action) { return action == GLFW_RELEASE; }
-bool isKeyboardModifierCtrl(int modifier) { return modifier & SYSTEM_COMMAND_MOD; }
-bool isKeyboardModifierShift(int modifier) { return modifier & GLFW_MOD_SHIFT; }
+bool isKeyboardModifierCtrl(int modifier) { return (modifier & SYSTEM_COMMAND_MOD) == SYSTEM_COMMAND_MOD; }
+bool isKeyboardModifierShift(int modifier) { return (modifier & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT; }
 bool isKeyboardActionPress(int action) { return action == GLFW_PRESS; }
 bool isKeyboardActionRepeat(int action) { return action == GLFW_REPEAT; }
 bool isKeyboardKeyEscape(int key) { return key == GLFW_KEY_ESCAPE; }
@@ -337,9 +337,9 @@ void sample::remove_window_border(WindowHandle wnd)
 Vector2i sample::get_cursor_pos()
 {
 #if WIN32
-  POINT p;
-  if (GetCursorPos(&p))
-    return{ p.x, p.y };
+  POINT p{ 0 , 0 };
+  GetCursorPos(&p);
+  return{ p.x, p.y };
 #else
   return{ 0, 0 };
 #endif

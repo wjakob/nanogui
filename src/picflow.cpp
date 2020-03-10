@@ -323,6 +323,7 @@ bool Picflow::mouseButtonEvent(const Vector2i &p, int button, bool down, int mod
 
     return true;
   }
+  return false;
 }
 
 bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)

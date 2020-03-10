@@ -87,7 +87,7 @@ public:
     void setDrawBackground(bool draw) { mDrawBackground = draw; }
     void setPictureRect( const Vector2f& rectangle ) { mPictureRect = rectangle; }
 
-    uint32_t itemCount() const { return mImages.size(); }
+    size_t itemCount() const { return mImages.size(); }
     const char* listItem(uint32_t id) const;
 
     //! return element type name for gui factory
