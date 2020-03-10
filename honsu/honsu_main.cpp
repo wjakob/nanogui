@@ -557,7 +557,7 @@ public:
 
 void updateInactiveWarningWindow(Screen* screen)
 {
-  if (account.inactiveTimeSec < 5)
+  if (account.inactiveTimeSec < (5 * 60)) 
     return;
   
   if (auto w = screen->findWidget("#inactive_warn"))
