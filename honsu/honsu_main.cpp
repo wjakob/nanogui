@@ -204,6 +204,13 @@ struct AccountData
     return nullptr;
   }
 
+  void resetInactiveTime()
+  {
+    suspendInactiveTime = false;
+    inactiveTimeSec = 0.f;
+    inactiveLastTimeSec = 0.f;
+  }
+
   void setIssueRecord(IssueInfo::Ptr issue, bool rec)
   {
     std::lock_guard<std::mutex> guard(issuesGuard);
@@ -216,6 +223,7 @@ struct AccountData
   std::vector<IssueInfo::Ptr> issues;
   float inactiveTimeSec = 0;
   float inactiveLastTimeSec = 0;
+  bool suspendInactiveTime = false;
 } account;
 
 struct SSLGet {
@@ -556,26 +564,39 @@ void updateInactiveWarningWindow(Screen* screen)
   if (auto w = screen->findWidget("#inactive_warn"))
     return;
 
-  auto& w = screen->window(Position{ 0, 0 },
-    FixedSize{ screen->size() },
-    WindowMovable{ Theme::WindowDraggable::dgFixed },
-    WindowHaveHeader{ false },
-    WidgetId{ "#inactive_warn" },
-    WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
-  w.label(Caption{ "You were inactive" });
-  w.label(Caption{ "What should I do with 00:00:00?" }, OnUpdate{ [](Widget* w) {
-    if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
-      return;
+  account.suspendInactiveTime = true;
+  auto& w = screen->window(Position{ 0, 0 }, FixedSize{ screen->size() },
+                           WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
+                           WidgetId{ "#inactive_warn" }, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  auto& title = w.vstack(10, 10);
+  title.label(Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{TextHAlign::hCenter});
+  title.label(Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
+    OnUpdate{ [](Widget* w) {
+      if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
+        return;
 
-    account.inactiveLastTimeSec = account.inactiveTimeSec;
-    if (auto lb = Label::cast(w))
-    {
-      std::string time = sec2str(account.inactiveTimeSec);
-      lb->setCaption("What should I do with" + time + "?");
+      account.inactiveLastTimeSec = account.inactiveTimeSec;
+      if (auto lb = Label::cast(w))
+      {
+        std::string time = sec2str(account.inactiveTimeSec);
+        lb->setCaption("What should I do with " + time + "?");
+      }
     }
-  } });
-  w.button(Caption{ "Add" });
-  w.button(Caption{ "Remove" });
+  });
+  w.button(Caption{ "Add" }, ButtonChangeCallback{ [](Button* b) {
+    account.resetInactiveTime();
+    Window::cast(b->parent())->dispose(); 
+  }});
+  w.button(Caption{ "Remove" }, ButtonChangeCallback{ [] (Button* b) {
+    if (auto issue = account.getActiveIssue())
+    {
+      issue->recordTimeSec -= account.inactiveTimeSec;
+      issue->recordTimeTodaySec -= account.inactiveTimeSec;
+      account.resetInactiveTime();
+    }
+    Window::cast(b->parent())->dispose();
+  }});
+  w.line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
   screen->needPerformLayout(screen);
 }
 
@@ -590,7 +611,7 @@ public:
     setSubElement(true);
 
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
-    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH});
+    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
 
     auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
     header.label(WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 });
@@ -1075,8 +1096,11 @@ int main(int /* argc */, char ** /* argv */)
           }
           else
           {
-            account.inactiveTimeSec = 0.f;
-            account.inactiveLastTimeSec = 0.f;
+            if (!account.suspendInactiveTime)
+            {
+              account.inactiveTimeSec = 0.f;
+              account.inactiveLastTimeSec = 0.f;
+            }
           }
           lastMousePos = currentMousePos;
         }

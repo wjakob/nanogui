@@ -36,6 +36,8 @@ Vector2i Line::preferredSize(NVGcontext *ctx) const
 void Line::performLayout(NVGcontext *ctx)
 {
   Vector2i pref = preferredSize(ctx);
+  setSize(pref);
+
   Vector2i psize = parent() ? parent()->size() : Vector2i{1, 1};
 
   if (haveDrawFlag(Line::Left))
