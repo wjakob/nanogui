@@ -921,6 +921,10 @@ void showStartupScreen(Screen* screen)
   screen->needPerformLayout(screen);
 }
 
+namespace nanogui { namespace sample {
+  void set_window_topmost(WindowHandle w, bool topalways);
+}}
+
 class HonsuScreen : public Screen {
 public:
     HonsuScreen(sample::WindowHandle hw, const Vector2i& size, const std::string& caption) : Screen(size, caption, false) 

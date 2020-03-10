@@ -286,6 +286,31 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
 
 void errorcb(int error, const char *desc) { printf("GLFW error %d: %s\n", error, desc); }
 
+void sample::set_window_topmost(WindowHandle w, bool topalways)
+{
+#if WIN32
+  if (!w)
+    w = GetActiveWindow();
+  ShowWindow((HWND)w, TRUE);
+  RECT rect;
+
+  // get the current window size and position
+  GetWindowRect((HWND)w, &rect);
+
+  // now change the size, position, and Z order
+  // of the window.
+  ::SetWindowPos((HWND)w,       // handle to window
+    topalways ? HWND_TOPMOST : HWND_TOP,  // placement-order handle
+    rect.left,     // horizontal position
+    rect.top,      // vertical position
+    rect.right - rect.left,  // width
+    rect.bottom - rect.top, // height
+    SWP_SHOWWINDOW);
+#else
+
+#endif
+}
+
 Vector2i sample::get_window_pos(WindowHandle w) 
 {
   Vector2i pos;

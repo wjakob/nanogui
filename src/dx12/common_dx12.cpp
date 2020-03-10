@@ -233,6 +233,27 @@ const char* dx12GetClipboardString(HWND window)
   return clipboardString;
 }
 
+void sample::set_window_topmost(WindowHandle w, bool topalways)
+{
+  if (!w)
+    w = GetActiveWindow();
+  ShowWindow((HWND)w, TRUE);
+  RECT rect;
+
+  // get the current window size and position
+  GetWindowRect((HWND)w, &rect);
+
+  // now change the size, position, and Z order
+  // of the window.
+  ::SetWindowPos((HWND)w,       // handle to window
+    topalways ? HWND_TOPMOST : HWND_TOP,  // placement-order handle
+    rect.left,     // horizontal position
+    rect.top,      // vertical position
+    rect.right - rect.left,  // width
+    rect.bottom - rect.top, // height
+    SWP_SHOWWINDOW);
+}
+
 Vector2i sample::get_window_pos(WindowHandle* w)
 {
   POINT pos = { 0, 0 };
