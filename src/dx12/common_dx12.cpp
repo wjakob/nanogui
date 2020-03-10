@@ -233,6 +233,30 @@ const char* dx12GetClipboardString(HWND window)
   return clipboardString;
 }
 
+Vector2i sample::get_window_pos(WindowHandle* w)
+{
+  POINT pos = { 0, 0 };
+  ClientToScreen((HWND)w, &pos);
+  return { pos.x, pos.y };
+}
+
+Vector2i sample::get_cursor_pos()
+{
+  POINT p;
+  if (GetCursorPos(&p))
+    return{ p.x, p.y };
+}
+
+
+void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
+{
+    RECT rect = { pos.x(), pos.y(), pos.x(), pos.y() };
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
+    SetWindowPos((HWND)w, NULL, rect.left, rect.top, 0, 0,
+                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
+}
+
 bool sample::post_empty_event(void) { PostMessage(hWndmain, WM_NULL, 0, 0); return false; }
 bool sample::wait_events(void) { sample::poll_events(); return false; }
 

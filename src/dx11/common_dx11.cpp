@@ -73,6 +73,28 @@ void dx11SetFramebufferSizeCallback(const std::function<void(void *, int, int)> 
 void dx11SetWindowFocusCallback(const std::function<void(void *, int )> &f) { focusCallback = f; }
 void dx11SetDrawCallback(const std::function<void()> &f) { drawCallback = f; }
 
+Vector2i sample::get_window_pos(WindowHandle* w)
+{
+  POINT pos = { 0, 0 };
+  ClientToScreen((HWND)w, &pos);
+  return { pos.x, pos.y };
+}
+
+void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
+{
+    RECT rect = { pos.x(), pos.y(), pos.x(), pos.y() };
+    AdjustWindowRectEx(&rect, getWindowStyle(window),
+                       FALSE, getWindowExStyle(window));
+    SetWindowPos((HWND)w, NULL, rect.left, rect.top, 0, 0,
+                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
+}
+
+Vector2i sample::get_cursor_pos()
+{
+  POINT p;
+  if (GetCursorPos(&p))
+    return{ p.x, p.y };
+}
 
 /* Calculate pixel ratio for hi-dpi devices. */
 static float get_pixel_ratio(HWND window) {

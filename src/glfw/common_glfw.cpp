@@ -334,6 +334,29 @@ void sample::remove_window_border(WindowHandle wnd)
 #endif
 }
 
+Vector2i sample::get_cursor_pos()
+{
+#if WIN32
+  POINT p;
+  if (GetCursorPos(&p))
+    return{ p.x, p.y };
+#else
+  return{ 0, 0 };
+#endif
+}
+
+Vector2i sample::get_window_pos(WindowHandle w) 
+{
+  Vector2i pos;
+  glfwGetWindowPos((GLFWwindow*)w, &pos.x(), &pos.y());
+  return pos;
+}
+
+void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
+{
+  glfwSetWindowPos((GLFWwindow*)w, pos.x(), pos.y());
+}
+
 WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
 {
   uint32_t glMajor = 3;

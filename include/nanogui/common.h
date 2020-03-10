@@ -804,6 +804,9 @@ namespace sample
 {
   using WindowHandle = void*;
   WindowHandle NANOGUI_EXPORT create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen);
+  Vector2i NANOGUI_EXPORT get_window_pos(WindowHandle w);
+  Vector2i NANOGUI_EXPORT get_cursor_pos();
+  void NANOGUI_EXPORT set_window_pos(WindowHandle w, const Vector2i& pos);
   void NANOGUI_EXPORT remove_window_border(WindowHandle wnd);
   void NANOGUI_EXPORT destroy_window(WindowHandle wnd);
   void NANOGUI_EXPORT create_context();

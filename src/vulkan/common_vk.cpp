@@ -286,6 +286,29 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
 
 void errorcb(int error, const char *desc) { printf("GLFW error %d: %s\n", error, desc); }
 
+Vector2i sample::get_window_pos(WindowHandle w) 
+{
+  Vector2i pos;
+  glfwGetWindowPos((GLFWwindow*)w, &pos.x(), &pos.y());
+  return pos;
+}
+
+Vector2i sample::get_cursor_pos()
+{
+#if WIN32
+  POINT p;
+  if (GetCursorPos(&p))
+    return{ p.x, p.y };
+#else
+  return{ 0, 0 };
+#endif
+}
+
+void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
+{
+  glfwSetWindowPos((GLFWwindow*)w, pos.x(), pos.y());
+}
+
 void sample::remove_window_border(WindowHandle wnd)
 {
 #if defined(_WIN32)	
