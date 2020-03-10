@@ -224,6 +224,8 @@ struct SSLGet {
 
 struct SSLPost {
   static std::vector<SSLPost> requests;
+  static int invalidRequestTime;
+  static int invalidRequestSent;
 
   std::string path;
   std::string body;
@@ -235,6 +237,8 @@ struct SSLPost {
 
 std::vector<SSLGet> SSLGet::requests;
 std::vector<SSLPost> SSLPost::requests;
+int SSLPost::invalidRequestTime = 0;
+int SSLPost::invalidRequestSent = 0;
 
 using namespace std::chrono_literals;
 httplib::SSLClient* sslClient = nullptr;
@@ -374,7 +378,7 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   if (!issue)
     return;
 
-  if (issue->recordTimeSec < 1)
+  if (issue->recordTimeSec < 60)
   {
     account.setIssueRecord(issue, false);
     return;
@@ -804,9 +808,6 @@ void createSSLClient()
     return;
 
   sslClient = new httplib::SSLClient(account.url);
-  //sslClient->set_ca_cert_path(CA_CERT_FILE);
-  //sslClient->enable_server_certificate_verification(true);
-
   sslHeaders = httplib::Headers{
     { "Accept", "application/json" },
     { "Authorization", std::string("Bearer ") + account.token },
@@ -856,22 +857,33 @@ void update_requests()
     answer(nn ? nn->status : -1, nn ? nn->body : "");
   }
 
-  if (!SSLPost::requests.empty())
+  if (!SSLPost::requests.empty() && (getTimeFromStart() > SSLPost::invalidRequestTime))
   {
-    SSLPost r = SSLPost::requests.front();
-    SSLPost::requests.erase(SSLPost::requests.begin());
+    const SSLPost& r = SSLPost::requests.front();
 
     auto nn = sslClient->Post(r.path.c_str(), r.headers, r.body, r.content_type.c_str());
 
-    auto answer = r.answer;
-    answer(nn ? nn->status : -1, nn ? nn->body : "");
+    if (nn && nn->status == 201)
+    {
+      auto answer = r.answer;
+      answer(nn ? nn->status : -1, nn ? nn->body : "");
+      SSLPost::requests.erase(SSLPost::requests.begin());
+      SSLPost::invalidRequestSent = 0;
+    }
+    else
+    {
+      SSLPost::invalidRequestSent++;
+      if (SSLPost::invalidRequestSent > 10)
+        SSLPost::requests.erase(SSLPost::requests.begin());
+      else
+        SSLPost::invalidRequestTime = getTimeFromStart() + 2.f;
+    }
   }
 }
 
 void showStartupScreen(Screen* screen)
 {
   auto& w = createWindow(screen, "#login_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
-    //w.withTheme<WhiteTheme>(screen->nvgContext());
 
   createWindowHeader(w);
 
@@ -911,8 +923,9 @@ void showStartupScreen(Screen* screen)
 
 class HonsuScreen : public Screen {
 public:
-    HonsuScreen(const Vector2i& size, const std::string& caption) : Screen(size, caption, false) 
+    HonsuScreen(sample::WindowHandle hw, const Vector2i& size, const std::string& caption) : Screen(size, caption, false) 
     {
+      hwindow = hw;
       initGPUTimer(&gpuTimer);
 
       account.load();
@@ -927,6 +940,27 @@ public:
 
       theme()->keyboardNavigation = false;
       //theme()->debugHighlightMouseover = true;
+    }
+
+    bool cursorPosCallbackEvent(double x, double y) override
+    {
+      if (mDrag)
+      {
+        Vector2i currentPos = sample::get_cursor_pos();
+        sample::set_window_pos(hwindow, mHwPos + (currentPos - mCursorPos));
+      }
+      return Screen::cursorPosCallbackEvent(x, y);
+    }
+
+    bool mouseButtonCallbackEvent(int button, int action, int modifiers) override
+    {
+      mDrag = (isMouseActionPress(action));
+      if (mDrag)
+      {
+        mCursorPos = sample::get_cursor_pos();
+        mHwPos = sample::get_window_pos(hwindow);
+      }
+      return Screen::mouseButtonCallbackEvent(button, action, modifiers);
     }
 
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
@@ -954,8 +988,11 @@ public:
     }
 
 private:
-    nanogui::PerfGraph *fpsGraph = nullptr;
-    nanogui::PerfGraph *cpuGraph = nullptr;
+    PerfGraph *fpsGraph = nullptr;
+    PerfGraph *cpuGraph = nullptr;
+    sample::WindowHandle hwindow;
+    bool mDrag = false;
+    Vector2i mCursorPos, mHwPos;
     double previousFrameTime = 0, cpuTime = 0;
 };
 
@@ -968,7 +1005,7 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::sample::create_context();
 
   {
-    HonsuScreen screen(size + Vector2i{13, 36}, "");
+    HonsuScreen screen(window, size + Vector2i{13, 36}, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
     

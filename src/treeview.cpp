@@ -257,7 +257,7 @@ void TreeView::setExpanded(TreeViewItem* item, bool expanded)
 
 bool TreeView::isExpanded(const TreeViewItem* item) const
 {
-  return mExpandedItems.count(item ? item->nodeId() : 0);
+  return mExpandedItems.count(item ? item->nodeId() : 0) > 0;
 }
 
 void TreeView::updateItems() { mNeedUpdateItems = true; }
