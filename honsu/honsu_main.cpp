@@ -227,11 +227,13 @@ struct AccountData
 } account;
 
 struct SSLGet {
+  using ResponseHandler = std::function< void(int status, std::string)>;
   static std::vector<SSLGet> requests;
 
   std::string path;
   httplib::Headers headers;
-  std::function< void(int status, std::string)> answer;
+  ResponseHandler answer;
+  SSLGet& onResponse(ResponseHandler handler) { answer = handler; return *this; }
   void execute() { requests.push_back(*this); }
 };
 
@@ -436,8 +438,9 @@ void startIssueRecord(IssueInfo::Ptr issue)
   path += issue->entityId;
   path += "/timetracking/workitem";
   showRecPanelWait(true);
-  SSLGet{ path, sslHeaders,
-    [issue](int status, std::string body) {
+    
+  SSLGet{ path, sslHeaders }
+    .onResponse([issue](int status, std::string body) {
       showRecPanelWait(false);
 
       if (status != 200)
@@ -481,8 +484,8 @@ void startIssueRecord(IssueInfo::Ptr issue)
       issue->recordTimeTodaySec = timeSpentToday * 60;
 
       account.setIssueRecord(issue, true);
-    }
-  }.execute();
+    })
+  .execute();
 }
 
 class TaskRecordButton : public Button
@@ -742,9 +745,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
   body += ":%7BCurrent%20sprint%7D%20%23Unresolved%20";
 
   showWaitingScreen(screen);
-  SSLGet{ body, sslHeaders,
-    [screen](int status, std::string body)
-    {
+  SSLGet{ body, sslHeaders }
+    .onResponse([screen](int status, std::string body) {
       account.issues.clear();
 
       if (status == 200)
@@ -773,8 +775,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
       if (account.issues.empty()) requestAgilesAndResolve(screen);
       else showTasksWindow(screen);
-    }
-  }.execute();
+    })
+    .execute();
 }
 
 void showAgilesScreen(Screen* screen)
@@ -827,9 +829,8 @@ void showAgilesScreen(Screen* screen)
 
 void requestAgilesAndResolve(Screen* screen)
 {
-  SSLGet{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100",
-    sslHeaders,
-    [screen](int status, std::string body) {
+  SSLGet{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100", sslHeaders }
+    .onResponse([screen](int status, std::string body) {
       account.agiles.clear();
 
       if (status == 200)
@@ -854,8 +855,8 @@ void requestAgilesAndResolve(Screen* screen)
 
       if (account.agiles.empty()) showStartupScreen(screen);
       else showAgilesScreen(screen);
-    }
-  }.execute();
+    })
+    .execute();
 }
 
 void createSSLClient() 
@@ -889,13 +890,12 @@ void requestAdminData(Screen* screen)
   account.save();
   showWaitingScreen(screen);
  
-  SSLGet{ "/youtrack/api/admin/users/me?fields=id,login,name,email",
-    sslHeaders,
-    [screen](int status, std::string) {
+  SSLGet{ "/youtrack/api/admin/users/me?fields=id,login,name,email", sslHeaders }
+    .onResponse([screen](int status, std::string) {
       if (status == 200) requestAgilesAndResolve(screen);
       else showStartupScreen(screen);
-    }
-  }.execute();
+    })
+    .execute();
 }
 
 void update_requests()
