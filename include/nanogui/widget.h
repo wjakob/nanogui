@@ -47,6 +47,8 @@ class ToleranceBar;
 class TextArea;
 class Panel;
 class ColorPicker;
+class UpdateHandler;
+
 template<class X> class IntBox;
 template<class X> class FloatBox;
 template<class X> class NumberPicker;
@@ -106,6 +108,7 @@ DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(VisibleObservable, BoolObservable)
+DECLSETTERARGSNEW(OnUpdate, UpdateHandler)
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -521,13 +524,14 @@ public:
 
     void setDebugDraw(bool en) { mDebugDraw = en; }
     template<typename FF, typename none = void> void set() {}
-
+    
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
     template<typename LayoutClass, typename... Args>
     Widget& withLayout(const Args&... args) { setLayout(new LayoutClass(args...)); return *this; }
     template<typename ThemeClass, typename... Args>
     Widget& withTheme(const Args&... args) { setTheme(new ThemeClass(args...)); return *this; }
+
     template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
     template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
     template<typename... Args>Widget& hlayer(int spacing, int margin, const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal, spacing, margin }, args...); }
@@ -565,8 +569,7 @@ public:
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
     template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
     template<typename... Args>Line& line(const Args&... args) { return wdg<Line>(args...); }
-
-
+    
 public:
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(FixedWidth, setFixedWidth)
@@ -584,6 +587,7 @@ public:
     PROPSETTER(FontSize, setFontSize)
     PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
+    PROPSETTER(OnUpdate, addChild)
 
 protected:
     /// Free all resources used by the widget and any children

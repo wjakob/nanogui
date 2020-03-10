@@ -19,6 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Line, Widget)
+RTTI_IMPLEMENT_INFO(UpdateHandler, Widget)
 
 Line::Line(Widget *parent)
     : Widget(parent) {

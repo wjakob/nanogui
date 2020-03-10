@@ -29,7 +29,27 @@ NAMESPACE_BEGIN(nanogui)
 
 DECLSETTER(LineWidth, int)
 
-class NANOGUI_EXPORT Line : public Widget {
+class NANOGUI_EXPORT UpdateHandler : public Widget 
+{
+  std::function<void(Widget*)> handler = nullptr;
+public:
+  RTTI_CLASS_UID(UpdateHandler)
+  RTTI_DECLARE_INFO(UpdateHandler)
+
+  UpdateHandler(const std::function<void (Widget*)>& f)
+    : Widget(nullptr), handler(f)
+  {}
+
+  void afterDraw(NVGcontext*) override
+  {
+    if (!handler)
+      return;
+    handler(parent());
+  }
+};
+
+class NANOGUI_EXPORT Line : public Widget 
+{
 public:
     RTTI_CLASS_UID(Line)
     RTTI_DECLARE_INFO(Line)
