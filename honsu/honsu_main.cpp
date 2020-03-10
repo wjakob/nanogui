@@ -236,6 +236,7 @@ struct SSLGet {
 };
 
 struct SSLPost {
+  using ResponseHandler = std::function< void(int status, std::string)>;
   static std::vector<SSLPost> requests;
   static int invalidRequestTime;
   static int invalidRequestSent;
@@ -244,7 +245,8 @@ struct SSLPost {
   std::string body;
   std::string content_type;
   httplib::Headers headers;
-  std::function< void(int status, std::string)> answer;
+  ResponseHandler answer;
+  SSLPost& onResponse(ResponseHandler handler) { answer = handler; return *this; }
   void execute() { requests.push_back(*this); }
 };
 
@@ -421,15 +423,9 @@ void stopIssueRecord(IssueInfo::Ptr issue)
     { "Cache-Control", "no-cache" } };
 
   showRecPanelWait(true);
-  SSLPost{ path, 
-    payload, "application/xml", 
-    headers,
-    [issue](int status, std::string body) {
-      showRecPanelWait(false);
-      if (status != 200)
-        return;
-    }
-  }.execute();
+  SSLPost{path, payload, "application/xml", headers }
+    .onResponse([issue](int status, std::string body) { showRecPanelWait(false); })
+    .execute();
 
   account.setIssueRecord(issue, false);
 }
