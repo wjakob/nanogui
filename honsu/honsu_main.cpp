@@ -583,19 +583,21 @@ void updateInactiveWarningWindow(Screen* screen)
       }
     }
   });
-  w.button(Caption{ "Add" }, ButtonChangeCallback{ [](Button* b) {
-    account.resetInactiveTime();
-    Window::cast(b->parent())->dispose(); 
-  }});
-  w.button(Caption{ "Remove" }, ButtonChangeCallback{ [] (Button* b) {
-    if (auto issue = account.getActiveIssue())
-    {
-      issue->recordTimeSec -= account.inactiveTimeSec;
-      issue->recordTimeTodaySec -= account.inactiveTimeSec;
-      account.resetInactiveTime();
+  w.button(Caption{ "Add" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+           BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
+           ButtonChangeCallback{ [](Button* b) { account.resetInactiveTime(); Window::cast(b->parent())->dispose(); }});
+  w.button(Caption{ "Remove" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+           BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
+    ButtonChangeCallback{ [](Button* b) {
+      if (auto issue = account.getActiveIssue())
+      {
+        issue->recordTimeSec -= account.inactiveTimeSec;
+        issue->recordTimeTodaySec -= account.inactiveTimeSec;
+        account.resetInactiveTime();
+      }
+      Window::cast(b->parent())->dispose();
     }
-    Window::cast(b->parent())->dispose();
-  }});
+  });
   w.line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
   screen->needPerformLayout(screen);
 }
