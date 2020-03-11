@@ -13,6 +13,13 @@
 #include <nanogui/nanovg_vk.h>
 #include "vulkan_util.h"
 
+#if defined(_WIN32)
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
+#  include <windows.h>
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 namespace internal
