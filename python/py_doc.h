@@ -410,25 +410,15 @@ Parameter ``caption``:
 Parameter ``icon``:
     The icon to display with this Button. See nanogui::Button::mIcon.)doc";
 
-static const char *__doc_nanogui_Button_Flags = R"doc(Flags to specify the button behavior (can be combined with binary OR))doc";
+static const char *__doc_nanogui_Button_Flag = R"doc(Flags to specify the button behavior (can be combined with binary OR))doc";
 
-static const char *__doc_nanogui_Button_Flags_NormalButton = R"doc(A normal Button.)doc";
+static const char *__doc_nanogui_Button_Flag_NormalButton = R"doc(A normal Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_PopupButton = R"doc(A popup Button.)doc";
+static const char *__doc_nanogui_Button_Flag_PopupButton = R"doc(A popup Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_RadioButton = R"doc(A radio Button.)doc";
+static const char *__doc_nanogui_Button_Flag_RadioButton = R"doc(A radio Button.)doc";
 
-static const char *__doc_nanogui_Button_Flags_ToggleButton = R"doc(A toggle Button.)doc";
-
-static const char *__doc_nanogui_Button_IconPosition = R"doc(The available icon positions.)doc";
-
-static const char *__doc_nanogui_Button_IconPosition_Left = R"doc(Button icon on the far left.)doc";
-
-static const char *__doc_nanogui_Button_IconPosition_LeftCentered = R"doc(Button icon on the left, centered (depends on caption text length).)doc";
-
-static const char *__doc_nanogui_Button_IconPosition_Right = R"doc(Button icon on the far right.)doc";
-
-static const char *__doc_nanogui_Button_IconPosition_RightCentered = R"doc(Button icon on the right, centered (depends on caption text length).)doc";
+static const char *__doc_nanogui_Button_Flag_ToggleButton = R"doc(A toggle Button.)doc";
 
 static const char *__doc_nanogui_Button_backgroundColor = R"doc(Returns the background color of this Button.)doc";
 
@@ -448,7 +438,7 @@ options).)doc";
 
 static const char *__doc_nanogui_Button_icon = R"doc(Returns the icon of this Button. See nanogui::Button::mIcon.)doc";
 
-static const char *__doc_nanogui_Button_iconPosition = R"doc(The position of the icon for this Button.)doc";
+static const char *__doc_nanogui_Button_iconAlign = R"doc(The position of the icon for this Button.)doc";
 
 static const char *__doc_nanogui_Button_load = R"doc(Sets the state of this Button provided the given Serializer.)doc";
 
@@ -534,7 +524,7 @@ options).)doc";
 
 static const char *__doc_nanogui_Button_setIcon = R"doc(Sets the icon of this Button. See nanogui::Button::mIcon.)doc";
 
-static const char *__doc_nanogui_Button_setIconPosition = R"doc(Sets the position of the icon for this Button.)doc";
+static const char *__doc_nanogui_Button_setIconAlign = R"doc(Sets the position of the icon for this Button.)doc";
 
 static const char *__doc_nanogui_Button_setPushed = R"doc(Sets whether or not this Button is currently pushed.)doc";
 
@@ -1086,6 +1076,16 @@ descriptive lables for each item.)doc";
 static const char *__doc_nanogui_ComboBox_setItems_2 = R"doc(Sets the items for this ComboBox.)doc";
 
 static const char *__doc_nanogui_ComboBox_setSelectedIndex = R"doc(Sets the current index this ComboBox has selected.)doc";
+
+static const char *__doc_nanogui_IconAlign = R"doc(The available icon positions.)doc";
+
+static const char *__doc_nanogui_IconAlign_Left = R"doc(Icon on the far left.)doc";
+
+static const char *__doc_nanogui_IconAlign_LeftCentered = R"doc(Icon on the left, centered (depends on caption text length).)doc";
+
+static const char *__doc_nanogui_IconAlign_Right = R"doc(Icon on the far right.)doc";
+
+static const char *__doc_nanogui_IconAlign_RightCentered = R"doc(Icon on the right, centered (depends on caption text length).)doc";
 
 static const char *__doc_nanogui_Cursor =
 R"doc(Cursor shapes available to use in GLFW. Shape of actual cursor

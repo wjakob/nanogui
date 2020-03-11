@@ -106,7 +106,7 @@ public:
 #if defined(__APPLE__) || defined(__linux__)
 static void (*sigint_handler_prev)(int) = nullptr;
 static void sigint_handler(int sig) {
-    nanogui::leave();
+    nanogui::sample::stop_frame_loop();
     signal(sig, sigint_handler_prev);
     raise(sig);
 }
@@ -237,8 +237,8 @@ PYBIND11_MODULE(nanogui, m) {
     }, py::arg("refresh") = 50, py::arg("detach") = py::none(),
        D(mainloop), py::keep_alive<0, 2>());
 
-    m.def("leave", &nanogui::leave, D(leave));
-    m.def("active", &nanogui::active, D(active));
+    m.def("stop_frame_loop", &nanogui::sample::stop_frame_loop, D(leave));
+    m.def("is_main_loop_active", &nanogui::sample::is_main_loop_active, D(active));
     m.def("file_dialog", (std::string(*)(const std::vector<std::pair<std::string, std::string>> &, bool)) &nanogui::file_dialog, D(file_dialog));
     m.def("file_dialog", (std::vector<std::string>(*)(const std::vector<std::pair<std::string, std::string>> &, bool, bool)) &nanogui::file_dialog, D(file_dialog, 2));
     #if defined(__APPLE__)
@@ -246,6 +246,12 @@ PYBIND11_MODULE(nanogui, m) {
     #endif
     m.def("utf8", [](int c) { return std::string(utf8(c).data()); }, D(utf8));
     m.def("loadImageDirectory", &nanogui::loadImageDirectory, D(loadImageDirectory));
+
+    py::enum_<IconAlign>(m, "IconAlign", D(IconAlign))
+      .value("Left", IconAlign::Left)
+      .value("LeftCentered", IconAlign::LeftCentered)
+      .value("RightCentered", IconAlign::RightCentered)
+      .value("Right", IconAlign::Right);
 
     py::enum_<Cursor>(m, "Cursor", D(Cursor))
         .value("Arrow", Cursor::Arrow)

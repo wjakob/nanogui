@@ -326,7 +326,7 @@ GET(std::string, *u_.string_)
 GET(array, *u_.array_)
 GET(object, *u_.object_)
 GET(double,
-    (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, const_cast<value *>(this)->u_.number_ = u_.int64_),
+    (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, const_cast<value *>(this)->u_.number_ = u_.int64_) > 0,
      u_.number_))
 GET(int64_t, u_.int64_)
 

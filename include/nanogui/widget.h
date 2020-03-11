@@ -58,7 +58,7 @@ namespace Json { class value; }
 
 enum TextHAlign { hLeft = 0, hCenter, hRight };
 enum TextVAlign { vTop = 3, vMiddle, vBottom };
-enum IconAlign {
+enum class IconAlign {
   Left = 0,         ///< Button icon on the far left.
   LeftCentered = 1, ///< Button icon on the left, centered (depends on caption text length).
   RightCentered = 2,///< Button icon on the right, centered (depends on caption text length).
@@ -125,7 +125,7 @@ public:
     RTTI_DECLARE_INFO(Widget)
 
     /// Construct a new widget with the given parent widget
-    Widget(Widget *parent);
+    explicit Widget(Widget *parent);
     Widget(Widget&) = delete;
     Widget& operator =(Widget&) = delete;
 

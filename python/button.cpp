@@ -22,8 +22,8 @@ void register_button(py::module &m) {
         .def("setIcon", &Button::setIcon, D(Button, setIcon))
         //.def("flags", &Button::flags, D(Button, flags))
         .def("setFlags", &Button::setFlags, D(Button, setFlags))
-        .def("iconPosition", &Button::iconPosition, D(Button, iconPosition))
-        .def("setIconPosition", &Button::setIconPosition, D(Button, setIconPosition))
+        .def("iconAlign", &Button::iconAlign, D(Button, iconAlign))
+        .def("setIconAlign", &Button::setIconAlign, D(Button, setIconAlign))
         .def("pushed", &Button::pushed, D(Button, pushed))
         .def("setPushed", &Button::setPushed, D(Button, setPushed))
         .def("callback", &Button::callback, D(Button, callback))
@@ -33,13 +33,7 @@ void register_button(py::module &m) {
         .def("buttonGroup", &Button::buttonGroup, D(Button, buttonGroup))
         .def("setButtonGroup", &Button::setButtonGroup, D(Button, setButtonGroup));
 
-    py::enum_<Button::IconPosition>(button, "IconPosition", D(Button, IconPosition))
-        .value("Left", Button::IconPosition::Left)
-        .value("LeftCentered", Button::IconPosition::LeftCentered)
-        .value("RightCentered", Button::IconPosition::RightCentered)
-        .value("Right", Button::IconPosition::Right);
-
-    py::enum_<Button::Flag>(button, "Flag", D(Button, Flags))
+    py::enum_<Button::Flag>(button, "Flag", D(Button, Flag))
         .value("NormalButton", Button::Flag::NormalButton)
         .value("RadioButton", Button::Flag::RadioButton)
         .value("ToggleButton", Button::Flag::ToggleButton)

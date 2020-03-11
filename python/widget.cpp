@@ -34,7 +34,7 @@ void register_widget(py::module &m) {
         .def("fixedHeight", &Widget::fixedHeight, D(Widget, fixedHeight))
         .def("setFixedHeight", &Widget::setFixedHeight, D(Widget, setFixedHeight))
         .def("visible", &Widget::visible, D(Widget, visible))
-        .def("setVisible", &Widget::setVisible, D(Widget, setVisible))
+        .def("setVisible", (void(Widget::*)(bool))&Widget::setVisible, D(Widget, setVisible))
         .def("visibleRecursive", &Widget::visibleRecursive, D(Widget, visibleRecursive))
         .def("children", (std::vector<Widget *>&(Widget::*)(void)) &Widget::children,
              D(Widget, children), py::return_value_policy::reference)
@@ -42,9 +42,7 @@ void register_widget(py::module &m) {
         .def("addChild", (void (Widget::*) (Widget *)) &Widget::addChild, D(Widget, addChild, 2))
         .def("childCount", &Widget::childCount, D(Widget, childCount))
         .def("__len__", &Widget::childCount, D(Widget, childCount))
-        .def("__iter__", [](const Widget &w) {
-                return py::make_iterator(w.children().begin(), w.children().end());
-            }, py::keep_alive<0, 1>())
+        .def("__iter__", [](const Widget &w) { return py::make_iterator(w.children().begin(), w.children().end()); }, py::keep_alive<0, 1>())
         .def("childIndex", &Widget::childIndex, D(Widget, childIndex))
         .def("__getitem__", (Widget* (Widget::*)(int)) &Widget::childAt, D(Widget, childAt))
         .def("removeChild", (void(Widget::*)(int)) &Widget::removeChild, D(Widget, removeChild))

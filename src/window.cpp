@@ -449,7 +449,7 @@ bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     
     if (isMouseButtonLeft(button) && mEnabled) 
     {
-      bool moveByHeader = mMoveByHeaderOnly < 0 ? theme()->windowMoveFromTitlebarOnly : mMoveByHeaderOnly;
+      bool moveByHeader = mMoveByHeaderOnly < 0 ? theme()->windowMoveFromTitlebarOnly : (mMoveByHeaderOnly > 0);
       int hh = moveByHeader ? getHeaderHeight() : height();
       mDrag = (down && (p - mPos).y() < hh) ? dragHeader : dragNone;
       bool edgeResize = canEdgeResize();
@@ -591,7 +591,7 @@ void Panel::draw(NVGcontext *ctx)
   int hh = getHeaderHeight();
 
   /* Draw window */
-  int realH = isCollapsed() ? hh : mSize.y();
+  //int realH = isCollapsed() ? hh : mSize.y();
 
   nvgSave(ctx);
 
