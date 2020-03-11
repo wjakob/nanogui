@@ -348,18 +348,19 @@ Vector2i sample::get_cursor_pos()
 void sample::set_window_topmost(WindowHandle w, bool topalways)
 {
 #if WIN32
-  if (!w)
-    w = GetActiveWindow();
-  ShowWindow((HWND)w, TRUE);
+  HWND realw = glfwGetWin32Window((GLFWwindow*)w);
+  
+  ShowWindow(realw, TRUE);
+  SetForegroundWindow(realw);
   RECT rect;
 
   // get the current window size and position
-  GetWindowRect((HWND)w, &rect);
+  GetWindowRect(realw, &rect);
 
   // now change the size, position, and Z order
   // of the window.
-  ::SetWindowPos((HWND)w,       // handle to window
-    topalways ? HWND_TOPMOST : HWND_TOP,  // placement-order handle
+  ::SetWindowPos(realw,       // handle to window
+    topalways ? HWND_TOPMOST : HWND_BOTTOM,  // placement-order handle
     rect.left,     // horizontal position
     rect.top,      // vertical position
     rect.right - rect.left,  // width
