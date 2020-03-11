@@ -429,7 +429,8 @@ inline bool value::contains(const size_t idx) const {
 }
 
 inline bool value::contains(const std::string &key) const {
-  PICOJSON_ASSERT(is<object>());
+  //PICOJSON_ASSERT(is<object>());
+  if (!is<object>()) return false;
   object::const_iterator i = u_.object_->find(key);
   return i != u_.object_->end();
 }

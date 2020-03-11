@@ -48,6 +48,7 @@ struct json {
   template<> json& set<_ss>(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
   template<> json& set<_vf>(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
 
+  Json::value& operator[](const _s& v) { return obj[v]; }
 
   json& name(const _s& n) { obj["name"] = _v(n); return *this; }
   json& type(const _s& n) { obj["type"] = _v(n); return *this; }
@@ -84,10 +85,11 @@ struct json {
 
   void load(const _s& filename)
   {
-    std::ifstream t(filename, std::ifstream::binary);
     Json::value x;
+    std::ifstream t(filename, std::ifstream::binary);
     t >> x;
-    obj = (x.is<Json::null>() ? Json::value("") : x).get_obj();
+    if (x.is<Json::object>()) obj = x.get_obj();
+    else obj = Json::object{};
     t.close();
   }
 
