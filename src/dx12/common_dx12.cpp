@@ -676,7 +676,7 @@ void sample::present_frame(void* window)
     pDX12.fr_end();
 }
 
-void sample::clear_frame(Color background) 
+void sample::clear_frame(const Color& background) 
 {
   if (!pDX12.isRunning)
     return;

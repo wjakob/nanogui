@@ -817,7 +817,7 @@ float getTimeFromStart(void)
     return (time - dx11startTime)/1000000.f;
 }
 
-void sample::clear_frame(Color background)
+void sample::clear_frame(const Color& background)
 {
   int n;
   int i;

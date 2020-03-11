@@ -110,7 +110,7 @@ uint32_t key2fourcc(int key)
   }
 }
 
-void sample::clear_frame(Color background)
+void sample::clear_frame(const Color& background)
 {
   VkResult res;
 
