@@ -115,6 +115,7 @@ struct AgileInfo
 
 void open_url(const std::string& url, const std::string& prefix);
 std::function<void(bool)> showRecPanelWait = [](bool) {};
+std::function<void(bool)> showAppExclusive = [](bool) {};
 
 struct Url
 {
@@ -182,17 +183,17 @@ struct AccountData
   void load() {
     json data;
     data.load(filename);
-    title = data.obj["title"].get_str("value");
-    url = data.obj["url"].get_str("value");
-    token = data.obj["token"].get_str("value");
+    title = data.get<std::string>("title");
+    url = data.get<std::string>("url");
+    token = data.get<std::string>("token");
   }
 
   void save() {
     json data;
     data.load(filename);
-    data.obj["title"] = json().set(title);
-    data.obj["url"] = json().set(url);
-    data.obj["token"] = json().set(token);
+    data["title"] = json().set(title);
+    data["url"] = json().set(url);
+    data["token"] = json().set(token);
     data.save(filename);
   }
 
@@ -557,13 +558,15 @@ public:
 
 void updateInactiveWarningWindow(Screen* screen)
 {
-  if (account.inactiveTimeSec < (5 * 60)) 
+  if (account.inactiveTimeSec < (5*60)) 
     return;
   
   if (auto w = screen->findWidget("#inactive_warn"))
     return;
-
+  
   account.suspendInactiveTime = true;
+  showAppExclusive(true);
+
   auto& w = screen->window(Position{ 0, 0 }, FixedSize{ screen->size() },
                            WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
                            WidgetId{ "#inactive_warn" }, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
@@ -575,16 +578,16 @@ void updateInactiveWarningWindow(Screen* screen)
         return;
 
       account.inactiveLastTimeSec = account.inactiveTimeSec;
-      if (auto lb = Label::cast(w))
-      {
-        std::string time = sec2str(account.inactiveTimeSec);
-        lb->setCaption("What should I do with " + time + "?");
-      }
+      Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
     }
   });
   w.button(Caption{ "Add" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
            BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
-           ButtonChangeCallback{ [](Button* b) { account.resetInactiveTime(); Window::cast(b->parent())->dispose(); }});
+    ButtonChangeCallback{ [](Button* b) { 
+            account.resetInactiveTime(); 
+            Window::cast(b->parent())->dispose();
+            showAppExclusive(false);
+  }});
   w.button(Caption{ "Remove" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
            BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
     ButtonChangeCallback{ [](Button* b) {
@@ -595,8 +598,8 @@ void updateInactiveWarningWindow(Screen* screen)
         account.resetInactiveTime();
       }
       Window::cast(b->parent())->dispose();
-    }
-  });
+      showAppExclusive(false);
+  }});
   w.line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
   screen->needPerformLayout(screen);
 }
@@ -977,10 +980,6 @@ void showStartupScreen(Screen* screen)
   screen->needPerformLayout(screen);
 }
 
-namespace nanogui { namespace sample {
-  void set_window_topmost(WindowHandle w, bool topalways);
-}}
-
 class HonsuScreen : public Screen {
 public:
     HonsuScreen(sample::WindowHandle hw, const Vector2i& size, const std::string& caption) : Screen(size, caption, false) 
@@ -1064,6 +1063,7 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::init();
   Vector2i size{ 400, 600 };
   auto window = nanogui::sample::create_window(size.x(), size.y(), "Honsu", true, false);
+  showAppExclusive = [window](bool v) { sample::set_window_topmost(window, v); };
   nanogui::sample::remove_window_border(window);
   nanogui::sample::create_context();
 
