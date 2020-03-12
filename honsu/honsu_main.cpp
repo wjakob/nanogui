@@ -1068,9 +1068,10 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::sample::create_context();
 
   {
-    HonsuScreen screen(window, size + Vector2i{13, 36}, "");
+    HonsuScreen screen(window, size /* + Vector2i{13, 36} */, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
+    screen.performLayout();
     
     bool requests_thread_active = true;
     auto requests_thread = std::thread([&] {
