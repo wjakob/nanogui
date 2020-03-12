@@ -1065,7 +1065,7 @@ public:
 
     bool mouseButtonCallbackEvent(int button, int action, int modifiers) override
     {
-      mDrag = (isMouseActionPress(action));
+      mDrag = (isMouseActionPress(action) && mMousePos.y() < 60);
       if (mDrag)
       {
         mCursorPos = sample::get_cursor_pos();
