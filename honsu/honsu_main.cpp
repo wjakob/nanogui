@@ -361,9 +361,34 @@ void createWindowHeader(Widget& w)
 }
 
 void showTasksWindow(Screen* screen);
+
+class IssuePanel : public Frame
+{
+public:
+  IssueInfo::Ptr issue;
+
+  IssuePanel(Widget* parent, IssueInfo::Ptr _issue)
+    : Frame(parent), issue(_issue)
+  {
+    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
+
+    auto& header = hlayer(2, 2, FixedHeight{ 30 });
+    header.link(Caption{ issue->entityId }, TextColor{ Color::white },
+      ButtonCallback{ [this] { issue->openUrl(account.url); } });
+    header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
+    header.widget();
+
+    label(Caption{ issue->summary });
+
+    spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+            WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
+  }
+};
+
+
 void showRecordsWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
+  auto& w = createWindow(screen, "#records_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
 
   createWindowHeader(w);
 
@@ -378,6 +403,33 @@ void showRecordsWindow(Screen* screen)
     .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption })
     .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
           RelativeSize{ 0.9f, 0.f }, LineWidth{ 2 });
+
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(2, 2);
+
+  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+                 WidgetId{ "#records_wait" }, FixedHeight{ screen->width()/2 });
+
+  SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}
+    .onResponse([v = &vstack](int status, std::string body) {
+      if (status != 200)
+        return;
+
+      Json::value response;
+      Json::parse(response, body);
+
+      int i = 0;
+      Json::value info = response.get("issue").get(i++);
+      while (!info.is<Json::null>())
+      {
+        IssueInfo::Ptr issue = std::make_shared<IssueInfo>();
+        issue->id = info.get("id").get_str();
+        issue->entityId = info.get("entityId").get_str();
+        info = response.get(i++);
+        v->wdg<IssuePanel>(issue);
+      }
+      v->screen()->needPerformLayout(v);
+    })
+    .execute();
 
   screen->needPerformLayout(screen);
 }
