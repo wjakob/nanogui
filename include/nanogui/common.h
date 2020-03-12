@@ -570,7 +570,7 @@ struct BoolObservable {
 
   operator bool() const { return _b ? *_b : _get ? _get() : false; }
   BoolObservable& operator &=(bool v) { bool t = *this; (*this) = t && v; return *this; }
-  BoolObservable& operator=(bool v) { _b ? *_b = v : _set ? _set(v) : false; return *this; }
+  BoolObservable& operator=(bool v) { _b ? (*_b = v) : (_set ? _set(v) : _set); return *this; }
 };
 
 struct BoolObservableRef : public BoolObservable {
@@ -590,8 +590,8 @@ struct ScalarObservable {
 
   
 
-  operator typename Scalar() const { return _v ? *_v : _get ? _get() : Scalar(); }
-  void operator=(typename Scalar v) { _v ? *_v = v : _set ? _set(v) : Scalar(); }
+  operator Scalar() const { return _v ? *_v : _get ? _get() : Scalar(); }
+  void operator=(Scalar v) { _v ? *_v = v : _set ? _set(v) : Scalar(); }
 };
 
 template<class Scalar>

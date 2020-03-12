@@ -388,7 +388,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
   return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
-bool EditorWorkspace::scrollEvent(const Vector2i &p, const Vector2f &rel)
+bool EditorWorkspace::scrollEvent(const Vector2i &, const Vector2f &rel)
 {
   if (rel.y() > 0)
     selectPreviousSibling();
@@ -422,7 +422,7 @@ void EditorWorkspace::_drawNextWidget(NVGcontext* ctx)
   }
 }
 
-bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, int button, int modifiers)
+bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, int /*button*/, int /*modifiers*/)
 {
   mLastMousePos = pp;
   if (_currentMode == EditMode::Select || _currentMode == EditMode::SelectNewParent)
@@ -519,7 +519,7 @@ bool EditorWorkspace::mouseMotionEvent(const Vector2i &pp, const Vector2i &rel, 
   return false;
 }
 
-bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down, int modifiers)
+bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down, int /*modifiers*/)
 {
   if (isMouseButtonLeft(button) && down)
   {
@@ -598,7 +598,7 @@ bool EditorWorkspace::mouseButtonEvent(const Vector2i &pp, int button, bool down
         mElementUnderMouse = getEditableElementFromPoint(this, pp);
         if (mElementUnderMouse != mSelectedElement)
         {
-          auto saveNewParent = mElementUnderMouse;
+          //auto saveNewParent = mElementUnderMouse;
           auto saveMovedElm = mSelectedElement;
 
           mElementUnderMouse->addChild(mSelectedElement);
@@ -755,7 +755,7 @@ void EditorWorkspace::addChild(int index, Widget * widget)
     mChildrenChangeCallback();
 }
 
-void EditorWorkspace::_drawWidthRectangle(NVGcontext* ctx, Color& color, int ww, const Vector4i& r)
+void EditorWorkspace::_drawWidthRectangle(NVGcontext* ctx, Color& color, int /*ww*/, const Vector4i& r)
 {
   nvgBeginPath(ctx);
   nvgStrokeColor(ctx, color);
@@ -929,7 +929,7 @@ void EditorWorkspace::pasteJsonToSelectedElement()
   //getEnvironment()->setFocus(this);
 }
 
-void EditorWorkspace::save(Serializer& out) const
+void EditorWorkspace::save(Serializer&) const
 {
   //out->AddBool( L"DrawGrid", drawGrid_);
   //out->AddBool( L"UseGrid", UseGrid);
@@ -937,7 +937,7 @@ void EditorWorkspace::save(Serializer& out) const
   //out->AddInt( L"MenuCommandStart", MenuCommandStart);
 }
 
-bool EditorWorkspace::load(Serializer& in )
+bool EditorWorkspace::load(Serializer&)
 {
   //setGridVisible(in->getAttributeAsBool(L"DrawGrid"));
   //setUseGrid(in->getAttributeAsBool(L"UseGrid"));
@@ -1086,7 +1086,7 @@ void EditorWorkspace::toggleOptionsVisible()
 
 void EditorWorkspace::saveSelectedElementToJson()
 {
-    Widget* elm = getSelectedElement();
+    //Widget* elm = getSelectedElement();
 
     //getEnvironment()->saveUI( io::FilePath( "temp/testXml.ui" ), elm );
 }

@@ -281,7 +281,7 @@ void Picflow::prev( int offset )
 void Picflow::next( int offset )
 {
 	mActiveIndex += offset;
-  mActiveIndex = std::min<int>( mActiveIndex, mImages.size()-1 );
+  mActiveIndex = std::min<size_t>( mActiveIndex, mImages.size()-1 );
 
   mNeedUpdateImages = true;
 }
@@ -360,7 +360,7 @@ bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)
 Picflow::~Picflow() {}
 
 const char* Picflow::listItem( uint32_t id ) const { return mImages[ id ].name.c_str(); }
-void Picflow::setSelected( const char *item ) {}
+void Picflow::setSelected( const char */*item*/ ) {}
 
 void Picflow::setSelected( int index )
 {

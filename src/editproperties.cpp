@@ -89,6 +89,7 @@ void PropertiesEditor::parse(Widget* w)
       //_data->get(keyCaption, keyCaptionValue);
       auto& wcaption = grid.label(Caption{ capvalue.empty() ? obj.first : capvalue },
                                   titleSize);
+      (void)wcaption;
       std::cout << capvalue << std::endl;
 
       if (typevalue == "position")
@@ -121,6 +122,7 @@ void PropertiesEditor::parse(Widget* w)
                                  CheckboxCallback{ [&](bool v) { jval.set_bool("value", v); updateAttribs(); } }, 
                                  CheckboxState{ jval.get_bool("value") },
                                  valueSize);
+        (void)ch;
       }
       else if (typevalue == "integer")
       {
