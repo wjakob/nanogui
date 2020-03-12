@@ -36,6 +36,7 @@ matrix:
       python: "3.7"
       before_install:
         - cmake --version
+        - choco install openssl
       script:     
         - mkdir -p build
         - cd build
