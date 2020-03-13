@@ -376,12 +376,12 @@ public:
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
     auto& header = hlayer(2, 2, FixedHeight{ 30 });
-    header.link(Caption{ issue->entityId }, TextColor{ Color::white },
+    header.link(Caption{ issue->id }, TextColor{ Color::grey },
                 ButtonCallback{ [this] { issue->openUrl(account.url); } });
-    header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
+    header.link(Caption{ issue->state }, TextColor{ Color::grey }, WidgetCursor{ Cursor::Arrow });
     header.widget();
 
-    label(Caption{ issue->summary });
+    label(Caption{ issue->summary }, FontSize{ 26 }, TextColor{ Color::white });
    // spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
    //         WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
   }
@@ -668,7 +668,7 @@ public:
     setSubElement(true);
 
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
-    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
+    line(LineWidth{ 4 }, IsSubElement{ true }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::Left });
 
     auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
     header.label(WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 });
@@ -729,18 +729,25 @@ public:
   IssueInfo::Ptr issue;
 
   TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
-    : Frame(parent), issue(_issue)
+    : Frame(parent, 
+            BorderColor{ Color::ligthDarkGrey }, BackgroundColor{ Color::heavyDarkGrey }, 
+            BorderSize{ 2 }, CornerRadius{ 6 }),
+      issue(_issue)
   {
     withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
 
-    auto& header = hlayer(2, 2, FixedHeight{ 30 });
-    header.link(Caption{ issue->entityId }, TextColor{ Color::white },
+    auto& header = hlayer(2, 2, FixedHeight{ 26 });
+    header.link(Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
                 ButtonCallback{ [this] { issue->openUrl(account.url); } });
-    header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
+    header.link(Caption{ issue->state }, TextColor{ Color::grey }, FontSize{ 14 },
+                WidgetCursor{ Cursor::Arrow });
     header.widget();
     header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
 
-    label(Caption{ issue->summary });
+    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white });
+
+    line(BackgroundColor{ Color::ligthDarkGrey }, LineWidth{ 6 },
+         DrawFlags{ Line::Vertical | Line::CenterV | Line::Left }, IsSubElement{ true });
   }
 };
 
@@ -764,7 +771,7 @@ void showTasksWindow(Screen* screen)
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
       DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
       HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
-    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{true});
 
   auto& actions = w.hstack(5, 2, FixedHeight{ 40 });
   auto action = [&](int icon, auto func) { actions.toolbutton(Icon{ icon }, FixedWidth{ 40 },
