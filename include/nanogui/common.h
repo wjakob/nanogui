@@ -160,11 +160,11 @@ template <class T>
 class Vector2
 {
 public:
-  T& x() { return _d[0]; }
-  T& y() { return _d[1]; }
+  inline T& x() { return _d[0]; }
+  inline T& y() { return _d[1]; }
 
-  const T& x() const { return _d[0]; }
-  const T& y() const { return _d[1]; }
+  inline const T& x() const { return _d[0]; }
+  inline const T& y() const { return _d[1]; }
 
   //! Default constructor (null vector)
   Vector2() : Vector2(0, 0) {}
@@ -179,8 +179,8 @@ public:
   static Vector2 Zero() { return Vector2(0, 0); }
 
   // operators
-  Vector2 operator-() const { return Vector2(-x(), -y()); }
-  Vector2& operator=(const Vector2& o) { x() = o.x(); y() = o.y(); return *this; }
+  inline Vector2 operator-() const { return Vector2(-x(), -y()); }
+  inline Vector2& operator=(const Vector2& o) { x() = o.x(); y() = o.y(); return *this; }
 
   Vector2 operator+(const Vector2& o) const { return{ x() + o.x(), y() + o.y() }; }
 
@@ -253,6 +253,8 @@ public:
 
   inline Vector2 yy() const { return{ y(), y() }; }
   inline Vector2 _0y()const { return{ 0,   y() }; }
+  inline Vector2 _x0()const { return{ x(), 0 }; }
+
   inline Vector2 xx() const { return{ x(), x() }; }
   inline Vector2 yx() const { return{ y(), x() }; }
 
