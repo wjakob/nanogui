@@ -380,11 +380,10 @@ public:
 
     label(Caption{ issue->summary });
 
-    spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
-            WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
+   // spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+   //         WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
   }
 };
-
 
 void showRecordsWindow(Screen* screen)
 {
@@ -406,8 +405,8 @@ void showRecordsWindow(Screen* screen)
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(2, 2);
 
-  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
-                 WidgetId{ "#records_wait" }, FixedHeight{ screen->width()/2 });
+ // vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+ //s                WidgetId{ "#records_wait" }, FixedHeight{ screen->width()/2 });
 
   SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}
     .onResponse([v = &vstack](int status, std::string body) {
@@ -418,14 +417,16 @@ void showRecordsWindow(Screen* screen)
       Json::parse(response, body);
 
       int i = 0;
-      Json::value info = response.get("issue").get(i++);
+      Json::value issues = response.get("issue");
+      Json::value info = issues.get(i++);
       while (!info.is<Json::null>())
       {
         IssueInfo::Ptr issue = std::make_shared<IssueInfo>();
         issue->id = info.get("id").get_str();
         issue->entityId = info.get("entityId").get_str();
-        info = response.get(i++);
         v->wdg<IssuePanel>(issue);
+        
+        info = issues.get(i++);
       }
       v->screen()->needPerformLayout(v);
     })
