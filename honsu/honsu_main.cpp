@@ -488,6 +488,12 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   account.setIssueRecord(issue, false);
 }
 
+void makeDayInterval(std::tm& b, std::tm& e) 
+{
+  b.tm_sec = b.tm_min = b.tm_hour = 0;
+  e.tm_sec = e.tm_min = 59; e.tm_hour = 23;
+}
+
 void startIssueRecord(IssueInfo::Ptr issue)
 {
   std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
@@ -505,15 +511,8 @@ void startIssueRecord(IssueInfo::Ptr issue)
 
       std::time_t timet = std::time(nullptr);
       std::tm* tmt = std::localtime(&timet);
-      std::tm tm_day_start = *tmt, 
-              tm_day_end = *tmt;
-      tm_day_start.tm_sec = 0;
-      tm_day_start.tm_min = 0;
-      tm_day_start.tm_hour = 0;
-
-      tm_day_end.tm_sec = 59;
-      tm_day_end.tm_min = 59;
-      tm_day_end.tm_hour = 23;
+      std::tm tm_day_start = *tmt, tm_day_end = *tmt;
+      makeDayInterval(tm_day_start, tm_day_end);
     
       //mktime convert tm to secs from epoch
       std::time_t current_time = mktime(tmt) * 1000;
