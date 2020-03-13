@@ -49,7 +49,7 @@ public:
   void draw(NVGcontext *ctx) override;
   void setBorderSize(float b) { mBorderSize = b; }
   void setCornerRadius(float r) { mCornerRadius = r; }
-
+  void setBorderColor(const Color& color) { mBorderColor = color; }
   void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
 
   bool inFocusChain() const;
@@ -63,6 +63,8 @@ private:
 public:
   PROPSETTER(CornerRadius, setCornerRadius)
   PROPSETTER(BackgroundColor, setBackgroundColor)
+  PROPSETTER(BorderSize, setBorderSize)
+  PROPSETTER(BorderColor, setBorderColor)
 };
 
 class NANOGUI_EXPORT Window : public Widget 
