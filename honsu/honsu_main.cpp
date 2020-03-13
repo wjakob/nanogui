@@ -149,9 +149,12 @@ struct IssueInfo
 
   void openUrl(std::string base) { open_url(y_url.http + base + y_url.issues + entityId, ""); }
 
-  void readField()
+  void readField(const Json::value& _js)
   {
     int i = 0;
+    js = _js;
+    id = js.get("id").get_str();
+    entityId = js.get("entityId").get_str();
     Json::value field = js.get("field");
     Json::value info = field.get(i++);
     while (!info.is<Json::null>())
@@ -374,12 +377,11 @@ public:
 
     auto& header = hlayer(2, 2, FixedHeight{ 30 });
     header.link(Caption{ issue->entityId }, TextColor{ Color::white },
-      ButtonCallback{ [this] { issue->openUrl(account.url); } });
+                ButtonCallback{ [this] { issue->openUrl(account.url); } });
     header.link(Caption{ issue->state }, TextColor{ Color::white }, WidgetCursor{ Cursor::Arrow });
     header.widget();
 
     label(Caption{ issue->summary });
-
    // spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
    //         WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
   }
@@ -387,23 +389,21 @@ public:
 
 void showRecordsWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#records_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
+  auto& w = createWindow(screen, "#records_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
 
   createWindowHeader(w);
 
-  auto& buttons = w.hlayer(2, 2);
+  auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
+  auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
+    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
+      .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+            DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+  };
 
-  buttons
-    .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption },  HoveredTextColor{ Color::red }, 
-            ButtonCallback{ [screen] { showTasksWindow(screen); } })
-    .line(BackgroundColor{ Color::grey }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
-          RelativeSize{ 0.9f, 0.f }, LineWidth{ 2 });
-  buttons
-    .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption })
-    .line(BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH },
-          RelativeSize{ 0.9f, 0.f }, LineWidth{ 2 });
+  hbutton("Boards", Color::grey, Color::red, [=] { showTasksWindow(screen); });
+  hbutton("Records", Color::red, Color::grey, [] {});
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(2, 2);
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
 
  // vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
  //s                WidgetId{ "#records_wait" }, FixedHeight{ screen->width()/2 });
@@ -422,13 +422,14 @@ void showRecordsWindow(Screen* screen)
       while (!info.is<Json::null>())
       {
         IssueInfo::Ptr issue = std::make_shared<IssueInfo>();
-        issue->id = info.get("id").get_str();
-        issue->entityId = info.get("entityId").get_str();
+        issue->readField(info);
         v->wdg<IssuePanel>(issue);
         
         info = issues.get(i++);
       }
-      v->screen()->needPerformLayout(v);
+
+      auto scr = v->screen();
+      scr->needPerformLayout(scr);
     })
     .execute();
 
@@ -750,14 +751,14 @@ void showTasksWindow(Screen* screen)
   createWindowHeader(w);
 
   auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
-  auto hbutton = [&](auto caption, auto color, auto hover) {
-    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover })
+  auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
+    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
            .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, 
                  DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH } );
   };
 
-  hbutton("Boards", Color::red, Color::grey);
-  hbutton("Records", Color::grey, Color::red);
+  hbutton("Boards", Color::red, Color::grey, [] {});
+  hbutton("Records", Color::grey, Color::red, [=] { showRecordsWindow(screen); });
 
   w.hlayer(2, 2, FixedHeight{ 40 })
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
@@ -774,7 +775,7 @@ void showTasksWindow(Screen* screen)
   action(ENTYPO_ICON_PLUS, [screen] { createNewIssue(screen); });
   action(ENTYPO_ICON_CCW, [screen] { showTasksWindow(screen); });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(0, 2);
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
   for (auto& issue : account.issues)
     vstack.wdg<TaskPanel>(issue);
 
@@ -816,10 +817,7 @@ void requestTasksAndResolve(Screen* screen, std::string board)
         while (!info.is<Json::null>())
         {
           auto issue = std::make_shared<IssueInfo>();
-          issue->js = info;
-          issue->id = info.get("id").get_str();
-          issue->entityId = info.get("entityId").get_str();
-          issue->readField();
+          issue->readField(info);
 
           account.issues.push_back(issue);
           info = issues.get(i++);
