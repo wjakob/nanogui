@@ -350,7 +350,7 @@ void showWaitingScreen(Screen* screen)
 
 void createWindowHeader(Widget& w)
 {
-  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 });
+  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{40});
   c.toolbutton(Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 },
                DrawFlags{ Button::DrawBody | Button::DrawIcon },
                BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
@@ -745,38 +745,36 @@ public:
 
 void showTasksWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#tasks_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 10 });
+  auto& w = createWindow(screen, "#tasks_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
   
   createWindowHeader(w);
 
-  auto& buttons = w.hlayer(2, 2);
+  auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
+  auto hbutton = [&](auto caption, auto color, auto hover) {
+    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover })
+           .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, 
+                 DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH } );
+  };
 
-  auto linestyle = DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH };
-  buttons
-    .button(Caption{ "Boards" }, DrawFlags{ Button::DrawCaption })
-    .line(BackgroundColor{ Color::red }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, linestyle);
+  hbutton("Boards", Color::red, Color::grey);
+  hbutton("Records", Color::grey, Color::red);
 
-  buttons
-    .button(Caption{ "Records" }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ Color::red }, 
-            ButtonCallback{ [screen] { showRecordsWindow(screen); }})
-    .line(BackgroundColor{ Color::grey }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, linestyle);
-
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(2, 2);
-
-  vstack
+  w.hlayer(2, 2, FixedHeight{ 40 })
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
-            DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
-            HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile);} })
-    .line(BackgroundColor{ Color::black }, linestyle);
+      DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
+      HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
+    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
 
-  auto& actions = vstack.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 10 });
-  actions.button(Caption{ "create issue" }, BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{Color::heavyDarkGrey},
-                 DrawFlags{ Button::DrawBody | Button::DrawCaption }, CornerRadius{ 4 },
-                 ButtonCallback{ [screen] { createNewIssue(screen); }});
-  actions.toolbutton(Icon{ ENTYPO_ICON_CCW }, BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
-                     DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 },
-                     ButtonCallback{ [screen] { showTasksWindow(screen); }});
+  auto& actions = w.hstack(5, 2, FixedHeight{ 40 });
+  auto action = [&](int icon, auto func) { actions.toolbutton(Icon{ icon }, FixedWidth{ 40 },
+      BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
+      DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 },  ButtonCallback{ func });
+  };
 
+  action(ENTYPO_ICON_PLUS, [screen] { createNewIssue(screen); });
+  action(ENTYPO_ICON_CCW, [screen] { showTasksWindow(screen); });
+
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(0, 2);
   for (auto& issue : account.issues)
     vstack.wdg<TaskPanel>(issue);
 
