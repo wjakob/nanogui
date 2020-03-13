@@ -28,17 +28,22 @@ Line::Line(Widget *parent)
 
 Vector2i Line::preferredSize(NVGcontext *ctx) const
 {
-  int w = parent() ? parent()->width() : 1;
-  return { static_cast<int>(mRelSize.x() > 0 ? mRelSize.x() * w : w),
-           mLineWidth >= 0 ? mLineWidth : theme()->separatorWidth };
+  Vector2i ps = parent() ? parent()->size() : Vector2i{ 1, 1 };
+  if (haveDrawFlag(Line::Horizontal))
+    return{ 0, mLineWidth >= 0 ? mLineWidth : theme()->separatorWidth };
+  else
+    return{ mLineWidth >= 0 ? mLineWidth : theme()->separatorWidth, 0 };
 }
 
 void Line::performLayout(NVGcontext *ctx)
 {
+  Vector2i psize = parent() ? parent()->size() : Vector2i{ 1, 1 };
   Vector2i pref = preferredSize(ctx);
-  setSize(pref);
-
-  Vector2i psize = parent() ? parent()->size() : Vector2i{1, 1};
+  
+  if (haveDrawFlag(Line::Horizontal))
+    pref.x() = mRelSize.x() > 0 ? mRelSize.x() * psize.x() : psize.x();
+  else
+    pref.y() = mRelSize.y() > 0 ? mRelSize.y() * psize.y() : psize.y();
 
   if (haveDrawFlag(Line::Left))
     mPos.x() = 0;
@@ -54,6 +59,9 @@ void Line::performLayout(NVGcontext *ctx)
   else if (haveDrawFlag(Line::CenterV))
     mPos.y() = (psize - pref).y() / 2;
 
+  if (isSubElement())
+    setSize(pref);
+
   Widget::performLayout(ctx);
 }
 
@@ -62,7 +70,15 @@ void Line::draw(NVGcontext* ctx)
   nvgBeginPath(ctx);
   nvgStrokeWidth(ctx, (mLineWidth >= 0 ? mLineWidth : theme()->separatorWidth));
   nvgStrokeColor(ctx, mBackgroundColor.notW(theme()->separatorColor));
-  nvgLine(ctx, mPos, mPos + mSize);
+  if (haveDrawFlag(Line::Vertical)) {
+    auto center = mPos + mSize._x0() / 2;
+    nvgLine(ctx, center, center + mSize._0y());
+  }
+  else
+  {
+    auto center = mPos + mSize._0y() / 2;
+    nvgLine(ctx, center, center + mSize._x0());
+  }
   nvgStroke(ctx);
 
   Widget::draw(ctx);

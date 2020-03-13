@@ -73,7 +73,7 @@ public:
        : Line(parent) { set<Line, Args...>(args...); }
 
     void setDrawFlags(int flags) { mDrawFlags = flags; }
-    bool haveDrawFlag(int flag) { return (mDrawFlags & flag) == flag; }
+    bool haveDrawFlag(int flag) const { return (mDrawFlags & flag) == flag; }
 
     void setBackgroundColor(const Color& color) { mBackgroundColor = color; }
     void setLineWidth(int w) { mLineWidth = w; }
