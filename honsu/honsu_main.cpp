@@ -149,6 +149,7 @@ struct IssueInfo
   bool rec;
   int64_t workStartTime;
   float recordTimeSec;
+  float recordTimeAllSec;
   float recordTimeTodaySec;
   Json::value js;
 
@@ -240,6 +241,14 @@ struct AccountData
   float inactiveLastTimeSec = 0;
   bool suspendInactiveTime = false;
 } account;
+
+std::string _s(const char* t) { return std::string(t); }
+std::string _s(uint64_t t) { return std::to_string(t); }
+struct AllOf {
+  std::string str;
+  AllOf(std::initializer_list<std::string> l) { for (auto& i : l) str += i; }
+  operator std::string() const { return str; }
+};
 
 struct SSLGet {
   using ResponseHandler = std::function< void(int status, std::string)>;
@@ -389,16 +398,42 @@ public:
   {
     auto& header = hstack(2, 2, FixedHeight{ 30 });
     std::string timeid = "#issue_all_time" + issue->id;
-    header.label(WidgetId{ timeid }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" });
+    header.label(WidgetId{ timeid }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
+            .spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f });
     header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white });
 
     auto it = std::find_if(account.agiles.begin(), account.agiles.end(),
                            [i = issue] (auto& a) { return a.shortName == i->projectShortName;});
     label(Caption{ it != account.agiles.end() ? it->name : "Not found project" }, FontSize{ 14 });
 
-        
-   // spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
-   //         WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
+    std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
+    
+    SSLGet{ path, sslHeaders }
+      .onResponse([_screen = screen(), _issue = issue, _id = timeid](int status, std::string body) {
+        if (status != 200)
+          return;
+
+        Json::value response;
+        Json::parse(response, body);
+
+        int i = 0;
+        int timeSpent = 0;
+        Json::value info = response.get(i++);
+        while (!info.is<Json::null>())
+        {
+          int duration = info.get("duration").get_int();
+          uint64_t created = (uint64_t)info.get("created").get_int();
+          timeSpent += duration;
+          info = response.get(i++);
+        }
+        _issue->recordTimeAllSec = timeSpent;
+        if (auto lb = _screen->findWidget<Label>(_id))
+        {
+          lb->removeChild("#spinner");
+          lb->setCaption("["+sec2str(timeSpent)+"]");
+        }
+      })
+      .execute();
   }
 };
 
@@ -467,14 +502,6 @@ void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
     issue->rec = false;
   issue->rec = rec;
 }
-
-std::string _s(const char* t) { return std::string(t); }
-std::string _s(uint64_t t) { return std::to_string(t); }
-struct AllOf {
-  std::string str;
-  AllOf(std::initializer_list<std::string> l) { for (auto& i : l) str += i; }
-  operator std::string() const { return str; }
-};
 
 void stopIssueRecord(IssueInfo::Ptr issue)
 {
