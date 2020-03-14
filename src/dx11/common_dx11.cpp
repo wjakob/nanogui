@@ -95,7 +95,7 @@ void sample::set_window_topmost(WindowHandle w, bool topalways)
     SWP_SHOWWINDOW);
 }
 
-Vector2i sample::get_window_pos(WindowHandle* w)
+Vector2i sample::get_window_pos(WindowHandle w)
 {
   POINT pos = { 0, 0 };
   ClientToScreen((HWND)w, &pos);
@@ -105,8 +105,8 @@ Vector2i sample::get_window_pos(WindowHandle* w)
 void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
 {
     RECT rect = { pos.x(), pos.y(), pos.x(), pos.y() };
-    AdjustWindowRectEx(&rect, getWindowStyle(window),
-                       FALSE, getWindowExStyle(window));
+    AdjustWindowRectEx(&rect, GetWindowStyle((HWND)w),
+                       FALSE, GetWindowExStyle((HWND)w));
     SetWindowPos((HWND)w, NULL, rect.left, rect.top, 0, 0,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
