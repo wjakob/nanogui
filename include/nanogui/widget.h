@@ -348,6 +348,7 @@ public:
 
     /// Remove a child widget by value
     virtual void removeChild(const Widget *widget);
+    virtual void removeChild(const std::string& id);
 
     /// Retrieves the child at the specific position
     const Widget* childAt(int index) const { return mChildren[index]; }

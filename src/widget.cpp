@@ -295,6 +295,12 @@ void Widget::removeChild(const Widget *widget) {
     widget->decRef();
 }
 
+void Widget::removeChild(const std::string& id)
+{
+  if (auto w = findWidget(id, false))
+    removeChild(w);
+}
+
 void Widget::remove()
 {
   if (parent())
