@@ -66,6 +66,7 @@ std::function<void(void *, int)> charCallback;
 std::function<void(void *, double x, double y)> scrollCallback;
 std::function<void(void *, int, int)> resizeCallback;
 std::function<void(void *, int)> focusCallback;
+std::function<void()> drawCallback;
 
 void dx12SetCursorPosCallback(const std::function<void (void *, double, double)>& f) { cursorPosCallback = f; }
 void dx12SetMouseButtonCallback(const std::function<void(void *, int, int, int)>& f) { mouseButtonCallback = f; }
@@ -75,6 +76,7 @@ void dx12SetDropCallback(const std::function<void(void *, int , const char **)> 
 void dx12SetScrollCallback(const std::function<void(void *, double , double )> &f) { scrollCallback = f; }
 void dx12SetFramebufferSizeCallback(const std::function<void(void *, int, int)> &f) { resizeCallback = f; }
 void dx12SetWindowFocusCallback(const std::function<void(void *, int )> &f) { focusCallback = f; }
+void dx12SetDrawCallback(const std::function<void()>& f) { drawCallback = f; }
 
 // Frees everything
 void UnInitializeDX()
@@ -255,7 +257,7 @@ void sample::set_window_topmost(WindowHandle w, bool topalways)
     SWP_SHOWWINDOW);
 }
 
-Vector2i sample::get_window_pos(WindowHandle* w)
+Vector2i sample::get_window_pos(WindowHandle w)
 {
   POINT pos = { 0, 0 };
   ClientToScreen((HWND)w, &pos);
@@ -273,8 +275,8 @@ Vector2i sample::get_cursor_pos()
 void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
 {
     RECT rect = { pos.x(), pos.y(), pos.x(), pos.y() };
-    AdjustWindowRectEx(&rect, getWindowStyle(window),
-                       FALSE, getWindowExStyle(window));
+    AdjustWindowRectEx(&rect, GetWindowStyle((HWND)w),
+                       FALSE, GetWindowExStyle((HWND)w));
     SetWindowPos((HWND)w, NULL, rect.left, rect.top, 0, 0,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
@@ -284,7 +286,7 @@ bool sample::wait_events(void) { sample::poll_events(); return false; }
 
 void sample::frame_loop(std::function<void()> &f)
 {
-  dx11SetDrawCallback(f);
+  dx12SetDrawCallback(f);
 
   MSG msg;
   HWND handle;
