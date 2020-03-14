@@ -157,6 +157,7 @@ public:
   const value &get(const size_t idx) const;
   const value &get(const std::string &key) const;
   value &get(const size_t idx);
+  void update(std::function<bool (Json::value& v)> f);
   value &get(const std::string &key);
 
   const object& get_obj() const;
@@ -414,6 +415,17 @@ inline const value &value::get(const std::string &key) const {
   PICOJSON_ASSERT(is<object>());
   object::const_iterator i = u_.object_->find(key);
   return i != u_.object_->end() ? i->second : s_null;
+}
+
+inline void value::update(std::function<bool(Json::value& v)> f)
+{
+  int i = 0;
+  Json::value* info = &get(i++);
+  while (!info->is<Json::null>()) { 
+    bool next = f(*info); 
+    if (!next) break; 
+    info = &get(i++); 
+  }
 }
 
 inline value &value::get(const std::string &key) {

@@ -153,6 +153,13 @@ struct IssueInfo
   float recordTimeTodaySec;
   Json::value js;
 
+  static Ptr fromJson(const Json::value& js)
+  {
+    auto ptr = std::make_shared<IssueInfo>();
+    ptr->readField(js);
+    return ptr;
+  }
+
   void updateTime(float dtSec)
   {
     if (rec)
@@ -166,23 +173,19 @@ struct IssueInfo
 
   void readField(const Json::value& _js)
   {
-    int i = 0;
     js = _js;
     id = js.get("id").get_str();
     entityId = js.get("entityId").get_str();
     Json::value field = js.get("field");
-    Json::value info = field.get(i++);
-    while (!info.is<Json::null>())
-    {
-      const std::string name = info.get_str("name");
-      if      (name == "State")   state = info.get("value").get(0).to_str();
-      else if (name == "Type")    type = info.get("value").get(0).to_str();
-      else if (name == "Sprints") sprint = info.get("value").get(0).to_str();
-      else if (name == "summary") summary = info.get("value").to_str();
-      else if (name == "projectShortName") projectShortName = info.get("value").to_str();
-
-      info = field.get(i++);
-    }
+    field.update([&] (auto& v) {
+      const std::string name = v.get_str("name");
+      if      (name == "State")   state = v.get("value").get(0).to_str();
+      else if (name == "Type")    type = v.get("value").get(0).to_str();
+      else if (name == "Sprints") sprint = v.get("value").get(0).to_str();
+      else if (name == "summary") summary = v.get("value").to_str();
+      else if (name == "projectShortName") projectShortName = v.get("value").to_str();
+      return true;
+    });
   }
 };
 
@@ -413,19 +416,15 @@ public:
         if (status != 200)
           return;
 
-        Json::value response;
-        Json::parse(response, body);
-
-        int i = 0;
         int timeSpent = 0;
-        Json::value info = response.get(i++);
-        while (!info.is<Json::null>())
-        {
-          int duration = info.get("duration").get_int();
-          uint64_t created = (uint64_t)info.get("created").get_int();
+        Json::value response(body); 
+        Json::parse(response, body);
+        response.update([&](auto& i) {
+          int duration = i.get("duration").get_int();
+          uint64_t created = (uint64_t)i.get("created").get_int();
           timeSpent += duration;
-          info = response.get(i++);
-        }
+          return true;
+        });
         _issue->recordTimeAllSec = timeSpent;
         if (auto lb = _screen->findWidget<Label>(_id))
         {
@@ -465,18 +464,12 @@ void showRecordsWindow(Screen* screen)
 
       Json::value response;
       Json::parse(response, body);
-
-      int i = 0;
       Json::value issues = response.get("issue");
-      Json::value info = issues.get(i++);
-      while (!info.is<Json::null>())
-      {
-        IssueInfo::Ptr issue = std::make_shared<IssueInfo>();
-        issue->readField(info);
+      issues.update([&] (auto& i) {
+        IssueInfo::Ptr issue = IssueInfo::fromJson(i);
         v->wdg<IssuePanel>(issue);
-        
-        info = issues.get(i++);
-      }
+        return true;
+      });
 
       auto scr = v->screen();
       scr->needPerformLayout(scr);
@@ -562,19 +555,16 @@ void startIssueRecord(IssueInfo::Ptr issue)
       std::time_t day_start = mktime(&tm_day_start) * 1000;
       std::time_t day_end = mktime(&tm_day_end) * 1000;
 
-      int i = 0;
       int timeSpent = 0;
       uint64_t timeSpentToday = 0;
-      Json::value info = response.get(i++);
-      while (!info.is<Json::null>())
-      {
-        int duration = info.get("duration").get_int();
-        uint64_t created = (uint64_t)info.get("created").get_int();
+      response.update([&] (auto& i) {
+        int duration = i.get("duration").get_int();
+        uint64_t created = (uint64_t)i.get("created").get_int();
         if (created >= day_start && created <= day_end)
           timeSpentToday += duration;
         timeSpent += duration;
-        info = response.get(i++);
-      }
+        return true;
+      });
       issue->recordTimeSec = 0;
       issue->workStartTime = current_time;
       issue->recordTimeTodaySec = timeSpentToday * 60;
@@ -859,16 +849,10 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
         Json::value issues = response.get("issue");
 
-        int i = 0;
-        Json::value info = issues.get(i++);
-        while (!info.is<Json::null>())
-        {
-          auto issue = std::make_shared<IssueInfo>();
-          issue->readField(info);
-
-          account.issues.push_back(issue);
-          info = issues.get(i++);
-        }
+        issues.update([&] (auto& i) {
+          account.issues.push_back(IssueInfo::fromJson(i));
+          return true;
+        });
       }
 
       if (account.issues.empty()) requestAgilesAndResolve(screen);
@@ -924,15 +908,12 @@ void requestAgilesAndResolve(Screen* screen)
         Json::value agiles;
         Json::parse(agiles, body);
 
-        int i = 0;
-        Json::value js = agiles.get(i++);
-        while (!js.is<Json::null>())
-        {
+        agiles.update([&] (auto& js) {
           AgileInfo agileInfo(js);
           if (agileInfo.valid())
             account.agiles.push_back(agileInfo);
-          js = agiles.get(i++);
-        }
+          return true;
+        });
       }
 
       if (account.agiles.empty()) showStartupScreen(screen);
