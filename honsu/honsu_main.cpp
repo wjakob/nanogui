@@ -107,10 +107,23 @@ using namespace nanogui;
 
 GPUtimer gpuTimer;
 
-struct AgileInfo 
+struct AgileInfo
 {
   std::string name;
   std::string id;
+  std::string shortName;
+
+  Json::value js;
+
+  AgileInfo(const Json::value& data)
+  {
+    js = data;
+    id = js.get("id").get_str();
+    shortName = js.get("projects").get(0).get("shortName").get_str();
+    name = js.get("name").get_str();
+  }
+
+  bool valid() const { return js.get("$type").get_str() == "Agile"; }
 };
 
 void open_url(const std::string& url, const std::string& prefix);
@@ -132,6 +145,7 @@ struct IssueInfo
   std::string sprint;
   std::string type;
   std::string summary;
+  std::string projectShortName;
   bool rec;
   int64_t workStartTime;
   float recordTimeSec;
@@ -160,14 +174,11 @@ struct IssueInfo
     while (!info.is<Json::null>())
     {
       const std::string name = info.get_str("name");
-      if (name == "State")
-        state = info.get("value").get(0).to_str();
-      else if (name == "Type")
-        type = info.get("value").get(0).to_str();
-      else if (name == "Sprints")
-        sprint = info.get("value").get(0).to_str();
-      else if (name == "summary")
-        summary = info.get("value").to_str();
+      if      (name == "State")   state = info.get("value").get(0).to_str();
+      else if (name == "Type")    type = info.get("value").get(0).to_str();
+      else if (name == "Sprints") sprint = info.get("value").get(0).to_str();
+      else if (name == "summary") summary = info.get("value").to_str();
+      else if (name == "projectShortName") projectShortName = info.get("value").to_str();
 
       info = field.get(i++);
     }
@@ -371,17 +382,21 @@ public:
   IssueInfo::Ptr issue;
 
   IssuePanel(Widget* parent, IssueInfo::Ptr _issue)
-    : Frame(parent), issue(_issue)
+    : Frame(parent, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 },
+            BorderColor { Color::transparent }, BackgroundColor{ Color::heavyDarkGrey },
+            CornerRadius{ 6 }),
+      issue(_issue)
   {
-    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
+    auto& header = hstack(2, 2, FixedHeight{ 30 });
+    std::string timeid = "#issue_all_time" + issue->id;
+    header.label(WidgetId{ timeid }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" });
+    header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white });
 
-    auto& header = hlayer(2, 2, FixedHeight{ 30 });
-    header.link(Caption{ issue->id }, TextColor{ Color::grey },
-                ButtonCallback{ [this] { issue->openUrl(account.url); } });
-    header.link(Caption{ issue->state }, TextColor{ Color::grey }, WidgetCursor{ Cursor::Arrow });
-    header.widget();
+    auto it = std::find_if(account.agiles.begin(), account.agiles.end(),
+                           [i = issue] (auto& a) { return a.shortName == i->projectShortName;});
+    label(Caption{ it != account.agiles.end() ? it->name : "Not found project" }, FontSize{ 14 });
 
-    label(Caption{ issue->summary }, FontSize{ 26 }, TextColor{ Color::white });
+        
    // spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
    //         WidgetId{ "#records_wait" }, IsSubElement{ true }, WidgetSize{ size() });
   }
@@ -812,8 +827,6 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
       if (status == 200)
       {
-        account.issues.clear();
-
         Json::value response;
         Json::parse(response, body);
 
@@ -854,27 +867,15 @@ void showAgilesScreen(Screen* screen)
                CaptionAlign{ hCenter, vTop },
                FixedHeight{ 20 });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f })
-                    .widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
 
-  auto agilebtn = [&vstack] (std::string name, int index) {
-    vstack.button(Caption{ name },
-                  FixedHeight{ 50 },
-                  ButtonFlags{ Button::RadioButton },
-                  BorderSize{ 2 },
-                  FontSize{ 24 },
-                  CaptionFont{ "sans" },
-                  Icon{ ENTYPO_ICON_OK },
-                  IconColor{ Color::dimGrey },
-                  IconPushedColor{ Color::aquamarine },
-                  BorderColor{ Color::dimGrey },
-                  BackgroundColor{ Color::transparent },
-                  BackgroundHoverColor{ Color::transparent },
-                  ButtonCallback{ [=] { account.activeAgile = name; }});
-  };
-
-  for (int i=0; i < account.agiles.size(); i++)
-    agilebtn(account.agiles[i].name, i);
+  for (auto& i: account.agiles)
+    vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
+                  ButtonFlags{ Button::RadioButton }, 
+                  FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
+                  BorderColor{ Color::dimGrey }, BorderSize{ 2 },
+                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
+                  ButtonCallback{ [name = i.name] { account.activeAgile = name; } });
     
   vstack.button(Caption{ "Save" },
                 FixedHeight{ 50 },
@@ -897,17 +898,13 @@ void requestAgilesAndResolve(Screen* screen)
         Json::parse(agiles, body);
 
         int i = 0;
-        Json::value info = agiles.get(i++);
-        while (!info.is<Json::null>())
+        Json::value js = agiles.get(i++);
+        while (!js.is<Json::null>())
         {
-          if (info.get("$type").get_str() == "Agile")
-          {
-            AgileInfo agInfo;
-            agInfo.id = info.get("id").get_str();
-            agInfo.name = info.get("name").get_str();
-            account.agiles.push_back(agInfo);
-          }
-          info = agiles.get(i++);
+          AgileInfo agileInfo(js);
+          if (agileInfo.valid())
+            account.agiles.push_back(agileInfo);
+          js = agiles.get(i++);
         }
       }
 
