@@ -29,6 +29,7 @@ class Window;
 class NANOGUI_EXPORT Screen : public Widget {
     friend class Widget;
     friend class Window;
+
 public:
     RTTI_CLASS_UID(Screen)
     RTTI_DECLARE_INFO(Screen)
@@ -152,6 +153,8 @@ public:
 
     void needPerformLayout(Widget* w);
 
+    void removeLater(Widget* w) { mRemovedWidgets.push_back(w); }
+
     template<typename T> void setTheme() { Widget::setTheme(new T(nvgContext())); }
     template<typename... Args>Window& window(const Args&... args) { return wdg<Window>(args...); }
 
@@ -202,6 +205,7 @@ protected:
     Cursor mCursor;
     Widget* mSelectedWidget = nullptr;
     std::vector<Widget *> mFocusPath;
+    std::vector<Widget *> mRemovedWidgets;
     Vector2i mFBSize;
     float mPixelRatio;
     int mMouseState, mModifiers;

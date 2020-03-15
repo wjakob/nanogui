@@ -48,6 +48,28 @@ public:
   }
 };
 
+class NANOGUI_EXPORT RemoveTimer : public Widget
+{
+public:
+  RTTI_CLASS_UID(RemoveTimer)
+  RTTI_DECLARE_INFO(RemoveTimer)
+
+  float seconds2remove = 0;
+  float startTimeSec = 0;
+
+  RemoveTimer(float seconds)
+    : Widget(nullptr), seconds2remove(seconds)
+  {
+    startTimeSec = getTimeFromStart();
+  }
+
+  void afterDraw(NVGcontext*) override
+  {
+    if (getTimeFromStart() - startTimeSec > seconds2remove)
+      parent()->removeLater();
+  }
+};
+
 class NANOGUI_EXPORT Line : public Widget 
 {
 public:

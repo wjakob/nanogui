@@ -370,7 +370,7 @@ Window& createWindow(Screen* screen, std::string id, const Args&... args)
   if (!lastWindowId.value.empty())
   {
     if (auto rm = screen->findWidget(lastWindowId.value, false))
-      rm->remove();
+      rm->removeLater();
   }
   lastWindowId.value = id;
   return screen->window(Position{ 0, 0 },
@@ -515,7 +515,7 @@ void showRecordsWindow(Screen* screen)
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{"#rec_vstack"});
   vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
-                 FixedHeight{ screen->width()/2 }/*, RemoveAfterTime{ 10 }*/);
+                 FixedHeight{ screen->width()/2 }, RemoveAfterSec{ 10.f });
 
   SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}
     .onResponse([screen, wId = vstack.id()](int status, std::string body) {
@@ -781,7 +781,7 @@ public:
                 WidgetId{ "#wait" }, IsSubElement{ true }, WidgetSize{ size() });
     }
     else if (sp)
-      sp->remove();
+      sp->removeLater();
   }
 
   void performLayout(NVGcontext* ctx) override

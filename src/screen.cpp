@@ -217,6 +217,14 @@ void Screen::drawWidgets() {
     }
 
     nvgEndFrame(nvgContext());
+
+    if (!mRemovedWidgets.empty())
+    {
+      for (auto& w : mRemovedWidgets)
+        w->remove();
+      mRemovedWidgets.clear();
+      needPerformLayout(this);
+    }
 }
 
 bool Screen::resizeEvent(const Vector2i& size) {

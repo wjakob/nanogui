@@ -307,6 +307,13 @@ void Widget::remove()
     parent()->removeChild(this);
 }
 
+void Widget::removeLater()
+{
+  auto scr = screen();
+  if (scr)
+    scr->removeLater(this);
+}
+
 void Widget::removeChild(int index) {
     Widget *widget = mChildren[index];
     mChildren.erase(mChildren.begin() + index);
@@ -434,11 +441,11 @@ void Widget::afterDraw(NVGcontext *ctx) {
   if (mChildren.empty())
     return;
 
-  for (auto child : mChildren)
+  for (auto& child : mChildren)
     child->afterDraw(ctx);
 }
 
-void Widget::save(Serializer &s) const {}
+void Widget::save(Serializer&) const {}
 
 void Widget::save(Json::value &save) const 
 {

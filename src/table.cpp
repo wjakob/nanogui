@@ -192,7 +192,7 @@ void Table::removeColumn(uint32_t columnIndex)
     _columns.erase( _columns.begin() + columnIndex );
     for (Row& row: _rows)
     {
-      row.items[ columnIndex ]->remove();
+      row.items[ columnIndex ]->removeLater();
       row.items.erase(row.items.begin() + columnIndex );
     }
   }

@@ -48,6 +48,7 @@ class TextArea;
 class Panel;
 class ColorPicker;
 class UpdateHandler;
+class RemoveTimer;
 
 template<class X> class IntBox;
 template<class X> class FloatBox;
@@ -109,6 +110,7 @@ DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(VisibleObservable, BoolObservable)
 DECLSETTERARGSNEW(OnUpdate, UpdateHandler)
+DECLSETTERARGSNEW(RemoveAfterSec, RemoveTimer)
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -341,12 +343,13 @@ public:
     /// Convenience function which appends a widget at the end
     void addChild(Widget *widget);
 
-    void remove();
+    void remove(); // this function should be used in screen::drawWidgets call
+    void removeLater(); // push widget to removes array
 
     /// Remove a child widget by index
     virtual void removeChild(int index);
 
-    /// Remove a child widget by value
+    /// Remove a child widget by value or id
     virtual void removeChild(const Widget *widget);
     virtual void removeChild(const std::string& id);
 
@@ -589,6 +592,7 @@ public:
     PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
     PROPSETTER(OnUpdate, addChild)
+    PROPSETTER(RemoveAfterSec, addChild)
 
 protected:
     /// Free all resources used by the widget and any children

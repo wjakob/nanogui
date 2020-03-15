@@ -292,7 +292,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
     case FOURCCS("KDEL"):
       if (mSelectedElement)
       {
-        mSelectedElement->remove();
+        mSelectedElement->removeLater();
         setSelectedElement(nullptr);
         mElementUnderMouse = nullptr;
 
@@ -308,7 +308,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       if (isKeyboardModifierCtrl(modifiers) && mSelectedElement)
       {
         // cut
-        mSelectedElement->remove();
+        mSelectedElement->removeLater();
         setSelectedElement(nullptr);
         mElementUnderMouse = nullptr;
 
@@ -373,7 +373,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
 
     case FOURCCS("ESCP"):
       if (mNextWidget) {
-        mNextWidget->remove();
+        mNextWidget->removeLater();
         mNextWidget = nullptr;
       }
       if (_currentMode == EditMode::SelectNewParent)
@@ -994,7 +994,7 @@ void EditorWorkspace::removeElement( Widget* elm )
     _sendHoveredElementChangedEvent();
   }
 
-  saveElm->remove();
+  saveElm->removeLater();
 }
 
 void EditorWorkspace::setMode( EditMode mode )
