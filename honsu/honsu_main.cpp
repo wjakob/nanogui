@@ -134,7 +134,16 @@ struct Url
 {
   const std::string http = "http://";
   const std::string issues = "/youtrack/issue/";
+  const std::string rest_issues = "/youtrack/rest/issue/";
 } y_url;
+
+std::string _s(const char* t) { return std::string(t); }
+std::string _s(uint64_t t) { return std::to_string(t); }
+struct AllOf {
+  std::string str;
+  AllOf(std::initializer_list<std::string> l) { for (auto& i : l) str += i; }
+  operator std::string() const { return str; }
+};
 
 struct IssueInfo
 {
@@ -146,11 +155,14 @@ struct IssueInfo
   std::string type;
   std::string summary;
   std::string projectShortName;
-  bool rec;
-  int64_t workStartTime;
-  float recordTimeSec;
-  float recordTimeAllSec;
-  float recordTimeTodaySec;
+  int64_t createdEpochSec = 0;
+  int64_t updatedEpochSec = 0;
+  bool rec = false;
+  int64_t workStartTime = 0;
+  int64_t spentTimeMin = 0;
+  float recordTimeSec = 0;
+  float recordTimeAllSec = 0;
+  float recordTimeTodaySec = 0;
   Json::value js;
 
   static Ptr fromJson(const Json::value& js)
@@ -159,6 +171,8 @@ struct IssueInfo
     ptr->readField(js);
     return ptr;
   }
+
+  std::string getWorktimeUrl() { return AllOf{ y_url.rest_issues, entityId, "/timetracking/workitem" }; }
 
   void updateTime(float dtSec)
   {
@@ -184,6 +198,9 @@ struct IssueInfo
       else if (name == "Sprints") sprint = v.get("value").get(0).to_str();
       else if (name == "summary") summary = v.get("value").to_str();
       else if (name == "projectShortName") projectShortName = v.get("value").to_str();
+      else if (name == "created") createdEpochSec = std::stoll(v.get("value").get_str());
+      else if (name == "updated") updatedEpochSec = std::stoll (v.get("value").get_str());
+      else if (name == "Spent time") spentTimeMin = std::stoll(v.get("value").get(0).get_str());
       return true;
     });
   }
@@ -244,14 +261,6 @@ struct AccountData
   float inactiveLastTimeSec = 0;
   bool suspendInactiveTime = false;
 } account;
-
-std::string _s(const char* t) { return std::string(t); }
-std::string _s(uint64_t t) { return std::to_string(t); }
-struct AllOf {
-  std::string str;
-  AllOf(std::initializer_list<std::string> l) { for (auto& i : l) str += i; }
-  operator std::string() const { return str; }
-};
 
 struct SSLGet {
   using ResponseHandler = std::function< void(int status, std::string)>;
@@ -347,6 +356,12 @@ bool checkAccountToken(TextBox* token)
   return true;
 }
 
+void makeDayInterval(std::tm& b, std::tm& e)
+{
+  b.tm_sec = b.tm_min = b.tm_hour = 0;
+  e.tm_sec = e.tm_min = 59; e.tm_hour = 23;
+}
+
 WidgetId lastWindowId{ "" };
 
 template<typename ... Args>
@@ -391,50 +406,96 @@ void showTasksWindow(Screen* screen);
 class IssuePanel : public Frame
 {
 public:
+  RTTI_CLASS_UID(IssuePanel)
+  RTTI_DECLARE_INFO(IssuePanel)
+
   IssueInfo::Ptr issue;
+  int timeSpentDaySec = 0;
+
+  void addTimeSpent(int timeSec)
+  {
+    timeSpentDaySec += timeSec;
+    if (auto lb = findWidget<Label>("#timelb"))
+    {
+      lb->removeChild("#spinner");
+      lb->setCaption("[" + sec2str(timeSpentDaySec) + "]");
+    }
+  }
 
   IssuePanel(Widget* parent, IssueInfo::Ptr _issue)
     : Frame(parent, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 },
             BorderColor { Color::transparent }, BackgroundColor{ Color::heavyDarkGrey },
-            CornerRadius{ 6 }),
+            CornerRadius{ 6 }, WidgetId{ "#issue_" + _issue->id }),
       issue(_issue)
   {
     auto& header = hstack(2, 2, FixedHeight{ 30 });
-    std::string timeid = "#issue_all_time" + issue->id;
-    header.label(WidgetId{ timeid }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
+    header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
             .spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f });
     header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white });
 
     auto it = std::find_if(account.agiles.begin(), account.agiles.end(),
                            [i = issue] (auto& a) { return a.shortName == i->projectShortName;});
     label(Caption{ it != account.agiles.end() ? it->name : "Not found project" }, FontSize{ 14 });
-
-    std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
-    
-    SSLGet{ path, sslHeaders }
-      .onResponse([_screen = screen(), _issue = issue, _id = timeid](int status, std::string body) {
-        if (status != 200)
-          return;
-
-        int timeSpent = 0;
-        Json::value response(body); 
-        Json::parse(response, body);
-        response.update([&](auto& i) {
-          int duration = i.get("duration").get_int();
-          uint64_t created = (uint64_t)i.get("created").get_int();
-          timeSpent += duration;
-          return true;
-        });
-        _issue->recordTimeAllSec = timeSpent;
-        if (auto lb = _screen->findWidget<Label>(_id))
-        {
-          lb->removeChild("#spinner");
-          lb->setCaption("["+sec2str(timeSpent)+"]");
-        }
-      })
-      .execute();
   }
 };
+
+RTTI_IMPLEMENT_INFO(IssuePanel, Frame)
+
+void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue, std::tm date, int duration)
+{
+  std::string _idDayWidget = "#day_" + std::to_string(date.tm_mon+1) +
+                             "_" + std::to_string(date.tm_mday+1);
+
+  //found records scroll panel by wId
+  if (auto vstack = screen->findWidget(wId))
+  {
+    auto dayWidget = vstack->findWidget(_idDayWidget);
+    if (!dayWidget)
+    {
+      dayWidget = &vstack->vstack(5, 0, WidgetId{ _idDayWidget });
+      dayWidget->label(Caption{ _idDayWidget });
+    }
+
+    auto issueWidget = dayWidget->findWidget([issue](Widget* w) {
+      if (auto ip = IssuePanel::cast(w))
+        return ip->issue == issue;
+      return false;
+    }, false);
+
+    if (!issueWidget)
+      issueWidget = dayWidget->add<IssuePanel>(issue);
+
+    if (auto w = IssuePanel::cast(issueWidget))
+    {
+      w->addTimeSpent(duration * 60);
+      screen->needPerformLayout(screen);
+    }
+  }
+}
+
+void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
+{
+  SSLGet{ issue->getWorktimeUrl(), sslHeaders }
+    .onResponse([issue, screen, wId](int status, std::string body) {
+      if (status != 200)
+        return;
+      Json::value response(body);
+      Json::parse(response, body);
+
+      response.update([screen, issue, wId](auto& i) {
+        int duration = i.get("duration").get_int();
+        std::time_t created = (uint64_t)i.get("created").get_int() / 1000;
+
+        std::tm* tmt = std::localtime(&created);
+        std::tm tm_date = *tmt, _tm = *tmt;
+        makeDayInterval(tm_date, _tm);
+
+        updateRecordsIssueDay(screen, wId, issue, tm_date, duration);
+        return true;
+      });
+    })
+    .execute();
+}
 
 void showRecordsWindow(Screen* screen)
 {
@@ -452,27 +513,27 @@ void showRecordsWindow(Screen* screen)
   hbutton("Boards", Color::grey, Color::red, [=] { showTasksWindow(screen); });
   hbutton("Records", Color::red, Color::grey, [] {});
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
-
- // vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
- //s                WidgetId{ "#records_wait" }, FixedHeight{ screen->width()/2 });
+  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{"#rec_vstack"});
+  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+                 FixedHeight{ screen->width()/2 }/*, RemoveAfterTime{ 10 }*/);
 
   SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}
-    .onResponse([v = &vstack](int status, std::string body) {
+    .onResponse([screen, wId = vstack.id()](int status, std::string body) {
       if (status != 200)
         return;
 
       Json::value response;
       Json::parse(response, body);
-      Json::value issues = response.get("issue");
-      issues.update([&] (auto& i) {
-        IssueInfo::Ptr issue = IssueInfo::fromJson(i);
-        v->wdg<IssuePanel>(issue);
-        return true;
-      });
 
-      auto scr = v->screen();
-      scr->needPerformLayout(scr);
+      response.get("issue")
+                .update([screen, wId] (auto& js) {
+                  auto issue = IssueInfo::fromJson(js);
+                  if (issue->spentTimeMin > 0)
+                    requestIssueWorktime(screen, issue, wId);
+                  return true; 
+                });
+
+      screen->needPerformLayout(screen);
     })
     .execute();
 
@@ -524,18 +585,11 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   account.setIssueRecord(issue, false);
 }
 
-void makeDayInterval(std::tm& b, std::tm& e) 
-{
-  b.tm_sec = b.tm_min = b.tm_hour = 0;
-  e.tm_sec = e.tm_min = 59; e.tm_hour = 23;
-}
-
 void startIssueRecord(IssueInfo::Ptr issue)
 {
-  std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
   showRecPanelWait(true);
     
-  SSLGet{ path, sslHeaders }
+  SSLGet{ issue->getWorktimeUrl(), sslHeaders }
     .onResponse([issue](int status, std::string body) {
       showRecPanelWait(false);
 
@@ -961,7 +1015,7 @@ void requestAdminData(Screen* screen)
     .execute();
 }
 
-void update_requests()
+bool update_requests()
 {
   createSSLClient();
 
@@ -998,6 +1052,7 @@ void update_requests()
         SSLPost::invalidRequestTime = getTimeFromStart() + 2.f;
     }
   }
+  return !(SSLGet::requests.empty() || SSLPost::requests.empty());
 }
 
 void showStartupScreen(Screen* screen)
@@ -1137,8 +1192,9 @@ int main(int /* argc */, char ** /* argv */)
     auto requests_thread = std::thread([&] {
       while (requests_thread_active)
       {
-        update_requests();
-        std::this_thread::sleep_for(1s);
+        bool haveRequests = update_requests();
+        if (!haveRequests)
+          std::this_thread::sleep_for(0.5s);
       }
     });
 
