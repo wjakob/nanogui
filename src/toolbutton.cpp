@@ -36,7 +36,7 @@ Color ToggleButton::getIconColor() const
           : mInactiveColor.notW(theme()->mToggleButtonInactiveColor);
 }
 
-Vector2i ToggleButton::preferredSize(NVGcontext *ctx) const 
+Vector2i ToggleButton::preferredSize(NVGcontext *) const 
 {
   int side = 0;
   if (mFontSize > 0) side = mFontSize * 1.2;

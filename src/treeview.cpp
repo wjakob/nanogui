@@ -270,7 +270,7 @@ Color TreeView::_getCurrentNodeColor( TreeViewItem* node )
   return textCol;
 }
 
-std::string TreeView::_getCurrentNodeFont( TreeViewItem* node)
+std::string TreeView::_getCurrentNodeFont( TreeViewItem* /*node*/)
 {
   return "sans";
 }
@@ -437,7 +437,7 @@ void TreeView::draw(NVGcontext* ctx)
         Vector2i prevCenter = mPos + baseNode->anchorPosition();
         prevCenter += Vector2i( rsize.x() / 2, baseNode->height());
 
-        int nodeh = baseNode->height();
+        //int nodeh = baseNode->height();
         //prevCenter += Vector2i( nodeh - rsize.x(), nodeh - rsize.x() )/2;
 
         rc_s = Vector2i( prevCenter.x(), center.y());

@@ -91,6 +91,12 @@ void Widget::performLayout(NVGcontext *ctx)
   }
 }
 
+void Widget::sortChildren(std::function<bool(Widget*, Widget*)> f)
+{
+  if (!mChildren.empty())
+    std::sort(mChildren.begin(), mChildren.end(), f);
+}
+
 Widget *Widget::findWidget(const Vector2i &p) 
 {
   for (int i=(int)mChildren.size()-1; i >= 0; i--) {
@@ -480,6 +486,6 @@ bool Widget::load(Json::value &save)
   return true;
 }
 
-bool Widget::load(Serializer &s) { return true; }
+bool Widget::load(Serializer &) { return true; }
 
 NAMESPACE_END(nanogui)

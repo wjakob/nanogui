@@ -564,9 +564,9 @@ void Table::_recalculateCells()
   _itemsArea->setFixedSize({ xPos, yPos });
 }
 
-bool Table::scrollEvent(const Vector2i &p, const Vector2f &rel)
+bool Table::scrollEvent(const Vector2i &/*p*/, const Vector2f &rel)
 {
-  int current = _totalItemHeight - _itemsArea->height();
+  //int current = _totalItemHeight - _itemsArea->height();
   //float d = (rel.y() < 0 ? -1 : 1) * _itemHeight;
   _verticalScrollBar->setScroll(_verticalScrollBar->scroll() + (rel.y() < 0 ? -1 : 1)*0.05);
   return true;
@@ -700,7 +700,7 @@ bool Table::_dragColumnUpdate(int xpos)
   return false;
 }
 
-int Table::_getCurrentColumn( int xpos, int ypos )
+int Table::_getCurrentColumn( int xpos, int /* ypos */ )
 {
   int pos = absolutePosition().x() + 1;
 
@@ -735,7 +735,7 @@ bool Table::_selectColumnHeader(int xpos, int ypos)
   return false;
 }
 
-bool _nstrCmp(const std::string& s1, const std::string& s2)
+int _nstrCmp(const std::string& s1, const std::string& s2)
 {
   return strcmp(s1.c_str(), s2.c_str());
 }
@@ -869,7 +869,7 @@ void Table::_finishEditCell()
   _edit = nullptr;
 }
 
-void Table::beforePaint(NVGcontext* ctx)
+void Table::beforePaint(NVGcontext*)
 {
   if ( _needRefreshCellsGeometry )
   {
@@ -887,7 +887,7 @@ void Table::draw(NVGcontext* ctx)
   if ( _font.empty() )
     return;
 
-  int yOffset = _verticalScrollBar->scroll() * _vscrollsize;
+  //int yOffset = _verticalScrollBar->scroll() * _vscrollsize;
   int xOffset = _horizontalScrollBar->scroll() * _hscrollsize;
 
   _header->setPosition(-xOffset, _header->position().y());

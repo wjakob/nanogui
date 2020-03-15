@@ -411,6 +411,7 @@ public:
 
   IssueInfo::Ptr issue;
   int timeSpentDaySec = 0;
+  int64_t day = 0;
 
   void addTimeSpent(int timeSec)
   {
@@ -422,11 +423,11 @@ public:
     }
   }
 
-  IssuePanel(Widget* parent, IssueInfo::Ptr _issue)
+  IssuePanel(Widget* parent, IssueInfo::Ptr _issue, int _day)
     : Frame(parent, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 },
             BorderColor { Color::transparent }, BackgroundColor{ Color::heavyDarkGrey },
             CornerRadius{ 6 }, WidgetId{ "#issue_" + _issue->id }),
-      issue(_issue)
+      issue(_issue), day(_day)
   {
     auto& header = hstack(2, 2, FixedHeight{ 30 });
     header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
@@ -453,7 +454,10 @@ void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue
     if (!dayWidget)
     {
       dayWidget = &vstack->vstack(5, 0, WidgetId{ _idDayWidget });
-      dayWidget->label(Caption{ _idDayWidget });
+
+      char datestr[100] = { 0 };
+      std::strftime(datestr, sizeof(datestr), "%Y-%m-%d", &date);
+      dayWidget->label(Caption{ datestr });
     }
 
     auto issueWidget = dayWidget->findWidget([issue](Widget* w) {
@@ -463,13 +467,24 @@ void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue
     }, false);
 
     if (!issueWidget)
-      issueWidget = dayWidget->add<IssuePanel>(issue);
+    {
+      int day = date.tm_mon * 100 + date.tm_mday;
+      issueWidget = dayWidget->add<IssuePanel>(issue, day);
+    }
 
     if (auto w = IssuePanel::cast(issueWidget))
     {
       w->addTimeSpent(duration * 60);
       screen->needPerformLayout(screen);
     }
+
+    vstack->sortChildren([](Widget* w1, Widget* w2) {
+      auto _i1 = w1->findFirst<IssuePanel>();
+      auto _i2 = w2->findFirst<IssuePanel>();
+      return (_i1 && _i2)
+        ? (_i1->day > _i2->day)
+        : false;
+    });
   }
 }
 
@@ -514,7 +529,7 @@ void showRecordsWindow(Screen* screen)
   hbutton("Records", Color::red, Color::grey, [] {});
 
   auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{"#rec_vstack"});
-  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey },
+  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
                  FixedHeight{ screen->width()/2 }, RemoveAfterSec{ 10.f });
 
   SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}

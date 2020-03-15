@@ -38,7 +38,7 @@ TreeViewItem::~TreeViewItem()
     setSelected(false);
 }
 
-int TreeViewItem::nodesCount() const { return mChildrenIds.size(); }
+int TreeViewItem::nodesCount() const { return (int)mChildrenIds.size(); }
 bool TreeViewItem::hasNodes() const { return !mChildrenIds.empty(); }
 TreeView* TreeViewItem::source() const { return mOwner; }
 void TreeViewItem::setIcon( int icon ) { mIcon = icon; }
@@ -420,8 +420,8 @@ void TreeViewItem::draw(NVGcontext *ctx)
 
   nvgFillColor(ctx, color);
 
-  int halign = (mFixedSize.x() > 0 ? (1 << mTextAlign.h) : (1 << TextHAlign::hLeft));
-  int valign = (mFixedSize.y() > 0 ? (1 << mTextAlign.v) : (1 << TextVAlign::vTop));
+  //int halign = (mFixedSize.x() > 0 ? (1 << mTextAlign.h) : (1 << TextHAlign::hLeft));
+  //int valign = (mFixedSize.y() > 0 ? (1 << mTextAlign.v) : (1 << TextVAlign::vTop));
 
   int xpos = 15, ypos = 0;
   switch (mTextAlign.h)

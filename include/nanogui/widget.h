@@ -215,15 +215,25 @@ public:
 
     template<typename RetClass>
     RetClass *findWidget(WidgetId id, bool inchildren = true)
-    {
-      return findWidget<RetClass>(std::string(id.value), inchildren);
-    }
+    { return findWidget<RetClass>(std::string(id.value), inchildren); }
+
+    void sortChildren(std::function<bool(Widget*, Widget*)> f);
 
     template<typename RetClass>
     RetClass *findWidgetGlobal(const std::string& id)
     {
       Widget* f = findWidgetGlobal(id);
       return f ? RetClass::cast(f) : nullptr;
+    }
+
+    template<typename WidgetClass>
+    WidgetClass* findFirst() const
+    {
+      for (auto& w : mChildren)
+        if (auto cw = WidgetClass::cast(w))
+          return cw;
+
+      return nullptr;
     }
 
     template<typename WidgetClass>
