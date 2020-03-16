@@ -935,40 +935,35 @@ void requestTasksAndResolve(Screen* screen, std::string board)
     .execute();
 }
 
-void showAgilesScreen(Screen* screen)
+struct AgilesWindow : public UniqueWindow
 {
-  auto& w = screen->wdg<UniqueWindow>("#agiles_window", UniqueWindow::ShowHeader,
-                                      WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  AgilesWindow(Widget* scr)
+    : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
+  {
+    auto& header = vstack(2, 2);
+    header.label(FixedHeight{ 60 }, Caption{ "Select agile boards" },
+                 TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
+                 CaptionFont{ "sans-bold" }, FontSize{ 42 });
+    header.label(Caption{ "You will be able to edit this selection later" },
+                 CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 });
 
-  auto& header = w.vstack(2, 2);
-  header.label(FixedHeight{ 60 },
-               Caption{ "Select agile boards" },
-               TextColor{ Color::white },
-               CaptionAlign{ hCenter, vBottom },
-               CaptionFont{ "sans-bold" },
-               FontSize{ 42 });
-  header.label(Caption{ "You will be able to edit this selection later" },
-               CaptionAlign{ hCenter, vTop },
-               FixedHeight{ 20 });
+    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
+    for (auto& i : account.agiles)
+      vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
+                    ButtonFlags{ Button::RadioButton },
+                    FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
+                    BorderColor{ Color::dimGrey }, BorderSize{ 2 },
+                    BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
+                    ButtonCallback{ [name = i.name]{ account.activeAgile = name; } });
 
-  for (auto& i: account.agiles)
-    vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
-                  ButtonFlags{ Button::RadioButton }, 
-                  FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
-                  BorderColor{ Color::dimGrey }, BorderSize{ 2 },
-                  BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
-                  ButtonCallback{ [name = i.name] { account.activeAgile = name; } });
-    
-  vstack.button(Caption{ "Save" },
-                FixedHeight{ 50 },
-                BorderSize{ 0 },
-                BackgroundColor{ Color::indianRed },
-                BackgroundHoverColor{ Color::caesarRed },
-                ButtonCallback{ [screen] { requestTasksAndResolve(screen, account.activeAgile); }});
-  screen->needPerformLayout(screen);
-}
+    vstack.button(Caption{ "Save" }, FixedHeight{ 50 },
+                  BorderSize{ 0 }, BackgroundColor{ Color::indianRed },
+                  BackgroundHoverColor{ Color::caesarRed },
+                  ButtonCallback{ [scr] { requestTasksAndResolve(Screen::cast(scr), account.activeAgile); } });
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+};
 
 void requestAgilesAndResolve(Screen* screen)
 {
@@ -990,7 +985,7 @@ void requestAgilesAndResolve(Screen* screen)
       }
 
       if (account.agiles.empty()) showStartupScreen(screen);
-      else showAgilesScreen(screen);
+      else screen->add<AgilesWindow>();
     })
     .execute();
 }
