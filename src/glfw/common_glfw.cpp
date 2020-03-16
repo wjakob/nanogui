@@ -318,7 +318,7 @@ void destroy_window(WindowHandle wnd)
     glfwDestroyWindow((GLFWwindow*)wnd);
 }
 
-void sample::remove_window_border(WindowHandle wnd)
+void remove_window_border(WindowHandle wnd)
 {
 #if defined(_WIN32)
   auto handle = glfwGetWin32Window((GLFWwindow*)wnd);
@@ -331,10 +331,12 @@ void sample::remove_window_border(WindowHandle wnd)
   Style &= ~WS_THICKFRAME;
   //Style &= ~WS_GROUP;
   SetWindowLong(handle, GWL_STYLE, Style);
+#else
+  (void)wnd;
 #endif
 }
 
-Vector2i sample::get_cursor_pos()
+Vector2i get_cursor_pos()
 {
 #if WIN32
   POINT p{ 0 , 0 };
@@ -345,7 +347,7 @@ Vector2i sample::get_cursor_pos()
 #endif
 }
 
-void sample::set_window_topmost(WindowHandle w, bool topalways)
+void set_window_topmost(WindowHandle w, bool topalways)
 {
 #if WIN32
   HWND realw = glfwGetWin32Window((GLFWwindow*)w);
@@ -371,19 +373,19 @@ void sample::set_window_topmost(WindowHandle w, bool topalways)
 #endif
 }
 
-Vector2i sample::get_window_pos(WindowHandle w) 
+Vector2i get_window_pos(WindowHandle w) 
 {
   Vector2i pos;
   glfwGetWindowPos((GLFWwindow*)w, &pos.x(), &pos.y());
   return pos;
 }
 
-void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
+void set_window_pos(WindowHandle w, const Vector2i& pos)
 {
   glfwSetWindowPos((GLFWwindow*)w, pos.x(), pos.y());
 }
 
-WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
+WindowHandle create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
 {
   uint32_t glMajor = 3;
   unsigned int glMinor = 3;

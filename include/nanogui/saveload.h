@@ -34,19 +34,18 @@ struct json {
   json& $(const _s& key, const Args&... args) { obj[key] = _v(args...); return *this; }
   template<typename T>
   json& set(const T& v) { assert(false && "Cant deduce type"); return $("value", v); }
-  template<> json& set<_s>(const _s& v) { $("value", v); return type("string"); }
-  template<> json& set<int>(const int& v) { $("value", v); return type("integer"); }
-  template<> json& set<bool>(const bool& v) { $("value", v); return type("boolean"); }
-  template<> json& set<BoolObservable>(const BoolObservable& v) { $("value", (bool)v); return type("boolean"); }
-  template<> json& set<float>(const float& v) { $("value", v); return type("float"); }
-  template<> json& set<FloatObservable>(const FloatObservable& v) { $("value", (float)v); return type("boolean"); }
-  template<> json& set<Color>(const Color& v) { $("value", v.toInt()); return type("color"); }
-  template<> json& set<_a>(const _a& v) { $("value", v); return type("array"); }
-  template<> json& set<_vi>(const _vi& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
-  template<> json& set<_r>(const _r& v) { $("min", v.first).$("max", v.second); return type("rangef"); }
-
-  template<> json& set<_ss>(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
-  template<> json& set<_vf>(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
+  json& set(const _s& v) { $("value", v); return type("string"); }
+  json& set(const int& v) { $("value", v); return type("integer"); }
+  json& set(const bool& v) { $("value", v); return type("boolean"); }
+  json& set(const BoolObservable& v) { $("value", (bool)v); return type("boolean"); }
+  json& set(const float& v) { $("value", v); return type("float"); }
+  json& set(const FloatObservable& v) { $("value", (float)v); return type("boolean"); }
+  json& set(const Color& v) { $("value", v.toInt()); return type("color"); }
+  json& set(const _a& v) { $("value", v); return type("array"); }
+  json& set(const _vi& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
+  json& set(const _r& v) { $("min", v.first).$("max", v.second); return type("rangef"); }
+  json& set(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
+  json& set(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
 
   Json::value& operator[](const _s& v) { return obj[v]; }
 
@@ -54,13 +53,8 @@ struct json {
   json& type(const _s& n) { obj["type"] = _v(n); return *this; }
 
   template<typename T> T get(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get("value") : T(); }
-  template<> _s get<_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
-  template<> int get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
-  template<> float get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
-  template<> bool get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
-  template<> Color get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color(it->second.get_int("value")): Color(); }
-  template<> _vi get<_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
-  template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_float("min"), it->second.get_float("max")) : _r{ 0.f, 0.f }; }
+
+  inline operator Json::value() const { return Json::value(obj); }
 
   template<typename T> std::vector<T> get_array(const _s& n, std::function<T (const _v&)> conv) const {
     auto it = obj.find(n); 
@@ -77,10 +71,6 @@ struct json {
     return ret;
   }
 
-  template<> _ss get<_ss>(const _s& n) const { return get_array<_s>(n, [](const _v& v) { return v.to_str(); }); }
-  template<> _vf get<_vf>(const _s& n) const { return get_array<float>(n, [](const _v& v) { return v.get_float(); }); }
-
-  inline operator Json::value() const { return Json::value(obj); }
 
   void load(const _s& filename)
   {
@@ -100,5 +90,18 @@ struct json {
     t.close();
   }
 };
+
+template<> inline json::_s json::get<json::_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
+template<> inline int json::get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
+template<> inline float json::get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
+template<> inline bool json::get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
+template<> inline Color json::get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color(it->second.get_int("value")): Color(); }
+template<> inline json::_vi json::get<json::_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi(it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
+template<> inline json::_r json::get<json::_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_float("min"), it->second.get_float("max")) : _r{ 0.f, 0.f }; }
+
+
+template<> inline json::_ss json::get<json::_ss>(const _s& n) const { return get_array<_s>(n, [](const _v& v) { return v.to_str(); }); }
+template<> inline json::_vf json::get<json::_vf>(const _s& n) const { return get_array<float>(n, [](const _v& v) { return v.get_float(); }); }
+
 
 NAMESPACE_END(nanogui)

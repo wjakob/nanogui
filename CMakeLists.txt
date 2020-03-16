@@ -587,6 +587,13 @@ if(NANOGUI_BUILD_HONSU)
     include_directories("/usr/local/opt/openssl/include")
     link_directories("/usr/local/opt/openssl/lib")
     list(APPEND HONSU_OPENSSL_LIBS ssl crypto)
+  else ()
+    find_package(OpenSSL REQUIRED)
+
+    message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
+    message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
+
+    list(APPEND HONSU_OPENSSL_LIBS ${OPENSSL_LIBRARIES})
   endif()
   add_executable(honsu 
     honsu/honsu_main.cpp )

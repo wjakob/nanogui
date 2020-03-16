@@ -181,7 +181,7 @@ Vector2i StretchLayout::preferredSize(NVGcontext *ctx, const Widget *widget) con
 
 void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
 {
-  Vector2i fs_w = widget->fixedSize();
+  //Vector2i fs_w = widget->fixedSize();
   Vector4i warea = widget->getWidgetsArea();
 
   int position = mMargin;

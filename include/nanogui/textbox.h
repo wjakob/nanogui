@@ -487,8 +487,8 @@ DECLSETTER(NumberPickerSplit, float)
 template<typename Scalar>
 class NumberPicker : public Widget
 {
-  auto& editor(Widget& /*parent*/, float v) { return floatbox(v); }
-  auto& editor(Widget& /*parent*/, int v) { return intbox(v); }
+  auto& editor(Widget& /*parent*/, float v) { return floatbox<float>(v); }
+  auto& editor(Widget& /*parent*/, int v) { return intbox<int>(v); }
   template<typename B> auto* find() { return nullptr; }
   template<typename B = float> FloatBox<float>* find() {
     auto widgets = findAll<FloatBox<float>>();
@@ -547,7 +547,7 @@ public:
 
   void setSplit(float split) 
   {
-    if (auto w = findWidget<Label>())
+    if (auto w = find<Label>())
       w->setRelativeSize({ split, 0 });
     if (auto w = find<Scalar>())
       w->setRelativeSize({ 1 - split, 0 });
