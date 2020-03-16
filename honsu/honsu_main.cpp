@@ -517,26 +517,27 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
     .execute();
 }
 
-void showRecordsWindow(Screen* screen)
+struct RecordsWindow : public UniqueWindow
 {
-  auto& w = screen->wdg<UniqueWindow>("#records_window", true, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  RecordsWindow(Widget* scr)
+    : UniqueWindow(scr, "#records_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
+  {
+    auto& buttons = hlayer(5, 2, FixedHeight{ 40 });
+    auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
+      buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
+        .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+          DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+    };
 
-  auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
-  auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
-    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
-      .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
-            DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
-  };
+    hbutton("Boards", Color::grey, Color::red, [=] { showTasksWindow(Screen::cast(scr)); });
+    hbutton("Records", Color::red, Color::grey, [] {});
 
-  hbutton("Boards", Color::grey, Color::red, [=] { showTasksWindow(screen); });
-  hbutton("Records", Color::red, Color::grey, [] {});
+    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
+    vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
+      FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{"#rec_vstack"});
-  vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
-                 FixedHeight{ screen->width()/2 }, RemoveAfterSec{ 10.f });
-
-  SSLGet{"/youtrack/rest/issue/?filter=for:me", sslHeaders}
-    .onResponse([screen, wId = vstack.id()](int status, std::string body) {
+    SSLGet{ "/youtrack/rest/issue/?filter=for:me", sslHeaders }
+      .onResponse([scr, wId = vstack.id()](int status, std::string body) {
       if (status != 200)
         return;
 
@@ -544,19 +545,20 @@ void showRecordsWindow(Screen* screen)
       Json::parse(response, body);
 
       response.get("issue")
-                .update([screen, wId] (auto& js) {
-                  auto issue = IssueInfo::fromJson(js);
-                  if (issue->spentTimeMin > 0)
-                    requestIssueWorktime(screen, issue, wId);
-                  return true; 
-                });
+        .update([scr, wId](auto& js) {
+        auto issue = IssueInfo::fromJson(js);
+        if (issue->spentTimeMin > 0)
+          requestIssueWorktime(Screen::cast(scr), issue, wId);
+        return true;
+      });
 
-      screen->needPerformLayout(screen);
+      Screen::cast(scr)->needPerformLayout(scr);
     })
     .execute();
 
-  screen->needPerformLayout(screen);
-}
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+};
 
 void openAgileUrl(const std::string& agile)
 {
@@ -867,7 +869,7 @@ void showTasksWindow(Screen* screen)
   };
 
   hbutton("Boards", Color::red, Color::grey, [] {});
-  hbutton("Records", Color::grey, Color::red, [=] { showRecordsWindow(screen); });
+  hbutton("Records", Color::grey, Color::red, [=] { screen->add<RecordsWindow>(); });
 
   w.hlayer(2, 2, FixedHeight{ 40 })
     .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
