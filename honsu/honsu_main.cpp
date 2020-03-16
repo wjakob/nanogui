@@ -406,8 +406,6 @@ struct WaitingWindow : public UniqueWindow
   }
 };
 
-void showTasksWindow(Screen* screen);
-
 class IssuePanel : public Frame
 {
 public:
@@ -517,6 +515,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
     .execute();
 }
 
+class TasksWindow;
 struct RecordsWindow : public UniqueWindow
 {
   RecordsWindow(Widget* scr)
@@ -529,7 +528,7 @@ struct RecordsWindow : public UniqueWindow
           DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
     };
 
-    hbutton("Boards", Color::grey, Color::red, [=] { showTasksWindow(Screen::cast(scr)); });
+    hbutton("Boards", Color::grey, Color::red, [=] { Screen::cast(scr)->add<TasksWindow>(); });
     hbutton("Records", Color::red, Color::grey, [] {});
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
@@ -857,42 +856,44 @@ public:
   }
 };
 
-void showTasksWindow(Screen* screen)
+struct TasksWindow : public UniqueWindow
 {
-  auto& w = screen->wdg<UniqueWindow>("#tasks_window", UniqueWindow::ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
-  
-  auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
-  auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
-    buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
-           .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f }, 
-                 DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH } );
-  };
+  TasksWindow(Widget* scr)
+    : UniqueWindow(scr, "#tasks_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
+  {
+    auto& buttons = hlayer(5, 2, FixedHeight{ 40 });
+    auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
+      buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
+        .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+          DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+    };
 
-  hbutton("Boards", Color::red, Color::grey, [] {});
-  hbutton("Records", Color::grey, Color::red, [=] { screen->add<RecordsWindow>(); });
+    hbutton("Boards", Color::red, Color::grey, [] {});
+    hbutton("Records", Color::grey, Color::red, [=] { Screen::cast(scr)->add<RecordsWindow>(); });
 
-  w.hlayer(2, 2, FixedHeight{ 40 })
-    .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
-      DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
-      HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
-    .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{true});
+    hlayer(2, 2, FixedHeight{ 40 })
+      .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
+        DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
+        HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
+      .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{ true });
 
-  auto& actions = w.hstack(5, 2, FixedHeight{ 40 });
-  auto action = [&](int icon, auto func) { actions.toolbutton(Icon{ icon }, FixedWidth{ 40 },
+    auto& actions = hstack(5, 2, FixedHeight{ 40 });
+    auto action = [&](int icon, auto func) { actions.toolbutton(Icon{ icon }, FixedWidth{ 40 },
       BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
-      DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 },  ButtonCallback{ func });
-  };
+      DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 }, ButtonCallback{ func });
+    };
 
-  action(ENTYPO_ICON_PLUS, [screen] { createNewIssue(screen); });
-  action(ENTYPO_ICON_CCW, [screen] { showTasksWindow(screen); });
+    action(ENTYPO_ICON_PLUS, [scr] { createNewIssue(Screen::cast(scr)); });
+    action(ENTYPO_ICON_CCW, [scr] { Screen::cast(scr)->add<TasksWindow>(); });
 
-  auto& vstack = w.vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
-  for (auto& issue : account.issues)
-    vstack.wdg<TaskPanel>(issue);
+    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
+    for (auto& issue : account.issues)
+      vstack.wdg<TaskPanel>(issue);
 
-  w.wdg<TaskRecordPanel>();
-  screen->needPerformLayout(screen);
-}
+    add<TaskRecordPanel>();
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+};
 
 std::string encodeQueryData(std::string data)
 {
@@ -929,7 +930,7 @@ void requestTasksAndResolve(Screen* screen, std::string board)
       }
 
       if (account.issues.empty()) requestAgilesAndResolve(screen);
-      else showTasksWindow(screen);
+      else screen->add<TasksWindow>();
     })
     .execute();
 }
