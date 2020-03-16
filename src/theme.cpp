@@ -416,7 +416,7 @@ Theme::Theme(NVGcontext *ctx) {
         throw std::runtime_error("Could not load fonts!");
 }
 
-void Theme::update(const Theme& newtheme)
+/*void Theme::update(const Theme& newtheme)
 {
   int oldFontNormal = mFontNormal;
   int oldFontBold = mFontBold;
@@ -426,7 +426,7 @@ void Theme::update(const Theme& newtheme)
   if (mFontNormal == -1) mFontNormal = oldFontNormal;
   if (mFontBold == -1) mFontBold = oldFontBold;
   if (mFontIcons == -1) mFontIcons = oldFontIcons;
-}
+}*/
 
 DefaultTheme::DefaultTheme(NVGcontext*)
   : Theme()

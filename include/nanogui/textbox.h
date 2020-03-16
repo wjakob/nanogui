@@ -203,7 +203,7 @@ public:
     return &rttiInfo;
   }
   inline static const RttiClass* staticRttiClass_const() { return IntBox<Scalar>::staticRttiClass(); }
-  inline RttiClass* rttiClass() const { return IntBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const override { return IntBox<Scalar>::staticRttiClass(); }
   inline IntBox<Scalar>* cast(Object*v) 
   { 
     if (v && v->isKindOf(IntBox<Scalar>::staticRttiClass()))  
@@ -358,7 +358,7 @@ public:
     return &rttiInfo;
   }
   inline static const RttiClass* staticRttiClass_const() { return FloatBox<Scalar>::staticRttiClass(); }
-  inline RttiClass* rttiClass() const { return FloatBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const override { return FloatBox<Scalar>::staticRttiClass(); }
   inline FloatBox<Scalar>* cast(Object*v)
   {
     if (v && v->isKindOf(FloatBox<Scalar>::staticRttiClass()))
@@ -487,8 +487,8 @@ DECLSETTER(NumberPickerSplit, float)
 template<typename Scalar>
 class NumberPicker : public Widget
 {
-  auto& editor(Widget& parent, float v) { return floatbox(v); }
-  auto& editor(Widget& parent, int v) { return intbox(v); }
+  auto& editor(Widget& /*parent*/, float v) { return floatbox(v); }
+  auto& editor(Widget& /*parent*/, int v) { return intbox(v); }
   template<typename B> auto* find() { return nullptr; }
   template<typename B = float> FloatBox<float>* find() {
     auto widgets = findAll<FloatBox<float>>();
@@ -525,7 +525,7 @@ public:
   }
 
 
-  using TextBox::set;
+  using Widget::set;
   template<typename... Args>
   NumberPicker(Widget* parent, const Args&... args)
     : NumberPicker(parent, Scalar(0)) { set<NumberPicker<Scalar>, Args...>(args...); }
@@ -548,7 +548,7 @@ public:
   void setSplit(float split) 
   {
     if (auto w = findWidget<Label>())
-      w->setRelativeSize({ spit, 0 });
+      w->setRelativeSize({ split, 0 });
     if (auto w = find<Scalar>())
       w->setRelativeSize({ 1 - split, 0 });
   }

@@ -248,6 +248,7 @@ void Button::draw(NVGcontext *ctx)
     {
     case TextHAlign::hCenter: textPos.x() = (mSize.x() - mCaptionSize.x()) / 2; break;
     case TextHAlign::hRight: textPos.x() = (mSize.x() - mCaptionSize.x()); break;
+    default: break;
     }
 
     switch (mTextAlign.v)

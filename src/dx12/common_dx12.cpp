@@ -315,7 +315,7 @@ bool sample::poll_events(void) { return false; }
 uint32_t key2fourcc(int key)
 {
   switch (key) {
-#define RET_KEYCODE(k,c) case k: return FOURCCS(c);
+#define RET_KEYCODE(k,c) case k: return FOURCC(c);
     RET_KEYCODE(VK_DELETE, "KDEL")
     RET_KEYCODE(VK_ACCEPT , "KEYA")
     RET_KEYCODE(VK_KEY_X, "KEYX")
@@ -337,7 +337,7 @@ uint32_t key2fourcc(int key)
     RET_KEYCODE(VK_ESCAPE, "ESCP")
     RET_KEYCODE(VK_SPACE,  "SPCE")    
 #undef RET_KEYCODE
-  default: return FOURCCS("UNKN");
+  default: return FOURCC("UNKN");
   }}
 
 bool isKeyboardModifierCtrl(int modifier) { return modifier & KB_MOD_CONTROL; }

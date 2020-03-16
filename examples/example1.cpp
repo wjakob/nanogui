@@ -847,7 +847,7 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.label("Inner spacing left");
   stcfg.slider(SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform);
   stcfg.label("Tool button side");
-  stcfg.slider(FloatObservableFunc{ [gs]() -> auto& { return gs()->toolButtonSide; } }, SliderRange{ 15.f, 50.f }, screenPerform);
+  stcfg.slider(SliderObservable{ gs()->toolButtonSide }, SliderRange{ 15.f, 50.f }, screenPerform);
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 
@@ -944,7 +944,7 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
 
     // green color, produces white chevron at start
     auto& cp = layer.colorpicker(Color{ 0.28573f, 0.56702f, 0.25104f, 1.0f });
-    cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose() << std::endl; });
+    cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose().toInt() << std::endl; });
 
     // combobox
     std::vector<std::string> items{ "Combo box item 1", "Combo box item 2", "Combo box item 3" };
@@ -1081,7 +1081,7 @@ public:
 
     ~ExampleScreen() {}
 
-    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
+    bool keyboardEvent(int key, int scancode, int action, int modifiers) override {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
         if (nanogui::isKeyboardKeyEscape(key) && nanogui::isKeyboardActionPress(action)) {
@@ -1091,7 +1091,7 @@ public:
         return false;
     }
 
-    virtual void draw(NVGcontext *ctx) {
+    void draw(NVGcontext *ctx) override {
       using namespace nanogui;
       float value = std::fmod((float)getTimeFromStart() / 10, 1.0f);
         if (auto progress = findWidget<ProgressBar>("#lineprogressbar"))
@@ -1144,7 +1144,7 @@ public:
           int value = 1.f / dt;
 
           ledvalues.push_back(value);
-          if (ledvalues.size() > led->columnCount())
+          if (ledvalues.size() > (size_t)led->columnCount())
             ledvalues.pop_front();
           int k = 0;
           for (auto& c : ledvalues)
@@ -1162,7 +1162,7 @@ public:
 
     }
 
-    virtual void drawContents() {
+    void drawContents() override {
         using namespace nanogui;
     }
 

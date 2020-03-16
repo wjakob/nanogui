@@ -33,7 +33,7 @@ struct json {
   template<typename... Args>
   json& $(const _s& key, const Args&... args) { obj[key] = _v(args...); return *this; }
   template<typename T>
-  json& set(const T& v) { static_assert("Cant deduce type"); return $("value", v); }
+  json& set(const T& v) { assert(false && "Cant deduce type"); return $("value", v); }
   template<> json& set<_s>(const _s& v) { $("value", v); return type("string"); }
   template<> json& set<int>(const int& v) { $("value", v); return type("integer"); }
   template<> json& set<bool>(const bool& v) { $("value", v); return type("boolean"); }
@@ -53,7 +53,7 @@ struct json {
   json& name(const _s& n) { obj["name"] = _v(n); return *this; }
   json& type(const _s& n) { obj["type"] = _v(n); return *this; }
 
-  template<typename T> T get(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get("value") : Json::null; }
+  template<typename T> T get(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get("value") : T(); }
   template<> _s get<_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
   template<> int get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
   template<> float get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
@@ -63,7 +63,6 @@ struct json {
   template<> _r get<_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_float("min"), it->second.get_float("max")) : _r{ 0.f, 0.f }; }
 
   template<typename T> std::vector<T> get_array(const _s& n, std::function<T (const _v&)> conv) const {
-    auto items = obj.find(n);
     auto it = obj.find(n); 
     if (it == obj.end())
       return{};

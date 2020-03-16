@@ -198,7 +198,7 @@ protected:
 
     virtual void beforeDoCallback() {}
     virtual void beforeDoChangeCallback(bool) {}
-    Vector2f Button::getCaptionSize(NVGcontext *ctx);
+    Vector2f getCaptionSize(NVGcontext *ctx);
     /// The caption of this Button.
     std::string mCaption;
     Vector2f mCaptionSize;
@@ -270,7 +270,7 @@ public:
     PROPSETTER(ButtonDragCallback,setDragCallback)
     PROPSETTER(ButtonToggleFlag,setToggleButton)
     PROPSETTER(ButtonPushed,setPushed)
-    PROPSETTER(BoolObservable, setObservable)
+    PROPSETTERVAL(BoolObservable, setObservable)
     PROPSETTER(TextColor, setTextColor)
     PROPSETTER(HoveredTextColor, setTextHoverColor)
     PROPSETTER(BorderSize, setBorderSize)

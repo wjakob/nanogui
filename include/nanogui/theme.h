@@ -362,7 +362,7 @@ public:
 
     bool textAreaBlinkCursor = true;
 
-    void update(const Theme& newtheme);
+    //void update(const Theme& newtheme);
 
 protected:
     /// Default destructor does nothing; allows for inheritance.

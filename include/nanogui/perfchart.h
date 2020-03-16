@@ -22,7 +22,7 @@ public:
 
   void update(float frameTime);
 
-  virtual Vector2i preferredSize(NVGcontext *ctx) const;
+  Vector2i preferredSize(NVGcontext *ctx) const override;
 
 private:
   float getGraphAverage();

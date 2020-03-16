@@ -39,7 +39,7 @@ public:
   virtual ~Foldout();
 
   //! draws the element and its children
-  void draw(NVGcontext* painter);
+  void draw(NVGcontext* painter) override;
 
   void addPage( const std::string& pageName, const std::string& pageCaption, Widget* page );
   void setPageOpened( const std::string& pageName, bool opened );

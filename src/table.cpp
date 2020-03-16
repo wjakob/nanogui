@@ -869,7 +869,7 @@ void Table::_finishEditCell()
   _edit = nullptr;
 }
 
-void Table::beforePaint(NVGcontext*)
+void Table::beforeDraw(NVGcontext*)
 {
   if ( _needRefreshCellsGeometry )
   {
@@ -974,7 +974,9 @@ void Table::setItemHeight( int height )
 
 int Table::getSelectedColumn() const { return _selectedColumn; }
 
-void Table::removeChild(Widget* child)
+void Table::removeChild(int index) { Widget::removeChild(index); }
+
+void Table::removeChild(const Widget* child)
 {
     for ( uint32_t rowIndex = 0 ; rowIndex < _rows.size() ; ++rowIndex )
         for ( uint32_t columnIndex = 0 ; columnIndex < _columns.size() ; ++columnIndex )

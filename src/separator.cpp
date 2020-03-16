@@ -27,9 +27,9 @@ Line::Line(Widget *parent)
   mDrawFlags = Horizontal | CenterV | CenterH;
 }
 
-Vector2i Line::preferredSize(NVGcontext *ctx) const
+Vector2i Line::preferredSize(NVGcontext *) const
 {
-  Vector2i ps = parent() ? parent()->size() : Vector2i{ 1, 1 };
+  //Vector2i ps = parent() ? parent()->size() : Vector2i{ 1, 1 };
   if (haveDrawFlag(Line::Horizontal))
     return{ 0, mLineWidth >= 0 ? mLineWidth : theme()->separatorWidth };
   else

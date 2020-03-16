@@ -18,7 +18,7 @@ SearchBox::SearchBox(Widget* parent)
   setEditable(true);
   mAlignment = TextAlignment::Left;
 
-  auto& btn = button(Caption{ "" }, 
+  /*auto& btn = */ button(Caption{ "" }, 
                      WidgetId{ "#cancel_btn"},
                      Icon{ ENTYPO_ICON_CANCEL_CIRCLED },
                      HoveredTextColor{ Color(0xff0000ff) },
@@ -56,7 +56,7 @@ void SearchBox::performLayout(NVGcontext* ctx)
 }
 
 void SearchBox::draw(NVGcontext* ctx) {
-  NVGpaint bg;
+  //NVGpaint bg;
 
   nvgFontSize(ctx, mSize.y()*0.6f);
   nvgFontFace(ctx, "icons");

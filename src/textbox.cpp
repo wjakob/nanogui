@@ -233,6 +233,7 @@ void TextBox::draw(NVGcontext* ctx)
             nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
             drawPos.x() += mSize.x() * 0.5f;
             break;
+        default: break;
     }
 
     nvgFontSize(ctx, fontSize());

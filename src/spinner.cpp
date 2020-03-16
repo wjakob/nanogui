@@ -1,5 +1,4 @@
 #include <nanogui/spinner.h>
-#include <nanogui/nanogui.h>
 #include <nanovg.h>
 
 NAMESPACE_BEGIN(nanogui)

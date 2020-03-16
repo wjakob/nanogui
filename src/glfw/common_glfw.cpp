@@ -95,7 +95,7 @@ bool isKeyboardKeyEscape(int key) { return key == GLFW_KEY_ESCAPE; }
 uint32_t key2fourcc(int key)
 {
   switch (key) {
-#define RET_KEYCODE(k,c) case k: return FOURCCS(c);
+#define RET_KEYCODE(k,c) case k: return FOURCC(c);
   RET_KEYCODE(GLFW_KEY_DELETE, "KDEL")
   RET_KEYCODE(GLFW_KEY_A, "KEYA")
   RET_KEYCODE(GLFW_KEY_X, "KEYX")
@@ -117,7 +117,7 @@ uint32_t key2fourcc(int key)
   RET_KEYCODE(GLFW_KEY_SPACE, "SPCE")
   RET_KEYCODE(GLFW_KEY_ESCAPE, "ESCP")
 #undef RET_KEYCODE
-  default: return FOURCCS("UNKN");
+  default: return FOURCC("UNKN");
   }
 }
 

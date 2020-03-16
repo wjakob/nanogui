@@ -146,7 +146,7 @@ public:
     void save(Json::value &s) const override;
     bool load(Json::value &s) override;
     const Vector2i &size() const override;
-    bool tabstop(CanTabStop mode) const;
+    bool tabstop(CanTabStop mode) const override;
 
     ContextMenu& submenu(const std::string& caption, const std::string& id = "");
 

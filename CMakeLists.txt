@@ -483,7 +483,6 @@ add_library(nanogui-obj OBJECT
   include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h src/toolbutton.cpp
-  include/nanogui/nanogui.h
   include/nanogui/serializer/core.h    src/serializer.cpp
 
   include/nanogui/serializer/sparse.h
@@ -584,6 +583,10 @@ if(NANOGUI_BUILD_HONSU)
     link_directories("c:/Program Files/OpenSSL-Win64/lib")
 
     list(APPEND HONSU_OPENSSL_LIBS libssl libcrypto)
+  elseif (APPLE)  
+    include_directories("/usr/local/opt/openssl/include")
+    link_directories("/usr/local/opt/openssl/lib")
+    list(APPEND HONSU_OPENSSL_LIBS ssl crypto)
   endif()
   add_executable(honsu 
     honsu/honsu_main.cpp )

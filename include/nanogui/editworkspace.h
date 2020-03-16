@@ -97,9 +97,6 @@ public:
 
     std::string wtypename() const override;
 
-    virtual void save(Serializer& out ) const;
-    virtual bool load(Serializer& in );
-
     void addChild(int index, Widget * widget) override;
 
     void quit() { _running = false; }

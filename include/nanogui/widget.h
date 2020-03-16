@@ -109,8 +109,6 @@ DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(VisibleObservable, BoolObservable)
-DECLSETTERARGSNEW(OnUpdate, UpdateHandler)
-DECLSETTERARGSNEW(RemoveAfterSec, RemoveTimer)
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -578,8 +576,8 @@ public:
     template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
     template<typename... Args>TextArea& text(const Args&... args) { return wdg<TextArea>(args...); }
     template<typename... Args>Panel& panel(const Args&... args) { return wdg<Panel>(args...); }
-    template<typename... Args>Panel& hgrid2(float split, const Args&... args) { auto& w=wdg<Panel>(args...); w.withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill}); return w; }
-    template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
+    template<typename... Args>Panel& hgrid2(float split, const Args&... args) { auto& w=wdg<Panel>(args...); w.template withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill}); return w; }
+    template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).template withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
     template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
     template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
     template<typename... Args>Line& line(const Args&... args) { return wdg<Line>(args...); }
@@ -601,8 +599,6 @@ public:
     PROPSETTER(FontSize, setFontSize)
     PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
-    PROPSETTER(OnUpdate, addChild)
-    PROPSETTER(RemoveAfterSec, addChild)
 
 protected:
     /// Free all resources used by the widget and any children

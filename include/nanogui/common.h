@@ -31,6 +31,7 @@
 #include <math.h>
 #include <cmath>
 #include <memory>
+#include <string>
 #include <functional>
 #include <type_traits>
 #include <vector>
@@ -572,7 +573,7 @@ struct BoolObservable {
 
   operator bool() const { return _b ? *_b : _get ? _get() : false; }
   BoolObservable& operator &=(bool v) { bool t = *this; (*this) = t && v; return *this; }
-  BoolObservable& operator=(bool v) { _b ? (*_b = v) : (_set ? _set(v) : _set); return *this; }
+  BoolObservable& operator=(bool v) { if (_b) { *_b = v; } else if (_set) {_set(v); }; return *this; }
 };
 
 struct BoolObservableRef : public BoolObservable {
@@ -582,36 +583,19 @@ struct BoolObservableRef : public BoolObservable {
 
 template<class Scalar>
 struct ScalarObservable {
+  using _Scalar = Scalar;  //macosx clang happy
   std::shared_ptr<Scalar> _v;
   std::function<Scalar()> _get;
   std::function<void(Scalar)> _set;
   explicit ScalarObservable(const Scalar& v = Scalar()) : _v(std::make_shared<Scalar>()) { *_v = v; }
   explicit ScalarObservable(std::shared_ptr<Scalar> v) : _v(v) {}
-  explicit ScalarObservable(std::function<Scalar()> g, std::function<void(Scalar)> s)
-    : _get(g), _set(s) {}
-
-  
-
-  operator Scalar() const { return _v ? *_v : _get ? _get() : Scalar(); }
-  void operator=(Scalar v) { _v ? *_v = v : _set ? _set(v) : Scalar(); }
-};
-
-template<class Scalar>
-struct ScalarObservableFunc : public ScalarObservable<Scalar>
-{
-  template<typename T>
-  ScalarObservableFunc(std::initializer_list<T> il)
-  {
-    _v = nullptr;
-    T _gs = *il.begin();
-    _get = [_gs]() { return static_cast<Scalar>(_gs()); };
-    _set = [_gs](Scalar v) mutable { _gs() = v; };
-  }
+  explicit ScalarObservable(std::function<Scalar()> g, std::function<void(Scalar)> s) : _get(g), _set(s) {}
+  operator _Scalar() const { return _v ? *_v : _get ? _get() : _Scalar(); }
+  ScalarObservable& operator=(_Scalar v) { if (_v) { *_v = v;} else if (_set) { _set(v); }; return *this; }
 };
 
 using IntObservable = ScalarObservable<int>;
 using FloatObservable = ScalarObservable<float>;
-using FloatObservableFunc = ScalarObservableFunc<float>;
 
 
 //! Calculates the angle of this vector in degrees in the trigonometric sense.
@@ -690,8 +674,14 @@ NANOGUI_EXPORT bool isMouseButtonLeft(int button);
 NANOGUI_EXPORT bool isMouseButtonLeftMod(int button);
 NANOGUI_EXPORT bool isMouseButtonRight(int button);
 
-#define FOURCC(a,b,c,d) ( (uint32_t) (((d)<<24) | ((c)<<16) | ((b)<<8) | (a)) )
-#define FOURCCS(s) ( (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0])) )
+constexpr uint32_t FOURCC(const char* p) {
+    return   (static_cast<uint32_t>(p[0]) << (8*0))
+           | (static_cast<uint32_t>(p[1]) << (8*1))
+           | (static_cast<uint32_t>(p[2]) << (8*2))
+           | (static_cast<uint32_t>(p[3]) << (8*3));
+}
+constexpr uint32_t FOURCC(const std::string& p) { return FOURCC(p.c_str()); }
+
 NANOGUI_EXPORT uint32_t key2fourcc(int key);
 
 NANOGUI_EXPORT float getTimeFromStart();
@@ -702,7 +692,7 @@ NANOGUI_EXPORT bool isKeyboardModifierShift(int modifier);
 NANOGUI_EXPORT bool isKeyboardActionPress(int action);
 NANOGUI_EXPORT bool isKeyboardActionRepeat(int action);
 NANOGUI_EXPORT bool isKeyboardKeyEscape(int key);
-inline bool isKeyboardKey(int key, const std::string& fourcc) { return key2fourcc(key) == FOURCCS(fourcc); }
+inline bool isKeyboardKey(int key, const std::string& fourcc) { return key2fourcc(key) == FOURCC(fourcc); }
 inline bool isKeyboardKeys(int key, const std::vector<std::string>& fourcc) {
   for (auto& k : fourcc)
     if (isKeyboardKey(key, k))

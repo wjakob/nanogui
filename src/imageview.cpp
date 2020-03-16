@@ -162,7 +162,7 @@ bool ImageView::keyboardEvent(int key, int scancode, int action, int modifiers)
         int keycode = key2fourcc(key);
         switch (keycode)
         {
-        case FOURCCS("LEFT"):
+        case FOURCC("LEFT"):
             if (!mFixedOffset) {
                 if (isKeyboardModifierCtrl(modifiers))
                     moveOffset(Vector2f(30, 0));
@@ -171,7 +171,7 @@ bool ImageView::keyboardEvent(int key, int scancode, int action, int modifiers)
                 return true;
             }
             break;
-        case FOURCCS("RGHT"):
+        case FOURCC("RGHT"):
             if (!mFixedOffset) {
                 if (isKeyboardModifierCtrl(modifiers))
                     moveOffset(Vector2f(-30, 0));
@@ -180,7 +180,7 @@ bool ImageView::keyboardEvent(int key, int scancode, int action, int modifiers)
                 return true;
             }
             break;
-        case FOURCCS("DOWN"):
+        case FOURCC("DOWN"):
             if (!mFixedOffset) {
                 if (isKeyboardModifierCtrl(modifiers))
                     moveOffset(Vector2f(0, -30));
@@ -189,7 +189,7 @@ bool ImageView::keyboardEvent(int key, int scancode, int action, int modifiers)
                 return true;
             }
             break;
-        case FOURCCS("KBUP"):
+        case FOURCC("KBUP"):
             if (!mFixedOffset) {
                 if (isKeyboardModifierCtrl(modifiers))
                     moveOffset(Vector2f(0, 30));

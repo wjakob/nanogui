@@ -190,19 +190,19 @@ public:
   //virtual bool onEvent(const NEvent &event);
 
   //! draws the element and its children
-  virtual void draw(NVGcontext* ctx);
+  void draw(NVGcontext* ctx) override;
 
   //! Set flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
-  virtual void setDrawFlag( DrawFlag flag, bool enabled=true );
+  void setDrawFlag( DrawFlag flag, bool enabled=true );
 
   //! Get the flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
-  virtual bool isFlag( DrawFlag flag ) const;
+  bool isFlag( DrawFlag flag ) const;
 
   //!
-  virtual void setItemHeight(int height);
+  void setItemHeight(int height);
 
   //!
-  virtual void beforePaint(NVGcontext* ctx);
+  void beforeDraw(NVGcontext* ctx);
 
   bool mouseButtonEvent(const Vector2i &pp, int button, bool down, int modifiers) override;
   bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
@@ -217,7 +217,8 @@ public:
   //! scripting languages, editors, debuggers or xml deserialization purposes.
   //virtual void load( core::VariantArray* in );
 
-  virtual void removeChild(Widget* child);
+  void removeChild(const Widget* child) override;
+  void removeChild(int index) override;
 
 protected:
   virtual void _refreshControls();

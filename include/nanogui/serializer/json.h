@@ -326,10 +326,27 @@ GET(bool, u_.boolean_)
 GET(std::string, *u_.string_)
 GET(array, *u_.array_)
 GET(object, *u_.object_)
-GET(double,
-    (type_ == int64_type && (const_cast<value *>(this)->type_ = number_type, const_cast<value *>(this)->u_.number_ = u_.int64_) > 0,
-     u_.number_))
 GET(int64_t, u_.int64_)
+
+//specific case that convert int64 to double
+template <> inline const double &value::get<double>() const {                                                                      
+  PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is<double>());          
+  if (type_ == int64_type)
+  {
+    const_cast<value *>(this)->type_ = number_type;
+    const_cast<value *>(this)->u_.number_ = u_.int64_;
+  }
+  return u_.number_;                                                                                                                    
+}                                                                                                                                
+template <> inline double &value::get<double>() {                                                                                
+  PICOJSON_ASSERT("type mismatch! call is<type>() before get<type>()" && is<double>());        
+  if (type_ == int64_type)
+  {
+    const_cast<value *>(this)->type_ = number_type;
+    const_cast<value *>(this)->u_.number_ = u_.int64_;
+  }
+  return u_.number_;                                                                                                                                             
+}
 
 #define SET(ctype, jtype, setter)                                                                                                  \
   template <> inline void value::set<ctype>(const ctype &_val) {                                                                   \

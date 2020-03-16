@@ -115,4 +115,7 @@ public:
     PROPSETTER(LineWidth, setLineWidth)
 };
 
+DECLSETTERARGSNEW(OnUpdate, UpdateHandler)
+DECLSETTERARGSNEW(RemoveAfterSec, RemoveTimer)
+
 NAMESPACE_END(nanogui)

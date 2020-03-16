@@ -86,7 +86,6 @@ protected:
 public:
   PROPSETTER(InitialValue, setValue)
   PROPSETTER(SliderObservable, setObservable)
-  PROPSETTERVAL(FloatObservableFunc, setObservable)
   PROPSETTER(SliderRange, setRange)
   PROPSETTER(SliderCallback, setCallback)
 };

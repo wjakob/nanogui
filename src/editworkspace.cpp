@@ -289,7 +289,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
     int keycode = key2fourcc(key);
     switch (keycode)
     {
-    case FOURCCS("KDEL"):
+    case FOURCC("KDEL"):
       if (mSelectedElement)
       {
         mSelectedElement->removeLater();
@@ -304,7 +304,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case FOURCCS("KEYX"):
+    case FOURCC("KEYX"):
       if (isKeyboardModifierCtrl(modifiers) && mSelectedElement)
       {
         // cut
@@ -320,17 +320,17 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case FOURCCS("KEYN"):
+    case FOURCC("KEYN"):
       if (isKeyboardModifierCtrl(modifiers))
         reset();
       break;
 
-    case FOURCCS("KEYB"):
+    case FOURCC("KEYB"):
       if (isKeyboardModifierCtrl(modifiers))
         bringElementToFront(mSelectedElement);
       break;
 
-    case FOURCCS("KEYC"):
+    case FOURCC("KEYC"):
       // copy
       if (isKeyboardModifierCtrl(modifiers) && mSelectedElement)
       {
@@ -338,19 +338,19 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case FOURCCS("KEYR"):
+    case FOURCC("KEYR"):
       if (isKeyboardModifierCtrl(modifiers))
       {
         preview();
       }
       break;
 
-    case FOURCCS("KEYP"):
+    case FOURCC("KEYP"):
       if (isKeyboardModifierCtrl(modifiers) && mSelectedElement)
         setMode(EditMode::SelectNewParent);
       break;
 
-    case FOURCCS("KEYV"):
+    case FOURCC("KEYV"):
       // paste
       if (isKeyboardModifierCtrl(modifiers))
       {
@@ -361,7 +361,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case FOURCCS("KEYZ"):
+    case FOURCC("KEYZ"):
       if (isKeyboardModifierCtrl(modifiers))
       {
         //if (modifiers & SYSTEM_COMMAND_SHIFT)
@@ -371,7 +371,7 @@ bool EditorWorkspace::keyboardEvent(int key, int scancode, int action, int modif
       }
       break;
 
-    case FOURCCS("ESCP"):
+    case FOURCC("ESCP"):
       if (mNextWidget) {
         mNextWidget->removeLater();
         mNextWidget = nullptr;
@@ -927,26 +927,6 @@ void EditorWorkspace::pasteJsonToSelectedElement()
 
   // reset focus
   //getEnvironment()->setFocus(this);
-}
-
-void EditorWorkspace::save(Serializer&) const
-{
-  //out->AddBool( L"DrawGrid", drawGrid_);
-  //out->AddBool( L"UseGrid", UseGrid);
-  //out->AddPosition2d( L"GridSize", Point(GridSize.Width, GridSize.Height));
-  //out->AddInt( L"MenuCommandStart", MenuCommandStart);
-}
-
-bool EditorWorkspace::load(Serializer&)
-{
-  //setGridVisible(in->getAttributeAsBool(L"DrawGrid"));
-  //setUseGrid(in->getAttributeAsBool(L"UseGrid"));
-
-  //Point tmpp = in->getAttributeAsPosition2d(L"GridSize");
-  //core::NSizeU tmpd(tmpp.X, tmpp.Y);
-  //setGridSize(tmpd);
-  //setMenuCommandIDStart(in->getAttributeAsInt( L"MenuCommandStart"));
-  return true;
 }
 
 std::string EditorWorkspace::wtypename() const

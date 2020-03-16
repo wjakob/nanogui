@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <nanogui/widget.h>
+#include <nanogui/separator.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -101,6 +101,7 @@ public:
     PROPSETTER(BackgroundColor, setBackgroundColor)
     PROPSETTER(CaptionHAlign,setTextHAlign)
     PROPSETTER(CaptionAlign, setTextAlign)
+    PROPSETTER(OnUpdate, addChild)
 };
 
 NAMESPACE_END(nanogui)

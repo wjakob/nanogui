@@ -25,7 +25,7 @@ public:
     : PropertiesEditor(parent, std::string("")) { set<PropertiesEditor, Args...>(args...); }
 
   //! Returns the type name of the gui element.
-  std::string wtypename() const;
+  std::string wtypename() const override;
 
   void updateAttribs();
 

@@ -396,9 +396,9 @@ void GridLayout::computeLayout(NVGcontext *ctx, const Widget *widget, std::vecto
     wsize[axis1] -= mMargin * 2;
 
     size_t child = 0;
-    for (int i2 = 0; i2 < dim[axis2]; i2++) 
+    for (size_t i2 = 0; i2 < (size_t)dim[axis2]; i2++) 
     {
-        for (int i1 = 0; i1 < dim[axis1]; i1++) 
+        for (size_t i1 = 0; i1 < (size_t)dim[axis1]; i1++) 
         {
             Widget *w = nullptr;
             do {

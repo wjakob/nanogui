@@ -236,9 +236,3 @@ private:
 };
 
 NAMESPACE_END(nanogui)
-
-inline std::ostream& operator<<(std::ostream& os, const nanogui::Color& c)
-{
-  os << c.r() << '.' << c.g() << '.' << c.b() << '.' << c.a();
-  return os;
-}
