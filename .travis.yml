@@ -43,7 +43,7 @@ matrix:
         - cd build
         - mkdir blob
         - cmake --version 
-        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_BUILD_HONSU=ON -DNANOGUI_BUILD_SHARED=OFF -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_VULKAN_NOSDK=ON -DNANOGUI_BUILD_PYTHON=OFF ..
+        - cmake -G "Visual Studio 15 2017 Win64" -DNANOGUI_BUILD_HONSU=ON -DNANOGUI_BUILD_SHARED=OFF -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_BUILD_PYTHON=OFF ..
         - cmake --build .  
       deploy:
         provider: releases # deploy to GitHub Releases

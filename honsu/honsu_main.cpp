@@ -362,13 +362,13 @@ void makeDayInterval(std::tm& b, std::tm& e)
   e.tm_sec = e.tm_min = 59; e.tm_hour = 23;
 }
 
-
 struct UniqueWindow : public Window
 {
+  enum { NoHeader=false, ShowHeader=true } ;
   static WidgetId lastWindowId;
 
   template<typename ... Args>
-  UniqueWindow(Widget* screen, std::string id, const Args&... args)
+  UniqueWindow(Widget* screen, std::string id, bool addheader, const Args&... args)
     : Window(screen, WidgetId{ id }, Position{ 0, 0 }, WindowHaveHeader{ false },
              FixedSize{ screen->size() }, WindowMovable{ Theme::WindowDraggable::dgFixed },
              args...)
@@ -379,6 +379,18 @@ struct UniqueWindow : public Window
         rm->removeLater();
     }
     lastWindowId.value = id;
+
+    if (addheader)
+    {
+      auto& c = widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 });
+      c.toolbutton(Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 },
+                   DrawFlags{ Button::DrawBody | Button::DrawIcon },
+                   BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
+                   ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
+      c.label(Caption{ "H" });
+      c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
+      c.label(Caption{ "N S U" });
+    }
   }
 };
 
@@ -387,24 +399,12 @@ WidgetId UniqueWindow::lastWindowId = { "" };
 struct WaitingWindow : public UniqueWindow
 {
   WaitingWindow(Widget* scr)
-    : UniqueWindow(scr, "#waiting_window", WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
+    : UniqueWindow(scr, "#waiting_window", NoHeader, WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
   {
     spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
     screen()->needPerformLayout(this);
   }
 };
-
-void createWindowHeader(Widget& w)
-{
-  auto& c = w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{40});
-  c.toolbutton(Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 },
-               DrawFlags{ Button::DrawBody | Button::DrawIcon },
-               BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
-               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
-  c.label(Caption{ "H" });
-  c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
-  c.label(Caption{ "N S U" });
-}
 
 void showTasksWindow(Screen* screen);
 
@@ -519,9 +519,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
 
 void showRecordsWindow(Screen* screen)
 {
-  auto& w = screen->wdg<UniqueWindow>("#records_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
-
-  createWindowHeader(w);
+  auto& w = screen->wdg<UniqueWindow>("#records_window", true, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
 
   auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
   auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
@@ -859,10 +857,8 @@ public:
 
 void showTasksWindow(Screen* screen)
 {
-  auto& w = screen->wdg<UniqueWindow>("#tasks_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  auto& w = screen->wdg<UniqueWindow>("#tasks_window", UniqueWindow::ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
   
-  createWindowHeader(w);
-
   auto& buttons = w.hlayer(5, 2, FixedHeight{ 40 });
   auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
     buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
@@ -938,10 +934,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
 void showAgilesScreen(Screen* screen)
 {
-  auto& w = screen->wdg<UniqueWindow>("#agiles_window", 
+  auto& w = screen->wdg<UniqueWindow>("#agiles_window", UniqueWindow::ShowHeader,
                                       WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
-
-  createWindowHeader(w);
 
   auto& header = w.vstack(2, 2);
   header.label(FixedHeight{ 60 },
@@ -1079,10 +1073,8 @@ bool update_requests()
 
 void showStartupScreen(Screen* screen)
 {
-  auto& w = screen->wdg<UniqueWindow>("#login_window", 
+  auto& w = screen->wdg<UniqueWindow>("#login_window", UniqueWindow::ShowHeader,
                                      WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
-
-  createWindowHeader(w);
 
   w.label(FixedHeight{ 100 },
     Caption{ "Add new account" },
