@@ -384,14 +384,15 @@ struct UniqueWindow : public Window
 
 WidgetId UniqueWindow::lastWindowId = { "" };
 
-void showWaitingScreen(Screen* screen)
+struct WaitingWindow : public UniqueWindow
 {
-  auto& w = screen->wdg<UniqueWindow>("#waiting_window", 
-                                      WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
-
-  w.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
-  screen->needPerformLayout(screen);
-}
+  WaitingWindow(Widget* scr)
+    : UniqueWindow(scr, "#waiting_window", WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
+  {
+    spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
+    screen()->needPerformLayout(this);
+  }
+};
 
 void createWindowHeader(Widget& w)
 {
@@ -910,7 +911,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
                             encodeQueryData(board),
                             ":%7BCurrent%20sprint%7D%20%23Unresolved%20" };
 
-  showWaitingScreen(screen);
+  screen->add<WaitingWindow>();
+
   SSLGet{ body, sslHeaders }
     .onResponse([screen](int status, std::string body) {
       account.issues.clear();
@@ -1025,7 +1027,7 @@ void requestAdminData(Screen* screen)
   }
 
   account.save();
-  showWaitingScreen(screen);
+  screen->add<WaitingWindow>();
  
   SSLGet{ "/youtrack/api/admin/users/me?fields=id,login,name,email", sslHeaders }
     .onResponse([screen](int status, std::string) {
