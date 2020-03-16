@@ -104,9 +104,9 @@ public:
       area.layout()->setId(0xfa);
       area.setPosition(0, theme()->mWindowMenuHeight);
       area.setFixedSize(size() - Vector2i(0, theme()->mWindowMenuHeight));
-      createControlWidgetsArea(area, 0.15);
-      createWorkspace(area, 0.7);
-      createPropertiesEditor(area, 0.15);
+      createControlWidgetsArea(area, 0.15f);
+      createWorkspace(area, 0.7f);
+      createPropertiesEditor(area, 0.15f);
       createBaseEditorWidget(area);
 
       performLayout();

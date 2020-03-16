@@ -680,7 +680,8 @@ constexpr uint32_t FOURCC(const char* p) {
            | (static_cast<uint32_t>(p[2]) << (8*2))
            | (static_cast<uint32_t>(p[3]) << (8*3));
 }
-constexpr uint32_t FOURCC(const std::string& p) { return FOURCC(p.c_str()); }
+
+inline uint32_t FOURCC(const std::string& p) { return FOURCC(p.c_str()); }
 
 NANOGUI_EXPORT uint32_t key2fourcc(int key);
 

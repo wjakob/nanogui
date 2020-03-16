@@ -1,6 +1,7 @@
 #ifdef NANOGUI_PYTHON
 
 #include "python.h"
+#include <nanogui/glcanvas.h>
 
 class PyGLCanvas : public GLCanvas {
 public:

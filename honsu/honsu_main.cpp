@@ -362,28 +362,32 @@ void makeDayInterval(std::tm& b, std::tm& e)
   e.tm_sec = e.tm_min = 59; e.tm_hour = 23;
 }
 
-WidgetId lastWindowId{ "" };
 
-template<typename ... Args>
-Window& createWindow(Screen* screen, std::string id, const Args&... args)
+struct UniqueWindow : public Window
 {
-  if (!lastWindowId.value.empty())
+  static WidgetId lastWindowId;
+
+  template<typename ... Args>
+  UniqueWindow(Widget* screen, std::string id, const Args&... args)
+    : Window(screen, WidgetId{ id }, Position{ 0, 0 }, WindowHaveHeader{ false },
+             FixedSize{ screen->size() }, WindowMovable{ Theme::WindowDraggable::dgFixed },
+             args...)
   {
-    if (auto rm = screen->findWidget(lastWindowId.value, false))
-      rm->removeLater();
+    if (!lastWindowId.value.empty())
+    {
+      if (auto rm = screen->findWidget(lastWindowId.value, false))
+        rm->removeLater();
+    }
+    lastWindowId.value = id;
   }
-  lastWindowId.value = id;
-  return screen->window(Position{ 0, 0 },
-                        FixedSize{ screen->size() },
-                        WindowMovable{ Theme::WindowDraggable::dgFixed },
-                        WindowHaveHeader{ false },
-                        WidgetId{ id },
-                        args... );
-}
+};
+
+WidgetId UniqueWindow::lastWindowId = { "" };
 
 void showWaitingScreen(Screen* screen)
 {
-  auto& w = createWindow(screen, "#waiting_window", WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
+  auto& w = screen->wdg<UniqueWindow>("#waiting_window", 
+                                      WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
 
   w.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
   screen->needPerformLayout(screen);
@@ -498,7 +502,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
       Json::parse(response, body);
 
       response.update([screen, issue, wId](auto& i) {
-        int duration = i.get("duration").get_int();
+        int64_t duration = i.get("duration").get_int();
         std::time_t created = (uint64_t)i.get("created").get_int() / 1000;
 
         std::tm* tmt = std::localtime(&created);
@@ -514,7 +518,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
 
 void showRecordsWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#records_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  auto& w = screen->wdg<UniqueWindow>("#records_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
 
   createWindowHeader(w);
 
@@ -627,7 +631,7 @@ void startIssueRecord(IssueInfo::Ptr issue)
       int timeSpent = 0;
       uint64_t timeSpentToday = 0;
       response.update([&] (auto& i) {
-        int duration = i.get("duration").get_int();
+        int64_t duration = i.get("duration").get_int();
         uint64_t created = (uint64_t)i.get("created").get_int();
         if (created >= day_start && created <= day_end)
           timeSpentToday += duration;
@@ -854,7 +858,7 @@ public:
 
 void showTasksWindow(Screen* screen)
 {
-  auto& w = createWindow(screen, "#tasks_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
+  auto& w = screen->wdg<UniqueWindow>("#tasks_window", WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
   
   createWindowHeader(w);
 
@@ -932,7 +936,8 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 
 void showAgilesScreen(Screen* screen)
 {
-  auto& w = createWindow(screen, "#agiles_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  auto& w = screen->wdg<UniqueWindow>("#agiles_window", 
+                                      WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
 
   createWindowHeader(w);
 
@@ -1072,7 +1077,8 @@ bool update_requests()
 
 void showStartupScreen(Screen* screen)
 {
-  auto& w = createWindow(screen, "#login_window", WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  auto& w = screen->wdg<UniqueWindow>("#login_window", 
+                                     WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
 
   createWindowHeader(w);
 
