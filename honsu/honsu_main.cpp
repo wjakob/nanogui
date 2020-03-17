@@ -570,7 +570,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
     .execute();
 }
 
-class TasksWindow;
+struct TasksWindow;
 struct RecordsWindow : public UniqueWindow
 {
   RecordsWindow(Widget* scr)
