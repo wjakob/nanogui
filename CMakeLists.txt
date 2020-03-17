@@ -57,13 +57,14 @@ if (NANOGUI_DX11_BACKEND OR NANOGUI_GLFW_BACKEND OR NANOGUI_DX12_BACKEND OR NANO
   list(LENGTH BACKENDS_SELECTED BACKENDS_SELECTED_SIZE)
   if (NOT ${BACKENDS_SELECTED_SIZE} EQUAL "1")
     message(FATAL_ERROR "Multiple backends selected! "
-      "Select one of backends: opengl, dx11, dx12, vulkan"
+      "Select one of backends: opengl(NANOGUI_GLFW_BACKEND), dx11(NANOGUI_DX11_BACKEND), dx12(NANOGUI_DX12_BACKEND), vulkan(NANOGUI_VULKAN_BACKEND)"
       "Current selected: ${BACKENDS_SELECTED}"
+      "Remove CMakeCache.txt that apply changes"
     )	
   endif()    
 else()
   message(FATAL_ERROR "No backends selected! "
-     "Select one of backends: opengl, dx11, dx12, vulkan"
+     "Select one of backends: opengl(NANOGUI_GLFW_BACKEND), dx11(NANOGUI_DX11_BACKEND), dx12(NANOGUI_DX12_BACKEND), vulkan(NANOGUI_VULKAN_BACKEND)"
   )	  
 endif()
 
