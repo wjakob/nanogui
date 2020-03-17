@@ -34,7 +34,7 @@ struct DummyFactory : public WidgetFactory
     return *this;
   }
 
-  std::vector<WidgetFactory*> factories() const { return{}; }
+  std::vector<WidgetFactory*> factories() const override { return{}; }
 
   std::vector<std::string> types() const override
   {

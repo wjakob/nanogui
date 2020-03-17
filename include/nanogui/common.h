@@ -33,7 +33,7 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include <type_traits>
+//#include <type_traits>
 #include <vector>
 
 /* Set to 1 to draw boxes around widgets */
