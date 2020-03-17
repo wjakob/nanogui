@@ -155,6 +155,16 @@ struct Url
   std::string query;
   std::string fragment;
 
+  static std::string encodeQueryData(std::string data)
+  {
+    std::string r;
+    for (char c : data)
+      if (c == ' ') r.append("%20");
+      else r.push_back(c);
+    
+    return r;
+  }
+
   Url(const std::string &i_uri)
   {
     static const std::regex regExpr(std::string("^") + SCHEME_REGEX + USER_REGEX + HOST_REGEX + PORT_REGEX  + PATH_REGEX + QUERY_REGEX + FRAGMENT_REGEX + "$");
@@ -178,6 +188,7 @@ struct Youtrack
   const std::string http = "http://";
   const std::string issues = "/issue/";
   const std::string rest_issues = "/rest/issue/";
+  const std::string filter_issues = "/rest/issue?filter=";
 } youytrack;
 
 std::string _s(const char* t) { return std::string(t); }
@@ -578,26 +589,27 @@ struct RecordsWindow : public UniqueWindow
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
     vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
       FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f });
-
-    SSLGet{ "/rest/issue/?filter=for:me", sslHeaders }
+    std::string body = AllOf{ youytrack.filter_issues, "for:me",
+                              "%20Board%20", Url::encodeQueryData(account.activeAgile), ":%7BCurrent%20sprint%7D" };
+    SSLGet{ body, sslHeaders }
       .onResponse([scr, wId = vstack.id()](int status, std::string body) {
-      if (status != 200)
-        return;
+        if (status != 200)
+          return;
 
-      Json::value response;
-      Json::parse(response, body);
+        Json::value response;
+        Json::parse(response, body);
 
-      response.get("issue")
-        .update([scr, wId](auto& js) {
-        auto issue = IssueInfo::fromJson(js);
-        if (issue->spentTimeMin > 0)
-          requestIssueWorktime(Screen::cast(scr), issue, wId);
-        return true;
-      });
+        response.get("issue")
+          .update([scr, wId](auto& js) {
+          auto issue = IssueInfo::fromJson(js);
+          if (issue->spentTimeMin > 0)
+            requestIssueWorktime(Screen::cast(scr), issue, wId);
+          return true;
+        });
 
-      Screen::cast(scr)->needPerformLayout(scr);
-    })
-    .execute();
+        Screen::cast(scr)->needPerformLayout(scr);
+      })
+      .execute();
 
     Screen::cast(scr)->needPerformLayout(scr);
   }
@@ -625,16 +637,21 @@ void stopIssueRecord(IssueInfo::Ptr issue)
   if (!issue)
     return;
 
-  if (issue->recordTimeSec < 60)
+  if (issue->recordTimeSec < 6)
   {
     account.setIssueRecord(issue, false);
     return;
   }
 
-  std::string path = AllOf{ "/rest/issue/", issue->entityId, "/timetracking/workitem" };
-  std::string payload = AllOf{ "<?xml version=\"1.0\" encoding=\"UTF-8\"?><workItem><date>", _s(issue->workStartTime), "</date>",
-                               "<duration>", _s(std::max<uint64_t>(issue->recordTimeSec / 60, 1)), "</duration><description>added by Honsu</description>",
-                               "<worktype><name>Development</name></worktype></workItem>" };
+  std::string path = AllOf{ youytrack.rest_issues, issue->entityId, "/timetracking/workitem" };
+  std::string payload = AllOf{ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                               "<workItem><date>", _s(issue->workStartTime), "</date>",
+                                 "<duration>", _s(std::max<uint64_t>(issue->recordTimeSec / 60, 1)), "</duration>",
+                                 "<description>added by Honsu</description>",
+                                 "<worktype>",
+                                    "<name>Development</name>",
+                                 "</worktype>",
+                               "</workItem>" };
   auto headers = httplib::Headers{
     { "Accept", "application/json" },
     { "Authorization", std::string("Bearer ") + account.token },
@@ -939,20 +956,11 @@ struct TasksWindow : public UniqueWindow
   }
 };
 
-std::string encodeQueryData(std::string data)
-{
-  std::string r;
-  for (char c : data)
-    if (c == ' ') r.append("%20");
-    else r.push_back(c);
-  return r;
-}
-
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
-  std::string body = AllOf{ "/rest/issue?filter=for:me%20Board%20", 
-                            encodeQueryData(board),
-                            ":%7BCurrent%20sprint%7D%20%23Unresolved%20" };
+  std::string body = AllOf{ youytrack.filter_issues, "for:me", 
+                            "%20Board%20", Url::encodeQueryData(board), ":%7BCurrent%20sprint%7D",
+                            "%20%23Unresolved%20" };
 
   screen->add<WaitingWindow>();
 
@@ -982,17 +990,16 @@ void requestTasksAndResolve(Screen* screen, std::string board)
 struct AgilesWindow : public UniqueWindow
 {
   AgilesWindow(Widget* scr)
-    : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
+    : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    auto& header = vstack(2, 2);
+    auto& header = vstack(2, 2, FixedHeight{ 80 });
     header.label(FixedHeight{ 60 }, Caption{ "Select agile boards" },
                  TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
                  CaptionFont{ "sans-bold" }, FontSize{ 42 });
     header.label(Caption{ "You will be able to edit this selection later" },
                  CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 });
 
-    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(20, 20);
-
+    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(10, 10);
     for (auto& i : account.agiles)
       vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
                     ButtonFlags{ Button::RadioButton },
