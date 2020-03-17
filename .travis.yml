@@ -226,6 +226,8 @@ matrix:
             - llvm-toolchain-precise-3.9
           packages:
             - clang-3.9
+            - libc++-dev
+            - libc++-abi-dev
             - python3.5
             - python3.5-dev
             - python3.5-venv

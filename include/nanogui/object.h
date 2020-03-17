@@ -28,7 +28,7 @@ struct RttiClass
   //RttiClass* createObject();
   bool inherited(const RttiClass* base) const
   {
-    assert(this != nullptr);
+    //assert(this != nullptr);
     assert(base != nullptr);
     if (base == nullptr)
       return false;
