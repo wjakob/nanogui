@@ -33,8 +33,8 @@ public:
     TreeViewItem::NodeId selectedNode() const { return mSelected; }
     TreeViewItem::NodeId hoveredNode() const { return mHovered; }
 
-    void setSelected(TreeViewItem* item) { mSelected = item ? item->nodeId() : TreeViewItem::BadNodeId; }
-    void setHovered(TreeViewItem* item) { mHovered = item ? item->nodeId() : TreeViewItem::BadNodeId; }
+    void setSelected(TreeViewItem* item) { mSelected = item ? item->nodeId() : (TreeViewItem::NodeId)TreeViewItem::BadNodeId; }
+    void setHovered(TreeViewItem* item) { mHovered = item ? item->nodeId() : (TreeViewItem::NodeId)TreeViewItem::BadNodeId; }
 
     bool getLinesVisible() const { return mLinesVisible; }
     void setLinesVisible( bool visible ) { mLinesVisible = visible; }

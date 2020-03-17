@@ -134,8 +134,8 @@ void register_nanovg(py::module &m) {
              "h"_a)
         .def("ResetScissor", &nvgResetScissor)
         .def("BeginPath", &nvgBeginPath)
-        .def("MoveTo", &nvgMoveTo, "x"_a, "y"_a)
-        .def("LineTo", &nvgLineTo, "x"_a, "y"_a)
+        .def("MoveTo", (void(*)(NVGcontext*, float, float))&nvgMoveTo, "x"_a, "y"_a)
+        .def("LineTo", (void(*)(NVGcontext*, float, float))&nvgLineTo, "x"_a, "y"_a)
         .def("BezierTo", &nvgBezierTo, "c1x"_a, "c1y"_a, "c2x"_a, "c2y"_a,
              "x"_a, "y"_a)
         .def("QuadTo", &nvgQuadTo, "cx"_a, "cy"_a, "x"_a, "y"_a)

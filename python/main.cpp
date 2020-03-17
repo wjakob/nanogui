@@ -129,55 +129,6 @@ PYBIND11_MODULE(nanogui, m) {
             handle->detached = true;
             handle->refresh = refresh;
 
-            #if defined(__APPLE__) || defined(__linux__)
-                /* Release GIL and completely disassociate the calling thread
-                   from its associated Python thread state data structure */
-                py::gil_scoped_release thread_state(true);
-
-                /* Create a new thread state for the nanogui main loop
-                   and reference it once (to keep it from being constructed and
-                   destructed at every callback invocation) */
-                {
-                    py::gil_scoped_acquire acquire;
-                    acquire.inc_ref();
-                }
-
-                handle->thread = std::thread([]{
-                    /* Handshake 1: wait for signal from detach_helper */
-                    handle->sema.wait();
-
-                    /* Swap context with main thread */
-                    coro_transfer(&handle->ctx_thread, &handle->ctx_main);
-
-                    /* Handshake 2: wait for signal from detach_helper */
-                    handle->sema.notify();
-                });
-
-                void (*detach_helper)(void *) = [](void *ptr) -> void {
-                    MainloopHandle *handle = (MainloopHandle *) ptr;
-
-                    /* Handshake 1: Send signal to new thread  */
-                    handle->sema.notify();
-
-                    /* Enter main loop */
-                    sigint_handler_prev = signal(SIGINT, sigint_handler);
-                    mainloop(handle->refresh);
-                    signal(SIGINT, sigint_handler_prev);
-
-                    /* Handshake 2: Wait for signal from new thread */
-                    handle->sema.wait();
-
-                    /* Return back to Python */
-                    coro_transfer(&handle->ctx_helper, &handle->ctx_main);
-                };
-
-                /* Allocate an 8MB stack and transfer context to the
-                   detach_helper function */
-                coro_stack_alloc(&handle->stack, 8 * 1024 * 1024);
-                coro_create(&handle->ctx_helper, detach_helper, handle,
-                            handle->stack.sptr, handle->stack.ssze);
-                coro_transfer(&handle->ctx_main, &handle->ctx_helper);
-            #else
                 handle->thread = std::thread([]{
                     auto window = nanogui::sample::create_window(1600, 900, "NanoGUI Python", true, false);
                     nanogui::sample::create_context();
@@ -196,13 +147,7 @@ PYBIND11_MODULE(nanogui, m) {
                       nanogui::sample::wait_events();
                     }, handle->refresh);
                 });
-            #endif
-
-            #if defined(__APPLE__) || defined(__linux__)
-                /* Reacquire GIL and reassociate with thread state on newly
-                   created thread [via RAII destructor in 'thread_state'] */
-            #endif
-
+            
             return handle;
         } else {
             py::gil_scoped_release release;
