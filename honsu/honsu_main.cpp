@@ -119,7 +119,14 @@ struct AgileInfo
   {
     js = data;
     id = js.get("id").get_str();
-    shortName = js.get("projects").get(0).get("shortName").get_str();
+    Json::value projects = js.get("projects");
+    if (projects.is<Json::array>())
+    {
+      Json::value proj = projects.get(0);
+      if (!proj.is<Json::null>())
+        shortName = proj.get("shortName").get_str();
+    }
+
     name = js.get("name").get_str();
   }
 
@@ -132,10 +139,46 @@ std::function<void(bool)> showAppExclusive = [](bool) {};
 
 struct Url
 {
+  const char* SCHEME_REGEX = "((http[s]?)://)?";  // match http or https before the ://
+  const char* USER_REGEX = "(([^@/:\\s]+)@)?";  // match anything other than @ / : or whitespace before the ending @
+  const char* HOST_REGEX = "([^@/:\\s]+)";      // mandatory. match anything other than @ / : or whitespace
+  const char* PORT_REGEX = "(:([0-9]{1,5}))?";  // after the : match 1 to 5 digits
+  const char* PATH_REGEX = "(/[^:#?\\s]*)?";    // after the / match anything other than : # ? or whitespace
+  const char* QUERY_REGEX = "(\\?(([^?;&#=]+=[^?;&#=]+)([;|&]([^?;&#=]+=[^?;&#=]+))*))?"; // after the ? match any number of x=y pairs, seperated by & or ;
+  const char* FRAGMENT_REGEX = "(#([^#\\s]*))?";    // after the # match anything other than # or whitespace
+
+  std::string scheme;
+  std::string user;
+  std::string host;
+  std::string port;
+  std::string path;
+  std::string query;
+  std::string fragment;
+
+  Url(const std::string &i_uri)
+  {
+    static const std::regex regExpr(std::string("^") + SCHEME_REGEX + USER_REGEX + HOST_REGEX + PORT_REGEX  + PATH_REGEX + QUERY_REGEX + FRAGMENT_REGEX + "$");
+
+    std::smatch matchResults;
+    if (std::regex_match(i_uri.cbegin(), i_uri.cend(), matchResults, regExpr))
+    {
+      scheme.assign(matchResults[2].first, matchResults[2].second);
+      user.assign(matchResults[4].first, matchResults[4].second);
+      host.assign(matchResults[5].first, matchResults[5].second);
+      port.assign(matchResults[7].first, matchResults[7].second);
+      path.assign(matchResults[8].first, matchResults[8].second);
+      query.assign(matchResults[10].first, matchResults[10].second);
+      fragment.assign(matchResults[15].first, matchResults[15].second);
+    }
+  }
+};
+
+struct Youtrack
+{
   const std::string http = "http://";
-  const std::string issues = "/youtrack/issue/";
-  const std::string rest_issues = "/youtrack/rest/issue/";
-} y_url;
+  const std::string issues = "/issue/";
+  const std::string rest_issues = "/rest/issue/";
+} youytrack;
 
 std::string _s(const char* t) { return std::string(t); }
 std::string _s(uint64_t t) { return std::to_string(t); }
@@ -172,7 +215,7 @@ struct IssueInfo
     return ptr;
   }
 
-  std::string getWorktimeUrl() { return AllOf{ y_url.rest_issues, entityId, "/timetracking/workitem" }; }
+  std::string getWorktimeUrl() { return AllOf{ youytrack.rest_issues, entityId, "/timetracking/workitem" }; }
 
   void updateTime(float dtSec)
   {
@@ -183,7 +226,7 @@ struct IssueInfo
     }
   }
 
-  void openUrl(std::string base) { open_url(y_url.http + base + y_url.issues + entityId, ""); }
+  void openUrl(std::string base) { open_url(youytrack.http + base + youytrack.issues + entityId, ""); }
 
   void readField(const Json::value& _js)
   {
@@ -535,7 +578,7 @@ struct RecordsWindow : public UniqueWindow
     vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
       FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f });
 
-    SSLGet{ "/youtrack/rest/issue/?filter=for:me", sslHeaders }
+    SSLGet{ "/rest/issue/?filter=for:me", sslHeaders }
       .onResponse([scr, wId = vstack.id()](int status, std::string body) {
       if (status != 200)
         return;
@@ -587,7 +630,7 @@ void stopIssueRecord(IssueInfo::Ptr issue)
     return;
   }
 
-  std::string path = AllOf{ "/youtrack/rest/issue/", issue->entityId, "/timetracking/workitem" };
+  std::string path = AllOf{ "/rest/issue/", issue->entityId, "/timetracking/workitem" };
   std::string payload = AllOf{ "<?xml version=\"1.0\" encoding=\"UTF-8\"?><workItem><date>", _s(issue->workStartTime), "</date>",
                                "<duration>", _s(std::max<uint64_t>(issue->recordTimeSec / 60, 1)), "</duration><description>added by Honsu</description>",
                                "<worktype><name>Development</name></worktype></workItem>" };
@@ -906,7 +949,7 @@ std::string encodeQueryData(std::string data)
 
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
-  std::string body = AllOf{ "/youtrack/rest/issue?filter=for:me%20Board%20", 
+  std::string body = AllOf{ "/rest/issue?filter=for:me%20Board%20", 
                             encodeQueryData(board),
                             ":%7BCurrent%20sprint%7D%20%23Unresolved%20" };
 
@@ -967,7 +1010,7 @@ struct AgilesWindow : public UniqueWindow
 
 void requestAgilesAndResolve(Screen* screen)
 {
-  SSLGet{ "/youtrack/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100", sslHeaders }
+  SSLGet{ "/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100", sslHeaders }
     .onResponse([screen](int status, std::string body) {
       account.agiles.clear();
 
@@ -990,12 +1033,18 @@ void requestAgilesAndResolve(Screen* screen)
     .execute();
 }
 
+#define CA_CERT_FILE "./ca-bundle.crt"
 void createSSLClient() 
 {
   if (sslClient)
     return;
 
-  sslClient = new httplib::SSLClient(account.url);
+  std::string host = Url(account.url).host;
+  sslClient = new httplib::SSLClient(host);
+
+  //sslClient->set_ca_cert_path(CA_CERT_FILE);
+  //sslClient->enable_server_certificate_verification(true);
+
   sslHeaders = httplib::Headers{
     { "Accept", "application/json" },
     { "Authorization", std::string("Bearer ") + account.token },
@@ -1021,8 +1070,8 @@ void requestAdminData(Screen* screen)
   account.save();
   screen->add<WaitingWindow>();
  
-  SSLGet{ "/youtrack/api/admin/users/me?fields=id,login,name,email", sslHeaders }
-    .onResponse([screen](int status, std::string) {
+  SSLGet{ "/api/admin/users/me?fields=id,login,name,email", sslHeaders }
+    .onResponse([screen](int status, std::string body) {
       if (status == 200) requestAgilesAndResolve(screen);
       else showStartupScreen(screen);
     })
