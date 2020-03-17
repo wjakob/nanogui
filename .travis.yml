@@ -214,7 +214,7 @@ matrix:
         - make -j 2                    
     # build opengl render linux clang-3.8
     - os: linux
-      compiler: clang-3.8  
+      compiler: clang-3.9  
       before_install:
         - sudo apt-get --purge remove gcc-4.8
       addons:
@@ -223,9 +223,9 @@ matrix:
             - ubuntu-toolchain-r-test
             - deadsnakes
             - kubuntu-backports
-            - llvm-toolchain-precise-3.8
+            - llvm-toolchain-precise-3.9
           packages:
-            - clang-3.8
+            - clang-3.9
             - python3.5
             - python3.5-dev
             - python3.5-venv
@@ -239,7 +239,7 @@ matrix:
             - cmake
       script:
         - cmake --version
-        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=clang++-3.8 -DCMAKE_C_COMPILER=clang-3.8
+        - cmake -DNANOGUI_GLFW_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_PYTHON_VERSION=3.5 -DPYTHON_INCLUDE_DIRS:PATH=/usr/include/python3.5m -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.5m.so -DCMAKE_CXX_COMPILER=clang++-3.9 -DCMAKE_C_COMPILER=clang-3.9
         - make -j 2                    
     # build opengl render osx       
     - os: osx
