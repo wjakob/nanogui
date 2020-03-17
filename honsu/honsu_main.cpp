@@ -340,7 +340,6 @@ using namespace std::chrono_literals;
 httplib::SSLClient* sslClient = nullptr;
 httplib::Headers sslHeaders;
 
-void showStartupScreen(Screen*);
 void requestAgilesAndResolve(Screen*);
 
 void open_url(const std::string& url, const std::string& prefix)
@@ -448,6 +447,8 @@ struct WaitingWindow : public UniqueWindow
     screen()->needPerformLayout(this);
   }
 };
+
+struct LoginWindow;
 
 class IssuePanel : public Frame
 {
@@ -1027,7 +1028,7 @@ void requestAgilesAndResolve(Screen* screen)
         });
       }
 
-      if (account.agiles.empty()) showStartupScreen(screen);
+      if (account.agiles.empty()) screen->add<LoginWindow>();
       else screen->add<AgilesWindow>();
     })
     .execute();
@@ -1057,13 +1058,13 @@ void requestAdminData(Screen* screen)
 {
   if (!checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url")))
   {
-    showStartupScreen(screen);
+    screen->add<LoginWindow>();
     return;
   }
 
   if (!checkAccountToken(screen->findWidget<TextBox>("#youtrack_token")))
   {
-    showStartupScreen(screen);
+    screen->add<LoginWindow>();
     return;
   }
 
@@ -1073,7 +1074,7 @@ void requestAdminData(Screen* screen)
   SSLGet{ "/api/admin/users/me?fields=id,login,name,email", sslHeaders }
     .onResponse([screen](int status, std::string body) {
       if (status == 200) requestAgilesAndResolve(screen);
-      else showStartupScreen(screen);
+      else screen->add<LoginWindow>();
     })
     .execute();
 }
@@ -1118,44 +1119,35 @@ bool update_requests()
   return !(SSLGet::requests.empty() || SSLPost::requests.empty());
 }
 
-void showStartupScreen(Screen* screen)
+struct LoginWindow : public UniqueWindow
 {
-  auto& w = screen->wdg<UniqueWindow>("#login_window", UniqueWindow::ShowHeader,
-                                     WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 });
+  LoginWindow(Widget* scr)
+    : UniqueWindow(scr, "#login_window", UniqueWindow::ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
+  {
+    label(FixedHeight{ 100 }, Caption{ "Add new account" }, CaptionHAlign{ TextHAlign::hCenter }, FontSize{ 26 });
 
-  w.label(FixedHeight{ 100 },
-    Caption{ "Add new account" },
-    CaptionHAlign{ TextHAlign::hCenter },
-    FontSize{ 26 });
+    auto textfield = [&](std::string placeholder, std::string value, std::string id) {
+      textbox(FontSize{ 24 }, IsEditable{ true }, TextAlignment::Left, TextPlaceholder{ placeholder },
+              TextValue{ value }, BorderColor{ Color::dimGrey }, BorderSize{ 2 }, BackgroundHoverColor{ Color::transparent },
+              BackgroundColor{ Color::transparent }, WidgetId{ id });
+    };
 
-  auto textfield = [&](std::string placeholder, std::string value, std::string id) {
-    w.textbox(FontSize{ 24 },
-      IsEditable{ true },
-      TextAlignment::Left,
-      TextPlaceholder{ placeholder },
-      TextValue{ value },
-      BorderColor{ Color::dimGrey },
-      BorderSize{ 2 },
-      BackgroundHoverColor{ Color::transparent },
-      BackgroundColor{ Color::transparent },
-      WidgetId{ id });
-  };
+    /* No need to store a pointer, the data structure will be automatically
+    freed when the parent window is deleted */
+    textfield("account name", account.title, "#account_name");
+    textfield("youtrack url", account.url, "#youtrack_url");
+    textfield("youtrack token", account.token, "#youtrack_token");
 
-  /* No need to store a pointer, the data structure will be automatically
-  freed when the parent window is deleted */
-  textfield("account name", account.title, "#account_name");
-  textfield("youtrack url", account.url, "#youtrack_url");
-  textfield("youtrack token", account.token, "#youtrack_token");
+    link(Caption{ "How to obtain a new permament token?" },
+         ButtonCallback{ [] { open_url("https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html", ""); } });
 
-  w.link(Caption{ "How to obtain a new permament token?" },
-         ButtonCallback{ [] { open_url("https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html", ""); }});
-
-  /* Alternative construction notation using variadic template */
-  w.button(Caption{ "Login" }, FontSize{ 32 },
-           BackgroundColor{ 0, 0, 255, 25 },
-           ButtonCallback{ [screen] { requestAdminData(screen); }});
-  screen->needPerformLayout(screen);
-}
+    /* Alternative construction notation using variadic template */
+    button(Caption{ "Login" }, FontSize{ 32 },
+      BackgroundColor{ 0, 0, 255, 25 },
+      ButtonCallback{ [scr] { requestAdminData(Screen::cast(scr)); } });
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+};
 
 class HonsuScreen : public Screen {
 public:
@@ -1165,7 +1157,7 @@ public:
       initGPUTimer(&gpuTimer);
 
       account.load();
-      showStartupScreen(this);
+      add<LoginWindow>();
 
       //fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(width() - 210, 5));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(width() - 205, 10));
