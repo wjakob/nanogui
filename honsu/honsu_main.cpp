@@ -896,12 +896,11 @@ public:
 
   TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
     : Frame(parent, 
-            BorderColor{ Color::ligthDarkGrey }, BackgroundColor{ Color::heavyDarkGrey }, 
-            BorderSize{ 2 }, CornerRadius{ 6 }),
+            BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2 }, CornerRadius{ 6 }, 
+            BackgroundColor{ Color::heavyDarkGrey },
+            WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}),
       issue(_issue)
   {
-    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
-
     auto& header = hlayer(2, 2, FixedHeight{ 26 });
     header.link(Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
                 ButtonCallback{ [this] { issue->openUrl(account.url); } });
@@ -934,8 +933,8 @@ struct TasksWindow : public UniqueWindow
 
     hlayer(2, 2, FixedHeight{ 40 })
       .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
-        DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
-        HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
+              DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
+              HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
       .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{ true });
 
     auto& actions = hstack(5, 2, FixedHeight{ 40 });
@@ -1198,7 +1197,7 @@ public:
       return Screen::mouseButtonCallbackEvent(button, action, modifiers);
     }
 
-    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
+    bool keyboardEvent(int key, int scancode, int action, int modifiers) override {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;
         return false;
