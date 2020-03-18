@@ -829,11 +829,8 @@ public:
   Label* time = nullptr;
   Label* dtime = nullptr;
   TaskRecordPanel(Widget* parent)
-    : Frame(parent)
+    : Frame(parent, IsSubElement{ true }, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 })
   {
-    setSubElement(true);
-
-    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, 10, 10);
     line(LineWidth{ 4 }, IsSubElement{ true }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::Left });
 
     auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
@@ -877,6 +874,9 @@ public:
   void afterDraw(NVGcontext* ctx) override
   {
     IssueInfo::Ptr issue = account.getActiveIssue();
+
+    if (issue) mPos.y() = parent()->height() - height();
+    else mPos.y() = parent()->height() - 4;
   
     setCaptionSafe("#time", sec2str(issue ? issue->recordTimeSec : 0));
     setCaptionSafe("#dtime", "TODAY:" + sec2str(issue ? issue->recordTimeTodaySec : 0));
