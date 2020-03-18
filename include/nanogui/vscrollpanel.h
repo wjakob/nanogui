@@ -54,6 +54,7 @@ public:
     bool isSliderVisible() const;
 protected:
     int mChildPreferredHeight;
+    int mLastChildCount = -1;
     float mScroll;
     bool mUpdateLayout;
     Vector2i mLastMousePos;

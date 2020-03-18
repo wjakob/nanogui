@@ -33,40 +33,42 @@ BoxLayout::BoxLayout(Orientation orientation, Alignment alignment,
       mSpacing(spacing) {
 }
 
-Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const {
-    Vector2i size = Vector2i::Constant(2*mMargin);
+Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const 
+{
+  Vector2i size = Vector2i::Constant(2*mMargin);
 
-    int yOffset = 0;
-    const Window *window = Window::cast(widget);
-    if (window && !window->title().empty()) 
-    {
-        if (mOrientation == Orientation::Vertical)
-            size.y() += window->getHeaderHeight() - mMargin/2;
-        else
-            yOffset = window->getHeaderHeight();
-    }
+  int yOffset = 0;
+  const Window *window = Window::cast(widget);
+  if (window && !window->title().empty()) 
+  {
+    if (mOrientation == Orientation::Vertical)
+      size.y() += window->getHeaderHeight() - mMargin/2;
+    else
+      yOffset = window->getHeaderHeight();
+  }
 
-    bool first = true;
-    int axis1 = (int) mOrientation % 2, axis2 = ((int) mOrientation + 1)%2;
-    for (auto w : widget->children()) {
-        if (!w->visible())
-            continue;
-        if (first)
-            first = false;
-        else
-            size[axis1] += mSpacing;
+  bool first = true;
+  int axis1 = (int) mOrientation % 2, axis2 = ((int) mOrientation + 1)%2;
+  for (auto w : widget->children()) 
+  {
+    if (!w->visible() || w->isSubElement())
+      continue;
+    if (first)
+      first = false;
+    else
+      size[axis1] += mSpacing;
 
-        Vector2i ps = w->preferredSize(ctx), fs = w->fixedSize();
-        Vector2i targetSize(fs.x() ? fs.x() : ps.x(), fs.y() ? fs.y() : ps.y());
+    Vector2i ps = w->preferredSize(ctx);
+    Vector2i targetSize = w->fixedSize().fillZero(ps);
 
-        size[axis1] += targetSize[axis1];
-        size[axis2] = std::max(size[axis2], targetSize[axis2] + 2*mMargin);
-        first = false;
-    }
-    size += Vector2i(0, yOffset);
-    size = size.cwiseMax(widget->minSize());
+    size[axis1] += targetSize[axis1];
+    size[axis2] = std::max(size[axis2], targetSize[axis2] + 2*mMargin);
+    first = false;
+  }
+  size += Vector2i(0, yOffset);
+  size = size.cwiseMax(widget->minSize());
 
-    return size;
+  return size;
 }
 
 void BoxLayout::performLayout(NVGcontext *ctx, Widget *widget) const 
@@ -289,7 +291,7 @@ void StretchLayout::performLayout(NVGcontext * ctx, Widget * widget) const
       w->performLayout(ctx);
 
       position += wSize.y() * sign;
-      warea.w() -= wSize.y();
+      warea.w() -= (wSize.y() + mSpacing);
     }
   }
 

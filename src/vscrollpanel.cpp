@@ -104,13 +104,22 @@ bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
 void VScrollPanel::draw(NVGcontext *ctx) {
     if (mChildren.empty())
         return;
+
     Widget *child = mChildren[0];
     child->setPosition(Vector2i(0, -mScroll*(mChildPreferredHeight - mSize.y())));
-    mChildPreferredHeight = child->preferredSize(ctx).y();
+
+    if (mChildren.size() != mLastChildCount)
+    {
+      mLastChildCount = mChildren.size();
+      mChildPreferredHeight = child->preferredSize(ctx).y();
+    }
+
     float scrollh = height() * std::min(1.0f, height() / (float) mChildPreferredHeight);
 
-    if (mUpdateLayout)
-        child->performLayout(ctx);
+    if (mUpdateLayout) {
+      child->performLayout(ctx);
+      mUpdateLayout = false;
+    }
 
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
@@ -126,8 +135,8 @@ void VScrollPanel::draw(NVGcontext *ctx) {
         ctx, mPos.x() + mSize.x() - 12 + 1, mPos.y() + 4 + 1, 8,
         mSize.y() - 8, 3, 4, Color(0, 32), Color(0, 92));
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12, mPos.y() + 4, 8,
-                   mSize.y() - 8, 3);
+    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12, mPos.y() + 4, 
+                   8, mSize.y() - 8, 3);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 
@@ -155,6 +164,8 @@ void VScrollPanel::draw(NVGcontext *ctx) {
     nvgRoundedRect(ctx, rectSlider.x(), rectSlider.y(), rectSlider.z(), rectSlider.w(), 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
+
+    Widget::draw(ctx);
 }
 
 void VScrollPanel::save(Json::value &s) const 
