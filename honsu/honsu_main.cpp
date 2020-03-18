@@ -189,6 +189,7 @@ struct Youtrack
   const std::string issues = "/issue/";
   const std::string rest_issues = "/rest/issue/";
   const std::string filter_issues = "/rest/issue?filter=";
+  const std::string filter_my_issues = "/rest/issue?filter=for:me";
 } youytrack;
 
 std::string _s(const char* t) { return std::string(t); }
@@ -205,7 +206,7 @@ struct IssueInfo
   std::string id;
   std::string entityId;
   std::string state;
-  std::string sprint;
+  std::vector<std::string> sprints;
   std::string type;
   std::string summary;
   std::string projectShortName;
@@ -249,7 +250,11 @@ struct IssueInfo
       const std::string name = v.get_str("name");
       if      (name == "State")   state = v.get("value").get(0).to_str();
       else if (name == "Type")    type = v.get("value").get(0).to_str();
-      else if (name == "Sprints") sprint = v.get("value").get(0).to_str();
+      else if (name == "Sprints") sprints.push_back(v.get("value").get(0).to_str());
+      else if (name == "sprint") {
+        Json::value arr = v.get("value");
+        arr.update([&](auto& v) { sprints.push_back(v.get("value").to_str()); return true; });
+      }
       else if (name == "summary") summary = v.get("value").to_str();
       else if (name == "projectShortName") projectShortName = v.get("value").to_str();
       else if (name == "created") createdEpochSec = std::stoll(v.get("value").get_str());
@@ -492,9 +497,7 @@ public:
             .spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f });
     header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white });
 
-    auto it = std::find_if(account.agiles.begin(), account.agiles.end(),
-                           [i = issue] (auto& a) { return a.shortName == i->projectShortName;});
-    label(Caption{ it != account.agiles.end() ? it->name : "Not found project" }, FontSize{ 14 });
+    label(Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 });
   }
 };
 
@@ -589,7 +592,7 @@ struct RecordsWindow : public UniqueWindow
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
     vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
       FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f });
-    std::string body = AllOf{ youytrack.filter_issues, "for:me",
+    std::string body = AllOf{ youytrack.filter_my_issues, 
                               "%20Board%20", Url::encodeQueryData(account.activeAgile), ":%7BCurrent%20sprint%7D" };
     SSLGet{ body, sslHeaders }
       .onResponse([scr, wId = vstack.id()](int status, std::string body) {
@@ -916,6 +919,8 @@ public:
   }
 };
 
+void requestTasksAndResolve(Screen* screen, std::string board);
+
 struct TasksWindow : public UniqueWindow
 {
   TasksWindow(Widget* scr)
@@ -944,7 +949,7 @@ struct TasksWindow : public UniqueWindow
     };
 
     action(ENTYPO_ICON_PLUS, [scr] { createNewIssue(Screen::cast(scr)); });
-    action(ENTYPO_ICON_CCW, [scr] { Screen::cast(scr)->add<TasksWindow>(); });
+    action(ENTYPO_ICON_CCW, [scr] { requestTasksAndResolve(Screen::cast(scr), account.activeAgile); });
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
     for (auto& issue : account.issues)
@@ -957,7 +962,7 @@ struct TasksWindow : public UniqueWindow
 
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
-  std::string body = AllOf{ youytrack.filter_issues, "for:me", 
+  std::string body = AllOf{ youytrack.filter_my_issues,
                             "%20Board%20", Url::encodeQueryData(board), ":%7BCurrent%20sprint%7D",
                             "%20%23Unresolved%20" };
 
@@ -972,12 +977,9 @@ void requestTasksAndResolve(Screen* screen, std::string board)
         Json::value response;
         Json::parse(response, body);
 
-        Json::value issues = response.get("issue");
-
-        issues.update([&] (auto& i) {
-          account.issues.push_back(IssueInfo::fromJson(i));
-          return true;
-        });
+        response
+          .get("issue")
+            .update([&] (auto& i) { account.issues.push_back(IssueInfo::fromJson(i)); return true; });
       }
 
       if (account.issues.empty()) requestAgilesAndResolve(screen);
