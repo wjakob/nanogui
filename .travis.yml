@@ -272,7 +272,7 @@ matrix:
             - cmake
       script:
         - cmake --version
-        - cmake -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_USE_GLAD=ON -DNANOGUI_BUILD_PYTHON=OFF -DCMAKE_CXX_COMPILER=clang++-3.9 -DCMAKE_C_COMPILER=clang-3.9
+        - cmake -DNANOGUI_VULKAN_BACKEND=ON -DNANOGUI_VULKAN_NOSDK=ON -DNANOGUI_BUILD_PYTHON=OFF -DCMAKE_CXX_COMPILER=clang++-3.9 -DCMAKE_C_COMPILER=clang-3.9
         - make -j 2                    
     # build opengl render osx       
     - os: osx
