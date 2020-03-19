@@ -247,19 +247,20 @@ struct IssueInfo
     entityId = js.get("entityId").get_str();
     Json::value field = js.get("field");
     field.update([&] (auto& v) {
+      auto& _v = [](auto& i) { return i.get("value"); };
       const std::string name = v.get_str("name");
-      if      (name == "State")   state = v.get("value").get(0).to_str();
-      else if (name == "Type")    type = v.get("value").get(0).to_str();
-      else if (name == "Sprints") sprints.push_back(v.get("value").get(0).to_str());
+      if      (name == "State")   state = _v(v).get(0).to_str();
+      else if (name == "Type")    type = _v(v).get(0).to_str();
+      else if (name == "Sprints") sprints.push_back(_v(v).get(0).to_str());
       else if (name == "sprint") {
-        Json::value arr = v.get("value");
-        arr.update([&](auto& v) { sprints.push_back(v.get("value").to_str()); return true; });
+        Json::value arr = _v(v);
+        arr.update([&](auto& v) { sprints.push_back(_v(v).to_str()); return true; });
       }
-      else if (name == "summary") summary = v.get("value").to_str();
-      else if (name == "projectShortName") projectShortName = v.get("value").to_str();
-      else if (name == "created") createdEpochSec = std::stoll(v.get("value").get_str());
-      else if (name == "updated") updatedEpochSec = std::stoll (v.get("value").get_str());
-      else if (name == "Spent time") spentTimeMin = std::stoll(v.get("value").get(0).get_str());
+      else if (name == "summary") summary = _v(v).to_str();
+      else if (name == "projectShortName") projectShortName = _v(v).to_str();
+      else if (name == "created") createdEpochSec = std::stoll(_v(v).get_str());
+      else if (name == "updated") updatedEpochSec = std::stoll(_v(v).get_str());
+      else if (name == "Spent time") spentTimeMin = std::stoll(_v(v).get(0).get_str());
       return true;
     });
   }
