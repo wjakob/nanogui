@@ -779,41 +779,39 @@ public:
   }
 };
 
-void updateInactiveWarningWindow(Screen* screen)
+struct InactiveWarning : public Window
 {
-  if (account.inactiveTimeSec < (5*60)) 
-    return;
-  
-  if (auto w = screen->findWidget("#inactive_warn"))
-    return;
-  
-  account.suspendInactiveTime = true;
-  showAppExclusive(true);
+  static const std::string Id;
+  InactiveWarning(Widget* scr)
+    : Window(scr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
+             Position{ 0, 0 }, FixedSize{ scr->size() },
+             WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
+             WidgetId{ Id })
+  {
+    account.suspendInactiveTime = true;
+    showAppExclusive(true);
 
-  auto& w = screen->window(Position{ 0, 0 }, FixedSize{ screen->size() },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
-                           WidgetId{ "#inactive_warn" }, WidgetStretchLayout{ Orientation::Vertical, 10, 10 });
-  auto& title = w.vstack(10, 10);
-  title.label(Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{TextHAlign::hCenter});
-  title.label(Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
-    OnUpdate{ [](Widget* w) {
+    auto& title = vstack(10, 10);
+    title.label(Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
+    title.label(Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
+      OnUpdate{ [](Widget* w) {
       if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
         return;
 
       account.inactiveLastTimeSec = account.inactiveTimeSec;
       Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
     }
-  });
-  w.button(Caption{ "Add" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
-           BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
-    ButtonChangeCallback{ [](Button* b) { 
-            account.resetInactiveTime(); 
-            Window::cast(b->parent())->dispose();
-            showAppExclusive(false);
-  }});
-  w.button(Caption{ "Remove" }, FontSize{36}, DrawFlags{ Button::DrawBody | Button::DrawCaption },
-           BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
-    ButtonChangeCallback{ [](Button* b) {
+    });
+    button(Caption{ "Add" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+      BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
+      ButtonChangeCallback{ [](Button* b) {
+      account.resetInactiveTime();
+      Window::cast(b->parent())->dispose();
+      showAppExclusive(false);
+    } });
+    button(Caption{ "Remove" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+      BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
+      ButtonChangeCallback{ [](Button* b) {
       if (auto issue = account.getActiveIssue())
       {
         issue->recordTimeSec -= account.inactiveTimeSec;
@@ -822,10 +820,21 @@ void updateInactiveWarningWindow(Screen* screen)
       }
       Window::cast(b->parent())->dispose();
       showAppExclusive(false);
-  }});
-  w.line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
-  screen->needPerformLayout(screen);
-}
+    } });
+    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+
+  static void update(Screen* screen) 
+  {
+    if (account.inactiveTimeSec < (5 * 60))
+      return;
+    if (auto w = screen->findWidget(Id))
+      return;
+    screen->add<InactiveWarning>();
+  }
+};
+const std::string InactiveWarning::Id = "#inactive_warn";
 
 class TaskRecordPanel : public Frame
 {
@@ -1224,7 +1233,7 @@ public:
       //if (fpsGraph) fpsGraph->update(dt);
       if (cpuGraph) cpuGraph->update(cpuTime);
 
-      updateInactiveWarningWindow(this);
+      InactiveWarning::update(this);
     }
 
 private:
