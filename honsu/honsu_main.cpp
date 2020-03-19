@@ -357,8 +357,6 @@ using namespace std::chrono_literals;
 httplib::SSLClient* sslClient = nullptr;
 httplib::Headers sslHeaders;
 
-void requestAgilesAndResolve(Screen*);
-
 void open_url(const std::string& url, const std::string& prefix)
 {
 #ifdef __UNIX__
@@ -970,6 +968,7 @@ struct TasksWindow : public UniqueWindow
   }
 };
 
+struct AgilesWindow;
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
   std::string body = AllOf{ youytrack.filter_my_issues,
@@ -992,7 +991,7 @@ void requestTasksAndResolve(Screen* screen, std::string board)
             .update([&] (auto& i) { account.issues.push_back(IssueInfo::fromJson(i)); return true; });
       }
 
-      if (account.issues.empty()) requestAgilesAndResolve(screen);
+      if (account.issues.empty()) screen->add<AgilesWindow>();
       else screen->add<TasksWindow>();
     })
     .execute();
@@ -1027,27 +1026,14 @@ struct AgilesWindow : public UniqueWindow
   }
 };
 
-void requestAgilesAndResolve(Screen* screen)
+void requestAgiles(std::function<void (std::string)> onSuccess, std::function<void (int)> onFailed)
 {
   SSLGet{ "/api/agiles?fields=name,id,projects(id,shortName,name),columnSettings(columns(presentation))&$top=100", sslHeaders }
-    .onResponse([screen](int status, std::string body) {
-      account.agiles.clear();
-
+    .onResponse([onSuccess,onFailed](int status, std::string body) {
       if (status == 200)
-      {
-        Json::value agiles;
-        Json::parse(agiles, body);
-
-        agiles.update([&] (auto& js) {
-          AgileInfo agileInfo(js);
-          if (agileInfo.valid())
-            account.agiles.push_back(agileInfo);
-          return true;
-        });
-      }
-
-      if (account.agiles.empty()) screen->add<LoginWindow>();
-      else screen->add<AgilesWindow>();
+        onSuccess(body);
+      else
+        onFailed(status);
     })
     .execute();
 }
@@ -1072,15 +1058,28 @@ void createSSLClient()
   };
 }
 
+bool parseAgilesData(std::string data)
+{
+  account.agiles.clear();
+
+  Json::value agiles;
+  Json::parse(agiles, data);
+
+  agiles.update([&](auto& js) {
+    AgileInfo agileInfo(js);
+    if (agileInfo.valid())
+      account.agiles.push_back(agileInfo);
+    return true;
+  });
+
+  return !account.agiles.empty();
+}
+
 void requestAdminData(Screen* screen)
 {
-  if (!checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url")))
-  {
-    screen->add<LoginWindow>();
-    return;
-  }
-
-  if (!checkAccountToken(screen->findWidget<TextBox>("#youtrack_token")))
+  if (   !checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url"))
+      || !checkAccountToken(screen->findWidget<TextBox>("#youtrack_token"))
+     )
   {
     screen->add<LoginWindow>();
     return;
@@ -1091,8 +1090,21 @@ void requestAdminData(Screen* screen)
  
   SSLGet{ "/api/admin/users/me?fields=id,login,name,email", sslHeaders }
     .onResponse([screen](int status, std::string body) {
-      if (status == 200) requestAgilesAndResolve(screen);
-      else screen->add<LoginWindow>();
+      if (status != 200) {
+        screen->add<LoginWindow>();
+        return;
+      }
+      
+      requestAgiles(
+        [screen](std::string body) {  //success
+          if (parseAgilesData(body))
+            screen->add<AgilesWindow>();
+        },
+        [screen](int status) {        //failed
+          account.agiles.clear(); 
+          screen->add<LoginWindow>(); 
+        }
+      );
     })
     .execute();
 }
