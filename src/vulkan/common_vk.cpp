@@ -365,7 +365,7 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
 
 void errorcb(int error, const char *desc) { printf("GLFW error %d: %s\n", error, desc); }
 
-void sample::set_window_topmost(WindowHandle w, bool topalways)
+void sample::set_window_topmost(WindowHandle w, bool top, bool always)
 {
 #ifdef _WIN32
   HWND realw = glfwGetWin32Window((GLFWwindow*)w);
@@ -380,7 +380,7 @@ void sample::set_window_topmost(WindowHandle w, bool topalways)
   // now change the size, position, and Z order
   // of the window.
   ::SetWindowPos(realw,       // handle to window
-    topalways ? HWND_TOPMOST : HWND_BOTTOM,  // placement-order handle
+    (top && always) ? HWND_TOPMOST : (top ? HWND_TOP : HWND_BOTTOM),  // placement-order handle
     rect.left,     // horizontal position
     rect.top,      // vertical position
     rect.right - rect.left,  // width

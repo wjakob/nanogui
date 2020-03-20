@@ -138,7 +138,7 @@ struct AgileInfo
 
 void open_url(const std::string& url, const std::string& prefix);
 std::function<void(bool)> showRecPanelWait = [](bool) {};
-std::function<void(bool)> showAppExclusive = [](bool) {};
+std::function<void(bool, bool)> showAppExclusive = [](bool, bool) {};
 
 struct Url
 {
@@ -792,7 +792,7 @@ struct ActivityWithNoTaskWarning : public Window
       WidgetId{ Id })
   {
     account.suspendInactiveTime = true;
-    showAppExclusive(true);
+    showAppExclusive(true, true);
 
     auto& title = vstack(10, 10);
     title.label(Caption{ "Long activity without task" }, FontSize{ 42 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
@@ -803,7 +803,7 @@ struct ActivityWithNoTaskWarning : public Window
       account.nocheckActivityInteralSec = 1 * 60;
       account.lastCheckActivityTimeSec = 0;
       Window::cast(b->parent())->dispose();
-      showAppExclusive(false);
+      showAppExclusive(true, false);
       } }
     );
     button(Caption{ "Stop annoying me next 30 min" }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
@@ -812,7 +812,7 @@ struct ActivityWithNoTaskWarning : public Window
       account.nocheckActivityInteralSec = 30 * 60;
       account.lastCheckActivityTimeSec = 0;
       Window::cast(b->parent())->dispose();
-      showAppExclusive(false);
+      showAppExclusive(false, false);
       } }
     );
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
@@ -847,7 +847,7 @@ struct InactiveWarning : public Window
              WidgetId{ Id })
   {
     account.suspendInactiveTime = true;
-    showAppExclusive(true);
+    showAppExclusive(true, true);
 
     auto& title = vstack(10, 10);
     title.label(Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
@@ -865,7 +865,7 @@ struct InactiveWarning : public Window
       ButtonChangeCallback{ [](Button* b) {
       account.resetInactiveTime();
       Window::cast(b->parent())->dispose();
-      showAppExclusive(false);
+      showAppExclusive(false, false);
     } });
     button(Caption{ "Remove" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
       BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
@@ -877,7 +877,7 @@ struct InactiveWarning : public Window
         account.resetInactiveTime();
       }
       Window::cast(b->parent())->dispose();
-      showAppExclusive(false);
+      showAppExclusive(false, false);
     } });
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
     performLayoutLater();
@@ -1325,7 +1325,7 @@ int main(int /* argc */, char ** /* argv */)
   nanogui::init();
   Vector2i size{ 400, 600 };
   auto window = nanogui::sample::create_window(size.x(), size.y(), "Honsu", true, false);
-  showAppExclusive = [window](bool v) { sample::set_window_topmost(window, v); };
+  showAppExclusive = [window](bool v, bool always) { sample::set_window_topmost(window, v, always); };
   nanogui::sample::remove_window_border(window);
   nanogui::sample::create_context();
 

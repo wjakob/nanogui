@@ -73,7 +73,7 @@ void dx11SetFramebufferSizeCallback(const std::function<void(void *, int, int)> 
 void dx11SetWindowFocusCallback(const std::function<void(void *, int )> &f) { focusCallback = f; }
 void dx11SetDrawCallback(const std::function<void()> &f) { drawCallback = f; }
 
-void sample::set_window_topmost(WindowHandle w, bool topalways)
+void sample::set_window_topmost(WindowHandle w, bool top, bool always)
 {
   HWND realw = (HWND)w;
   
@@ -87,7 +87,7 @@ void sample::set_window_topmost(WindowHandle w, bool topalways)
   // now change the size, position, and Z order
   // of the window.
   ::SetWindowPos(realw,       // handle to window
-    topalways ? HWND_TOPMOST : HWND_BOTTOM,  // placement-order handle
+    (top && always) ? HWND_TOPMOST : (top ? HWND_TOP : HWND_BOTTOM),  // placement-order handle
     rect.left,     // horizontal position
     rect.top,      // vertical position
     rect.right - rect.left,  // width
