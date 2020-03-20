@@ -107,6 +107,9 @@ using namespace nanogui;
 
 GPUtimer gpuTimer;
 
+struct AgilesWindow;
+struct InactiveWarning;
+
 struct AgileInfo
 {
   std::string name;
@@ -319,6 +322,8 @@ struct AccountData
   std::vector<IssueInfo::Ptr> issues;
   float inactiveTimeSec = 0;
   float inactiveLastTimeSec = 0;
+  float lastCheckActivityTimeSec = 0;
+  float nocheckActivityInteralSec = 60;
   bool suspendInactiveTime = false;
 } account;
 
@@ -777,6 +782,59 @@ public:
   }
 };
 
+struct ActivityWithNoTaskWarning : public Window
+{
+  static const std::string Id;
+  ActivityWithNoTaskWarning(Widget* scr)
+    : Window(scr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
+      Position{ 0, 0 }, FixedSize{ scr->size() },
+      WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
+      WidgetId{ Id })
+  {
+    account.suspendInactiveTime = true;
+    showAppExclusive(true);
+
+    auto& title = vstack(10, 10);
+    title.label(Caption{ "Long activity without task" }, FontSize{ 42 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
+    title.label(Caption{ "Are you read to work?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter });
+    button(Caption{ "Take me a minute to select task" }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+      BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
+      ButtonChangeCallback{ [](Button* b) {
+      account.nocheckActivityInteralSec = 1 * 60;
+      account.lastCheckActivityTimeSec = 0;
+      Window::cast(b->parent())->dispose();
+      showAppExclusive(false);
+      } }
+    );
+    button(Caption{ "Stop annoying me next 30 min" }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+      BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
+      ButtonChangeCallback{ [](Button* b) {
+      account.nocheckActivityInteralSec = 30 * 60;
+      account.lastCheckActivityTimeSec = 0;
+      Window::cast(b->parent())->dispose();
+      showAppExclusive(false);
+      } }
+    );
+    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
+    Screen::cast(scr)->needPerformLayout(scr);
+  }
+
+  static void update(Screen* screen)
+  {
+    if (account.lastCheckActivityTimeSec < account.nocheckActivityInteralSec)
+      return;
+    account.lastCheckActivityTimeSec = 0;
+    if (auto w = screen->findWidget(Id))
+      return;
+    if (account.issues.empty())
+      return;
+    if (account.getActiveIssue())
+      return;
+    screen->add<ActivityWithNoTaskWarning>();
+  }
+};
+const std::string ActivityWithNoTaskWarning::Id = "#active_notask_warn";
+
 struct InactiveWarning : public Window
 {
   static const std::string Id;
@@ -968,7 +1026,6 @@ struct TasksWindow : public UniqueWindow
   }
 };
 
-struct AgilesWindow;
 void requestTasksAndResolve(Screen* screen, std::string board)
 {
   std::string body = AllOf{ youytrack.filter_my_issues,
@@ -1246,6 +1303,7 @@ public:
       if (cpuGraph) cpuGraph->update(cpuTime);
 
       InactiveWarning::update(this);
+      ActivityWithNoTaskWarning::update(this);
     }
 
 private:
@@ -1314,6 +1372,7 @@ int main(int /* argc */, char ** /* argv */)
       {
         for (auto& issue : account.issues)
           issue->updateTime(0.5);
+        account.lastCheckActivityTimeSec += 0.5f;
         std::this_thread::sleep_for(0.5s);
       }
     });
