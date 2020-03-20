@@ -515,6 +515,7 @@ public:
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);
+    void performLayoutLater();
 
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);

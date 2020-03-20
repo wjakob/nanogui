@@ -464,7 +464,7 @@ struct WaitingWindow : public UniqueWindow
     : UniqueWindow(scr, "#waiting_window", NoHeader, WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
   {
     spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
-    screen()->needPerformLayout(this);
+    performLayoutLater();
   }
 };
 
@@ -590,7 +590,7 @@ struct RecordsWindow : public UniqueWindow
           DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
     };
 
-    hbutton("Boards", Color::grey, Color::red, [=] { Screen::cast(scr)->add<TasksWindow>(); });
+    hbutton("Boards", Color::grey, Color::red, [=] { scr->add<TasksWindow>(); });
     hbutton("Records", Color::red, Color::grey, [] {});
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
@@ -618,7 +618,7 @@ struct RecordsWindow : public UniqueWindow
       })
       .execute();
 
-    Screen::cast(scr)->needPerformLayout(scr);
+    performLayoutLater();
   }
 };
 
@@ -816,7 +816,7 @@ struct ActivityWithNoTaskWarning : public Window
       } }
     );
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
-    Screen::cast(scr)->needPerformLayout(scr);
+    performLayoutLater();
   }
 
   static void update(Screen* screen)
@@ -824,8 +824,10 @@ struct ActivityWithNoTaskWarning : public Window
     if (account.lastCheckActivityTimeSec < account.nocheckActivityInteralSec)
       return;
     account.lastCheckActivityTimeSec = 0;
-    if (auto w = screen->findWidget(Id))
+    if (auto w = screen->findWidget(Id)) {
+      w->bringToFront();
       return;
+    }
     if (account.issues.empty())
       return;
     if (account.getActiveIssue())
@@ -878,7 +880,7 @@ struct InactiveWarning : public Window
       showAppExclusive(false);
     } });
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
-    Screen::cast(scr)->needPerformLayout(scr);
+    performLayoutLater();
   }
 
   static void update(Screen* screen) 
@@ -985,7 +987,28 @@ public:
   }
 };
 
-void requestTasksAndResolve(Screen* screen, std::string board);
+bool parseBoardTasks(std::string body)
+{
+  account.issues.clear();
+  Json::value response;
+  Json::parse(response, body);
+  response
+    .get("issue")
+    .update([&](auto& i) { account.issues.push_back(IssueInfo::fromJson(i)); return true; });
+  return !account.issues.empty();
+}
+
+void requestTasks(std::string board, std::function<void(std::string)> onSuccess,
+                                     std::function<void(int)> onFailed)
+{
+  std::string body = AllOf{ youytrack.filter_my_issues,
+                            "%20Board%20", Url::encodeQueryData(board), ":%7BCurrent%20sprint%7D",
+                            "%20%23Unresolved%20" };
+
+  SSLGet{ body, sslHeaders }
+    .onResponse([=](int status, std::string body) { status == 200 ? onSuccess(body) : onFailed(status); })
+    .execute();
+}
 
 struct TasksWindow : public UniqueWindow
 {
@@ -1000,7 +1023,7 @@ struct TasksWindow : public UniqueWindow
     };
 
     hbutton("Boards", Color::red, Color::grey, [] {});
-    hbutton("Records", Color::grey, Color::red, [=] { Screen::cast(scr)->add<RecordsWindow>(); });
+    hbutton("Records", Color::grey, Color::red, [=] { scr->add<RecordsWindow>(); });
 
     hlayer(2, 2, FixedHeight{ 40 })
       .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
@@ -1015,44 +1038,21 @@ struct TasksWindow : public UniqueWindow
     };
 
     action(ENTYPO_ICON_PLUS, [scr] { createNewIssue(Screen::cast(scr)); });
-    action(ENTYPO_ICON_CCW, [scr] { requestTasksAndResolve(Screen::cast(scr), account.activeAgile); });
+    action(ENTYPO_ICON_CCW, [scr] { 
+      scr->add<WaitingWindow>();
+      requestTasks(account.activeAgile,
+        [scr](std::string body) { parseBoardTasks(body) ? (void*)scr->add<TasksWindow>() : (void*)scr->add<AgilesWindow>();  },
+        [scr](int) { scr->add<AgilesWindow>(); }); 
+    });
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
     for (auto& issue : account.issues)
       vstack.wdg<TaskPanel>(issue);
 
     add<TaskRecordPanel>();
-    Screen::cast(scr)->needPerformLayout(scr);
+    performLayoutLater();
   }
 };
-
-void requestTasksAndResolve(Screen* screen, std::string board)
-{
-  std::string body = AllOf{ youytrack.filter_my_issues,
-                            "%20Board%20", Url::encodeQueryData(board), ":%7BCurrent%20sprint%7D",
-                            "%20%23Unresolved%20" };
-
-  screen->add<WaitingWindow>();
-
-  SSLGet{ body, sslHeaders }
-    .onResponse([screen](int status, std::string body) {
-      account.issues.clear();
-
-      if (status == 200)
-      {
-        Json::value response;
-        Json::parse(response, body);
-
-        response
-          .get("issue")
-            .update([&] (auto& i) { account.issues.push_back(IssueInfo::fromJson(i)); return true; });
-      }
-
-      if (account.issues.empty()) screen->add<AgilesWindow>();
-      else screen->add<TasksWindow>();
-    })
-    .execute();
-}
 
 struct AgilesWindow : public UniqueWindow
 {
@@ -1078,8 +1078,13 @@ struct AgilesWindow : public UniqueWindow
     vstack.button(Caption{ "Save" }, FixedHeight{ 50 },
                   BorderSize{ 0 }, BackgroundColor{ Color::indianRed },
                   BackgroundHoverColor{ Color::caesarRed },
-                  ButtonCallback{ [scr] { requestTasksAndResolve(Screen::cast(scr), account.activeAgile); } });
-    Screen::cast(scr)->needPerformLayout(scr);
+                  ButtonCallback{ [scr] {
+                    scr->add<WaitingWindow>();
+                    requestTasks(account.activeAgile, 
+                      [scr](std::string body) { parseBoardTasks(body) ? (void*)scr->add<TasksWindow>() : (void*)scr->add<AgilesWindow>();  },
+                      [scr](int) { scr->add<AgilesWindow>(); });
+                  } });
+    performLayoutLater();
   }
 };
 
@@ -1132,7 +1137,7 @@ bool parseAgilesData(std::string data)
   return !account.agiles.empty();
 }
 
-void requestAdminData(Screen* screen)
+void requestAdminData(Widget* screen)
 {
   if (   !checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url"))
       || !checkAccountToken(screen->findWidget<TextBox>("#youtrack_token"))
@@ -1231,8 +1236,8 @@ struct LoginWindow : public UniqueWindow
     /* Alternative construction notation using variadic template */
     button(Caption{ "Login" }, FontSize{ 32 },
       BackgroundColor{ 0, 0, 255, 25 },
-      ButtonCallback{ [scr] { requestAdminData(Screen::cast(scr)); } });
-    Screen::cast(scr)->needPerformLayout(scr);
+      ButtonCallback{ [scr] { requestAdminData( scr ); } });
+    performLayoutLater();
   }
 };
 

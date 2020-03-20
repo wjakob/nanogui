@@ -69,6 +69,12 @@ Vector2i Widget::preferredSize(NVGcontext *ctx) const {
     }
 }
 
+void Widget::performLayoutLater()
+{
+  if (auto scr = screen())
+    scr->needPerformLayout(parent());
+}
+
 void Widget::performLayout(NVGcontext *ctx)
 {
   if (mLayout)
