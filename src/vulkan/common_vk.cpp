@@ -348,21 +348,29 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
   screen->initClipboardSetHandler([hw_window](std::string text) { glfwSetClipboardString((GLFWwindow*)hw_window, text.c_str()); });
   screen->initClipboardGetHandler([hw_window]() { return glfwGetClipboardString((GLFWwindow*)hw_window); });
 
+  //FIXME: make this handlers properly
+
   screen->setPrepareFrameHandler([hw_window](Screen* screen) {
-    Vector2i fbsize, size;
-    glfwGetFramebufferSize((GLFWwindow*)hw_window, &fbsize.x(), &fbsize.y());
-    glfwGetWindowSize((GLFWwindow*)hw_window, &size.x(), &size.y());
-    if (size.x() != screen->width() || size.y() != screen->height())
-    {
-      destroyFrameBuffers(internal::device, &internal::fb);
-      internal::fb = createFrameBuffers(internal::device, internal::surface, internal::queue, size.x(), size.y(), 0);
-      screen->setSizeFBSize(size, fbsize);
-    }
+   // Vector2i fbsize, size;
+   // glfwGetFramebufferSize((GLFWwindow*)hw_window, &fbsize.x(), &fbsize.y());
+   // glfwGetWindowSize((GLFWwindow*)hw_window, &size.x(), &size.y());
+   // if (size.x() != screen->width() || size.y() != screen->height())
+   // {
+   //   destroyFrameBuffers(internal::device, &internal::fb);
+   //   internal::fb = createFrameBuffers(internal::device, internal::surface, internal::queue, size.x(), size.y(), 0);
+   //   screen->setSizeFBSize(size, fbsize);
+   // }
   });
 
   screen->setResizeHwHandler([hw_window](Screen*, Vector2i& size, Vector2i& fbsize) {
     glfwGetFramebufferSize((GLFWwindow*)hw_window, &fbsize.x(), &fbsize.y());
     glfwGetWindowSize((GLFWwindow*)hw_window, &size.x(), &size.y());
+    if (size.x() != screen->width() || size.y() != screen->height())
+    {
+        destroyFrameBuffers(internal::device, &internal::fb);
+        internal::fb = createFrameBuffers(internal::device, internal::surface, internal::queue, size.x(), size.y(), 0);
+        screen->setSizeFBSize(size, fbsize);
+    }
   });
 
   screen->initHwCursorSetter([hw_window](intptr_t cursor) { glfwSetCursor((GLFWwindow*)hw_window, (GLFWcursor*)cursor); });
