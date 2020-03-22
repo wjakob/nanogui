@@ -549,11 +549,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 static unsigned __int64 dx12startTime = 0;
+static unsigned __int64 dx12timeFreq = 0;
+
 void init() {
   hInstance = GetModuleHandle(NULL);
   if (!MyRegisterClass(hInstance))
     throw std::runtime_error("Could not initialize window!");
-  QueryPerformanceCounter((LARGE_INTEGER*)&dx12startTime);
+  QueryPerformanceCounter((LARGE_INTEGER*)&dx12startTime);  
+  QueryPerformanceFrequency((LARGE_INTEGER*)&dx12timeFreq);
 }
 
 void shutdown() {}
@@ -564,7 +567,7 @@ float getTimeFromStart(void)
 {
     unsigned __int64 time;
     QueryPerformanceCounter((LARGE_INTEGER*)&time);
-    return (time - dx12startTime)/1000000.f;
+    return (time - dx12startTime) / (float)dx12timeFreq;
 }
 
 // Setup the device and the rendering targets

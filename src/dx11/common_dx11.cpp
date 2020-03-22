@@ -800,11 +800,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 static unsigned __int64 dx11startTime = 0;
+static unsigned __int64 dx11timeFreq = 0;
+
 void init() {
   hInstance = GetModuleHandle(NULL);
   if (!MyRegisterClass(hInstance))
     throw std::runtime_error("Could not initialize window!");
   QueryPerformanceCounter((LARGE_INTEGER*)&dx11startTime);
+  QueryPerformanceFrequency((LARGE_INTEGER*)&dx11timeFreq);
 }
 
 void shutdown() {}
@@ -815,7 +818,7 @@ float getTimeFromStart(void)
 {
     unsigned __int64 time;
     QueryPerformanceCounter((LARGE_INTEGER*)&time);
-    return (time - dx11startTime)/1000000.f;
+    return (time - dx11startTime) / (float)dx11timeFreq;
 }
 
 void sample::clear_frame(const Color& background)
