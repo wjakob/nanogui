@@ -471,12 +471,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
         // Painting
-      case WM_PAINT:
+        case WM_PAINT:
         {
-            //Draw(hWnd);
-            //ValidateRect(hWnd, NULL);
+          if (drawCallback)
+            drawCallback();
         }
-      break;
+        break;
 
         // Sizing
       case WM_SIZE:
