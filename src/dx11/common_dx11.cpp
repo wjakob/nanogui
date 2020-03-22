@@ -769,6 +769,7 @@ break;
 
           // Quit the app
           PostQuitMessage(0);
+          sample::stop_frame_loop();
         }
         break;
 
