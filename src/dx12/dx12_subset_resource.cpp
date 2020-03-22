@@ -241,11 +241,14 @@ void dx12_subset_resource::ClearAsDSV(FLOAT Depth, UINT8 Stencil, D3D12_CLEAR_FL
 
 void dx12_subset_resource::SetIB()
 {
+  BTransit4(D3D12_RESOURCE_STATE_GENERIC_READ);
   dx12->FrameCL()->IASetIndexBuffer(&bindData.i);
 }
 
 void dx12_subset_resource::SetVB(int stream, int offset, int stride)
 {
+  BTransit4(D3D12_RESOURCE_STATE_GENERIC_READ);
+
   D3D12_VERTEX_BUFFER_VIEW bindDataLocal;
 
   bindDataLocal = bindData.v;
@@ -364,8 +367,6 @@ void * dx12_subset_resource::MapWrite(unsigned int offset, unsigned int size)
   UINT64 ulOffset = 0;
   dx12_subset_resource* ul = dx12->GetUploadBuffer(size, &ulOffset, 0);
   void* ret = ul->UploadBlockFR(this, offset, ulOffset, size);
-
-  BTransit4(D3D12_RESOURCE_STATE_GENERIC_READ);
 
   return ret;
 }
