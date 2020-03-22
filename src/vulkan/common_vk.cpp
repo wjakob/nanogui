@@ -339,6 +339,12 @@ void sample::setup_window_params(WindowHandle hw_window, Screen* s)
       screen->focusEvent(focused != 0);
   });
 
+  glfwSetWindowCloseCallback((GLFWwindow*)hw_window,
+    [](GLFWwindow*) {
+      sample::stop_frame_loop();
+  });
+
+
   screen->initClipboardSetHandler([hw_window](std::string text) { glfwSetClipboardString((GLFWwindow*)hw_window, text.c_str()); });
   screen->initClipboardGetHandler([hw_window]() { return glfwGetClipboardString((GLFWwindow*)hw_window); });
 
@@ -492,7 +498,12 @@ void sample::destroy_window(WindowHandle wnd)
 void __nanogui_destroy_cursor(intptr_t cursor) { glfwDestroyCursor((GLFWcursor*)cursor); }
 intptr_t __nanogui_create_cursor(int shape) { return (intptr_t)glfwCreateStandardCursor(GLFW_ARROW_CURSOR + shape); }
 
-void sample::frame_loop(std::function<void()> &f) { while (true) { f(); }; }
+void sample::frame_loop(std::function<void()> &f) {
+  while (is_main_loop_active())
+  { 
+    f();
+  }; 
+}
 
 void sample::create_context()
 {
