@@ -518,6 +518,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             // Quit the app
             PostQuitMessage(0);
+            sample::stop_frame_loop();
         }
       break;
 
