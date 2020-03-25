@@ -273,6 +273,7 @@ struct AccountData
 {
   std::string title;
   std::string url;
+  std::string path;
   std::string token;
   std::mutex issuesGuard;
 
@@ -980,7 +981,7 @@ public:
     header.widget();
     header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
 
-    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white });
+    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWidthBreak{ 150 });
 
     line(BackgroundColor{ Color::ligthDarkGrey }, LineWidth{ 6 },
          DrawFlags{ Line::Vertical | Line::CenterV | Line::Left }, IsSubElement{ true });
@@ -1106,8 +1107,9 @@ void createSSLClient()
   if (sslClient)
     return;
 
-  std::string host = Url(account.url).host;
-  sslClient = new httplib::SSLClient(host);
+  Url url(account.url);
+  account.path = url.path;
+  sslClient = new httplib::SSLClient(url.host);
 
   //sslClient->set_ca_cert_path(CA_CERT_FILE);
   //sslClient->enable_server_certificate_verification(true);
@@ -1180,7 +1182,8 @@ bool update_requests()
     SSLGet r = SSLGet::requests.front();
     SSLGet::requests.erase(SSLGet::requests.begin());
 
-    auto nn = sslClient->Get(r.path.c_str(), r.headers);
+    std::string path = account.path + r.path;
+    auto nn = sslClient->Get( path.c_str(), r.headers);
 
     auto answer = r.answer;
     answer(nn ? nn->status : -1, nn ? nn->body : "");
@@ -1190,7 +1193,8 @@ bool update_requests()
   {
     const SSLPost& r = SSLPost::requests.front();
 
-    auto nn = sslClient->Post(r.path.c_str(), r.headers, r.body, r.content_type.c_str());
+    std::string path = account.path + r.path;
+    auto nn = sslClient->Post( path.c_str(), r.headers, r.body, r.content_type.c_str());
 
     if (nn && nn->status == 201)
     {
