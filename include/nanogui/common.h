@@ -736,6 +736,7 @@ inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size);
 Vector2f NANOGUI_EXPORT nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end=nullptr);
+Vector2f NANOGUI_EXPORT nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float s, const char* string, const char* end=nullptr);
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size);
 void NANOGUI_EXPORT nvgRect(NVGcontext* ctx, const Vector4i& r);
 void NANOGUI_EXPORT nvgTranslate(NVGcontext* ctx, const Vector2i& pos);

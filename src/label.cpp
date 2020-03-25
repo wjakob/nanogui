@@ -38,9 +38,11 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
   }
 
   nvgFontFaceSize(ctx, mFont.c_str(), fontSize());
-  if (mFixedSize.x() > 0 || mFixedSize.y() > 0) 
+  if (mFixedSize.x() > 0 || mTextWidthBreak) 
   {
-    const_cast<Label*>(this)->mTextRealSize = nvgTextBounds(ctx, 0, 0, mCaption.c_str()).cast<int>();
+    const_cast<Label*>(this)->mTextRealSize = nvgTextBoxBounds(ctx, 0, 0, 
+                                                               mTextWidthBreak ? mTextWidthBreak : mFixedSize.x(), 
+                                                               mCaption.c_str()).cast<int>();
     return mFixedSize.fillZero(mTextRealSize);
   } 
   else 

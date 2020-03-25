@@ -26,6 +26,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 
 DECLSETTERARGS(TextOffset, Vector2i)
+DECLSETTER(TextWidthBreak, int)
 
 class NANOGUI_EXPORT Label : public Widget {
 public:
@@ -71,6 +72,8 @@ public:
     bool tabstop(CanTabStop) const override { return false; }
     void setTextAlign(TextAlign talign) { mTextAlign = talign; }
 
+    void setTextWidthBreak(int w) { mTextWidthBreak = w; }
+
     /// Set the \ref Theme used to draw this widget
     void setTheme(Theme *theme) override;
     int fontSize() const override;
@@ -91,6 +94,7 @@ protected:
     Color mColor, mDisabledColor;
     TextAlign mTextAlign = { hLeft, vMiddle };
     Vector2i mTextRealSize;
+    int mTextWidthBreak = 0;
 
 public:
     PROPSETTER(Caption,setCaption)
@@ -102,6 +106,7 @@ public:
     PROPSETTER(CaptionHAlign,setTextHAlign)
     PROPSETTER(CaptionAlign, setTextAlign)
     PROPSETTER(OnUpdate, addChild)
+    PROPSETTER(TextWidthBreak, setTextWidthBreak)
 };
 
 NAMESPACE_END(nanogui)
