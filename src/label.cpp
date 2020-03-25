@@ -45,6 +45,13 @@ Vector2i Label::preferredSize(NVGcontext *ctx) const {
                                                                mCaption.c_str()).cast<int>();
     return mFixedSize.fillZero(mTextRealSize);
   } 
+  else if (mTextWrapped)
+  {
+    const_cast<Label*>(this)->mTextRealSize = nvgTextBoxBounds(ctx, 0, 0,
+                                                               parent()->width(),
+                                                               mCaption.c_str()).cast<int>();
+    return mTextRealSize;
+  }
   else 
   {
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
@@ -92,8 +99,12 @@ void Label::draw(NVGcontext *ctx)
     }
 
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-    if (mFixedSize.x() > 0)
-      nvgTextBox(ctx, mPos.x() + opos.x(), mPos.y() + opos.y(), mFixedSize.x(), mCaption.c_str(), nullptr);
+    if (mFixedSize.x() > 0 || mTextWidthBreak > 0)
+      nvgTextBox(ctx, mPos.x() + opos.x(), mPos.y() + opos.y(), 
+                 mTextWidthBreak > 0 ? mTextWidthBreak : mFixedSize.x(), mCaption.c_str(), nullptr);
+    else if (mTextWrapped)
+      nvgTextBox(ctx, mPos.x() + mTextOffset.x(), mPos.y() + mTextOffset.y(),
+                 width() - mTextOffset.x(), mCaption.c_str(), nullptr);
     else
       nvgText(ctx, mPos + opos, mCaption);
 

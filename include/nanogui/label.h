@@ -27,6 +27,7 @@ NAMESPACE_BEGIN(nanogui)
 
 DECLSETTERARGS(TextOffset, Vector2i)
 DECLSETTER(TextWidthBreak, int)
+DECLSETTER(TextWrapped, bool)
 
 class NANOGUI_EXPORT Label : public Widget {
 public:
@@ -73,6 +74,7 @@ public:
     void setTextAlign(TextAlign talign) { mTextAlign = talign; }
 
     void setTextWidthBreak(int w) { mTextWidthBreak = w; }
+    void setTextWrapped(bool w) { mTextWrapped = w; }
 
     /// Set the \ref Theme used to draw this widget
     void setTheme(Theme *theme) override;
@@ -89,6 +91,7 @@ public:
 protected:
     std::string mCaption;
     std::string mFont;
+    bool mTextWrapped = false;
     Vector2i mTextOffset;
     Color mBackgroundColor;
     Color mColor, mDisabledColor;
@@ -107,6 +110,7 @@ public:
     PROPSETTER(CaptionAlign, setTextAlign)
     PROPSETTER(OnUpdate, addChild)
     PROPSETTER(TextWidthBreak, setTextWidthBreak)
+    PROPSETTER(TextWrapped, setTextWrapped)
 };
 
 NAMESPACE_END(nanogui)

@@ -497,10 +497,10 @@ public:
             CornerRadius{ 6 }, WidgetId{ "#issue_" + _issue->id }),
       issue(_issue), day(_day)
   {
-    auto& header = hstack(2, 2, FixedHeight{ 30 });
+    auto& header = hstack(2, 2);
     header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
             .spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f });
-    header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white });
+    header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true });
 
     label(Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 });
   }
@@ -981,7 +981,7 @@ public:
     header.widget();
     header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
 
-    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWidthBreak{ 150 });
+    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWrapped{ true });
 
     line(BackgroundColor{ Color::ligthDarkGrey }, LineWidth{ 6 },
          DrawFlags{ Line::Vertical | Line::CenterV | Line::Left }, IsSubElement{ true });
