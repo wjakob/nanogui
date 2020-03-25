@@ -43,18 +43,12 @@ Example screenshots (Dx11, Dx12, Vulkan, OpenGL)
    :alt: Screenshot of Dx11 backend.
    :align: center
    
-.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_dx12.png
-   :alt: Screenshot of Dx12 backend.
-   :align: center
-   
-.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_vulkan.png
-   :alt: Screenshot of Vulkan backend.
-   :align: center
+Honsu timetracker
+----------------------------------------------------------------------------------------
 
-.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_opengl.png
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/honsu_preview.jpg
    :alt: Screenshot of OpenGL backend.
-   :align: center   
-      
+   :align: center  
 
 Extensions
 ----------------------------------------------------------------------------------------
