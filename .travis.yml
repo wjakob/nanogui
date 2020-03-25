@@ -2,11 +2,6 @@ language: cpp
 dist: trusty
 sudo: false
 
-# Only build master branch, other branches will have a Pull Request build.
-branches:
-  only:
-    - master
-
 matrix:
   include:
     # build opengl render
