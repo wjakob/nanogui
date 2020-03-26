@@ -79,6 +79,7 @@ DECLSETTERARGSNEW(WidgetGridLayout, GridLayout)
 DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
 DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
+DECLSETTER(Element, Widget&)
 DECLSETTER(FloatValue, float)
 DECLSETTER(Icon, int)
 DECLSETTER(IconColor, Color)
@@ -350,6 +351,7 @@ public:
 
     /// Convenience function which appends a widget at the end
     void addChild(Widget *widget);
+    void addChild(Widget& widget) { addChild(&widget); }
 
     void remove(); // this function should be used in screen::drawWidgets call
     void removeLater(); // push widget to removes array
@@ -587,6 +589,7 @@ public:
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(FixedWidth, setFixedWidth)
     PROPSETTER(WidgetId, setId)
+    PROPSETTER(Element, addChild)
     PROPSETTER(Position, setPosition)
     PROPSETTER(WidgetSize, setSize)
     PROPSETTER(MinimumSize, setMinSize)

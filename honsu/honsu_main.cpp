@@ -498,8 +498,10 @@ public:
       issue(_issue), day(_day)
   {
     auto& header = hstack(2, 2);
-    header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" })
-            .spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f });
+    header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
+                 Element{ spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, 
+                                  BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f })
+                         });
     header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true });
 
     label(Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 });

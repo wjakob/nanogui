@@ -49,8 +49,9 @@ Vector2i BoxLayout::preferredSize(NVGcontext *ctx, const Widget *widget) const
 
   bool first = true;
   int axis1 = (int) mOrientation % 2, axis2 = ((int) mOrientation + 1)%2;
-  for (auto w : widget->children()) 
+  for (size_t i=0; i < widget->children().size(); i++) 
   {
+    auto w = widget->children().at(i);
     if (!w->visible() || w->isSubElement())
       continue;
     if (first)
