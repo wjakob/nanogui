@@ -445,14 +445,19 @@ struct UniqueWindow : public Window
 
     if (addheader)
     {
-      auto& c = widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 });
-      c.toolbutton(Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 },
-                   DrawFlags{ Button::DrawBody | Button::DrawIcon },
-                   BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
-                   ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } });
-      c.label(Caption{ "H" });
-      c.toolbutton(Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red });
-      c.label(Caption{ "N S U" });
+      widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 },
+             Element<ToolButton>{ 
+               Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
+               BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
+               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
+             },
+             Element<Label>{ Caption{ "H" } },
+             Element<ToolButton>{ 
+                 Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, 
+                 DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }
+             },
+             Element<Label>{ Caption{ "N S U" }}
+      );
     }
   }
 };
