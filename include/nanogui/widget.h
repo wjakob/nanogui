@@ -79,7 +79,6 @@ DECLSETTERARGSNEW(WidgetGridLayout, GridLayout)
 DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
 DECLSETTERARGS(FixedSize, Vector2i)
 DECLSETTER(WidgetId, std::string)
-DECLSETTER(Element, Widget&)
 DECLSETTER(FloatValue, float)
 DECLSETTER(Icon, int)
 DECLSETTER(IconColor, Color)
@@ -110,6 +109,9 @@ DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(VisibleObservable, BoolObservable)
+
+struct ElementBase { Widget* w = nullptr; };
+template<class FF> struct Element : public ElementBase { template<typename... Args> Element(const Args&... args) { w = new FF(nullptr, args...); }};
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -539,6 +541,9 @@ public:
 
     void setDebugDraw(bool en) { mDebugDraw = en; }
     template<typename FF, typename none = void> void set() {}
+
+    template<typename FF, typename First, typename... Args> void set(const ElementBase& h, const Args&... args) 
+    { this->addChild(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
     
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
@@ -589,7 +594,6 @@ public:
     PROPSETTER(FixedHeight, setFixedHeight)
     PROPSETTER(FixedWidth, setFixedWidth)
     PROPSETTER(WidgetId, setId)
-    PROPSETTER(Element, addChild)
     PROPSETTER(Position, setPosition)
     PROPSETTER(WidgetSize, setSize)
     PROPSETTER(MinimumSize, setMinSize)

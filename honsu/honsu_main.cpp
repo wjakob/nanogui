@@ -497,12 +497,17 @@ public:
             CornerRadius{ 6 }, WidgetId{ "#issue_" + _issue->id }),
       issue(_issue), day(_day)
   {
-    auto& header = hstack(2, 2);
-    header.label(WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
-                 Element{ spinner(WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, 
-                                  BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, RelativeSize{ 1.f, 1.f })
-                         });
-    header.label(Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true });
+    hstack(2, 2,
+           Element<Label> { 
+              WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
+              Element<Spinner> {
+                WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, RelativeSize{ 1.f, 1.f },
+                BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, 
+              }
+           },
+           Element<Label> { 
+             Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true }
+           });
 
     label(Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 });
   }
@@ -1062,12 +1067,13 @@ struct AgilesWindow : public UniqueWindow
   AgilesWindow(Widget* scr)
     : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    auto& header = vstack(2, 2, FixedHeight{ 80 });
-    header.label(FixedHeight{ 60 }, Caption{ "Select agile boards" },
-                 TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
-                 CaptionFont{ "sans-bold" }, FontSize{ 42 });
-    header.label(Caption{ "You will be able to edit this selection later" },
-                 CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 });
+    vstack(2, 2, FixedHeight{ 80 },
+           Element<Label>{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
+                           TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
+                           CaptionFont{ "sans-bold" }, FontSize{ 42 } },
+           Element<Label>{ Caption{ "You will be able to edit this selection later" },
+                           CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 } }
+    );
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(10, 10);
     for (auto& i : account.agiles)
