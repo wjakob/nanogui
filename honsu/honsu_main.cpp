@@ -807,25 +807,32 @@ struct ActivityWithNoTaskWarning : public Window
     account.suspendInactiveTime = true;
     showAppExclusive(true, true);
 
-    auto& title = vstack(10, 10);
-    title.label(Caption{ "Long activity without task" }, FontSize{ 42 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
-    title.label(Caption{ "Are you read to work?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter });
+    vstack(10, 10,
+           Element<Label>{ 
+             Caption{ "Long activity without task" },
+             FontSize{ 42 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter }
+           },
+           Element<Label>{
+             Caption{ "Are you read to work?" }, 
+             FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter }
+           }
+    );
     button(Caption{ "Take me a minute to select task" }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
       BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
       ButtonChangeCallback{ [](Button* b) {
-      account.nocheckActivityInteralSec = 1 * 60;
-      account.lastCheckActivityTimeSec = 0;
-      Window::cast(b->parent())->dispose();
-      showAppExclusive(true, false);
+        account.nocheckActivityInteralSec = 1 * 60;
+        account.lastCheckActivityTimeSec = 0;
+        Window::cast(b->parent())->dispose();
+        showAppExclusive(true, false);
       } }
     );
     button(Caption{ "Stop annoying me next 30 min" }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
       BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
       ButtonChangeCallback{ [](Button* b) {
-      account.nocheckActivityInteralSec = 30 * 60;
-      account.lastCheckActivityTimeSec = 0;
-      Window::cast(b->parent())->dispose();
-      showAppExclusive(false, false);
+        account.nocheckActivityInteralSec = 30 * 60;
+        account.lastCheckActivityTimeSec = 0;
+        Window::cast(b->parent())->dispose();
+        showAppExclusive(false, false);
       } }
     );
     line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
