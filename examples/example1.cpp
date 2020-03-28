@@ -104,33 +104,33 @@ GPUtimer gpuTimer;
 void createButtonDemoWindow(Screen* screen)
 {
   auto& w = screen->window(Position{ 15, 15 },
-                           WindowMovable{ Theme::WindowDraggable::dgFixed },
-                           Caption{ "Button demo" },
-                           WindowGroupLayout{});
+    WindowMovable{ Theme::WindowDraggable::dgFixed },
+    Caption{ "Button demo" },
+    WindowGroupLayout{});
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
   w.label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
   w.button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
-           Caption{ "Plain button" },
-           TooltipText{ "short tooltip" });
+    Caption{ "Plain button" },
+    TooltipText{ "short tooltip" });
 
   /* Alternative construction notation using variadic template */
   w.button(Caption{ "Styled" },
-           Icon{ ENTYPO_ICON_ROCKET },
-           BackgroundColor{ 0, 0, 255, 25 },
-           ButtonCallback{ [] { cout << "pushed!" << endl; } },
-           TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                        "fact, that the shown text will span several lines." });
+    Icon{ ENTYPO_ICON_ROCKET },
+    BackgroundColor{ 0, 0, 255, 25 },
+    ButtonCallback{ [] { cout << "pushed!" << endl; } },
+    TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                 "fact, that the shown text will span several lines." });
 
   w.label("Toggle buttons", "sans-bold");
   w.button(Caption{ "Toggle me" },
-           ButtonFlags{ Button::ToggleButton },
-           ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } });
+    ButtonFlags{ Button::ToggleButton },
+    ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } });
 
   w.label("Radio buttons", "sans-bold");
-  w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } );
-  w.button(Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } );
+  w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton });
+  w.button(Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton });
 
   w.label("A tool palette", "sans-bold");
   auto& tools = w.widget();
@@ -175,16 +175,15 @@ void createButtonDemoWindow(Screen* screen)
   switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
 
   w.label("A led buttons", "sans-bold");
-  auto& ledbuttonsArea = w.widget();
-  ledbuttonsArea.withLayout<GridLayout>(Orientation::Horizontal, 4);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleBlack, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleBlue, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleGreen, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleGray, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleOrange, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleRed, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circleYellow, 30, 30);
-  ledbuttonsArea.wdg<LedButton>(LedButton::circlePurple, 30, 30);
+  w.widget(WidgetLayout{ new GridLayout(Orientation::Horizontal, 4) },
+           Element<LedButton>{ LedButton::circleBlack, 30, 30 },
+           Element<LedButton>{ LedButton::circleBlue, 30, 30 },
+           Element<LedButton>{ LedButton::circleGreen, 30, 30 },
+           Element<LedButton>{ LedButton::circleGray, 30, 30 },
+           Element<LedButton>{ LedButton::circleOrange, 30, 30 },
+           Element<LedButton>{ LedButton::circleRed, 30, 30 },
+           Element<LedButton>{ LedButton::circleYellow, 30, 30 },
+           Element<LedButton>{ LedButton::circlePurple, 30, 30 });
 }
 
 using ImagesDataType = std::vector<pair<int, std::string>>;
@@ -215,26 +214,28 @@ void createBasicWidgets(Screen* parent)
   w.wdg<SearchBox>();
 
   w.label("Message dialog", "sans-bold");
-  auto& tools = w.widget();
-  tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-  tools.button(Caption{ "Info" },
-               ButtonCallback { [=] {
+  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+           Element<Button>{ 
+              Caption{ "Info" },
+              ButtonCallback { [=] {
                  auto& dlg = parent->msgdialog(MessageDialog::Type::Information, "Title", "This is an information message");
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-               }});
-
-  tools.button(Caption{ "Warn" },
-               ButtonCallback{ [=] {
+               }}
+           },
+           Element<Button>{ 
+              Caption{ "Warn" },
+              ButtonCallback{ [=] {
                  auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a warning message");
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-               }});
-
-
-  tools.button(Caption{ "Ask" },
-               ButtonCallback{ [=] {
+              }}
+           },
+           Element<Button>{ 
+              Caption{ "Ask" },
+              ButtonCallback{ [=] {
                  auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
                  dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
-               }});
+              }}
+           });
 
   w.label("Image panel & scroll panel", "sans-bold");
   auto& imagePanelBtn = w.popupbutton("Image Panel");
