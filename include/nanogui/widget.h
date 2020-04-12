@@ -108,6 +108,7 @@ DECLSETTER(MaxValue, float)
 DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
+DECLSETTER(IsVisible, bool)
 DECLSETTER(VisibleObservable, BoolObservable)
 
 struct ElementBase { Widget* w = nullptr; };
@@ -607,6 +608,7 @@ public:
     PROPSETTER(FontSize, setFontSize)
     PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
+    PROPSETTER(IsVisible, setVisible)
 
 protected:
     /// Free all resources used by the widget and any children

@@ -218,22 +218,28 @@ void createBasicWidgets(Screen* parent)
            Element<Button>{ 
               Caption{ "Info" },
               ButtonCallback { [=] {
-                 auto& dlg = parent->msgdialog(MessageDialog::Type::Information, "Title", "This is an information message");
-                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+                 parent->msgdialog(DialogTitle{ "Title" },
+                                   DialogMessage{ "This is an information message" },
+                                   DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
                }}
            },
            Element<Button>{ 
               Caption{ "Warn" },
               ButtonCallback{ [=] {
-                 auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a warning message");
-                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+                 parent->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
+                                   DialogTitle{ "Title" },
+                                   DialogMessage{ "This is a warning message" },
+                                   DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
               }}
            },
            Element<Button>{ 
               Caption{ "Ask" },
               ButtonCallback{ [=] {
-                 auto& dlg = parent->msgdialog( MessageDialog::Type::Warning, "Title", "This is a question message", "Yes", "No", true);
-                 dlg.setCallback([](int result) { cout << "Dialog result: " << result << endl; });
+                 parent->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
+                                   DialogTitle{ "Title" }, 
+                                   DialogMessage{ "This is a question message" },
+                                   DialogButton{ "Yes" }, DialogAltButton{ "No" },
+                                   DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
               }}
            });
 
@@ -611,16 +617,17 @@ void toggleMainMenu(Screen* screen, bool show)
   {
     auto& mmenu = screen->wdg<WindowMenu>();
     mmenu.activate({ 0, 0 });
+    auto dlg = [screen](std::string title) { screen->msgdialog(DialogTitle{ title }, DialogMessage{ "New Clicked" }); };
     mmenu.submenu("File")
-      .item("New", [=]() { screen->msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
-      .item("Open", [=]() { screen->msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
-      .item("Save", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "Save", "New Clicked!"); });
+      .item("New", [dlg]() { dlg("New"); })
+      .item("Open", [dlg]() { dlg("Open"); })
+      .item("Save", [dlg]() { dlg("Save"); });
     mmenu.submenu("Edit")
-      .item("Undo", "Ctrl+Z", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-      .item("Redo", "Ctrl+Y", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-      .item("Cut", "Ctrl+X", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-      .item("Copy", "Ctrl+C", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); })
-      .item("Paste", "Ctrl+V", [=]() { screen->msgdialog(nanogui::MessageDialog::Type::Information, "New", "New Clicked!"); });
+      .item("Undo", "Ctrl+Z", [dlg]() { dlg("Undo"); })
+      .item("Redo", "Ctrl+Y", [dlg]() { dlg("Redo"); })
+      .item("Cut", "Ctrl+X", [dlg]() { dlg("Cut"); })
+      .item("Copy", "Ctrl+C", [dlg]() { dlg("Copy"); })
+      .item("Paste", "Ctrl+V", [dlg]() { dlg("Paste"); });
 
     screen->performLayout();
   }
@@ -748,9 +755,9 @@ void createAllWidgetsDemo(Screen* screen)
 
   dw.submenu("File")
     .item("(dummy item)", []() {})
-    .item("New", "Ctrl+N", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
-    .item("Very larget text", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
-    .item("Save", [screen]() { screen->msgdialog(MessageDialog::Type::Information, "Save", "New Clicked!"); });
+    .item("New", "Ctrl+N", [screen]() { screen->msgdialog(DialogTitle{ "New" }, DialogMessage{ "New Clicked!" }); })
+    .item("Very larget text", [screen]() { screen->msgdialog(DialogTitle{ "Open" }, DialogMessage{ "New Clicked!" }); })
+    .item("Save", [screen]() { screen->msgdialog(DialogTitle{ "Save" }, DialogMessage{ "New Clicked!" }); });
   dw.submenu("File").item("(dummy item)").setEnabled(false);
   dw.submenu("File").item("Save").setShortcut("Ctrl+S");
 
@@ -907,30 +914,26 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     auto& b = tools.button("Info");
     Theme* ctheme = cwindow.theme();
     b.setCallback([screen, ctheme]() {
-      auto& dlg = screen->msgdialog(MessageDialog::Type::Information,
-        "Title",
-        "This is an information message");
+      auto& dlg = screen->msgdialog(DialogTitle{ "Title" }, DialogMessage{ "This is an information message" },
+                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
       dlg.setTheme(ctheme);
-      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
     });
     auto& bw = tools.button("Warn");
     bw.setCallback([screen, ctheme]() {
-      auto& dlg = screen->msgdialog(MessageDialog::Type::Warning,
-        "Title",
-        "This is a warning message");
+      auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
+                                    DialogTitle{ "Title" },
+                                    DialogMessage{ "This is a warning message" },
+                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }} );
       dlg.setTheme(ctheme);
-      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
     });
     auto& ba = tools.button("Ask");
     ba.setCallback([&, ctheme]() {
-      auto& dlg = screen->msgdialog(MessageDialog::Type::Question,
-        "Title",
-        "This is a question message",
-        "Yes",
-        "No",
-        true);
+      auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
+                                    DialogTitle{ "Title" },
+                                    DialogMessage{ "This is a question message" },
+                                    DialogButton{ "Yes" }, DialogAltButton{ "No" },
+                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
       dlg.setTheme(ctheme);
-      dlg.setCallback([](int result) { std::cout << "Dialog result: " << result << std::endl; });
     });
   }
 
@@ -1169,21 +1172,21 @@ public:
 
     bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override {
         if (Widget::mouseButtonEvent(p, button, down, modifiers))
-            return true;
+          return true;
         if (down && isMouseButtonRight(button) && findWidget(p)==this) {
-            auto menu = new ContextMenu(this, "", true);
-            menu->addItem("Item 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
+          auto menu = new nanogui::ContextMenu(this, "", true);
+          menu->addItem("Item 1", [this]() { msgdialog(DialogTitle{ "Item 1" }, DialogMessage{ "Item 1 Clicked!" }); }, ENTYPO_ICON_PLUS);
 
-            auto submenu = menu->addSubMenu("Submenu");
-            submenu->addItem("Subitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
-            auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
-            submenu->addItem("Subitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
+          auto submenu = menu->addSubMenu("Submenu");
+          submenu->addItem("Subitem 1", [this]() { msgdialog(DialogTitle{ "Subitem 1" }, DialogMessage{ "Subitem 1 Clicked!" }); });
+          auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
+          submenu->addItem("Subitem 2", [this]() { msgdialog(DialogTitle{ "Subitem 2" }, DialogMessage{ "Subitem 2 Clicked!" }); });
 
-            subsubmenu->addItem("Subsubitem 1", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
-            subsubmenu->addItem("Subsubitem 2", [this]() { new MessageDialog(this, MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
+          subsubmenu->addItem("Subsubitem 1", [this]() { msgdialog(DialogTitle{ "Subsubitem 1" }, DialogMessage{ "Subsubitem 1 Clicked!" }); });
+          subsubmenu->addItem("Subsubitem 2", [this]() { msgdialog(DialogTitle{ "Subsubitem 2" }, DialogMessage{ "Subsubitem 2 Clicked!" }); });
 
-            menu->activate(p-mPos);
-            performLayout();
+          menu->activate(p - mPos);
+          performLayout();
         }
         return true;
     }

@@ -117,47 +117,50 @@ public:
       auto& mmenu = wdg<WindowMenu>();
       mmenu.setId(ID.mainmenu.value);
       mmenu.activate({ 0, 0 });
+      auto dlg = [this](const std::string& title) { msgdialog(DialogType{ (int)MessageDialog::Type::Information }, 
+                                                              DialogTitle{ title },
+                                                              DialogMessage{ "New Clicked!" }); };
       mmenu.submenu("File")
-        .item("New", [this]() { msgdialog(MessageDialog::Type::Information, "New", "New Clicked!"); })
-        .item("Open", [this]() { msgdialog(MessageDialog::Type::Information, "Open", "New Clicked!"); })
-        .item("Save", [this]() { msgdialog(MessageDialog::Type::Information, "Save", "New Clicked!"); });
+        .item("New", [dlg]() { dlg("New"); })
+        .item("Open", [dlg]() { dlg("Open"); })
+        .item("Save", [dlg]() { dlg("Save"); });
 
       mmenu.submenu("Edit")
-        .item("Undo", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Redo", [this]() { msgdialog(MessageDialog::Type::Information, "Redo", "New Clicked!"); })
-        .item("Cut", [this]() { msgdialog(MessageDialog::Type::Information, "Cut", "New Clicked!"); })
-        .item("Copy", [this]() { msgdialog(MessageDialog::Type::Information, "Copy", "New Clicked!"); })
-        .item("Paste", [this]() { msgdialog(MessageDialog::Type::Information, "Paste", "New Clicked!"); })
-        .item("Delete", [this]() { msgdialog(MessageDialog::Type::Information, "Delete", "New Clicked!"); });
+        .item("Undo",  [dlg]() { dlg("Undo"); })
+        .item("Redo",  [dlg]() { dlg("Redo"); })
+        .item("Cut",   [dlg]() { dlg("Cut"); })
+        .item("Copy",  [dlg]() { dlg("Copy"); })
+        .item("Paste", [dlg]() { dlg("Paste"); })
+        .item("Delete",[dlg]() { dlg("Delete"); });
 
       mmenu.submenu("View")
-        .item("Code", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Solution", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Widgets", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Output", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Toolbox", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Notifications", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Full screen", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Option", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        .item("Code",     [dlg]() { dlg("Code"); })
+        .item("Solution", [dlg]() { dlg("Solution"); })
+        .item("Widgets",  [dlg]() { dlg("Widgets"); })
+        .item("Output",   [dlg]() { dlg("Output"); })
+        .item("Toolbox",  [dlg]() { dlg("Toolbox"); })
+        .item("Notifications", [dlg]() { dlg("Notifications"); })
+        .item("Full screen", [dlg]() { dlg("Full screen"); })
+        .item("Option",   [dlg]() { dlg("Option"); });
 
       mmenu.submenu("Build")
-        .item("Build solution", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        .item("Build solution", [dlg]() { dlg("Build"); });
 
       mmenu.submenu("Samples")
-        .item("Sample 1", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Sample 2", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Sample 3", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Sample 4", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        .item("Sample 1", [dlg]() { dlg("Sample 1"); })
+        .item("Sample 2", [dlg]() { dlg("Smaple 2"); })
+        .item("Sample 3", [dlg]() { dlg("Smaple 3"); })
+        .item("Sample 4", [dlg]() { dlg("Sample 4"); });
 
       mmenu.submenu("Widgets")
-        .item("w1", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("w2", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("w3", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("w4", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        .item("w1", [dlg]() { dlg("Undo"); })
+        .item("w2", [dlg]() { dlg("Undo"); })
+        .item("w3", [dlg]() { dlg("Undo"); })
+        .item("w4", [dlg]() { dlg("Undo"); });
 
       mmenu.submenu("Help")
-        .item("View help", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); })
-        .item("Send feedback", [this]() { msgdialog(MessageDialog::Type::Information, "Undo", "New Clicked!"); });
+        .item("View help", [dlg]() { dlg("Undo"); })
+        .item("Send feedback", [dlg]() { dlg("Undo"); });
 
       return mmenu;
     }
@@ -324,15 +327,15 @@ public:
             return true;
         if (down && nanogui::isMouseButtonRight(button) && findWidget(p)==this) {
             auto menu = new nanogui::ContextMenu(this, "", true);
-            menu->addItem("Item 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Item 1", "Item 1 Clicked!"); }, ENTYPO_ICON_PLUS);
+            menu->addItem("Item 1", [this]() { msgdialog(DialogTitle{ "Item 1" }, DialogMessage{ "Item 1 Clicked!" }); }, ENTYPO_ICON_PLUS);
 
             auto submenu = menu->addSubMenu("Submenu");
-            submenu->addItem("Subitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 1", "Subitem 1 Clicked!"); });
+            submenu->addItem("Subitem 1", [this]() { msgdialog(DialogTitle{ "Subitem 1" }, DialogMessage{ "Subitem 1 Clicked!" }); });
             auto subsubmenu = submenu->addSubMenu("Subsubmenu", ENTYPO_ICON_LOOP);
-            submenu->addItem("Subitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subitem 2", "Subitem 2 Clicked!"); });
+            submenu->addItem("Subitem 2", [this]() { msgdialog(DialogTitle{ "Subitem 2" }, DialogMessage{ "Subitem 2 Clicked!" }); });
 
-            subsubmenu->addItem("Subsubitem 1", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 1", "Subsubitem 1 Clicked!"); });
-            subsubmenu->addItem("Subsubitem 2", [this]() { new nanogui::MessageDialog(this, nanogui::MessageDialog::Type::Information, "Subsubitem 2", "Subsubitem 2 Clicked!"); });
+            subsubmenu->addItem("Subsubitem 1", [this]() { msgdialog(DialogTitle{ "Subsubitem 1" }, DialogMessage{ "Subsubitem 1 Clicked!" }); });
+            subsubmenu->addItem("Subsubitem 2", [this]() { msgdialog(DialogTitle{ "Subsubitem 2" }, DialogMessage{ "Subsubitem 2 Clicked!" }); });
 
             menu->activate(p-mPos);
             performLayout();

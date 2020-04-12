@@ -650,7 +650,8 @@ void EditorWorkspace::preview()
     Widget* elm = children().size() > 0 ? ( children().front() ) : nullptr;
     if (!elm)
     {
-      new MessageDialog(this, MessageDialog::Type::Information, "Warning", "Have no element to preview");
+      msgdialog(DialogMessage{ "Warning" }, 
+                DialogTitle{ "Have no element to preview" });
     }
     else
     {
