@@ -101,8 +101,50 @@ void MessageDialog::setIcon(int c)
 InAppNotification::InAppNotification(Widget *parent)
   : MessageDialog(parent, Orientation::Horizontal)
 {
-  withLayout<BoxLayout>(Orientation::Horizontal, Alignment::Middle, 10, 10);
-  setModal(true);
+  setSubElement(true);
+  setDraggable(Theme::dgFixed);
+  setDrawFlag(Window::DrawHeader, false);
+  setDrawFlag(Window::DrawTitle, false);
+
+  mState = Expand;
+
+  if (auto btn = findWidget<Button>("#button"))
+    btn->setCallback([&] { if (mCallback) mCallback(0); mState = Collapse; });
+
+  if (auto btn = findWidget<Button>("#alt_button"))
+    btn->setCallback([&] { if (mCallback) mCallback(1); mState = Collapse; });
+}
+
+void InAppNotification::draw(NVGcontext* ctx)
+{
+  if (!inited)
+  {
+    mSize = preferredSize(ctx);
+    mFixedSize = mSize;
+    mPos.y() = parent()->size().y();
+    mPos.x() = parent()->size().x() - size().x() - 20;
+    requestFocus();
+    inited = true;
+  }
+
+  Window::draw(ctx);
+  
+  if (mState == Expand)
+  {
+    if (position().y() > parent()->size().y() - size().y())
+      mPos.y() -= 1;
+    else
+    {
+      mState = Idle;
+    }
+  }
+  else if (mState == Collapse)
+  {
+    if (position().y() < parent()->size().y())
+      mPos.y() += 1;
+    else
+      dispose();
+  }
 }
 
 NAMESPACE_END(nanogui)

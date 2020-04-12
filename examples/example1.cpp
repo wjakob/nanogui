@@ -242,6 +242,16 @@ void createBasicWidgets(Screen* parent)
                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
               }}
            });
+  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+           Element<Button>{
+              Caption{ "Notification" },
+              ButtonCallback{ [=]() {
+                parent->add<InAppNotification>(
+                  DialogMessage{ "This is an notification message" },
+                  DialogButton{ "Yes" }, DialogAltButton{ "No" },
+                  DialogResult{ [](int result) { std::cout << "Notification result: " << result << std::endl; } });
+              }}
+            });
 
   w.label("Image panel & scroll panel", "sans-bold");
   auto& imagePanelBtn = w.popupbutton("Image Panel");
@@ -909,8 +919,7 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
   /* Message dialogs */
   {
     cwindow.label("Message Dialogues");
-    auto& tools = cwindow.widget();
-    tools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
+    auto& tools = cwindow.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
     auto& b = tools.button("Info");
     Theme* ctheme = cwindow.theme();
     b.setCallback([screen, ctheme]() {

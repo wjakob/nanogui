@@ -82,9 +82,19 @@ public:
   RTTI_CLASS_UID(InAppNotification)
   RTTI_DECLARE_INFO(InAppNotification)
 
-  using MessageDialog::set;
-  InAppNotification(Widget *parent);
+  explicit InAppNotification(Widget *parent);
 
+  using MessageDialog::set;
+  template<typename... Args>
+  InAppNotification(Widget* parent, const Args&... args)
+    : InAppNotification(parent)
+  { set<InAppNotification, Args...>(args...); }
+
+  void draw(NVGcontext* ctx);
+protected:
+  enum { Expand, Collapse, Idle };
+
+  int mState = Idle;
 };
 
 NAMESPACE_END(nanogui)
