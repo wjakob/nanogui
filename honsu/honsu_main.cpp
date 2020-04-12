@@ -992,13 +992,18 @@ public:
             WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}),
       issue(_issue)
   {
-    auto& header = hlayer(2, 2, FixedHeight{ 26 });
-    header.link(Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
-                ButtonCallback{ [this] { issue->openUrl(account.url); } });
-    header.link(Caption{ issue->state }, TextColor{ Color::grey }, FontSize{ 14 },
-                WidgetCursor{ Cursor::Arrow });
-    header.widget();
-    header.wdg<TaskRecordButton>([this] { return issue; }, [this] { return inFocusChain(); });
+    hlayer(2, 2, FixedHeight{ 26 },
+           Element<LinkButton>{
+              Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
+              ButtonCallback{ [this] { issue->openUrl(account.url); } }
+           },
+           Element<LinkButton>{
+              Caption{ issue->state }, TextColor{ Color::grey }, FontSize{ 14 },
+              WidgetCursor{ Cursor::Arrow }
+           },
+           Element<Widget> {},
+           Element<TaskRecordButton>{ [this] { return issue; }, [this] { return inFocusChain(); }
+           });
 
     label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWrapped{ true });
 

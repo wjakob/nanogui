@@ -92,7 +92,8 @@ struct json {
 };
 
 template<> inline json::_s json::get<json::_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
-template<> inline int json::get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
+template<> inline int json::get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? (int)it->second.get_int("value") : 0; }
+template<> inline int64_t json::get<int64_t>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }
 template<> inline float json::get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
 template<> inline bool json::get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
 template<> inline Color json::get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color(it->second.get_int("value")): Color(); }
