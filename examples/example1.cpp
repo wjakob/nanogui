@@ -904,17 +904,15 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
   /* test text box fonts */
   {
     cwindow.label("Text Boxes");
-    auto& wrapper = cwindow.widget();
-    wrapper.withLayout<GridLayout>(ColumnsAligment{ Alignment::Maximum, Alignment::Fill });
-    wrapper.label("TextBox : ");
-    wrapper.textbox(TextValue{ "Some Text" }, IsEditable{ true });
-    wrapper.label("IntBox : ");
-    wrapper.intbox<int>(IsSpinnable{ true });
-    wrapper.label("FloatBox : ");
-    wrapper.floatbox<float>(IsSpinnable{ true });
-
-    wrapper.label("Volume : ");
-    wrapper.tolerancebar().setFixedSize(Vector2i(120, 30));
+    cwindow.widget(WidgetGridLayout{ ColumnsAligment{ Alignment::Maximum, Alignment::Fill } },
+                   Element<Label>{ Caption{"TextBox : "}},
+                   Element<TextBox>{ TextValue{ "Some Text" }, IsEditable{ true }},
+                   Element<Label>{ Caption{"IntBox : "}},
+                   Element<IntBox<int>>{ IsSpinnable{ true }},
+                   Element<Label>{ Caption{ "FloatBox : " }},
+                   Element<FloatBox<float>>{ IsSpinnable{ true }},
+                   Element<Label>{ Caption{ "Volume : " }},
+                   Element<ToleranceBar>{ FixedSize{ 120, 30 }} );
   }
 
   /* Message dialogs */

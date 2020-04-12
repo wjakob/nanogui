@@ -25,6 +25,8 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief ToleranceBar box widget.
  */
+DECLSETTER(TBarCallback, std::function<void(int)>)
+
 class NANOGUI_EXPORT ToleranceBar : public Widget
 {
 public:
@@ -40,16 +42,20 @@ public:
      */
     explicit ToleranceBar(Widget* parent, const std::function<void(int)>& callback = nullptr);
 
+    using Widget::set;
+    template<typename... Args>
+    ToleranceBar(Widget* parent, const Args&... args)
+      : Widget(parent)
+    { set<ToleranceBar, Args...>(args...); }
+
     bool mouseMotionEvent(const Vector2i& p, const Vector2i& rel, int button, int modifiers) override;
     bool mouseButtonEvent(const Vector2i& p, int button, bool down, int modifiers) override;
     bool scrollEvent(const Vector2i& p, const Vector2f& rel) override;
 
-    void draw(NVGcontext* ctx) override;
+    void setCallback(const std::function<void(int)>& callback) { mCallback = callback; }
 
-    void setBackgroundColor(const Color& c)
-    {
-        mBackgroundColor = c;
-    }
+    void draw(NVGcontext* ctx) override;
+    void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
 
 protected:
     int mValue = 0;
@@ -67,6 +73,9 @@ private:
     bool inFigure(const Vector2i& pos) const;
 
     void updateValue(int value);
+
+public:
+    PROPSETTER(TBarCallback, setCallback)
 };
 
 NAMESPACE_END(nanogui)
