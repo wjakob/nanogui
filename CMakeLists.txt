@@ -401,7 +401,6 @@ if (NANOGUI_GLFW_BACKEND)
     include/nanogui/glutil.h src/glfw/glutil_glfw.cpp
 
     include/nanogui/opengl.h
-    include/nanogui/serializer/opengl.h
     src/glfw/common_glfw.cpp
     src/glfw/gpu_glfw.cpp
   )
@@ -499,9 +498,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h src/toolbutton.cpp
-  include/nanogui/serializer/core.h    src/serializer.cpp
 
-  include/nanogui/serializer/sparse.h
   include/nanogui/serializer/json.h
 
   ${NANOGUI_BACKEND_SOURCES}

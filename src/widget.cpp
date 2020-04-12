@@ -457,8 +457,6 @@ void Widget::afterDraw(NVGcontext *ctx) {
     child->afterDraw(ctx);
 }
 
-void Widget::save(Serializer&) const {}
-
 void Widget::save(Json::value &save) const 
 {
   Json::object obj;
@@ -491,7 +489,5 @@ bool Widget::load(Json::value &save)
   mCursor = (Cursor)s.get<int>("cursor");
   return true;
 }
-
-bool Widget::load(Serializer &) { return true; }
 
 NAMESPACE_END(nanogui)

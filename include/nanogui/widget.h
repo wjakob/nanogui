@@ -20,7 +20,6 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-class Serializer;
 class Window;
 class Frame;
 class Label;
@@ -527,11 +526,9 @@ public:
     virtual void afterDraw(NVGcontext *ctx);
 
     /// Save the state of the widget into the given \ref Serializer instance
-    virtual void save(Serializer &s) const;
     virtual void save(Json::value &s) const;
 
     /// Restore the state of the widget from the given \ref Serializer instance
-    virtual bool load(Serializer &s);
     virtual bool load(Json::value &s);
 
     inline void setSubElement(bool v) { mSubElement = v; }

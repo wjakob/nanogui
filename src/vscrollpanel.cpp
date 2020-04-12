@@ -110,7 +110,7 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 
     if (mChildren.size() != mLastChildCount)
     {
-      mLastChildCount = mChildren.size();
+      mLastChildCount = (int)mChildren.size();
       mChildPreferredHeight = child->preferredSize(ctx).y();
     }
 

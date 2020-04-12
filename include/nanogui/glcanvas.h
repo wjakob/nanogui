@@ -68,12 +68,6 @@ public:
     /// Draw the GL scene. Override this method to draw the actual GL content.
     virtual void drawGL() {}
 
-    /// Save the state of this GLCanvas to the specified Serializer.
-    virtual void save(Serializer &s) const override;
-
-    /// Set the state of this GLCanvas from the specified Serializer.
-    virtual bool load(Serializer &s) override;
-
 protected:
     /// Internal helper function for drawing the widget border
     void drawWidgetBorder(NVGcontext* ctx) const;

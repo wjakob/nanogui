@@ -20,7 +20,6 @@
 #include <nanogui/glcanvas.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -77,19 +76,6 @@ void GLCanvas::draw(NVGcontext *ctx) {
     glDisable(GL_SCISSOR_TEST);
     glViewport(storedViewport[0], storedViewport[1],
                storedViewport[2], storedViewport[3]);
-}
-
-void GLCanvas::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("backgroundColor", mBackgroundColor);
-    s.set("drawBorder", mDrawBorder);
-}
-
-bool GLCanvas::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("backgroundColor", mBackgroundColor)) return false;
-    if (!s.get("drawBorder", mDrawBorder)) return false;
-    return true;
 }
 
 NAMESPACE_END(nanogui)
