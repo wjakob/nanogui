@@ -337,11 +337,12 @@ void createBasicWidgets(Screen* parent)
 
   w.label("Progress bar", "sans-bold");
 
-  auto& bars = w.widget();
-  bars.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-  bars.wdg<ProgressBar>(WidgetId{ "#lineprogressbar" });
-  bars.wdg<CircleProgressBar>(WidgetId{ "#circleprogressbar" },
-                              FixedSize{ 40, 40 });
+  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+           Element<ProgressBar>{ WidgetId{ "#lineprogressbar" }},
+           Element<CircleProgressBar>{ 
+                WidgetId{ "#circleprogressbar" },
+                FixedSize{ 40, 40 }
+           });
 
   w.label("Slider and text box", "sans-bold");
 
