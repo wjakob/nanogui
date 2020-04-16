@@ -498,6 +498,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/perfchart.h src/perfchart.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h src/toolbutton.cpp
+  include/nanogui/splitter.h src/splitter.cpp
 
   include/nanogui/serializer/json.h
 

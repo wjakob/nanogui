@@ -54,6 +54,7 @@
 #include <nanogui/picflow.h>
 #include <nanogui/textarea.h>
 #include <nanogui/searchbox.h>
+#include <nanogui/splitter.h>
 #include <nanogui/editproperties.h>
 #include <iostream>
 #include <sstream>
@@ -114,6 +115,7 @@ void createButtonDemoWindow(Screen* screen)
   w.button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
     Caption{ "Plain button" },
     TooltipText{ "short tooltip" });
+  w.wdg<Splitter>( Orientation::Horizontal );
 
   /* Alternative construction notation using variadic template */
   w.button(Caption{ "Styled" },
@@ -356,7 +358,7 @@ void createBasicWidgets(Screen* parent)
                 TextBoxUpdateCallback{ [sliderValue] (TextBox* tb) { 
                   static int lastValue = 0;
                   if (lastValue != (int)(sliderValue * 100)) {
-                    lastValue = sliderValue * 100;
+                    lastValue = (int)(sliderValue * 100);
                     tb->setValue(std::to_string(lastValue));
                   }
                 }});
@@ -410,7 +412,7 @@ void createTextAreaWindow(Screen* screen)
     "                              Position{ 1015, 405 });\n"
     "    std::string longText = \"\";\n"
     "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }";
-  auto& area = mw.text(RelativeSize{ 1.f, 1.f }, LongText{ longText });
+  /*auto& area = */mw.text(RelativeSize{ 1.f, 1.f }, LongText{ longText });
 }
 
 void createPicflowWindow(Screen* screen)
@@ -512,7 +514,7 @@ void createMiscWidgets(Screen* screen)
   auto& ib = panelJump.intbox<int>(IsEditable{ true },
                                    FixedHeight{ 22 });
 
-  auto& bf = panelJump.button(Caption{ "" },
+  /*auto& bf = */panelJump.button(Caption{ "" },
                               Icon{ ENTYPO_ICON_FORWARD },
                               FixedSize{ 22, 22 },
                               ButtonCallback{ [&] {
@@ -772,7 +774,7 @@ void createAllWidgetsDemo(Screen* screen)
   dw.submenu("File").item("(dummy item)").setEnabled(false);
   dw.submenu("File").item("Save").setShortcut("Ctrl+S");
 
-  auto toggleVisible = [screen](const std::string& wname, bool& enabled, bool& checked) {
+  auto toggleVisible = [screen](const std::string& /*wname*/, bool& enabled, bool& checked) {
     enabled = true;
     auto* w = screen->findWidgetGlobal("#console_wnd");
     checked = (w && w->visible());
@@ -844,7 +846,7 @@ void createAllWidgetsDemo(Screen* screen)
   nav.checkbox(Caption{ "theme.keyboardNavigation" }, BoolObservable{ [gs] {return gs()->keyboardNavigation; },
                                                                       [gs](bool v) { gs()->keyboardNavigation = v; }});
 
-  auto& bfcfg = iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  /*auto& bfcfg = */iocfg.panel(Caption{ "Backend flags" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   auto& stcfg = iocfg.hgrid2(0.3f, Caption{ "Style" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   stcfg.label("Theme");
   stcfg.wdg<DropdownBox>(DropdownBoxItems{ "Default", "White" },
@@ -871,7 +873,7 @@ void createAllWidgetsDemo(Screen* screen)
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 
     if (v < 0) return w->haveDrawFlag(f);
-    w->setDrawFlag(f, v); 
+    w->setDrawFlag(f, v>0); 
     screen->needPerformLayout(screen);
     return false;
   };
@@ -886,7 +888,7 @@ void createAllWidgetsDemo(Screen* screen)
 
 void makePropEditor(Screen* screen)
 {
-  auto& cwindow = screen->wdg<PropertiesEditor>(Caption{ "Properties" },
+  /*auto& cwindow =*/screen->wdg<PropertiesEditor>(Caption{ "Properties" },
                                  WidgetId{ "#prop_editor" },
                                  Position{ screen->width() - 300, 0 },
                                  FixedSize{ 300, screen->height() },
@@ -983,7 +985,7 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     popupLeft.checkbox(Caption{ "Another check box" });
 
     // regular buttons
-    auto& button = layer.button("PushButton");
+    /*auto& button =*/layer.button("PushButton");
 
     // test that non-bold fonts for buttons work (applying to radio buttons)
     //std::string radio_font = cwindow.theme()->mDefaultFont;
@@ -1123,8 +1125,8 @@ public:
 
         startGPUTimer(&gpuTimer);
 
-        double t = getTimeFromStart();
-        double dt = t - previousFrameTime;
+        float t = getTimeFromStart();
+        float dt = float(t - previousFrameTime);
         previousFrameTime = t;
 
         /* Draw the user interface */
@@ -1141,7 +1143,7 @@ public:
         }
 
         if (fpsGraph) fpsGraph->update(dt);
-        if (cpuGraph) cpuGraph->update(cpuTime);
+        if (cpuGraph) cpuGraph->update((float)cpuTime);
         if (gpuGraph && gpuTimer.supported)
         {
           float gpuTimes[3];
