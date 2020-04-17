@@ -324,7 +324,7 @@ bool Window::prefferContains(const Vector2i& p) const
 
 void Window::dispose() { screen()->disposeWindow(this); }
 void Window::center() { screen()->centerWindow(this); }
-bool Window::canEdgeResize() const { return theme()->windowResizeFromEdge; }
+bool Window::canEdgeResize() const { return theme()->windowResizeFromEdge && mCanResize; }
 
 bool Window::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
 {

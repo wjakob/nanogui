@@ -58,15 +58,15 @@ void Splitter::draw(NVGcontext* ctx)
 
   nvgBeginPath(ctx);
   nvgFillColor(ctx, Color(150, mEnabled ? 255 : 100));
-  nvgCircle(ctx, tc.cast<float>(), 2.3);
-  nvgCircle(ctx, tc.cast<float>() + offs, 2.3);
-  nvgCircle(ctx, tc.cast<float>() - offs, 2.3);
+  nvgCircle(ctx, tc.cast<float>(), 2.3f);
+  nvgCircle(ctx, tc.cast<float>() + offs, 2.3f);
+  nvgCircle(ctx, tc.cast<float>() - offs, 2.3f);
   nvgFill(ctx);
 
   nvgRestore(ctx);
 }
 
-Vector2i Splitter::preferredSize(NVGcontext *ctx) const
+Vector2i Splitter::preferredSize(NVGcontext * /*ctx*/) const
 {
   if (mOrientation == Orientation::Horizontal)
     return {1, 5};

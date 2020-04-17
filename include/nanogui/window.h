@@ -152,11 +152,7 @@ public:
 
     bool prefferContains(const Vector2i& p) const override;
     bool haveDrawFlag(int flag) const { return (mDrawFlags & flag) == flag; }
-    void setDrawFlag(int flag, bool v) 
-    {
-      if (v) mDrawFlags |= flag;
-      else mDrawFlags &= ~flag;
-    }
+    void setDrawFlag(int flag, bool v) { v ? (mDrawFlags |= flag) : (mDrawFlags &= ~flag); }
 
     void setDrawHeader(bool v) { setDrawFlag(DrawHeader, v); }
 
@@ -166,6 +162,9 @@ public:
     void setHeaderHeight(int h);
     Vector4i getWidgetsArea() override;
     virtual bool canEdgeResize() const;
+
+    bool canResize() const { return mCanResize; }
+    void setCanResize(bool v) { mCanResize = v; }
 
 protected:
     virtual void requestPerformLayout();
@@ -177,6 +176,7 @@ protected:
     std::string mTitle;
     Widget *mButtonPanel;
     bool mModal;
+    bool mCanResize = true;
     enum DragType { dragNone=0, dragHeader=1, dragBody, 
                                 dragLeft, dragRight, 
                                 dragTop, dragBottom,
