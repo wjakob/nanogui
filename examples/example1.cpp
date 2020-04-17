@@ -854,21 +854,18 @@ void createAllWidgetsDemo(Screen* screen)
       if (item == "Default") screen->setTheme<DefaultTheme>();
       else if (item == "White") screen->setTheme<WhiteTheme>();
     }});
-  auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); } };
-  stcfg.label("Window border size");
-  stcfg.slider(SliderObservable{ gs()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
-  stcfg.label("Window border size");
-  stcfg.slider(SliderObservable{ gs()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform);
-  stcfg.label("Window padding top");
-  stcfg.slider(SliderObservable{ gs()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
-  stcfg.label("Frame padding left");
-  stcfg.slider(SliderObservable{ gs()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform);
-  stcfg.label("Frame padding top");
-  stcfg.slider(SliderObservable{ gs()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform);
-  stcfg.label("Inner spacing left");
-  stcfg.slider(SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform);
-  stcfg.label("Tool button side");
-  stcfg.slider(SliderObservable{ gs()->toolButtonSide }, SliderRange{ 15.f, 50.f }, screenPerform);
+  auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); }};
+  stcfg.add(Element<Label>{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform});
+  stcfg.add(Element<Label>{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform });
+  stcfg.add(Element<Label>{ "Window padding top" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(Element<Label>{ "Frame padding left" }, Element<Slider>{ SliderObservable{ gs()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(Element<Label>{ "Frame padding top" },  Element<Slider>{ SliderObservable{ gs()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(Element<Label>{ "Inner spacing left" }, Element<Slider>{ SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform});
+  stcfg.add(Element<Label>{ "Tool button side" },   
+            Element<Slider>{ 
+                 SliderObservable{ [=] { return gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = v; }}, 
+                 SliderRange{ 15.f, 50.f }, screenPerform 
+            });
 
   auto& wopt = iocfg.hgrid2(0.5f, Caption{ "Window options" }, WindowCollapsed{ true });
   auto dwf = [screen, w = &dw](int f, int v = -1) { 

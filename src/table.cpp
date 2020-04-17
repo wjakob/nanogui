@@ -101,9 +101,9 @@ public:
     }
 };
 
-Table::Table( Widget* parent, const std::string& id,
+Table::Table( Widget* parent, const std::string& /*id*/,
               const Vector4i& r, bool clip,
-              bool drawBack, bool moveOverSelect)
+              bool /*drawBack*/, bool moveOverSelect)
 : Widget(parent),
   _clip(clip), _moveOverSelect(moveOverSelect),
   _selecting(false), _currentResizedColumn(-1), _resizeStart(0), _resizableColumns(true),
@@ -204,8 +204,8 @@ void Table::removeColumn(uint32_t columnIndex)
 }
 
 
-int Table::getColumnCount() const {  return _columns.size(); }
-int Table::getRowCount() const { return _rows.size(); }
+int Table::getColumnCount() const { return (int)_columns.size(); }
+int Table::getRowCount() const { return (int)_rows.size(); }
 
 bool Table::setActiveColumn(int idx, bool doOrder )
 {

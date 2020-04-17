@@ -376,9 +376,10 @@ public:
 
     /// Variadic shorthand notation to construct and add a child widget
     template<typename WidgetClass, typename... Args>
-    WidgetClass* add(const Args&... args) {
-        return new WidgetClass(this, args...);
-    }
+    WidgetClass* add(const Args&... args) { return new WidgetClass(this, args...); }
+
+    template<typename... Args>
+    Widget& add(const Args&... args) { set<Widget, Args...>(args...); return *this; }
 
     bool areParentsContain(Widget* w)
     {
