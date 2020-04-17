@@ -882,6 +882,7 @@ void createAllWidgetsDemo(Screen* screen)
                                                                [=](bool v) { dwf(Window::DrawCollapseIcon, !v); } });
   wopt.checkbox(Caption{ "No move" }, BoolObservable{ [w=&dw] { return !w->isDraggable(); }, [w=&dw](bool v) { w->setDraggable((Theme::WindowDraggable)!v); } });
   wopt.checkbox(Caption{ "No resize" }, BoolObservable{ [w = &dw] { return !w->canResize(); }, [w = &dw](bool v) { w->setCanResize(!v); } });
+  wopt.checkbox(Caption{ "No background" }, BoolObservable{ [=] {return !dwf(Window::DrawBody); }, [=](bool v) { dwf(Window::DrawBody, !v); }});
 }
 
 void makePropEditor(Screen* screen)
