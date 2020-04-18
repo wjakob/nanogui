@@ -27,10 +27,12 @@ MessageDialog::MessageDialog(Widget* parent, Orientation orient)
 
   widget(WidgetId{ "#panel_header" },
          WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 10, 15 },
-         Element<Label> {
-           WidgetId{ "#icon" }, Caption{ utf8(mTheme->mMessageInformationIcon).data() }, CaptionFont{ "icons" }, FontSize{ 50 }
+         elm::Label {
+           WidgetId{ "#icon" }, 
+           Caption{ utf8(mTheme->mMessageInformationIcon).data() }, CaptionFont{ "icons" }, 
+           FontSize{ 50 }
          },
-         Element<Label>{ WidgetId{ "#message" }, FixedWidth{ 200 }});
+         elm::Label{ WidgetId{ "#message" }, FixedWidth{ 200 }});
 
   widget(WidgetId{ "#panel_buttons" },
          WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 15},

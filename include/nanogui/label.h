@@ -112,5 +112,6 @@ public:
     PROPSETTER(TextWidthBreak, setTextWidthBreak)
     PROPSETTER(TextWrapped, setTextWrapped)
 };
+namespace elm { using Label = Element<Label>; }
 
 NAMESPACE_END(nanogui)

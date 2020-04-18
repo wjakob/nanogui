@@ -855,13 +855,13 @@ void createAllWidgetsDemo(Screen* screen)
       else if (item == "White") screen->setTheme<WhiteTheme>();
     }});
   auto screenPerform = SliderCallback{ [screen](float) { screen->needPerformLayout(screen); }};
-  stcfg.add(Element<Label>{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform});
-  stcfg.add(Element<Label>{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform });
-  stcfg.add(Element<Label>{ "Window padding top" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
-  stcfg.add(Element<Label>{ "Frame padding left" }, Element<Slider>{ SliderObservable{ gs()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform });
-  stcfg.add(Element<Label>{ "Frame padding top" },  Element<Slider>{ SliderObservable{ gs()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
-  stcfg.add(Element<Label>{ "Inner spacing left" }, Element<Slider>{ SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform});
-  stcfg.add(Element<Label>{ "Tool button side" },   
+  stcfg.add(elm::Label{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform});
+  stcfg.add(elm::Label{ "Window border size" }, Element<Slider>{ SliderObservable{ gs()->windowBorderSize }, SliderRange{ 0.f, 5.f }, screenPerform });
+  stcfg.add(elm::Label{ "Window padding top" }, Element<Slider>{ SliderObservable{ gs()->windowPaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(elm::Label{ "Frame padding left" }, Element<Slider>{ SliderObservable{ gs()->framePaddingLeft }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(elm::Label{ "Frame padding top" },  Element<Slider>{ SliderObservable{ gs()->framePaddingTop }, SliderRange{ 0.f, 20.f }, screenPerform });
+  stcfg.add(elm::Label{ "Inner spacing left" }, Element<Slider>{ SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform});
+  stcfg.add(elm::Label{ "Tool button side" },   
             Element<Slider>{ 
                  SliderObservable{ [=] { return gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = v; }}, 
                  SliderRange{ 15.f, 50.f }, screenPerform 
@@ -883,6 +883,7 @@ void createAllWidgetsDemo(Screen* screen)
   wopt.checkbox(Caption{ "No move" }, BoolObservable{ [w=&dw] { return !w->isDraggable(); }, [w=&dw](bool v) { w->setDraggable((Theme::WindowDraggable)!v); } });
   wopt.checkbox(Caption{ "No resize" }, BoolObservable{ [w = &dw] { return !w->canResize(); }, [w = &dw](bool v) { w->setCanResize(!v); } });
   wopt.checkbox(Caption{ "No background" }, BoolObservable{ [=] {return !dwf(Window::DrawBody); }, [=](bool v) { dwf(Window::DrawBody, !v); }});
+  wopt.checkbox(Caption{ "No bring to front" }, BoolObservable{[w=&dw]{return !w->canBringToFront();}, [w=&dw](bool v){w->setBringToFront(!v); } });
 }
 
 void makePropEditor(Screen* screen)
@@ -906,13 +907,13 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
   {
     cwindow.label("Text Boxes");
     cwindow.widget(WidgetGridLayout{ ColumnsAligment{ Alignment::Maximum, Alignment::Fill } },
-                   Element<Label>{ Caption{"TextBox : "}},
+                   elm::Label{ Caption{"TextBox : "}},
                    Element<TextBox>{ TextValue{ "Some Text" }, IsEditable{ true }},
-                   Element<Label>{ Caption{"IntBox : "}},
+                   elm::Label{ Caption{"IntBox : "}},
                    Element<IntBox<int>>{ IsSpinnable{ true }},
-                   Element<Label>{ Caption{ "FloatBox : " }},
+                   elm::Label{ Caption{ "FloatBox : " }},
                    Element<FloatBox<float>>{ IsSpinnable{ true }},
-                   Element<Label>{ Caption{ "Volume : " }},
+                   elm::Label{ Caption{ "Volume : " }},
                    Element<ToleranceBar>{ FixedSize{ 120, 30 }} );
   }
 
@@ -1154,19 +1155,19 @@ public:
         if (auto led = findWidget<LedMatrix>("#led"))
         {
           static std::list<int> ledvalues;
-          int value = 1.f / dt;
+          int nvalue = 1.f / dt;
 
-          ledvalues.push_back(value);
+          ledvalues.push_back(nvalue);
           if (ledvalues.size() > (size_t)led->columnCount())
             ledvalues.pop_front();
           int k = 0;
           for (auto& c : ledvalues)
           {
             led->clearColumn(k);
-            int t = led->rowCount() * c / 50;
-            for (int i = 0; i <= t; i++)
+            int tt = led->rowCount() * c / 50;
+            for (int i = 0; i <= tt; i++)
             {
-              int rk = 0xff * (i / (float)led->rowCount());
+              int rk(0xff * (i / (float)led->rowCount()));
               led->setColorAt(led->rowCount() - i, k, Color(0xff, 0, 0, rk));
             }
             k++;

@@ -451,12 +451,12 @@ struct UniqueWindow : public Window
                BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
                ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
              },
-             Element<Label>{ Caption{ "H" } },
+             elm::Label{ "H" },
              Element<ToolButton>{ 
                  Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, 
                  DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }
              },
-             Element<Label>{ Caption{ "N S U" }}
+             elm::Label{ "N S U" }
       );
     }
   }
@@ -503,14 +503,14 @@ public:
       issue(_issue), day(_day)
   {
     hstack(2, 2,
-           Element<Label> { 
+           elm::Label { 
               WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
               Element<Spinner> {
                 WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, RelativeSize{ 1.f, 1.f },
                 BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, 
               }
            },
-           Element<Label> { 
+           elm::Label { 
              Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true }
            });
 
@@ -808,11 +808,11 @@ struct ActivityWithNoTaskWarning : public Window
     showAppExclusive(true, true);
 
     vstack(10, 10,
-           Element<Label>{ 
+           elm::Label{ 
              Caption{ "Long activity without task" },
              FontSize{ 42 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter }
            },
-           Element<Label>{
+           elm::Label{
              Caption{ "Are you read to work?" }, 
              FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter }
            }
@@ -1085,10 +1085,10 @@ struct AgilesWindow : public UniqueWindow
     : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
     vstack(2, 2, FixedHeight{ 80 },
-           Element<Label>{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
+           elm::Label{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
                            TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
                            CaptionFont{ "sans-bold" }, FontSize{ 42 } },
-           Element<Label>{ Caption{ "You will be able to edit this selection later" },
+           elm::Label{ Caption{ "You will be able to edit this selection later" },
                            CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 } }
     );
 
