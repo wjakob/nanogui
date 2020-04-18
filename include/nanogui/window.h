@@ -166,6 +166,9 @@ public:
     bool canResize() const { return mCanResize; }
     void setCanResize(bool v) { mCanResize = v; }
 
+    bool canBringToFront() const { return mBringToFront; }
+    void setBringToFront(bool v) { mBringToFront = v; }
+
 protected:
     virtual void requestPerformLayout();
     virtual bool isClickInsideCollapseArea(const Vector2i& clkPnt);
@@ -177,6 +180,7 @@ protected:
     Widget *mButtonPanel;
     bool mModal;
     bool mCanResize = true;
+    bool mBringToFront = true;
     enum DragType { dragNone=0, dragHeader=1, dragBody, 
                                 dragLeft, dragRight, 
                                 dragTop, dragBottom,

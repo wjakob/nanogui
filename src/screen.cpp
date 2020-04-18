@@ -472,8 +472,11 @@ void Screen::moveWindowToFront(Window *window) {
   if (!isMyChild(window))
     return;
 
-  mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
-  mChildren.push_back(window);
+  if (window->canBringToFront())
+  {
+    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), window), mChildren.end());
+    mChildren.push_back(window);
+  }
   /* Brute force topological sort (no problem for a few windows..) */
   bool changed = false;
   do {
