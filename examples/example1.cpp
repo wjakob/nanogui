@@ -863,7 +863,7 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.add(elm::Label{ "Inner spacing left" }, Element<Slider>{ SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform});
   stcfg.add(elm::Label{ "Tool button side" },   
             Element<Slider>{ 
-                 SliderObservable{ [=] { return gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = v; }}, 
+                 SliderObservable{ [=] { return gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = (int)v; }}, 
                  SliderRange{ 15.f, 50.f }, screenPerform 
             });
 
@@ -884,6 +884,16 @@ void createAllWidgetsDemo(Screen* screen)
   wopt.checkbox(Caption{ "No resize" }, BoolObservable{ [w = &dw] { return !w->canResize(); }, [w = &dw](bool v) { w->setCanResize(!v); } });
   wopt.checkbox(Caption{ "No background" }, BoolObservable{ [=] {return !dwf(Window::DrawBody); }, [=](bool v) { dwf(Window::DrawBody, !v); }});
   wopt.checkbox(Caption{ "No bring to front" }, BoolObservable{[w=&dw]{return !w->canBringToFront();}, [w=&dw](bool v){w->setBringToFront(!v); } });
+
+  auto& wwidgets = pw.panel(Caption{ "Widgets" }, WindowCollapsed{ true });
+  auto& wbasic = wwidgets.panel(Caption{ "Basic" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
+  wbasic.hstack(5, 2, 
+                elm::Button{
+                      Caption{"Button"}, 
+                      ButtonCallback{ [w = &dw] { if (auto l = Label::find(w, "#btn_action"))
+                                      l->setCaption("Thanks for cliking me!!!"); }}
+                },
+                elm::Label{ WidgetId{ "#btn_action" }});
 }
 
 void makePropEditor(Screen* screen)
@@ -921,30 +931,30 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
   {
     cwindow.label("Message Dialogues");
     auto& tools = cwindow.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
-    auto& b = tools.button("Info");
+    auto& b = tools.button(Caption{ "Info" });
     Theme* ctheme = cwindow.theme();
     b.setCallback([screen, ctheme]() {
       auto& dlg = screen->msgdialog(DialogTitle{ "Title" }, DialogMessage{ "This is an information message" },
                                     DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
       dlg.setTheme(ctheme);
     });
-    auto& bw = tools.button("Warn");
-    bw.setCallback([screen, ctheme]() {
-      auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
-                                    DialogTitle{ "Title" },
-                                    DialogMessage{ "This is a warning message" },
-                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }} );
-      dlg.setTheme(ctheme);
-    });
-    auto& ba = tools.button("Ask");
-    ba.setCallback([&, ctheme]() {
-      auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
-                                    DialogTitle{ "Title" },
-                                    DialogMessage{ "This is a question message" },
-                                    DialogButton{ "Yes" }, DialogAltButton{ "No" },
-                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
-      dlg.setTheme(ctheme);
-    });
+    tools.button(Caption{ "Warn" },
+      ButtonCallback{ [screen, ctheme]() {
+        auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
+                                      DialogTitle{ "Title" },
+                                      DialogMessage{ "This is a warning message" },
+                                      DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
+        dlg.setTheme(ctheme);
+      }} );
+    tools.button(Caption{ "Ask" },
+      ButtonCallback{ [&, ctheme]() {
+        auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
+                                      DialogTitle{ "Title" },
+                                      DialogMessage{ "This is a question message" },
+                                      DialogButton{ "Yes" }, DialogAltButton{ "No" },
+                                      DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
+        dlg.setTheme(ctheme);
+      } });
   }
 
   // TabWidget used to test TabHeader and others while keeping the size manageable
@@ -985,23 +995,21 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     popupLeft.checkbox(Caption{ "Another check box" });
 
     // regular buttons
-    /*auto& button =*/layer.button("PushButton");
+    /*auto& button =*/layer.button(Caption{ "PushButton" });
 
     // test that non-bold fonts for buttons work (applying to radio buttons)
     //std::string radio_font = cwindow.theme()->mDefaultFont;
 
-    auto& button2 = layer.button("Radio 1 (Hover for Tooltip)");
-    //button2.setFont(radio_font);
-    button2.setFlags(Button::Flag::RadioButton);
-    button2.setTooltip("Short tooltip!");
+    layer.button(Caption{ "Radio 1 (Hover for Tooltip)" },
+                 ButtonFlags{ Button::Flag::RadioButton },
+                 TooltipText{ "Short tooltip!" });
 
-    auto& button3 = layer.button("Radio 2 (Hover for Tooltip)");
-    //button3.setFont(radio_font);
-    button3.setFlags(Button::Flag::RadioButton);
-    button3.setTooltip("This is a much longer tooltip that will get wrapped automatically!");
+    layer.button(Caption{ "Radio 2 (Hover for Tooltip)" },
+                 ButtonFlags{ Button::Flag::RadioButton },
+                 TooltipText{ "This is a much longer tooltip that will get wrapped automatically!" });
 
-    auto& button4 = layer.button("ToggleButton");
-    button4.setFlags(Button::Flag::ToggleButton);
+    layer.button(Caption{ "ToggleButton" },
+                 ButtonFlags{ Button::Flag::ToggleButton });
 
     // checkbox (top level)
     layer.checkbox(Caption{ "A CheckBox" });

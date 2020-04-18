@@ -290,10 +290,8 @@ public:
       if (!editor)
         return;
 
-      auto& eb = editor->button("Editor button");
-      eb.setCallback([] { cout << "pushed!" << endl; });
-      eb.setTooltip("short tooltip");
-      
+      auto& eb = editor->button(Caption{ "Editor button" }, TooltipText{ "short tooltip" });
+      eb.setCallback([] { cout << "pushed!" << endl; });   
 
       auto& ew = editor->wdg<Window>(Caption{ "Editor window" });
       ew.setSize(100, 200);

@@ -20,8 +20,8 @@ RTTI_IMPLEMENT_INFO(Button, Widget)
 RTTI_IMPLEMENT_INFO(LedButton, Button)
 RTTI_IMPLEMENT_INFO(LinkButton, Button)
 
-Button::Button(Widget *parent, const std::string &caption, int icon)
-    : Widget(parent), mCaption(caption), mIcon(icon),
+Button::Button(Widget *parent)
+    : Widget(parent), mCaption("Untitled"), mIcon(0),
       mIconAlign(IconAlign::LeftCentered), 
       mBackgroundColor(Color(0, 0)),
       mTextColor(Color(0, 0))

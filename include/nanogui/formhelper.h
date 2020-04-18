@@ -190,14 +190,12 @@ public:
 
     /// Add a button with a custom callback
     Button *addButton(const std::string &label, const std::function<void()> &cb) {
-        Button *button = new Button(mWindow, label);
-        button->setCallback(cb);
-        button->setFixedHeight(25);
-        if (mLayout->rowCount() > 0)
-            mLayout->appendRow(mVariableSpacing);
-        mLayout->appendRow(0);
-        mLayout->setAnchor(button, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
-        return button;
+      auto button = mWindow->add<Button>(Caption{ label }, ButtonCallback{ cb }, FixedHeight{ 25 });
+      if (mLayout->rowCount() > 0)
+        mLayout->appendRow(mVariableSpacing);
+      mLayout->appendRow(0);
+      mLayout->setAnchor(button, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
+      return button;
     }
 
     /// Add an arbitrary (optionally labeled) widget to the layout

@@ -113,6 +113,9 @@ DECLSETTER(VisibleObservable, BoolObservable)
 struct ElementBase { Widget* w = nullptr; };
 template<class FF> struct Element : public ElementBase { template<typename... Args> Element(const Args&... args) { w = new FF(nullptr, args...); }};
 
+#define WIDGET_COMMON_FUNCTIONS(class_name) \
+static class_name* find(Widget* p, const char* id) { return p->findWidget<class_name>(id); }
+
 /**
  * \class Widget widget.h nanogui/widget.h
  *

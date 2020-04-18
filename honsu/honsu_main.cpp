@@ -250,7 +250,7 @@ struct IssueInfo
     entityId = js.get("entityId").get_str();
     Json::value field = js.get("field");
     field.update([&] (auto& v) {
-      auto& _v = [](auto& i) { return i.get("value"); };
+      auto _v = [](auto& i) { return i.get("value"); };
       const std::string name = v.get_str("name");
       if      (name == "State")   state = _v(v).get(0).to_str();
       else if (name == "Type")    type = _v(v).get(0).to_str();
@@ -576,7 +576,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
       Json::parse(response, body);
 
       response.update([screen, issue, wId](auto& i) {
-        int64_t duration = i.get("duration").get_int();
+        int duration = (int)i.get("duration").get_int();
         std::time_t created = (uint64_t)i.get("created").get_int() / 1000;
 
         std::tm* tmt = std::localtime(&created);
@@ -712,7 +712,7 @@ void startIssueRecord(IssueInfo::Ptr issue)
       int timeSpent = 0;
       uint64_t timeSpentToday = 0;
       response.update([&] (auto& i) {
-        int64_t duration = i.get("duration").get_int();
+        int duration = (int)i.get("duration").get_int();
         uint64_t created = (uint64_t)i.get("created").get_int();
         if (created >= day_start && created <= day_end)
           timeSpentToday += duration;
@@ -987,11 +987,11 @@ public:
 
   TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
     : Frame(parent, 
-            BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2 }, CornerRadius{ 6 }, 
+            BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2 }, CornerRadius{ 6.f }, 
             BackgroundColor{ Color::heavyDarkGrey },
-            WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}),
-      issue(_issue)
+            WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}) 
   {
+    issue = _issue;
     hlayer(2, 2, FixedHeight{ 26 },
            Element<LinkButton>{
               Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
@@ -1066,7 +1066,9 @@ struct TasksWindow : public UniqueWindow
     action(ENTYPO_ICON_CCW, [scr] { 
       scr->add<WaitingWindow>();
       requestTasks(account.activeAgile,
-        [scr](std::string body) { parseBoardTasks(body) ? (void*)scr->add<TasksWindow>() : (void*)scr->add<AgilesWindow>();  },
+        [scr](std::string body) { 
+          if (parseBoardTasks(body)) scr->add<TasksWindow>(); 
+          else scr->add<AgilesWindow>();  },
         [scr](int) { scr->add<AgilesWindow>(); }); 
     });
 
@@ -1107,7 +1109,10 @@ struct AgilesWindow : public UniqueWindow
                   ButtonCallback{ [scr] {
                     scr->add<WaitingWindow>();
                     requestTasks(account.activeAgile, 
-                      [scr](std::string body) { parseBoardTasks(body) ? (void*)scr->add<TasksWindow>() : (void*)scr->add<AgilesWindow>();  },
+                      [scr](std::string body) { 
+                        if (parseBoardTasks(body)) scr->add<TasksWindow>(); 
+                        else scr->add<AgilesWindow>();  
+                      },
                       [scr](int) { scr->add<AgilesWindow>(); });
                   } });
     performLayoutLater();

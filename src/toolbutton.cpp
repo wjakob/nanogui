@@ -46,8 +46,9 @@ Vector2i ToggleButton::preferredSize(NVGcontext *) const
 }
 
 ToggleButton::ToggleButton(Widget *parent, int icon)
-  : Button(parent, std::string(), icon)
+  : Button(parent)
 {
+  setIcon(icon);
   setFlags(Flag::ToggleButton);
   setDrawFlags(DrawFlag::DrawIcon);
 }

@@ -117,7 +117,7 @@ constexpr uint32_t StrNameFnHash(const char* str) { return ClsNameHashRecursive(
   static const RttiClass* staticRttiClass(); \
   virtual RttiClass* rttiClass() const override; \
   static class_name* cast(Object*); \
-  static const class_name* cast(const Object*);
+  static const class_name* cast(const Object*); \
 
 #define RTTI_IMPLEMENT_INFO(class_name, base_class_name) \
   const RttiClass class_name::rttiInfo##class_name = { #class_name, sizeof(class class_name), RTTI_CLASS(base_class_name), class_name::RTTI_CLASS_UID }; \

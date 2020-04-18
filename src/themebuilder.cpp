@@ -104,7 +104,7 @@ public:
     alphaBox->setCallback(alpha_cb);
 
     {
-      auto& b = wrapper.button("Darken 5%");
+      auto& b = wrapper.button(Caption{ "Darken 5%" });
       //WTF b.setFont("sans");
       auto darken_cb = [this]() {
         Color curr = color();
@@ -133,7 +133,7 @@ public:
     }
 
     {
-      auto& b = wrapper.button("Lighten 5%");
+      auto& b = wrapper.button(Caption{ "Lighten 5%" });
       // WTF b.setFont("sans");
       auto lighten_cb = [this]() {
         Color curr = color();

@@ -60,9 +60,9 @@ void ComboBox::setItems(const std::vector<std::string> &items, const std::vector
     int index = 0;
     for (const auto &str: items) 
     {
-        auto& button = mPopup->button(str);
-        button.setFlags(Button::RadioButton);
-        button.setCallback([&, index] {
+      auto& button = mPopup->button(Caption{ str });
+      button.setFlags(Button::RadioButton);
+      button.setCallback([&, index] {
             mSelectedIndex = index;
             setCaption(mItemsShort[index]);
             setPushed(false);
@@ -71,8 +71,8 @@ void ComboBox::setItems(const std::vector<std::string> &items, const std::vector
               mCallback(index);
             if (mStrCallback)
               mStrCallback(mItems[index]);
-        });
-        index++;
+      });
+      index++;
     }
     setSelectedIndex(mSelectedIndex);
 }

@@ -27,9 +27,11 @@ public:
     RTTI_DECLARE_INFO(ToolButton)
 
     explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
-        : Button(parent, caption, icon)
+        : Button(parent)
     {
-        setFlags(Flag::RadioButton | Flag::ToggleButton);
+      setCaption(caption);
+      setIcon(icon);
+      setFlags(Flag::RadioButton | Flag::ToggleButton);
     }
 
     std::string wtypename() const override { return "toolbutton"; }

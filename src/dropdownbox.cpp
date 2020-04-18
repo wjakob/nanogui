@@ -27,7 +27,10 @@ public:
   bool mInlist = true;
 
   DropdownListItem(Widget* parent, const std::string& str, bool inlist=true)
-    : Button(parent, str), mInlist(inlist) {}
+    : Button(parent), mInlist(inlist) 
+  {
+    setCaption(str);
+  }
 
   void draw(NVGcontext *ctx) override
   {

@@ -75,9 +75,7 @@ public:
      * \param icon
      *     The icon to display with this Button.  See \ref nanogui::Button::mIcon.
      */
-    explicit Button(Widget *parent, const std::string &caption = "Untitled", int icon = 0);
-    explicit Button(Widget *parent, const char* caption)
-      : Button(parent, std::string(caption), 0) {}
+    explicit Button(Widget *parent);
 
     using Widget::set;
     template<typename... Args>
@@ -277,6 +275,7 @@ public:
     PROPSETTER(BorderColor, setBorderColor)
     PROPSETTER(CornerRadius, setCornerRadius)
 };
+namespace elm { using Button = Element<Button>; }
 
 class NANOGUI_EXPORT LedButton : public Button
 {

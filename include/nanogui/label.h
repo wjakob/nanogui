@@ -33,6 +33,7 @@ class NANOGUI_EXPORT Label : public Widget {
 public:
     RTTI_CLASS_UID(Label)
     RTTI_DECLARE_INFO(Label)
+    WIDGET_COMMON_FUNCTIONS(Label)
 
     enum TextState { tEnabled=0, tDisabled };
     explicit Label(Widget* parent);

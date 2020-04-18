@@ -19,18 +19,20 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(PopupButton, Button)
 
 PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
-    : Button(parent, caption, buttonIcon) 
+    : Button(parent) 
 {
-    mChevronIcon = mTheme->mPopupChevronRightIcon;
+  setCaption(caption);
+  setIcon(buttonIcon);
+  mChevronIcon = mTheme->mPopupChevronRightIcon;
 
-    setFlags(Flag::ToggleButton | Flag::PopupButton);
+  setFlags(Flag::ToggleButton | Flag::PopupButton);
 
-    Window *parentWindow = window();
-    mPopup = parentWindow->parent()->add<Popup>(window());
-    mPopup->setSize(320, 250);
-    mPopup->setVisible(false);
+  Window *parentWindow = window();
+  mPopup = parentWindow->parent()->add<Popup>(window());
+  mPopup->setSize(320, 250);
+  mPopup->setVisible(false);
 
-    mIconExtraScale = 0.8f;// widget override
+  mIconExtraScale = 0.8f;// widget override
 }
 
 PopupButton::~PopupButton() { mPopup->setVisible(false); }
