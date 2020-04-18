@@ -212,7 +212,7 @@ bool Table::setActiveColumn(int idx, bool doOrder )
   if (idx < 0 || idx >= (int)_columns.size())
     return false;
 
-  bool changed = (_activeTab != idx);
+  //bool changed = (_activeTab != idx);
 
   _activeTab = idx;
   if ( _activeTab < 0 )
@@ -287,7 +287,7 @@ bool Table::hasResizableColumns() const {  return _resizableColumns; }
 uint32_t Table::addRow(uint32_t rowIndex)
 {
   if ( rowIndex > _rows.size() )
-    rowIndex = _rows.size();
+    rowIndex = (int)_rows.size();
 
   Row row;
 
@@ -322,7 +322,7 @@ void Table::removeRow(uint32_t rowIndex)
   _rows.erase(_rows.begin() + rowIndex );
 
   if ( !(_selectedRow < int(_rows.size())) )
-    _selectedRow = _rows.size() - 1;
+    _selectedRow = (int)_rows.size() - 1;
 
   _recalculateHeights();
   _recalculateScrollBars();
@@ -449,7 +449,7 @@ void Table::_recalculateHeights()
   int fontH = bounds[3] - bounds[1] + (_cellHeightPadding * 2);
   _itemHeight = _overItemHeight == 0 ? fontH : _overItemHeight;
 
-  _totalItemHeight = _itemHeight * _rows.size();    //  header is not counted, because we only want items
+  _totalItemHeight = _itemHeight * (int)_rows.size();    //  header is not counted, because we only want items
 }
 
 
@@ -806,7 +806,7 @@ void Table::_selectNew( int xpos, int ypos, bool lmb, bool onlyHover)
   _selectedColumn = _getCurrentColumn( xpos, ypos );
 
   if (_selectedRow >= (int)_rows.size())
-    _selectedRow = _rows.size() - 1;
+    _selectedRow = (int)_rows.size() - 1;
   else if (_selectedRow<0)
     _selectedRow = 0;
 

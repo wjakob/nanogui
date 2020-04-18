@@ -399,7 +399,7 @@ void Picflow::setItemBlend( uint32_t index, int blend )
 		mImages[ index ].blend = blend;
 }
 
-int Picflow::getItemAt( int xpos, int ypos ) const
+int Picflow::getItemAt( int /*xpos*/, int /*ypos*/ ) const
 {
   assert( false && "func not supported" );
   return -1;

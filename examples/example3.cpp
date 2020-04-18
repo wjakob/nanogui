@@ -90,8 +90,6 @@ std::string strval = "A string";
 test_enum enumval = Item2;
 Color colval(0.5f, 0.5f, 0.7f, 1.f);
 
-Screen *screen = nullptr;
-
 int main(int /* argc */, char ** /* argv */) {
 
   nanogui::init();
@@ -101,12 +99,12 @@ int main(int /* argc */, char ** /* argv */) {
 
   {
     // Create a nanogui screen and pass the glfw pointer to initialize
-    Screen screen({ 1600, 900 }, "NanoGUI Test", false);
-    nanogui::sample::setup_window_params(window, &screen);
+    Screen nscreen({ 1600, 900 }, "NanoGUI Test", false);
+    nanogui::sample::setup_window_params(window, &nscreen);
 
     // Create nanogui gui
     bool enabled = true;
-    FormHelper *gui = new FormHelper(&screen);
+    FormHelper *gui = new FormHelper(&nscreen);
     ref<Window> nanoguiWindow = gui->addWindow({ 10, 10 }, "Form helper example");
     gui->addGroup("Basic types");
     gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
@@ -131,15 +129,15 @@ int main(int /* argc */, char ** /* argv */) {
     gui->addGroup("Other widgets");
     gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
 
-    screen.setVisible(true);
-    screen.performLayout();
+    nscreen.setVisible(true);
+    nscreen.performLayout();
 
-    screen.drawAll();
+    nscreen.drawAll();
     
     nanogui::sample::run([&] {
-      nanogui::sample::clear_frame(screen.background());
+      nanogui::sample::clear_frame(nscreen.background());
 
-      screen.drawAll();
+      nscreen.drawAll();
 
       nanogui::sample::present_frame(window);
 

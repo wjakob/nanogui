@@ -98,7 +98,8 @@ class EditorScreen : public Screen {
 public:
     EditorScreen(const Vector2i& s) : Screen(s, "Editor", false)
     {
-      auto& mmenu = createMainMenu();
+      //auto& mmenu = 
+      createMainMenu();
 
       auto& area = hlayer(2, 2, ID.editor);
       area.layout()->setId(0xfa);
@@ -175,7 +176,7 @@ public:
         editor->addSelectedCallback([&](Widget* w) { propeditor.parse(w); });
     }
 
-    void createWorkspace(Widget& area, float relw)
+    void createWorkspace(Widget& area, float /*relw*/)
     {
       auto& editor = area.wdg<EditorWorkspace>(ID.workspace);
       editor.setRelativeSize(0.7f, 1.f);
@@ -197,7 +198,7 @@ public:
       auto& wa = area.vlayer(2, 2, RelativeSize{ relw, 1.f });
       auto& waheader = wa.hlayer(2, 2, FixedHeight{ 30 });
 
-      auto& wawidgets = wa.vlayer(2, 2, RelativeSize{ 1, 0 });
+      auto& wawidgets = wa.vlayer(2, 2, RelativeSize{ 1.f, 0.f });
       auto& factoryview = wawidgets.wdg<Foldout>(ID.factoryview);
       auto& wfactory = WidgetFactory::instance();
       for (auto f : wfactory.factories())
@@ -248,7 +249,7 @@ public:
     {
       auto node = item->addNode("Unknown widget");
       node->setData((intptr_t)w);
-      node->setNodeId((intptr_t)w);
+      node->setNodeId((TreeViewItem::NodeId)w);
       if (auto parea = node->previewArea())
       {
         bool editable = editor->isWidgetEditable((intptr_t)w);
@@ -283,7 +284,7 @@ public:
         addTreeViewNode(editor, treeview->rootNode(), c);
     }
 
-    void createBaseEditorWidget(Widget& area)
+    void createBaseEditorWidget(Widget& /*area*/)
     {
       auto* editor = findWidget<EditorWorkspace>(ID.workspace);
       if (!editor)

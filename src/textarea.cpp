@@ -46,7 +46,7 @@ TextArea& TextArea::bulletLine(const std::string &text)
   return *this;
 }
 
-TextArea& TextArea::separator(const std::string &text)
+TextArea& TextArea::separator(const std::string &/*text*/)
 {
   m_blocks.push_back(Block{ m_offset, 0, std::string(""), m_foreground_color, true, false });
   m_offset = Vector2i(0, m_offset.y() + 2);

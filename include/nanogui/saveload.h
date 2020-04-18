@@ -97,7 +97,7 @@ template<> inline int64_t json::get<int64_t>(const _s& n) const { auto it = obj.
 template<> inline float json::get<float>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_float("value") : 0; }
 template<> inline bool json::get<bool>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_bool("value") : false; }
 template<> inline Color json::get<Color>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? Color((int)it->second.get_int("value")): Color(); }
-template<> inline json::_vi json::get<json::_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi((int)it->second.get_int("x"), it->second.get_int("y")) : _vi{0, 0}; }
+template<> inline json::_vi json::get<json::_vi>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _vi((int)it->second.get_int("x"), (int)it->second.get_int("y")) : _vi{0, 0}; }
 template<> inline json::_r json::get<json::_r>(const _s& n) const { auto it = obj.find(n);  return it != obj.end() ? _r(it->second.get_float("min"), it->second.get_float("max")) : _r{ 0.f, 0.f }; }
 
 

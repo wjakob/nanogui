@@ -159,7 +159,7 @@ void WindowMenu::draw(NVGcontext* ctx)
   /* Draw margin background */
   if (!mLabels.empty())
   {
-    auto lbl = mLabels.begin()->second;
+    //auto lbl = mLabels.begin()->second;
 
     nvgBeginPath(ctx);
     nvgRect(ctx, 0, 0, ww - 1, hh);
