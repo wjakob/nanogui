@@ -19,6 +19,7 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(Button, Widget)
 RTTI_IMPLEMENT_INFO(LedButton, Button)
 RTTI_IMPLEMENT_INFO(LinkButton, Button)
+RTTI_IMPLEMENT_INFO(RadioButton, Button)
 
 Button::Button(Widget *parent)
     : Widget(parent), mCaption("Untitled"), mIcon(0),

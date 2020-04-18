@@ -890,10 +890,21 @@ void createAllWidgetsDemo(Screen* screen)
   wbasic.hstack(5, 2, 
                 elm::Button{
                       Caption{"Button"}, 
-                      ButtonCallback{ [w = &dw] { if (auto l = Label::find(w, "#btn_action"))
-                                      l->setCaption("Thanks for cliking me!!!"); }}
+                      ButtonCallback{ [w = &dw] { if (auto l = Label::find(w, "#btn_action")) l->setCaption("Thanks for cliking me!!!"); }}
                 },
                 elm::Label{ WidgetId{ "#btn_action" }});
+  wbasic.checkbox(Caption{ "checkbox" });
+  auto radio_action = ButtonChangeCallback{ [w = &dw](Button* b) { 
+    if (b && !b->pushed())
+      return;
+    if (auto l = Label::find(w, "#radio_action")) 
+      l->setCaption("Clicked " + b->caption()); 
+  }};
+  wbasic.hstack(5, 2, 
+                elm::RadioBtn{Caption{ "radio a" }, radio_action},
+                elm::RadioBtn{Caption{ "radio b" }, radio_action},
+                elm::RadioBtn{Caption{ "radio c" }, radio_action},
+                elm::Label{ WidgetId{ "#radio_action" }});
 }
 
 void makePropEditor(Screen* screen)

@@ -277,6 +277,19 @@ public:
 };
 namespace elm { using Button = Element<Button>; }
 
+class NANOGUI_EXPORT RadioButton : public Button
+{
+public:
+  RTTI_CLASS_UID(RadioButton)
+  RTTI_DECLARE_INFO(RadioButton)
+
+  using Button::set;
+  template<typename... Args>
+  RadioButton(Widget* parent, const Args&... args)
+    : Button(parent, ButtonFlags{ Button::RadioButton }) { set<RadioButton, Args...>(args...); }
+};
+namespace elm { using RadioBtn = Element<RadioButton>; }
+
 class NANOGUI_EXPORT LedButton : public Button
 {
 public:
