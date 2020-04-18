@@ -31,6 +31,9 @@ void Screen::addChild(int index, Widget * widget)
 
 void Screen::needPerformLayout(Widget* w)
 {
+  if (!w)
+    return;
+
   if (w == this)
     mWidgetsNeedUpdateGlobal = true;
   else

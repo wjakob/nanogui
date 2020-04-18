@@ -11,6 +11,7 @@
 
 #include <nanogui/label.h>
 #include <nanogui/theme.h>
+#include <nanogui/screen.h>
 #include <nanovg.h>
 #include <nanogui/saveload.h>
 
@@ -27,6 +28,13 @@ void Label::setTheme(Theme *theme) {
 }
 
 int Label::fontSize() const { return mFontSize > 0 ? mFontSize : mTheme->mStandardFontSize;  }
+
+void Label::setCaption(const std::string& caption)
+{
+  mCaption = caption;
+  if (auto s = screen())
+    s->needPerformLayout(parent());
+}
 
 Vector2i Label::preferredSize(NVGcontext *ctx) const {
   if (mCaption == "")

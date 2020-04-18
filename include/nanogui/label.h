@@ -52,7 +52,7 @@ public:
     /// Get the label's text caption
     const std::string &caption() const { return mCaption; }
     /// Set the label's text caption
-    void setCaption(const std::string &caption) { mCaption = caption; }
+    void setCaption(const std::string &caption);
 
     /// Set the currently active font (2 are available by default: 'sans' and 'sans-bold')
     void setFont(const std::string &font) { mFont = font; }

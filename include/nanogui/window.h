@@ -256,4 +256,6 @@ public:
 
 };
 
+namespace elm { using Panel = Element<Panel>; }
+
 NAMESPACE_END(nanogui)
