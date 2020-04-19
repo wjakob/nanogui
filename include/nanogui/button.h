@@ -39,6 +39,7 @@ public:
 
     RTTI_CLASS_UID(Button)
     RTTI_DECLARE_INFO(Button)
+    WIDGET_COMMON_FUNCTIONS(Button)
 
     /// Flags to specify the button behavior (can be combined with binary OR)
     enum Flag {
@@ -292,6 +293,46 @@ public:
     : RadioButton(parent) { set<RadioButton, Args...>(args...); }
 };
 namespace elm { using RadioBtn = Element<RadioButton>; }
+
+DECLSETTER(UpDownCallback, std::function<void(bool)>)
+DECLSETTER(UpIcon, int)
+DECLSETTER(DownIcon, int)
+
+class NANOGUI_EXPORT UpDownButton : public Widget
+{
+public:
+  RTTI_CLASS_UID(UpDownButton)
+  RTTI_DECLARE_INFO(UpDownButton)
+
+  explicit UpDownButton(Widget* parent);
+
+  using Widget::set;
+  template<typename... Args>
+  UpDownButton(Widget* parent, const Args&... args)
+    : UpDownButton(parent) { set<UpDownButton, Args...>(args...); }
+
+  void setCallback(std::function<void(bool)> cb) { mCallback = cb; }
+  void setUpIcon(int icon);
+  void setDownIcon(int icon);
+
+  void afterDraw(NVGcontext* ctx) override;
+
+protected:
+  std::function<void(bool)> mCallback;
+  Button* mUp = nullptr;
+  Button* mDown = nullptr;
+  int mLastState = 0;
+  float mLastUpdate = 0;
+  float mActivateTime = 0;
+  float mActivateInterval = 1.5f;
+  float mRepeatInverval = 0.033f;
+
+public:
+  PROPSETTER(UpDownCallback, setCallback)
+  PROPSETTER(UpIcon, setUpIcon)
+  PROPSETTER(DownIcon, setDownIcon)
+};
+namespace elm { using UpDownButton = Element<UpDownButton>; }
 
 class NANOGUI_EXPORT LedButton : public Button
 {

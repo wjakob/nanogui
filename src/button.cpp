@@ -9,10 +9,11 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#include <nanogui/button.h>
+#include <nanogui/toolbutton.h>
 #include <nanogui/theme.h>
 #include <nanovg.h>
 #include <nanogui/saveload.h>
+#include <nanogui/entypo.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -20,6 +21,47 @@ RTTI_IMPLEMENT_INFO(Button, Widget)
 RTTI_IMPLEMENT_INFO(LedButton, Button)
 RTTI_IMPLEMENT_INFO(LinkButton, Button)
 RTTI_IMPLEMENT_INFO(RadioButton, Button)
+RTTI_IMPLEMENT_INFO(UpDownButton, Button)
+
+UpDownButton::UpDownButton(Widget* parent)
+  : Widget(parent,
+           WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2})
+{
+  mDown = &toolbutton(Icon{ ENTYPO_ICON_LEFT_1 }, ButtonFlags{ Button::NormalButton },
+    ButtonCallback{ [&] {
+      if (mCallback) mCallback(false); 
+      mActivateTime = getTimeFromStart() + mActivateInterval;
+    }
+  });
+  mUp = &toolbutton(Icon{ ENTYPO_ICON_RIGHT_1 }, ButtonFlags{ Button::NormalButton },
+    ButtonCallback{ [&] {
+      if (mCallback) mCallback(true); 
+      mActivateTime = getTimeFromStart() + mActivateInterval;
+    }
+  });
+}
+
+void UpDownButton::setUpIcon(int icon) { if (mUp) mUp->setIcon(icon); }
+void UpDownButton::setDownIcon(int icon) { if (mDown) mDown->setIcon(icon); }
+
+void UpDownButton::afterDraw(NVGcontext* ctx)
+{
+  Widget::afterDraw(ctx);
+
+  int curState = mDown->pushed() ? -1 : 
+                 mUp->pushed() ? 1 : 
+                 0;
+  if (curState != 0 && mLastState == curState)
+  {
+    float curtime = getTimeFromStart();
+    if (mActivateTime < curtime && mLastUpdate + mRepeatInverval < curtime)
+    {
+      mCallback(curState == 1);
+      mLastUpdate = curtime;
+    }
+  }
+  mLastState = curState;
+}
 
 Button::Button(Widget *parent)
     : Widget(parent), mCaption("Untitled"), mIcon(0),

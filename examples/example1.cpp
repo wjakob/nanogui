@@ -908,6 +908,17 @@ void createAllWidgetsDemo(Screen* screen)
   auto makecbtn = [=](Color c) { return elm::Button{ Caption{ "Click" }, FixedHeight{ 17 }, BackgroundColor{c}}; };
   wbasic.hstack(5, 2, makecbtn(Color::red), makecbtn(Color::yellow), makecbtn(Color::green),
                       makecbtn(Color::blue), makecbtn(Color::purple), makecbtn(Color::pink));
+
+  wbasic.hstack(5, 2, 
+                elm::Label{"Hold to repeat:"}, 
+                elm::UpDownButton{UpDownCallback{ [w = &dw] (bool v) {
+                    static int value = 0;
+                    value += (v ? 1 : -1);
+                    if (auto l = Label::find(w, "#updown_action"))
+                      l->setCaption(std::to_string(value));
+                  }
+                }},
+                elm::Label{WidgetId{ "#updown_action"}});
 }
 
 void makePropEditor(Screen* screen)
