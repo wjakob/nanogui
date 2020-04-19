@@ -78,11 +78,11 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
     if (isMouseButtonLeft(button) && mEnabled) {
         bool pushedBackup = mPushed;
         if (down) {
-            if (haveFlag(RadioButton)) {
+            if (haveFlag(Button::RadioButton)) {
                 if (mButtonGroup.empty()) {
                     for (auto widget : parent()->children()) {
                         Button *b = Button::cast(widget);
-                        if (b != this && b && (b->haveFlag(RadioButton)) && b->mPushed) {
+                        if (b != this && b && (b->haveFlag(Button::RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
                                 b->mChangeCallback(this);
@@ -90,7 +90,7 @@ bool Button::mouseButtonEvent(const Vector2i &p, int button, bool down, int modi
                     }
                 } else {
                     for (auto b : mButtonGroup) {
-                        if (b != this && (b->haveFlag(RadioButton)) && b->mPushed) {
+                        if (b != this && (b->haveFlag(Button::RadioButton)) && b->mPushed) {
                             b->mPushed = false;
                             if (b->mChangeCallback)
                                 b->mChangeCallback(this);

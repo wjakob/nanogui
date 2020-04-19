@@ -18,7 +18,7 @@ void PickflowItem::setTextureId( const std::string& pathTo )
     //setTexture( Texture() );
 }
 
-void PickflowItem::updateTextures( NVGcontext* ctx )
+void PickflowItem::updateTextures( NVGcontext* /*ctx*/ )
 {
     mDownTexture = mTexture; 
 }
@@ -360,7 +360,7 @@ bool Picflow::keyboardEvent(int key, int scancode, int action, int modifiers)
 Picflow::~Picflow() {}
 
 const char* Picflow::listItem( uint32_t id ) const { return mImages[ id ].name.c_str(); }
-void Picflow::setSelected( const char */*item*/ ) {}
+void Picflow::setSelected( const char * /*item*/ ) {}
 
 void Picflow::setSelected( int index )
 {

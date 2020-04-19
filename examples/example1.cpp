@@ -904,7 +904,7 @@ void createAllWidgetsDemo(Screen* screen)
   wbasic.hstack(5, 2, 
                 makerbtn("radio a"), makerbtn("radio b"), makerbtn("radio c"),
                 elm::Label{ WidgetId{ "#radio_action" }});
-
+                
   auto makecbtn = [=](Color c) { return elm::Button{ Caption{ "Click" }, FixedHeight{ 17 }, BackgroundColor{c}}; };
   wbasic.hstack(5, 2, makecbtn(Color::red), makecbtn(Color::yellow), makecbtn(Color::green),
                       makecbtn(Color::blue), makecbtn(Color::purple), makecbtn(Color::pink));

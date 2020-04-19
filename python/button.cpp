@@ -4,14 +4,15 @@
 
 DECLARE_WIDGET(Button);
 DECLARE_WIDGET(ToolButton);
+DECLARE_WIDGET(RadioButton);
 DECLARE_WIDGET(PopupButton);
 DECLARE_WIDGET(CheckBox);
 
 void register_button(py::module &m) {
     py::class_<Button, Widget, ref<Button>, PyButton> button(m, "Button", D(Button));
     button
-        .def(py::init<Widget *, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption") = std::string("Untitled"), py::arg("icon") = 0, D(Button, Button))
+        .def(py::init<Widget *>(),
+             py::arg("parent"), D(Button, Button))
         .def("caption", &Button::caption, D(Button, caption))
         .def("setCaption", &Button::setCaption, D(Button, setCaption))
         .def("backgroundColor", &Button::backgroundColor, D(Button, backgroundColor))
@@ -40,9 +41,14 @@ void register_button(py::module &m) {
         .value("PopupButton", Button::Flag::PopupButton);
 
     py::class_<ToolButton, Button, ref<ToolButton>, PyToolButton>(m, "ToolButton", D(ToolButton))
-        .def(py::init<Widget *,int, const std::string &>(),
-             py::arg("parent"), py::arg("icon"), py::arg("caption") = std::string(""),
+        .def(py::init<Widget *>(),
+             py::arg("parent"),
              D(ToolButton, ToolButton));
+
+    py::class_<RadioButton, Button, ref<RadioButton>, PyRadioButton>(m, "RadioButton", D(RadioButton))
+        .def(py::init<Widget *>(),
+             py::arg("parent"),
+             D(RadioButton, RadioButton));
 
     py::class_<PopupButton, Button, ref<PopupButton>, PyPopupButton> popupBtn(m, "PopupButton", D(PopupButton));
     popupBtn

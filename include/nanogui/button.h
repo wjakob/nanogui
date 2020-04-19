@@ -142,7 +142,7 @@ public:
     /// Set the push callback (for any type of button).
     void setCallback(const std::function<void()> &callback) { mCallback = callback; }
 
-    void setBorderSize(int v) { mBorderSize = v; }
+    void setBorderSize(float v) { mBorderSize = v; }
     void setBorderColor(const Color& c) { mBorderColor = c; }
 
     /// The current callback to execute (for toggle buttons).
@@ -201,7 +201,7 @@ protected:
     std::string mCaption;
     Vector2f mCaptionSize;
 
-    int mBorderSize;
+    float mBorderSize;
     Color mBorderColor;
     /**
      * \brief The icon of this Button (``0`` means no icon).
@@ -283,10 +283,13 @@ public:
   RTTI_CLASS_UID(RadioButton)
   RTTI_DECLARE_INFO(RadioButton)
 
+  explicit RadioButton(Widget* parent) 
+    : Button(parent, ButtonFlags{ Button::RadioButton }) {}
+
   using Button::set;
   template<typename... Args>
   RadioButton(Widget* parent, const Args&... args)
-    : Button(parent, ButtonFlags{ Button::RadioButton }) { set<RadioButton, Args...>(args...); }
+    : RadioButton(parent) { set<RadioButton, Args...>(args...); }
 };
 namespace elm { using RadioBtn = Element<RadioButton>; }
 

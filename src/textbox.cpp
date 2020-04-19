@@ -146,7 +146,7 @@ void TextBox::draw(NVGcontext* ctx)
     nvgSave(ctx);
     nvgResetScissor(ctx);
     nvgBeginPath(ctx);
-    int bs = mBorderSize > 0 ? mBorderSize : theme()->textBoxBorderSize;
+    float bs = mBorderSize > 0 ? mBorderSize : theme()->textBoxBorderSize;
     nvgStrokeWidth(ctx, bs );
     nvgRoundedRect(ctx, mPos.x() + (-bs/2+0.5f), mPos.y() + (-bs/2+0.5f), 
                         mSize.x() + (bs/2+0.5f), mSize.y() + (bs/2+0.5f), 

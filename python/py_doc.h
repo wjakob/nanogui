@@ -3529,6 +3529,10 @@ static const char *__doc_nanogui_ToolButton = R"doc(Simple radio+toggle button w
 
 static const char *__doc_nanogui_ToolButton_ToolButton = R"doc()doc";
 
+static const char *__doc_nanogui_RadioButton = R"doc(Simple radio button)doc";
+
+static const char *__doc_nanogui_RadioButton_RadioButton = R"doc()doc";
+
 static const char *__doc_nanogui_ToolButton_operator_delete = R"doc()doc";
 
 static const char *__doc_nanogui_ToolButton_operator_delete_2 = R"doc()doc";

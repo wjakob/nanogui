@@ -28,7 +28,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 static GLuint createShader_helper(GLint type, const std::string &name,
-                                  const std::string &defines,
+                                  const std::string &/*defines*/,
                                   std::string shader_string) {
    /* if (shader_string.empty())
         return (GLuint) 0;

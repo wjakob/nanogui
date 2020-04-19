@@ -16,7 +16,7 @@ import time
 import gc
 
 from nanogui import Color, Screen, Window, GroupLayout, BoxLayout, \
-                    ToolButton, Label, Button, Widget, \
+                    ToolButton, RadioButton, Label, Button, Widget, \
                     PopupButton, CheckBox, MessageDialog, VScrollPanel, \
                     ImagePanel, ImageView, ComboBox, ProgressBar, Slider, \
                     TextBox, ColorWheel, Graph, GridLayout, \

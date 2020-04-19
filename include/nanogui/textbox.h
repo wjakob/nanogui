@@ -130,7 +130,7 @@ protected:
     enum class SpinArea { None, Top, Bottom };
     SpinArea spinArea(const Vector2i & pos);
 
-    void setBorderSize(int v) { mBorderSize = v; }
+    void setBorderSize(float v) { mBorderSize = v; }
     void setBorderColor(const Color& color) { mBorderColor = color; }
     void setBackgroundColor(const Color& color) { mBackgrodunColor = color; }
     void setBackgroundHoverColor(const Color& color) { mBackgroundHoverColor = color; }
@@ -148,7 +148,7 @@ protected:
     std::string mUnits;
     std::string mFormat;
     int mUnitsImage;
-    int mBorderSize;
+    float mBorderSize;
     Color mBorderColor, mBackgrodunColor, mBackgroundHoverColor;
     std::function<bool(const std::string&)> mCallback;
     std::function<void(const std::string&, bool)> mEditCallback;

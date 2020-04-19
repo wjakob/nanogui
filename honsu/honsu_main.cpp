@@ -713,7 +713,7 @@ void startIssueRecord(IssueInfo::Ptr issue)
       uint64_t timeSpentToday = 0;
       response.update([&] (auto& i) {
         int duration = (int)i.get("duration").get_int();
-        uint64_t created = (uint64_t)i.get("created").get_int();
+        int created = (int)i.get("created").get_int();
         if (created >= day_start && created <= day_end)
           timeSpentToday += duration;
         timeSpent += duration;
@@ -987,7 +987,7 @@ public:
 
   TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
     : Frame(parent, 
-            BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2 }, CornerRadius{ 6.f }, 
+            BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2.f }, CornerRadius{ 6.f }, 
             BackgroundColor{ Color::heavyDarkGrey },
             WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}) 
   {
@@ -1099,7 +1099,7 @@ struct AgilesWindow : public UniqueWindow
       vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
                     ButtonFlags{ Button::RadioButton },
                     FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
-                    BorderColor{ Color::dimGrey }, BorderSize{ 2 },
+                    BorderColor{ Color::dimGrey }, BorderSize{ 2.f },
                     BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
                     ButtonCallback{ [name = i.name]{ account.activeAgile = name; } });
 
@@ -1254,7 +1254,7 @@ struct LoginWindow : public UniqueWindow
 
     auto textfield = [&](std::string placeholder, std::string value, std::string id) {
       textbox(FontSize{ 24 }, IsEditable{ true }, TextAlignment::Left, TextPlaceholder{ placeholder },
-              TextValue{ value }, BorderColor{ Color::dimGrey }, BorderSize{ 2 }, BackgroundHoverColor{ Color::transparent },
+              TextValue{ value }, BorderColor{ Color::dimGrey }, BorderSize{ 2.f }, BackgroundHoverColor{ Color::transparent },
               BackgroundColor{ Color::transparent }, WidgetId{ id });
     };
 
