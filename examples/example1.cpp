@@ -863,7 +863,7 @@ void createAllWidgetsDemo(Screen* screen)
   stcfg.add(elm::Label{ "Inner spacing left" }, Element<Slider>{ SliderObservable{ gs()->innerSpacingCommon }, SliderRange{ 0.f, 20.f }, screenPerform});
   stcfg.add(elm::Label{ "Tool button side" },   
             Element<Slider>{ 
-                 SliderObservable{ [=] { return gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = (int)v; }}, 
+                 SliderObservable{ [=] { return (float)gs()->toolButtonSide; }, [=](float v) { gs()->toolButtonSide = (int)v; }}, 
                  SliderRange{ 15.f, 50.f }, screenPerform 
             });
 
@@ -889,7 +889,7 @@ void createAllWidgetsDemo(Screen* screen)
   auto& wbasic = wwidgets.panel(Caption{ "Basic" }, WindowCollapsed{ true }, PanelHighlightHeader{ false });
   wbasic.hstack(5, 2, 
                 elm::Button{
-                      Caption{"Button"}, 
+                      Caption{"Button"}, FixedHeight{17},
                       ButtonCallback{ [w = &dw] { if (auto l = Label::find(w, "#btn_action")) l->setCaption("Thanks for cliking me!!!"); }}
                 },
                 elm::Label{ WidgetId{ "#btn_action" }});
@@ -900,11 +900,14 @@ void createAllWidgetsDemo(Screen* screen)
     if (auto l = Label::find(w, "#radio_action")) 
       l->setCaption("Clicked " + b->caption()); 
   }};
+  auto makerbtn = [=](std::string text) { return elm::RadioBtn{ Caption{text}, radio_action, FixedHeight{17} }; };
   wbasic.hstack(5, 2, 
-                elm::RadioBtn{Caption{ "radio a" }, radio_action},
-                elm::RadioBtn{Caption{ "radio b" }, radio_action},
-                elm::RadioBtn{Caption{ "radio c" }, radio_action},
+                makerbtn("radio a"), makerbtn("radio b"), makerbtn("radio c"),
                 elm::Label{ WidgetId{ "#radio_action" }});
+
+  auto makecbtn = [=](Color c) { return elm::Button{ Caption{ "Click" }, FixedHeight{ 17 }, BackgroundColor{c}}; };
+  wbasic.hstack(5, 2, makecbtn(Color::red), makecbtn(Color::yellow), makecbtn(Color::green),
+                      makecbtn(Color::blue), makecbtn(Color::purple), makecbtn(Color::pink));
 }
 
 void makePropEditor(Screen* screen)
@@ -1174,7 +1177,7 @@ public:
         if (auto led = findWidget<LedMatrix>("#led"))
         {
           static std::list<int> ledvalues;
-          int nvalue = 1.f / dt;
+          int nvalue = (int)(1.f / dt);
 
           ledvalues.push_back(nvalue);
           if (ledvalues.size() > (size_t)led->columnCount())
