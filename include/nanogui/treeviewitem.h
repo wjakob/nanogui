@@ -13,7 +13,7 @@ class TreeView;
 class NANOGUI_EXPORT TreeViewItem : public Label
 {
   friend class TreeView;
-  int mNodeId;
+  intptr_t mNodeId;
 
 public:
   RTTI_CLASS_UID(TreeViewItem)
