@@ -2,7 +2,7 @@
 #include <nanogui/screen.h>
 #include <nanogui/window.h>
 #include <nanovg.h>
-#include <functional>
+#include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
 
