@@ -249,7 +249,6 @@ public:
     {
       auto node = item->addNode("Unknown widget");
       node->setData((intptr_t)w);
-      node->setNodeId((TreeViewItem::NodeId)w);
       if (auto parea = node->previewArea())
       {
         bool editable = editor->isWidgetEditable((intptr_t)w);
