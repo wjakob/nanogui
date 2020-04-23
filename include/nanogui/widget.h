@@ -112,6 +112,9 @@ DECLSETTER(VisibleObservable, BoolObservable)
 
 struct ElementBase { Widget* w = nullptr; };
 template<class FF> struct Element : public ElementBase { template<typename... Args> Element(const Args&... args) { w = new FF(nullptr, args...); }};
+struct TooltipBase { Widget* w = nullptr; };
+template<class FF> struct TooltipWidget : public TooltipBase { template<typename... Args> TooltipWidget(const Args&... args) { w = new FF(nullptr, args...); } };
+
 
 #define WIDGET_COMMON_FUNCTIONS(class_name) \
 static class_name* find(Widget* p, const char* id) { return p->findWidget<class_name>(id); }
@@ -434,6 +437,9 @@ public:
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
+    void setTooltip(Widget* w);
+    Widget* tooltipWidget() const { return mTooltipWdiget; }
+
     virtual Widget* getCurrentSelection() const { return nullptr; }
 
     /// Return current font size. If not set the default of the current theme will be returned
@@ -546,6 +552,9 @@ public:
 
     template<typename FF, typename First, typename... Args> void set(const ElementBase& h, const Args&... args) 
     { this->addChild(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
+
+    template<typename FF, typename First, typename... Args> void set(const TooltipBase& h, const Args&... args) 
+    { this->setTooltip(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
     
     template<typename WidgetClass, typename... Args>
     WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
@@ -610,6 +619,8 @@ public:
     PROPSETTER(WidgetCursor, setCursor)
     PROPSETTER(VisibleObservable, setVisible)
     PROPSETTER(IsVisible, setVisible)
+    PROPSETTER(TooltipText, setTooltip)
+
 
 protected:
     /// Free all resources used by the widget and any children
@@ -654,6 +665,7 @@ protected:
     bool mEnabled;
     bool mFocused, mMouseFocus;
     std::string mTooltip;
+    Widget* mTooltipWdiget = nullptr;
     int mFontSize;
 
     /**

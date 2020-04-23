@@ -762,9 +762,9 @@ void toggleTreeView(Screen* screen, bool show)
 void createAllWidgetsDemo(Screen* screen)
 {
   Window& dw = screen->window(WidgetStretchLayout{ Orientation::Vertical },
-    Caption{ "All widgets demo" },
-    Position{ 725, 350 },
-    FixedSize{ 400, 400 });
+                              Caption{ "All widgets demo" },
+                              Position{ 725, 350 },
+                              FixedSize{ 400, 400 });
 
   dw.submenu("File")
     .item("(dummy item)", []() {})
@@ -919,6 +919,19 @@ void createAllWidgetsDemo(Screen* screen)
                   }
                 }},
                 elm::Label{WidgetId{ "#updown_action"}});
+
+  wbasic.hstack(5, 2,
+                elm::Label{Caption{"Hover over me"}, TooltipText{"I am tooltip"}},
+                elm::Label{" - "},
+                elm::Label{Caption{"or me"},
+                           TooltipWidget<Window>{ 
+                              WidgetStretchLayout{ Orientation::Vertical },
+                              Caption{ "And I am tooltip too" },
+                              FixedSize{ 100, 60 },
+                              makecbtn(Color::red), makecbtn(Color::yellow), makecbtn(Color::green)
+                           }
+                          }
+                );
 }
 
 void makePropEditor(Screen* screen)

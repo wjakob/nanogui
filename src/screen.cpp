@@ -178,7 +178,27 @@ void Screen::drawWidgets() {
     if (elapsed > 0.5f) {
         /* Draw tooltips */
         const Widget *widget = findWidget(mMousePos);
-        if (widget && !widget->tooltip().empty()) {
+        if (widget && widget->tooltipWidget())
+        {
+          Widget* tooltip = widget->tooltipWidget();
+          if (!tooltip->parent())
+          {
+            tooltip->setParent(this);
+            Vector2i ps = tooltip->preferredSize(nvgContext());
+            tooltip->setSize(ps);
+            tooltip->performLayout(nvgContext());
+          }
+
+          Vector2i pos = widget->absolutePosition() +
+                         Vector2i(widget->width() / 2, widget->height() + 10);
+          nvgSave(nvgContext());
+          nvgResetScissor(nvgContext());
+          tooltip->setPosition(pos);
+          tooltip->draw(nvgContext());
+          nvgRestore(nvgContext());
+        }
+        else if (widget && !widget->tooltip().empty()) 
+        {
             int tooltipWidth = 150;
 
             float bounds[4];

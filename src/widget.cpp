@@ -48,6 +48,8 @@ void Widget::setTheme(Theme *theme) {
     mTheme = theme;
     for (auto child : mChildren)
         child->setTheme(theme);
+    if (mTooltipWdiget)
+      mTooltipWdiget->setTheme(theme);
 }
 
 int Widget::fontSize() const {
@@ -447,6 +449,15 @@ void Widget::setVisible(bool visible)
     if (scr) scr->needPerformLayout(mParent);
   }
   mVisible = visible;
+}
+
+void Widget::setTooltip(Widget* w)
+{
+  if (mTooltipWdiget)
+    mTooltipWdiget->removeLater();
+
+  mTooltipWdiget = w;
+  mTooltipWdiget->setTheme(theme());
 }
 
 void Widget::afterDraw(NVGcontext *ctx) {

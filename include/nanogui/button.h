@@ -254,7 +254,6 @@ public:
     PROPSETTER(CaptionFont, setFontName)
     PROPSETTER(CaptionAlign, setTextAlign)
     PROPSETTER(CaptionHAlign, setTextHAlign)
-    PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Icon, setIcon)
     PROPSETTER(IconColor, setIconColor)
     PROPSETTER(IconHoveredColor, setIconHoveredColor)
