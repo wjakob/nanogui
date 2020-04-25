@@ -49,5 +49,6 @@ protected:
 public:
   PROPSETTER(SplitterDir, setDirection)
 };
+namespace elm { using Splitter = Element<Splitter>; }
 
 NAMESPACE_END(nanogui)

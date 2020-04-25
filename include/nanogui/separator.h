@@ -115,6 +115,28 @@ public:
     PROPSETTER(LineWidth, setLineWidth)
 };
 
+class NANOGUI_EXPORT SplitLine : public Line
+{
+public:
+  RTTI_CLASS_UID(SplitLine)
+  RTTI_DECLARE_INFO(SplitLine)
+
+  explicit SplitLine(Widget* parent)
+    : Line(parent, BackgroundColor{ Color::grey },
+      LineWidth{ 2 }, RelativeSize{ 1.0f, 0.f },
+      DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }) {}
+
+  using Line::set;
+  template<typename... Args>
+  SplitLine(Widget* parent, const Args&... args)
+    : SplitLine(parent) { set<SplitLine, Args...>(args...); }
+};
+
+namespace elm { 
+  using Line = Element<Line>; 
+  using SplitLine = Element<SplitLine>;
+}
+
 DECLSETTERARGSNEW(OnUpdate, UpdateHandler)
 DECLSETTERARGSNEW(RemoveAfterSec, RemoveTimer)
 

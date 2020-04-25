@@ -19,6 +19,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Line, Widget)
+RTTI_IMPLEMENT_INFO(SplitLine, Line)
 RTTI_IMPLEMENT_INFO(UpdateHandler, Widget)
 RTTI_IMPLEMENT_INFO(RemoveTimer, Widget)
 

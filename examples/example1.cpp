@@ -111,19 +111,14 @@ void createButtonDemoWindow(Screen* screen)
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
-  w.label(Caption{ "Push buttons" }, CaptionFont{ "sans-bold" });
-  w.button(ButtonCallback{ [] { cout << "pushed!" << endl; } },
-    Caption{ "Plain button" },
-    TooltipText{ "short tooltip" });
-  w.wdg<Splitter>( Orientation::Horizontal );
-
-  /* Alternative construction notation using variadic template */
-  w.button(Caption{ "Styled" },
-    Icon{ ENTYPO_ICON_ROCKET },
-    BackgroundColor{ 0, 0, 255, 25 },
-    ButtonCallback{ [] { cout << "pushed!" << endl; } },
-    TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                 "fact, that the shown text will span several lines." });
+  w.add(elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" }},
+        elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; }}, Caption{ "Plain button" }, TooltipText{ "short tooltip" }},
+        elm::Splitter{ Orientation::Horizontal },
+        /* Alternative construction notation using variadic template */
+        elm::Button{ Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET }, BackgroundColor{ 0, 0, 255, 25 },
+                     ButtonCallback{ [] { cout << "pushed!" << endl; } },
+                     TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                                  "fact, that the shown text will span several lines." }});
 
   w.label("Toggle buttons", "sans-bold");
   w.button(Caption{ "Toggle me" },
@@ -930,8 +925,8 @@ void createAllWidgetsDemo(Screen* screen)
                               FixedSize{ 100, 60 },
                               makecbtn(Color::red), makecbtn(Color::yellow), makecbtn(Color::green)
                            }
-                          }
-                );
+                          });
+  wbasic.widget(FixedHeight{2}, elm::SplitLine{});
 }
 
 void makePropEditor(Screen* screen)
