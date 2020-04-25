@@ -120,14 +120,13 @@ void createButtonDemoWindow(Screen* screen)
                      TooltipText{ "This button has a fairly long tooltip. It is so long, in "
                                   "fact, that the shown text will span several lines." }});
 
-  w.label("Toggle buttons", "sans-bold");
-  w.button(Caption{ "Toggle me" },
-    ButtonFlags{ Button::ToggleButton },
-    ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } });
+  w.add(elm::Label{ Caption{"Toggle buttons"}, CaptionFont{"sans-bold"}},
+        elm::Button{ Caption{ "Toggle me" }, ButtonFlags{ Button::ToggleButton },
+                     ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; }}});
 
-  w.label("Radio buttons", "sans-bold");
-  w.button(Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton });
-  w.button(Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton });
+  w.add(elm::Label{ Caption{"Radio buttons"}, CaptionFont{"sans-bold"} },
+        elm::Button{ Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton }},
+        elm::Button{ Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton }} );
 
   w.label("A tool palette", "sans-bold");
   auto& tools = w.widget();
