@@ -44,8 +44,8 @@ struct json {
   json& set(const _a& v) { $("value", v); return type("array"); }
   json& set(const _vi& v) { $("x", v.x()); $("y", v.y()); return type("position"); }
   json& set(const _r& v) { $("min", v.first).$("max", v.second); return type("rangef"); }
-  json& set(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
-  json& set(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set<_a>(items); }
+  json& set(const _ss& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set(items); }
+  json& set(const _vf& v) { _a items; for (auto& e : v) items.push_back(_v(e)); return set(items); }
 
   Json::value& operator[](const _s& v) { return obj[v]; }
 
