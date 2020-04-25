@@ -18,6 +18,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(PopupSide, int)
+
 /**
  * \class PopupButton popupbutton.h nanogui/popupbutton.h
  *
@@ -28,13 +30,19 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT PopupButton : public Button {
+class NANOGUI_EXPORT PopupButton : public Button 
+{
 public:
     RTTI_CLASS_UID(PopupButton)
     RTTI_DECLARE_INFO(PopupButton)
 
-    PopupButton(Widget *parent, const std::string &caption = "Untitled",
-                int buttonIcon = 0);
+    explicit PopupButton(Widget *parent);
+
+    using Button::set;
+    template<typename... Args>
+    PopupButton(Widget* parent, const Args&... args)
+      : PopupButton(parent) {  set<PopupButton, Args...>(args...);  }
+
     virtual ~PopupButton();
 
     void setChevronIcon(int icon) { mChevronIcon = icon; }
@@ -47,6 +55,11 @@ public:
     const Popup *popup() const { return mPopup; }
 
     Popup& popupref() { return *popup(); }
+    void setPopupSide(int side);
+
+    template<typename... Args>
+    Popup& popupset(const Args&... args)
+    { popupref().add(args...); return *popup(); }
 
     void draw(NVGcontext* ctx) override;
     Vector2i preferredSize(NVGcontext *ctx) const override;
@@ -57,6 +70,9 @@ public:
 protected:
     Popup *mPopup;
     int mChevronIcon;
+
+public:
+    PROPSETTER(PopupSide, setPopupSide)
 };
 
 NAMESPACE_END(nanogui)

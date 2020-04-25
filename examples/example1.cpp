@@ -137,22 +137,16 @@ void createButtonDemoWindow(Screen* screen)
   tools.toolbutton(Icon{ ENTYPO_ICON_INSTALL });
 
   w.label("Popup buttons", "sans-bold");
-  auto& popupBtn = w.wdg<PopupButton>("Popup", ENTYPO_ICON_EXPORT);
-  auto& popup = popupBtn.popupref();
-  popup.withLayout<GroupLayout>();
-  popup.label("Arbitrary widgets can be placed here");
-  popup.checkbox(Caption{ "A check box" });
+  auto& popup = w.popupbutton(Caption{ "Popup" }, Icon{ ENTYPO_ICON_EXPORT })
+                    .popupset( WidgetGroupLayout{}, 
+                               elm::Label{ "Arbitrary widgets can be placed here" },
+                               elm::CheckBox{ Caption{ "A check box" }});
   // popup right
-  auto& popupBtnR = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
-  auto& popupRight = popupBtnR.popupref();
-  popupRight.withLayout<GroupLayout>();
-  popupRight.checkbox(Caption{ "Another check box" });
+  popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH } )
+           .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" }});
   // popup left
-  auto& popupBtnL = popup.wdg<PopupButton>("Recursive popup", ENTYPO_ICON_FLASH);
-  popupBtnL.setSide(Popup::Side::Left);
-  auto& popupLeft = popupBtnL.popupref();
-  popupLeft.withLayout<GroupLayout>();
-  popupLeft.checkbox(Caption{ "Another check box" });
+  popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH }, PopupSide{ Popup::Side::Left })
+           .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" } });
 
   w.label("A switch boxes", "sans-bold");
   auto& switchboxArea = w.widget();
@@ -250,10 +244,8 @@ void createBasicWidgets(Screen* parent)
             });
 
   w.label("Image panel & scroll panel", "sans-bold");
-  auto& imagePanelBtn = w.popupbutton("Image Panel");
-  imagePanelBtn.setIcon(ENTYPO_ICON_FOLDER);
-  auto& popup = imagePanelBtn.popupref();
-  popup.setFixedSize({ 245, 150 });
+  auto& popup = w.popupbutton(Caption{ "Image Panel" }, Icon{ENTYPO_ICON_FOLDER})
+                      .popupset(FixedSize{ 245, 150 });
 
   auto& vscroll = popup.vscrollpanel();
 
@@ -926,6 +918,10 @@ void createAllWidgetsDemo(Screen* screen)
                            }
                           });
   wbasic.widget(FixedHeight{2}, elm::SplitLine{});
+  wbasic.frame(WidgetGridLayout{ GridLayoutSplit{ 0.7f, 0.3f }, GridLayoutColAlignment{ Alignment::Fill } },
+               elm::Label{"Value"}, elm::Label{"Caption"}
+               
+    );
 }
 
 void makePropEditor(Screen* screen)
@@ -1003,28 +999,19 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
     cp.setFinalCallback([](const Color &c) { std::cout << "Color: " << c.transpose().toInt() << std::endl; });
 
     // combobox
-    std::vector<std::string> items{ "Combo box item 1", "Combo box item 2", "Combo box item 3" };
-    layer.combobox(items);
+    layer.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" });
 
     // popup button
-    int icon = ENTYPO_ICON_EXPORT;
-    auto& popupBtn = layer.popupbutton("Popup", icon);
-    auto& popup = popupBtn.popupref();
-    popup.withLayout<GroupLayout>();
-    popup.label("Arbitrary widgets can be placed here");
-    popup.checkbox(Caption{ "A check box" });
+    auto& popup = layer.popupbutton(Caption{ "Popup" }, Icon{ ENTYPO_ICON_EXPORT })
+                          .popupset(WidgetGroupLayout{}, 
+                                    elm::Label{ "Arbitrary widgets can be placed here" },
+                                    elm::CheckBox{ Caption{ "A check box" }});
     // popup right
-    icon = ENTYPO_ICON_FLASH;
-    auto& popupBtn2 = popup.popupbutton("Recursive popup", icon);
-    auto& popupRight = popupBtn2.popupref();
-    popupRight.withLayout<GroupLayout>();
-    popupRight.checkbox(Caption{ "Another check box" });
+    popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH })
+            .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" }});
     // popup left
-    auto& popupBtn3 = popup.popupbutton("Recursive popup", icon);
-    popupBtn3.setSide(Popup::Side::Left);
-    auto& popupLeft = popupBtn3.popupref();
-    popupLeft.withLayout<GroupLayout>();
-    popupLeft.checkbox(Caption{ "Another check box" });
+    popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH }, PopupSide{ Popup::Side::Left })
+            .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" }} );
 
     // regular buttons
     /*auto& button =*/layer.button(Caption{ "PushButton" });

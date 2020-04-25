@@ -35,7 +35,6 @@ struct json {
   template<typename T>
   json& set(const T& v) { assert(false && "Cant deduce type"); return $("value", v); }
   json& set(const _s& v) { $("value", v); return type("string"); }
-  json& set(const int& v) { $("value", v); return type("integer"); }
   json& set(const bool& v) { $("value", v); return type("boolean"); }
   json& set(const BoolObservable& v) { $("value", (bool)v); return type("boolean"); }
   json& set(const float& v) { $("value", v); return type("float"); }
@@ -91,6 +90,7 @@ struct json {
   }
 };
 
+template<> inline json& json::set<int>(const int& v) { $("value", v); return type("integer"); }
 template<> inline json::_s json::get<json::_s>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_str("value") : ""; }
 template<> inline int json::get<int>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? (int)it->second.get_int("value") : 0; }
 template<> inline int64_t json::get<int64_t>(const _s& n) const { auto it = obj.find(n); return it != obj.end() ? it->second.get_int("value") : 0; }

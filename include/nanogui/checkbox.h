@@ -159,4 +159,6 @@ public:
   PROPSETTER(FontSize,setFontSize)
 };
 
+namespace elm { using CheckBox = Element<CheckBox>; }
+
 NAMESPACE_END(nanogui)
