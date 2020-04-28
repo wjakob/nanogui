@@ -43,6 +43,8 @@ public:
       : ToolButton(parent, -1, std::string("")) { set<ToolButton, Args...>(args...); }
 };
 
+namespace elm { using ToolButton = Element<ToolButton>; }
+
 class NANOGUI_EXPORT ToggleButton : public Button {
 public:
   RTTI_CLASS_UID(ToggleButton)

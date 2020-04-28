@@ -446,13 +446,13 @@ struct UniqueWindow : public Window
     if (addheader)
     {
       widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 },
-             Element<ToolButton>{ 
+             elm::ToolButton{ 
                Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
                BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
                ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
              },
              elm::Label{ "H" },
-             Element<ToolButton>{ 
+             elm::ToolButton{ 
                  Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, 
                  DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }
              },
