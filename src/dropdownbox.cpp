@@ -290,26 +290,51 @@ public:
   }
 };
 
+void DropdownBox::setFillFunction(std::function<bool(std::string&)> f)
+{
+  std::vector<std::string> items;
+  std::string result;
+  bool mayContinue = f(result);
+  do
+  {
+    if (mayContinue)
+      items.push_back(result);
+    mayContinue = f(result);
+  } while (mayContinue);
+
+  setItems(items);
+}
+
 DropdownBox::DropdownBox(Widget *parent)
   : PopupButton(parent)
 {
   mSelectedIndex = 0;
-  Window *parentWindow = window();
-  parentWindow->parent()->removeChild(mPopup);
-
-  mPopup = new DropdownPopup(parentWindow->parent(), window());
-  mPopup->setSize(Vector2i(320, 250));
-  mPopup->setVisible(false);
-  mPopup->setAnchorPos(Vector2i(0, 0));
 }
 
 DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items)
-    : DropdownBox(parent) {
+    : DropdownBox(parent) 
+{
   setItems(items);
 }
 
+void DropdownBox::updatePopup()
+{
+  Window *parentWindow = window();
+  if (parentWindow && !mPopup)
+  {
+    parentWindow->parent()->removeChild(mPopup);
+
+    mPopup = new DropdownPopup(parentWindow->parent(), window());
+    mPopup->setSize(Vector2i(320, 250));
+    mPopup->setVisible(false);
+    mPopup->setAnchorPos(Vector2i(0, 0));
+    setItems(mItems, mItemsShort);
+  }
+}
+
 DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items, const std::vector<std::string> &itemsShort)
-    : DropdownBox(parent) {
+    : DropdownBox(parent) 
+{
   setItems(items, itemsShort);
 }
 
@@ -325,18 +350,24 @@ void DropdownBox::performLayout(NVGcontext *ctx) {
   }
 }
 
-void DropdownBox::setSelectedIndex(int idx) {
-    if (mItemsShort.empty())
-        return;
+void DropdownBox::setSelectedIndex(int idx) 
+{
+  if (mItemsShort.empty())
+    return;
+
+  if (mPopup)
+  {
     const std::vector<Widget *> &children = popup()->children();
     if (auto b = Button::cast(children[mSelectedIndex]))
       b->setPushed(false);
     if (auto b = Button::cast(children[idx]))
       b->setPushed(true);
-    mSelectedIndex = idx;
-    setCaption(mItemsShort[idx]);
     if (auto pp = DropdownPopup::cast(mPopup))
       pp->updateCaption(mItemsShort[idx]);
+  }
+
+  mSelectedIndex = idx;
+  setCaption(mItemsShort[idx]);
 }
 
 void DropdownBox::setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort) {
@@ -346,38 +377,42 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
     if (mSelectedIndex < 0 || mSelectedIndex >= (int) items.size())
         mSelectedIndex = 0;
 
-    while (mPopup->childCount() != 0)
-      mPopup->removeChild(mPopup->childCount() - 1);
-
-    mPopup->withLayout<GroupLayout>(0,0,0,0);
-    if (!items.empty())
+    if (mPopup)
     {
-      auto& button = mPopup->wdg<DropdownListItem>(items[mSelectedIndex], false);
-      button.setPushed(false);
-      button.setCallback([&] { setPushed(false); popup()->setVisible(false); });
-    }
+      while (mPopup->childCount() != 0)
+        mPopup->removeChild(mPopup->childCount() - 1);
 
-    int index = 0;
-    for (const auto &str: items) {
+      mPopup->withLayout<GroupLayout>(0, 0, 0, 0);
+      if (!items.empty())
+      {
+        auto& button = mPopup->wdg<DropdownListItem>(items[mSelectedIndex], false);
+        button.setPushed(false);
+        button.setCallback([&] { setPushed(false); popup()->setVisible(false); });
+      }
+
+      int index = 0;
+      for (const auto &str : items) {
         auto& button = mPopup->wdg<DropdownListItem>(str);
         button.setFlags(Button::RadioButton);
         button.setCallback([&, index] {
-            mSelectedIndex = index;
-            setCaption(mItemsShort[index]);
-            setPushed(false);
-            if (mCallback)
-                mCallback(index);
-            if (mStrCallback)
-              mStrCallback(mItems[index]);
+          mSelectedIndex = index;
+          setCaption(mItemsShort[index]);
+          setPushed(false);
+          if (mCallback)
+            mCallback(index);
+          if (mStrCallback)
+            mStrCallback(mItems[index]);
         });
         index++;
+      }
     }
     setSelectedIndex(mSelectedIndex);
 }
 
 bool DropdownBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers)
 {
-  if (isMouseButtonLeft(button) && mEnabled) {
+  if (isMouseButtonLeft(button) && mEnabled) 
+  {
     if (!mItems.empty())
     {
       if (auto item = DropdownListItem::cast(mPopup->childAt(0)))

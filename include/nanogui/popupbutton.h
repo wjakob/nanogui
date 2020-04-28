@@ -68,8 +68,10 @@ public:
     void save(Json::value &save) const override;
     bool load(Json::value &save) override;
 protected:
-    Popup *mPopup;
-    int mChevronIcon;
+    Popup *mPopup = nullptr;
+    int mChevronIcon = -1;
+
+    virtual void updatePopup();
 
 public:
     PROPSETTER(PopupSide, setPopupSide)

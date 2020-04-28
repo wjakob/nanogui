@@ -21,14 +21,11 @@ RTTI_IMPLEMENT_INFO(PopupButton, Button)
 PopupButton::PopupButton(Widget *parent)
     : Button(parent) 
 {
-  mChevronIcon = mTheme->mPopupChevronRightIcon;
+  mChevronIcon = mTheme ? mTheme->mPopupChevronRightIcon : -1;
 
   setFlags(Flag::ToggleButton | Flag::PopupButton);
 
-  Window *parentWindow = window();
-  mPopup = parentWindow->parent()->add<Popup>(window());
-  mPopup->setSize(320, 250);
-  mPopup->setVisible(false);
+  updatePopup();
 
   mIconExtraScale = 0.8f;// widget override
 }
@@ -40,7 +37,19 @@ Vector2i PopupButton::preferredSize(NVGcontext *ctx) const {
     return Button::preferredSize(ctx) + Vector2i(15, 0);
 }
 
-void PopupButton::draw(NVGcontext* ctx) {
+void PopupButton::updatePopup()
+{
+  Window *parentWindow = window();
+  if (parentWindow && !mPopup)
+  {
+    mPopup = parentWindow->parent()->add<Popup>(window());
+    mPopup->setSize(320, 250);
+    mPopup->setVisible(false);
+  }
+}
+
+void PopupButton::draw(NVGcontext* ctx) 
+{
     if (!mEnabled && mPushed)
         mPushed = false;
 
@@ -49,8 +58,7 @@ void PopupButton::draw(NVGcontext* ctx) {
 
     if (mChevronIcon) {
         auto icon = utf8(mChevronIcon);
-        NVGcolor textColor =
-            mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+        NVGcolor textColor = mTextColor.notW(mTheme->mTextColor);
 
         nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
         nvgFontFace(ctx, "icons");
@@ -71,6 +79,11 @@ void PopupButton::draw(NVGcontext* ctx) {
 
 void PopupButton::performLayout(NVGcontext *ctx) {
     Widget::performLayout(ctx);
+
+    if (mChevronIcon < 0)
+      mChevronIcon = mTheme ? mTheme->mPopupChevronRightIcon : -1;
+
+    updatePopup();
 
     const Window *parentWindow = window();
 

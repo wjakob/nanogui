@@ -34,70 +34,91 @@ ComboBox::ComboBox(Widget *parent, const std::vector<std::string> &items, const 
     setItems(items, itemsShort);
 }
 
+void ComboBox::updatePopup()
+{
+  bool needUpdateItems = mPopup == nullptr;
+  PopupButton::updatePopup();
+  if (needUpdateItems)
+    setItems(mItems, mItemsShort);
+}
+
 void ComboBox::setSelectedIndex(int idx) 
 {
-    if (mItemsShort.empty())
-        return;
-    const std::vector<Widget *> &children = popup()->children();
+  if (mItemsShort.empty())
+    return;
+  mSelectedIndex = idx;
+  setCaption(mItemsShort[idx]);
+
+  if (auto p = popup())
+  {
+    const std::vector<Widget *> &children = p->children();
     if (auto button = Button::cast(children[mSelectedIndex]))
       button->setPushed(false);
     if (auto button = Button::cast(children[idx]))
       button->setPushed(true);
-    mSelectedIndex = idx;
-    setCaption(mItemsShort[idx]);
+  }
+}
+
+void ComboBox::resolveClickItem(int index)
+{
+  mSelectedIndex = index;
+  setCaption(mItemsShort[index]);
+  setPushed(false);
+  popup()->setVisible(false);
+
+  if (mCallback)
+    mCallback(index);
+
+  if (mStrCallback)
+    mStrCallback(mItems[index]);
 }
 
 void ComboBox::setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort) 
 {
-    assert(items.size() == itemsShort.size());
-    mItems = items;
-    mItemsShort = itemsShort;
-    if (mSelectedIndex < 0 || mSelectedIndex >= (int) items.size())
-        mSelectedIndex = 0;
+  assert(items.size() == itemsShort.size());
+  mItems = items;
+  mItemsShort = itemsShort;
+  if (mSelectedIndex < 0 || mSelectedIndex >= (int) items.size())
+      mSelectedIndex = 0;
+
+  if (mPopup)
+  {
     while (mPopup->childCount() != 0)
-        mPopup->removeChild(mPopup->childCount()-1);
+      mPopup->removeChild(mPopup->childCount() - 1);
     mPopup->withLayout<GroupLayout>(10);
     int index = 0;
-    for (const auto &str: items) 
+    for (const auto &str : items)
     {
       auto& button = mPopup->button(Caption{ str });
       button.setFlags(Button::RadioButton);
-      button.setCallback([&, index] {
-            mSelectedIndex = index;
-            setCaption(mItemsShort[index]);
-            setPushed(false);
-            popup()->setVisible(false);
-            if (mCallback)
-              mCallback(index);
-            if (mStrCallback)
-              mStrCallback(mItems[index]);
-      });
+      button.setCallback([this, index] { this->resolveClickItem(index); });
       index++;
     }
-    setSelectedIndex(mSelectedIndex);
+  }
+  setSelectedIndex(mSelectedIndex);
 }
 
 bool ComboBox::scrollEvent(const Vector2i &p, const Vector2f &rel) 
 {
-    if (rel.y() < 0) 
-    {
-        setSelectedIndex(std::min(mSelectedIndex+1, (int)(items().size()-1)));
-        if (mCallback)
-          mCallback(mSelectedIndex);
-        if (mStrCallback)
-          mStrCallback(mItems[mSelectedIndex]);
-        return true;
-    } 
-    else if (rel.y() > 0) 
-    {
-        setSelectedIndex(std::max(mSelectedIndex-1, 0));
-        if (mCallback)
-            mCallback(mSelectedIndex);
-        if (mStrCallback)
-          mStrCallback(mItems[mSelectedIndex]);
-        return true;
-    }
-    return Widget::scrollEvent(p, rel);
+  if (rel.y() < 0) 
+  {
+    setSelectedIndex(std::min(mSelectedIndex+1, (int)(items().size()-1)));
+    if (mCallback)
+      mCallback(mSelectedIndex);
+    if (mStrCallback)
+      mStrCallback(mItems[mSelectedIndex]);
+    return true;
+  } 
+  else if (rel.y() > 0) 
+  {
+    setSelectedIndex(std::max(mSelectedIndex-1, 0));
+    if (mCallback)
+        mCallback(mSelectedIndex);
+    if (mStrCallback)
+      mStrCallback(mItems[mSelectedIndex]);
+    return true;
+  }
+  return Widget::scrollEvent(p, rel);
 }
 
 void ComboBox::save(Json::value &save) const {

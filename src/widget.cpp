@@ -85,8 +85,9 @@ void Widget::performLayout(NVGcontext *ctx)
   }
   else
   {
-    for (auto c : mChildren)
+    for (int i=0; i< mChildren.size(); i++)
     {
+      auto c = mChildren[i];
       Vector2f relk = c->relsize();
       Vector2i pref = c->preferredSize(ctx),
                rel = Vector2i(relk.x() * width(), relk.y() * height()),
@@ -305,8 +306,11 @@ void Widget::addChild(Widget * widget) {
 }
 
 void Widget::removeChild(const Widget *widget) {
-    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
-    widget->decRef();
+  if (!widget)
+    return;
+
+  mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), widget), mChildren.end());
+  widget->decRef();
 }
 
 void Widget::removeChild(const std::string& id)

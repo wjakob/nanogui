@@ -710,4 +710,6 @@ protected:
     static std::vector<intptr_t> mFocusChain;
 };
 
+namespace elm { using Widget = Element<Widget>; }
+
 NAMESPACE_END(nanogui)

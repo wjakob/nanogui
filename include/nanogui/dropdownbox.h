@@ -25,6 +25,7 @@ NAMESPACE_BEGIN(nanogui)
  */
 DECLSETTERILIST(DropdownBoxItems, std::vector<std::string>)
 DECLSETTER(DropdownBoxStrCallback, std::function<void(std::string)>)
+DECLSETTER(DropdownBoxFill, std::function<bool(std::string&)>)
 
 class NANOGUI_EXPORT DropdownBox : public PopupButton {
 public:
@@ -79,6 +80,8 @@ public:
     /// The short descriptions associated with this dropdownbox.
     const ShortItems &itemsShort() const { return mItemsShort; }
 
+    void setFillFunction(std::function<bool(std::string&)> f);
+
     /// Handles mouse scrolling events for this dropdownbox.
     virtual bool scrollEvent(const Vector2i &p, const Vector2f &rel) override;
 
@@ -105,9 +108,14 @@ protected:
     /// The current index this dropdownbox has selected.
     int mSelectedIndex;
 
+    void updatePopup() override;
+
 public:
     PROPSETTER(DropdownBoxItems, setItems)
     PROPSETTER(DropdownBoxStrCallback, setCallback)
+    PROPSETTER(DropdownBoxFill, setFillFunction)
 };
+
+namespace elm { using DropdownBox = Element<DropdownBox>; }
 
 NAMESPACE_END(nanogui)

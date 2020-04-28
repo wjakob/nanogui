@@ -310,10 +310,10 @@ void createBasicWidgets(Screen* parent)
                          << endl;
                  }});
 
-  w.label("Combo box", "sans-bold");
-  w.wdg<DropdownBox>(DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"});
-  w.combobox(ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" });
-  w.label("Check box", "sans-bold");
+  w.add(elm::Label{ Caption{"Combo box"}, CaptionFont{"sans-bold"}},
+        elm::DropdownBox{ DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"}},
+        elm::ComboBox{ ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" }},
+        elm::Label{ Caption{"Check box"}, CaptionFont{"sans-bold"}});
   auto& cb = w.checkbox(Caption{ "Flag 1" }, 
                         CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
                         CheckboxState{true});
@@ -919,7 +919,9 @@ void createAllWidgetsDemo(Screen* screen)
                           });
   wbasic.widget(FixedHeight{2}, elm::SplitLine{});
   wbasic.frame(WidgetGridLayout{ GridLayoutSplit{ 0.7f, 0.3f }, GridLayoutColAlignment{ Alignment::Fill } },
-               elm::Label{"Value"}, elm::Label{"Caption"}
+               elm::Label{"Value"}, elm::Label{"Caption"},
+               elm::DropdownBox{ DropdownBoxFill{ [](string& r) { static char i = 'a'; r = std::string(5, i); return i++ < 'z';  } }},
+                 elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }}
                
     );
 }

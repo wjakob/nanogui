@@ -100,10 +100,15 @@ protected:
     /// The current index this ComboBox has selected.
     int mSelectedIndex;
 
+    void updatePopup() override;
+    void resolveClickItem(int index);
+
 public:
     PROPSETTER(ComboBoxItems, setItems)
     PROPSETTER(ComboBoxStrCallback, setCallback)
     PROPSETTER(FontSize, setFontSize)
 };
+
+namespace elm { using ComboBox = Element<ComboBox>; }
 
 NAMESPACE_END(nanogui)
