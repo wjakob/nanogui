@@ -97,6 +97,7 @@ public:
 protected:
     /// The items associated with this dropdownbox.
     Items mItems;
+    Widget* mStack = nullptr;
 
     /// The short descriptions of items associated with this dropdownbox.
     ShortItems mItemsShort;
@@ -109,6 +110,7 @@ protected:
     int mSelectedIndex;
 
     void updatePopup() override;
+    void resolveItemClick(int index);
 
 public:
     PROPSETTER(DropdownBoxItems, setItems)

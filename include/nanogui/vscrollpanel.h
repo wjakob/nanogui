@@ -27,6 +27,7 @@ class NANOGUI_EXPORT VScrollPanel : public Widget {
 public:
     RTTI_CLASS_UID(VScrollPanel)
     RTTI_DECLARE_INFO(VScrollPanel)
+    WIDGET_COMMON_FUNCTIONS(VScrollPanel)
 
     VScrollPanel(Widget *parent);
 

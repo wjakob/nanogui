@@ -12,6 +12,7 @@
 #include <nanogui/dropdownbox.h>
 #include <nanogui/layout.h>
 #include <nanovg.h>
+#include <nanogui/vscrollpanel.h>
 #include <nanogui/saveload.h>
 #include <algorithm>
 #include <cassert>
@@ -211,11 +212,18 @@ public:
 
   void updateCaption(const std::string& caption)
   {
-    if (mChildren.size() > 0)
-    {
-      auto* btn = Button::cast(mChildren[0]);
+    if (mChildren.size() <= 0)
+      return;
+
+    auto vs = VScrollPanel::cast(mChildren[0]);
+    if (!vs)
+      return;
+
+    if (vs->children().size() <= 0)
+      return;
+
+    if (auto btn = Button::cast(vs->children().front()))
       btn->setCaption(caption);
-    }
   }
 
   void updateVisible(bool visible)
@@ -324,10 +332,12 @@ void DropdownBox::updatePopup()
   {
     parentWindow->parent()->removeChild(mPopup);
 
-    mPopup = new DropdownPopup(parentWindow->parent(), window());
+    mPopup = parentWindow->parent()->add<DropdownPopup>(window());
     mPopup->setSize(Vector2i(320, 250));
     mPopup->setVisible(false);
     mPopup->setAnchorPos(Vector2i(0, 0));
+    //mPopup->withLayout<GroupLayout>(0, 0, 0, 0);
+    mStack = &(mPopup->vscrollpanel(RelativeSize{ 1.f, 1.f }).vstack(0, 0));
     setItems(mItems, mItemsShort);
   }
 }
@@ -338,15 +348,16 @@ DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items, 
   setItems(items, itemsShort);
 }
 
-void DropdownBox::performLayout(NVGcontext *ctx) {
+void DropdownBox::performLayout(NVGcontext *ctx) 
+{
   PopupButton::performLayout(ctx);
-
-  DropdownPopup* dpopup = DropdownPopup::cast(mPopup);
-  if (dpopup)
+  if (auto dpopup = DropdownPopup::cast(mPopup))
   {
-    Window* ww = window();
-    dpopup->setAnchorPos(absolutePosition() - ww->absolutePosition());
-    dpopup->preferredWidth = width();
+    if (auto ww = window())
+    {
+      dpopup->setAnchorPos(absolutePosition() - ww->absolutePosition());
+      dpopup->preferredWidth = width();
+    }
   }
 }
 
@@ -355,9 +366,9 @@ void DropdownBox::setSelectedIndex(int idx)
   if (mItemsShort.empty())
     return;
 
-  if (mPopup)
+  if (mPopup && mStack)
   {
-    const std::vector<Widget *> &children = popup()->children();
+    const std::vector<Widget *> &children = mStack->children();
     if (auto b = Button::cast(children[mSelectedIndex]))
       b->setPushed(false);
     if (auto b = Button::cast(children[idx]))
@@ -370,39 +381,43 @@ void DropdownBox::setSelectedIndex(int idx)
   setCaption(mItemsShort[idx]);
 }
 
-void DropdownBox::setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort) {
+void DropdownBox::resolveItemClick(int index)
+{
+  mSelectedIndex = index;
+  setCaption(mItemsShort[index]);
+  setPushed(false);
+  if (mCallback)
+    mCallback(index);
+  if (mStrCallback)
+    mStrCallback(mItems[index]);
+}
+
+void DropdownBox::setItems(const std::vector<std::string> &items, const std::vector<std::string> &itemsShort) 
+{
     assert(items.size() == itemsShort.size());
     mItems = items;
     mItemsShort = itemsShort;
     if (mSelectedIndex < 0 || mSelectedIndex >= (int) items.size())
         mSelectedIndex = 0;
 
-    if (mPopup)
+    if (mPopup && mStack)
     {
-      while (mPopup->childCount() != 0)
-        mPopup->removeChild(mPopup->childCount() - 1);
+      while (mStack->childCount() != 0)
+        mStack->removeChild(mStack->childCount() - 1);
 
-      mPopup->withLayout<GroupLayout>(0, 0, 0, 0);
       if (!items.empty())
       {
-        auto& button = mPopup->wdg<DropdownListItem>(items[mSelectedIndex], false);
+        auto& button = mStack->wdg<DropdownListItem>(items[mSelectedIndex], false);
         button.setPushed(false);
         button.setCallback([&] { setPushed(false); popup()->setVisible(false); });
       }
 
       int index = 0;
-      for (const auto &str : items) {
-        auto& button = mPopup->wdg<DropdownListItem>(str);
+      for (const auto &str : items) 
+      {
+        auto& button = mStack->wdg<DropdownListItem>(str);
         button.setFlags(Button::RadioButton);
-        button.setCallback([&, index] {
-          mSelectedIndex = index;
-          setCaption(mItemsShort[index]);
-          setPushed(false);
-          if (mCallback)
-            mCallback(index);
-          if (mStrCallback)
-            mStrCallback(mItems[index]);
-        });
+        button.setCallback([this, i=index] { this->resolveItemClick(i);});
         index++;
       }
     }
