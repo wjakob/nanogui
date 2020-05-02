@@ -311,15 +311,20 @@ void createBasicWidgets(Screen* parent)
                  }});
 
   w.add(elm::Label{ Caption{"Combo box"}, CaptionFont{"sans-bold"}},
-        elm::DropdownBox{ DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"}},
+        elm::DropdownBox{ DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"}},        
         elm::ComboBox{ ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" }},
-        elm::Label{ Caption{"Check box"}, CaptionFont{"sans-bold"}});
-  auto& cb = w.checkbox(Caption{ "Flag 1" }, 
-                        CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
-                        CheckboxState{true});
-  cb.setUncheckedColor(Color(128, 0, 0, 255));
-  cb.setCheckedColor(Color(0, 128, 0, 255));
-  cb.setPushedColor(Color(128, 128, 0, 255));
+        elm::DropdownBox{ 
+           DropdownBoxFill{ [](string& r) { static char i = '1'; r = std::string(5, i); return i++ < '9';  }},
+           ItemHeight{ 18 }
+        }
+  );
+
+  w.add(elm::Label{ Caption{"Check box"}, CaptionFont{"sans-bold"}},
+        elm::CheckBox{ Caption{ "Flag 1" }, CheckboxState{ true },
+                       CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
+                       CheckboxUncheckedColor{ 0xC00000ff }, CheckboxCheckedColor{ 0x00c000ff },
+                       CheckboxPushedColor{ 0xc0c000ff }} );
+
   w.checkbox(Caption{ "Flag 2" }, 
              CheckboxCallback{ [](bool state) { cout << "Check box 2 state: " << state << endl; }});
 
@@ -920,8 +925,10 @@ void createAllWidgetsDemo(Screen* screen)
   wbasic.widget(FixedHeight{2}, elm::SplitLine{});
   wbasic.frame(WidgetGridLayout{ GridLayoutSplit{ 0.7f, 0.3f }, GridLayoutColAlignment{ Alignment::Fill } },
                elm::Label{"Value"}, elm::Label{"Caption"},
-               elm::DropdownBox{ DropdownBoxFill{ [](string& r) { static char i = 'a'; r = std::string(5, i); return i++ < 'z';  } }},
-                 elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }}
+               elm::DropdownBox{ 
+                 DropdownBoxFill{ [](string& r) { static char i = 'a'; r = std::string(5, i); return i++ < 'z';  }},
+                 ItemHeight{ 20 }
+               }, elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }}
                
     );
 }

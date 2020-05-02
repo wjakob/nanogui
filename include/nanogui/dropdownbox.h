@@ -24,6 +24,7 @@ NAMESPACE_BEGIN(nanogui)
  * \brief Simple dropdownbox box widget based on a popup button.
  */
 DECLSETTERILIST(DropdownBoxItems, std::vector<std::string>)
+DECLSETTER(ItemHeight, int)
 DECLSETTER(DropdownBoxStrCallback, std::function<void(std::string)>)
 DECLSETTER(DropdownBoxFill, std::function<bool(std::string&)>)
 
@@ -74,6 +75,8 @@ public:
     /// Sets the items for this dropdownbox.
     void setItems(const Items &items) { setItems(items, items); }
 
+    void setItemHeight(int h);
+
     /// The items associated with this dropdownbox.
     const Items &items() const { return mItems; }
 
@@ -108,6 +111,7 @@ protected:
 
     /// The current index this dropdownbox has selected.
     int mSelectedIndex;
+    int mItemHeight = -1;
 
     void updatePopup() override;
     void resolveItemClick(int index);
@@ -116,6 +120,7 @@ public:
     PROPSETTER(DropdownBoxItems, setItems)
     PROPSETTER(DropdownBoxStrCallback, setCallback)
     PROPSETTER(DropdownBoxFill, setFillFunction)
+    PROPSETTER(ItemHeight, setItemHeight)
 };
 
 namespace elm { using DropdownBox = Element<DropdownBox>; }

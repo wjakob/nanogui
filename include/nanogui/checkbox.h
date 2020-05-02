@@ -30,6 +30,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 
 DECLSETTER(CheckboxState, bool)
+DECLSETTERARGS(CheckboxUncheckedColor, Color)
+DECLSETTERARGS(CheckboxCheckedColor, Color)
+DECLSETTERARGS(CheckboxPushedColor, Color)
 DECLSETTER(CheckboxCallback, std::function<void(bool)>)
 
 class NANOGUI_EXPORT CheckBox : public Widget {
@@ -157,6 +160,9 @@ public:
   PROPSETTERVAL(BoolObservableRef, setObservable)
   PROPSETTERVAL(BoolObservable, setObservable)
   PROPSETTER(FontSize,setFontSize)
+  PROPSETTER(CheckboxUncheckedColor, setUncheckedColor)
+  PROPSETTER(CheckboxCheckedColor, setCheckedColor)
+  PROPSETTER(CheckboxPushedColor, setPushedColor)
 };
 
 namespace elm { using CheckBox = Element<CheckBox>; }

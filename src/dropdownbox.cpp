@@ -325,6 +325,12 @@ DropdownBox::DropdownBox(Widget *parent, const std::vector<std::string> &items)
   setItems(items);
 }
 
+void DropdownBox::setItemHeight(int h) 
+{ 
+  mItemHeight = h; 
+  setFixedHeight(h > 0 ? h : 0);
+}
+
 void DropdownBox::updatePopup()
 {
   Window *parentWindow = window();
@@ -333,7 +339,7 @@ void DropdownBox::updatePopup()
     parentWindow->parent()->removeChild(mPopup);
 
     mPopup = parentWindow->parent()->add<DropdownPopup>(window());
-    mPopup->setSize(Vector2i(320, 250));
+    mPopup->setSize(320, 250);
     mPopup->setVisible(false);
     mPopup->setAnchorPos(Vector2i(0, 0));
     //mPopup->withLayout<GroupLayout>(0, 0, 0, 0);
@@ -405,10 +411,16 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
       while (mStack->childCount() != 0)
         mStack->removeChild(mStack->childCount() - 1);
 
+      int count = clamp<int>(items.size(), 0, 10) + 1;
+      int itemHeight = (mItemHeight > 0 ? mItemHeight : (theme()->mButtonFontSize + 10));
+      mPopup->setSize(width(), count * itemHeight);
+
       if (!items.empty())
       {
         auto& button = mStack->wdg<DropdownListItem>(items[mSelectedIndex], false);
         button.setPushed(false);
+        if (itemHeight > 0)
+          button.setFixedHeight(itemHeight);
         button.setCallback([&] { setPushed(false); popup()->setVisible(false); });
       }
 
@@ -418,6 +430,8 @@ void DropdownBox::setItems(const std::vector<std::string> &items, const std::vec
         auto& button = mStack->wdg<DropdownListItem>(str);
         button.setFlags(Button::RadioButton);
         button.setCallback([this, i=index] { this->resolveItemClick(i);});
+        if (itemHeight > 0)
+          button.setFixedHeight(itemHeight);
         index++;
       }
     }
