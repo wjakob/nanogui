@@ -924,15 +924,21 @@ void createAllWidgetsDemo(Screen* screen)
                           });
   wbasic.widget(FixedHeight{2}, elm::SplitLine{});
   wbasic.frame(WidgetGridLayout{ GridLayoutSplit{ 0.7f, 0.3f }, GridLayoutColAlignment{ Alignment::Fill } },
-               elm::Label{"Value"}, elm::Label{"Caption"},
+               elm::Label{"Value"}, 
+                    elm::Label{"Caption"},
                elm::DropdownBox{ 
                  DropdownBoxFill{ [](string& r) { static char i = 'a'; r = std::string(5, i); return i++ < 'z';  }},
                  ItemHeight{ 20 }
-               }, elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }},
+               }, 
+                    elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }},
                elm::Textbox{
                  TextValue{"Input text here!"}, IsEditable{true}, FixedHeight{20},
                  TextBoxEditCallback{ [screen](const std::string& s, bool) { if (auto l = Label::find(screen, "#inp_txt_smp")) l->setCaption(s); }}
-               }, elm::Label{ Caption{"Input text"}, WidgetId{"#inp_txt_smp"}}
+               }, 
+                    elm::Label{ Caption{"Input text"}, WidgetId{"#inp_txt_smp"}},
+               elm::Textbox{ TextPlaceholder{"input text here"}, IsEditable{ true }, FixedHeight{ 20 }}, 
+                    elm::Label{ Caption{ "Input text (w/ hint)" }}
+
     );
 }
 
