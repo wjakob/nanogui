@@ -38,12 +38,15 @@ DECLSETTER(TextValue,std::string)
 DECLSETTER(TextDefaultValue,std::string)
 DECLSETTER(TextBoxUnits,std::string)
 DECLSETTER(TextPlaceholder,std::string)
+DECLSETTER(TextBoxEditCallback, std::function<void(const std::string&, bool)>)
 DECLSETTER(TextBoxUpdateCallback, std::function<void(TextBox*)>)
 
-class NANOGUI_EXPORT TextBox : public Widget {
+class NANOGUI_EXPORT TextBox : public Widget
+{
 public:
     RTTI_CLASS_UID(TextBox)
     RTTI_DECLARE_INFO(TextBox)
+    WIDGET_COMMON_FUNCTIONS(TextBox)
 
     /// How to align the text in the text box.
     explicit TextBox(Widget   *parent, const std::string &value = "Untitled");
@@ -178,7 +181,10 @@ public:
     PROPSETTER(BackgroundHoverColor,setBackgroundHoverColor)
     PROPSETTER(BackgroundColor,setBackgroundColor)
     PROPSETTER(BorderColor,setBorderColor)
+    PROPSETTER(TextBoxEditCallback, setEditCallback)
 };
+
+namespace elm { using Textbox = Element<TextBox>; }
 
 /**
  * \class IntBox textbox.h nanogui/textbox.h

@@ -928,8 +928,11 @@ void createAllWidgetsDemo(Screen* screen)
                elm::DropdownBox{ 
                  DropdownBoxFill{ [](string& r) { static char i = 'a'; r = std::string(5, i); return i++ < 'z';  }},
                  ItemHeight{ 20 }
-               }, elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }}
-               
+               }, elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }},
+               elm::Textbox{
+                 TextValue{"Input text here!"}, IsEditable{true}, FixedHeight{20},
+                 TextBoxEditCallback{ [screen](const std::string& s, bool) { if (auto l = Label::find(screen, "#inp_txt_smp")) l->setCaption(s); }}
+               }, elm::Label{ Caption{"Input text"}, WidgetId{"#inp_txt_smp"}}
     );
 }
 
