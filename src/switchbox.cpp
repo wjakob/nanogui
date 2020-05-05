@@ -18,12 +18,9 @@ NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(SwitchBox, CheckBox)
 
-SwitchBox::SwitchBox(Widget *parent, Alignment align, 
-                     const std::string &caption,
-                     const std::function<void(bool) > &callback,
-                     bool initial)
-    : CheckBox(parent, caption, callback, initial), mAlign(align) {
-
+SwitchBox::SwitchBox(Widget *parent)
+    : CheckBox(parent, std::string()), mAlign(Alignment::Horizontal)
+{
     mIconExtraScale = 1.2f;// widget override
 }
 

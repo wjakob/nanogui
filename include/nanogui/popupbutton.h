@@ -20,6 +20,9 @@ NAMESPACE_BEGIN(nanogui)
 
 DECLSETTER(PopupSide, int)
 
+struct PopupBase { Popup* w = nullptr; };
+template<class FF=Popup> struct PopupWidget : public PopupBase { template<typename... Args> PopupWidget(const Args&... args) { w = new FF(nullptr, nullptr, args...); } };
+
 /**
  * \class PopupButton popupbutton.h nanogui/popupbutton.h
  *
@@ -54,6 +57,8 @@ public:
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
 
+    void setPopup(Popup* pp);
+
     Popup& popupref() { return *popup(); }
     void setPopupSide(int side);
 
@@ -67,14 +72,21 @@ public:
 
     void save(Json::value &save) const override;
     bool load(Json::value &save) override;
+
+    template<typename FF, typename First, typename... Args> void set(const PopupBase& h, const Args&... args)
+    { this->setPopup(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
+
 protected:
     Popup *mPopup = nullptr;
     int mChevronIcon = -1;
 
     virtual void updatePopup();
+    void parentChanged() override;
 
 public:
     PROPSETTER(PopupSide, setPopupSide)
 };
+
+namespace elm { using PopupButton = Element<PopupButton>; }
 
 NAMESPACE_END(nanogui)

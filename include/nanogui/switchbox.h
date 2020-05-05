@@ -28,49 +28,60 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT SwitchBox : public CheckBox {
+DECLSETTER(SwitchboxAlign, int)
+
+class NANOGUI_EXPORT SwitchBox : public CheckBox 
+{
 public:
-    RTTI_CLASS_UID(SwitchBox)
-    RTTI_DECLARE_INFO(SwitchBox)
+  RTTI_CLASS_UID(SwitchBox)
+  RTTI_DECLARE_INFO(SwitchBox)
 
-    enum class Alignment {
-      Horizontal,
-      Vertical
-    };
-    /**
-     * Adds a SwitchBox to the specified ``parent``.
-     *
-     * \param parent
-     *     The Widget to add this SwitchBox to.
-     *
-     * \param caption
-     *     The caption text of the SwitchBox (default ``"Untitled"``).
-     *
-     * \param callback
-     *     If provided, the callback to execute when the SwitchBox is checked or
-     *     unchecked.  Default parameter function does nothing.  See
-     *     \ref nanogui::SwitchBox::mPushed for the difference between "pushed"
-     *     and "checked".
-     */
-    SwitchBox(Widget *parent, Alignment align = Alignment::Horizontal, 
-              const std::string &caption = "Untitled",
-              const std::function<void(bool)> &callback = std::function<void(bool)>(),
-              bool initial = false);
+  enum class Alignment {
+    Horizontal,
+    Vertical
+  };
+  /**
+    * Adds a SwitchBox to the specified ``parent``.
+    *
+    * \param parent
+    *     The Widget to add this SwitchBox to.
+    *
+    * \param caption
+    *     The caption text of the SwitchBox (default ``"Untitled"``).
+    *
+    * \param callback
+    *     If provided, the callback to execute when the SwitchBox is checked or
+    *     unchecked.  Default parameter function does nothing.  See
+    *     \ref nanogui::SwitchBox::mPushed for the difference between "pushed"
+    *     and "checked".
+    */
+  explicit SwitchBox(Widget *parent);
 
-    /// The preferred size of this SwitchBox.
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
+  using CheckBox::set;
+  template<typename... Args>
+  SwitchBox(Widget* parent, const Args&... args)
+    : SwitchBox(parent) { set<SwitchBox, Args...>(args...); }
 
-    /// Draws this SwitchBox.
-    virtual void draw(NVGcontext *ctx) override;
+  /// The preferred size of this SwitchBox.
+  Vector2i preferredSize(NVGcontext *ctx) const override;
 
-    virtual void setAlignment(Alignment align) { mAlign = align; }
-    void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
+  /// Draws this SwitchBox.
+  void draw(NVGcontext *ctx) override;
+
+  void setAlignment(int align) { mAlign = (Alignment)align; }
+  void setBackgroundColor(const Color& c) { mBackgroundColor = c; }
 
 protected:
-    Alignment mAlign = Alignment::Horizontal;
-    float path = 0.f;
+  Alignment mAlign = Alignment::Horizontal;
+  float path = 0.f;
 
-    Color mBackgroundColor;
+  Color mBackgroundColor;
+
+public:
+  PROPSETTER(SwitchboxAlign, setAlignment)
+  PROPSETTER(BackgroundColor, setBackgroundColor)
 };
+
+namespace elm { using Switchbox = Element<SwitchBox>; }
 
 NAMESPACE_END(nanogui)

@@ -109,79 +109,79 @@ void createButtonDemoWindow(Screen* screen)
                     Caption{ "Button demo" },
                     WindowMovable{ Theme::WindowDraggable::dgFixed } };
 
-  elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" } };
-  elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; } }, Caption{ "Plain button" }, TooltipText{ "short tooltip" } };
-  elm::Splitter{ Orientation::Horizontal };
-  /* Alternative construction notation using variadic template */
-  elm::Button{ Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET }, BackgroundColor{ 0, 0, 255, 25 },
-               ButtonCallback{ [] { cout << "pushed!" << endl; } },
-               TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                            "fact, that the shown text will span several lines." } };
+    elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" } };
+    elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; } }, Caption{ "Plain button" }, TooltipText{ "short tooltip" } };
+    elm::Splitter{ Orientation::Horizontal };
+    /* Alternative construction notation using variadic template */
+    elm::Button{ Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET }, BackgroundColor{ 0, 0, 255, 25 },
+                 ButtonCallback{ [] { cout << "pushed!" << endl; } },
+                 TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                              "fact, that the shown text will span several lines." } };
 
-  elm::Label{ Caption{ "Toggle buttons" }, CaptionFont{ "sans-bold" } };
-  elm::Button { 
-      Caption{ "Toggle me" }, ButtonFlags{ Button::ToggleButton },
-      ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } } 
-  };
+    elm::Label{ Caption{ "Toggle buttons" }, CaptionFont{ "sans-bold" } };
+    elm::Button { 
+        Caption{ "Toggle me" }, ButtonFlags{ Button::ToggleButton },
+        ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } } 
+    };
 
-  elm::Label{ Caption{ "Radio buttons" }, CaptionFont{ "sans-bold" } };
-  elm::Button{ Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } };
-  elm::Button{ Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } };
+    elm::Label{ Caption{ "Radio buttons" }, CaptionFont{ "sans-bold" } };
+    elm::Button{ Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } };
+    elm::Button{ Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } };
 
-  elm::Label{ "A tool palette", "sans-bold" };
-  elm::Widget{ 
-    WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
-      elm::ToolButton{ Icon{ ENTYPO_ICON_CLOUD } },
-      elm::ToolButton{ Icon{ ENTYPO_ICON_FAST_FORWARD } },
-      elm::ToolButton{ Icon{ ENTYPO_ICON_VOLUME_UP } },
-      elm::ToolButton{ Icon{ ENTYPO_ICON_INSTALL } }
-  };
+    elm::Label{ "A tool palette", "sans-bold" };
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+                 Children{},
+                   elm::ToolButton{ Icon{ ENTYPO_ICON_CLOUD } },
+                   elm::ToolButton{ Icon{ ENTYPO_ICON_FAST_FORWARD } },
+                   elm::ToolButton{ Icon{ ENTYPO_ICON_VOLUME_UP } },
+                   elm::ToolButton{ Icon{ ENTYPO_ICON_INSTALL } }
+    };
 
-  elm::Label{ Caption{ "Popup buttons" }, CaptionFont{ "sans-bold" } };
+    elm::Label{ Caption{ "Popup buttons" }, CaptionFont{ "sans-bold" } };
 
+    elm::PopupButton { 
+      Caption{ "Popup" }, Icon{ ENTYPO_ICON_EXPORT },
+      PopupWidget<> { WidgetGroupLayout{},
+        elm::Label{ "Arbitrary widgets can be placed here" },
+        elm::CheckBox{ Caption{ "A check box" } },
+        // popup right
+        elm::PopupButton {
+          Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH },
+          PopupWidget<> { WidgetGroupLayout{}, 
+            elm::CheckBox{ Caption{ "Another check box" } }
+          }
+        },
+        // popup left
+        elm::PopupButton {
+          Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH }, PopupSide{ Popup::Side::Left },
+          PopupWidget<> { WidgetGroupLayout{}, 
+            elm::CheckBox{ Caption{ "Another check box" } }
+          }
+        }
+      } 
+    };
+
+    elm::Label{ Caption{ "A switch boxes" }, CaptionFont{ "sans-bold" } };
+    elm::Widget{ WidgetGridLayout{ Orientation::Horizontal, 2 },
+                 Children{},
+                   elm::Switchbox{ FixedSize{ 80, 30 } },
+                   elm::Switchbox{ FixedSize{ 28, 60 }, SwitchboxAlign{ (int)SwitchBox::Alignment::Vertical }, BackgroundColor{ 0x0000c0ff } },
+                   elm::Switchbox{ FixedSize{ 60, 25 }, BackgroundColor{ 0x0000c0ff }, CheckedColor{ 0x00c000ff }, UncheckedColor { 0xff0000ff } }
+    };
+
+    elm::Label{ Caption{ "A led buttons" }, CaptionFont{ "sans-bold" } };
+    elm::Widget{ WidgetLayout{ new GridLayout(Orientation::Horizontal, 4) },
+                 Children{},
+                   Element<LedButton>{ LedButton::circleBlack, 30, 30 },
+                   Element<LedButton>{ LedButton::circleBlue, 30, 30 },
+                   Element<LedButton>{ LedButton::circleGreen, 30, 30 },
+                   Element<LedButton>{ LedButton::circleGray, 30, 30 },
+                   Element<LedButton>{ LedButton::circleOrange, 30, 30 },
+                   Element<LedButton>{ LedButton::circleRed, 30, 30 },
+                   Element<LedButton>{ LedButton::circleYellow, 30, 30 },
+                   Element<LedButton>{ LedButton::circlePurple, 30, 30 }
+    };
   elm::EndWindow{};
-
-  /* No need to store a pointer, the data structure will be automatically
-  freed when the parent window is deleted */
-  auto& w = *elm::last_window();
-
-  auto& popup = w.popupbutton(Caption{ "Popup" }, Icon{ ENTYPO_ICON_EXPORT })
-                    .popupset( WidgetGroupLayout{}, 
-                               elm::Label{ "Arbitrary widgets can be placed here" },
-                               elm::CheckBox{ Caption{ "A check box" }});
-  // popup right
-  popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH } )
-           .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" }});
-  // popup left
-  popup.popupbutton(Caption{ "Recursive popup" }, Icon{ ENTYPO_ICON_FLASH }, PopupSide{ Popup::Side::Left })
-           .popupset(WidgetGroupLayout{}, elm::CheckBox{ Caption{ "Another check box" } });
-
-  w.label("A switch boxes", "sans-bold");
-  auto& switchboxArea = w.widget();
-  switchboxArea.withLayout<GridLayout>(Orientation::Horizontal, 2);
-
-  auto& switchboxHorizontal = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-  switchboxHorizontal.setFixedSize(Vector2i(80, 30));
-  switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
-
-  auto& switchboxVerticalColored = switchboxArea.switchbox(SwitchBox::Alignment::Vertical, "");
-  switchboxVerticalColored.setFixedSize(Vector2i(28, 60));
-  switchboxVerticalColored.setBackgroundColor({ 0,0,129,255 });
-
-  auto& switchboxHorizontalColored = switchboxArea.switchbox(SwitchBox::Alignment::Horizontal, "");
-  switchboxHorizontalColored.setFixedSize(Vector2i(60, 25));
-  switchboxHorizontalColored.setStateColor({ 0,129,0,255 }, { 255, 0, 0, 255 });
-
-  w.label("A led buttons", "sans-bold");
-  w.widget(WidgetLayout{ new GridLayout(Orientation::Horizontal, 4) },
-           Element<LedButton>{ LedButton::circleBlack, 30, 30 },
-           Element<LedButton>{ LedButton::circleBlue, 30, 30 },
-           Element<LedButton>{ LedButton::circleGreen, 30, 30 },
-           Element<LedButton>{ LedButton::circleGray, 30, 30 },
-           Element<LedButton>{ LedButton::circleOrange, 30, 30 },
-           Element<LedButton>{ LedButton::circleRed, 30, 30 },
-           Element<LedButton>{ LedButton::circleYellow, 30, 30 },
-           Element<LedButton>{ LedButton::circlePurple, 30, 30 });
 }
 
 using ImagesDataType = std::vector<pair<int, std::string>>;
@@ -330,8 +330,7 @@ void createBasicWidgets(Screen* parent)
   w.add(elm::Label{ Caption{"Check box"}, CaptionFont{"sans-bold"}},
         elm::CheckBox{ Caption{ "Flag 1" }, CheckboxState{ true },
                        CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
-                       CheckboxUncheckedColor{ 0xC00000ff }, CheckboxCheckedColor{ 0x00c000ff },
-                       CheckboxPushedColor{ 0xc0c000ff }} );
+                       UncheckedColor{ 0xC00000ff }, CheckedColor{ 0x00c000ff }, PushedColor{ 0xc0c000ff }} );
 
   w.checkbox(Caption{ "Flag 2" }, 
              CheckboxCallback{ [](bool state) { cout << "Check box 2 state: " << state << endl; }});

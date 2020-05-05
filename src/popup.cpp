@@ -20,8 +20,12 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(Popup, Window)
 
 Popup::Popup(Widget *parent, Window *parentWindow)
-    : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {
+    : Window(parent, ""),
+      mParentWindow(parentWindow),
+      mAnchorPos(Vector2i::Zero()), 
+      mAnchorHeight(30), 
+      mSide(Side::Right) 
+{
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
@@ -36,10 +40,14 @@ void Popup::performLayout(NVGcontext *ctx) {
         mAnchorPos[0] -= size()[0];
 }
 
-void Popup::refreshRelativePlacement() {
+void Popup::refreshRelativePlacement() 
+{
+  if (mParentWindow)
+  {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
     mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+  }
 }
 
 int Popup::getHeaderHeight() const 
@@ -49,7 +57,8 @@ int Popup::getHeaderHeight() const
   return 0;
 }
 
-void Popup::draw(NVGcontext* ctx) {
+void Popup::draw(NVGcontext* ctx) 
+{
     refreshRelativePlacement();
 
     if (!mVisible)

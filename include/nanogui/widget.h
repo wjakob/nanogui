@@ -73,6 +73,7 @@ DECLSETTER(MaxHeight, int)
 DECLSETTER(FixedHeight, int)
 DECLSETTER(FixedWidth, int)
 DECLSETTER(WidgetLayout, Layout*)
+DECLSETTERDEF(Children, int, 0)
 DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
 DECLSETTERARGSNEW(WidgetGridLayout, GridLayout)
 DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
@@ -148,7 +149,7 @@ public:
     /// Return the parent widget
     const Widget *parent() const { return mParent; }
     /// Set the parent widget
-    void setParent(Widget *parent) { mParent = parent; }
+    void setParent(Widget *parent);
 
     /// Return the used \ref Layout generator
     Layout *layout() { return mLayout; }
@@ -542,6 +543,8 @@ public:
     /// Restore the state of the widget from the given \ref Serializer instance
     virtual bool load(Json::value &s);
 
+    virtual void setChildrentOpts(int) {};
+
     inline void setSubElement(bool v) { mSubElement = v; }
     inline bool isSubElement() const { return mSubElement; }
 
@@ -622,7 +625,7 @@ public:
     PROPSETTER(VisibleObservable, setVisible)
     PROPSETTER(IsVisible, setVisible)
     PROPSETTER(TooltipText, setTooltip)
-
+    PROPSETTER(Children, setChildrentOpts )
 
 protected:
     /// Free all resources used by the widget and any children
@@ -640,6 +643,7 @@ protected:
      *     strategy may not be appropriate with fonts other than ``entypo.ttf``.
      */
     inline float icon_scale() const { return mTheme->mIconScale * mIconExtraScale; }
+    virtual void parentChanged() {}
 
 protected:
     Widget *mParent;

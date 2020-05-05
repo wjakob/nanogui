@@ -33,7 +33,13 @@ public:
     enum Side { Left = 0, Right };
 
     /// Create a new popup parented to a screen (first argument) and a parent window
-    Popup(Widget *parent, Window *parentWindow);
+    explicit Popup(Widget *parent, Window *parentWindow);
+
+    using Window::set;
+    template<typename... Args>
+    Popup(Widget* parent, Window *parentWindow, const Args&... args)
+      : Popup(parent, parentWindow) { set<PopupButton, Args...>(args...);  }
+
 
     /// Return the anchor position in the parent window; the placement of the popup is relative to it
     void setAnchorPos(const Vector2i &anchorPos) { mAnchorPos = anchorPos; }
@@ -55,6 +61,7 @@ public:
     Window *parentWindow() { return mParentWindow; }
     /// Return the parent window of the popup
     const Window *parentWindow() const { return mParentWindow; }
+    void setParentWindow(Window* p) { mParentWindow = p; }
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx) override;
@@ -69,10 +76,12 @@ protected:
     virtual void refreshRelativePlacement() override;
 
 protected:
-    Window *mParentWindow;
+    Window *mParentWindow = nullptr;
     Vector2i mAnchorPos;
     int mAnchorHeight;
     Side mSide;
 };
+
+namespace elm { using Popup = Element<Popup>; }
 
 NAMESPACE_END(nanogui)

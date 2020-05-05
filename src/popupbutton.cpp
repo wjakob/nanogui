@@ -48,6 +48,36 @@ void PopupButton::updatePopup()
   }
 }
 
+void PopupButton::parentChanged()
+{
+  Window *parentWindow = window();
+  if (parentWindow && mPopup)
+  {
+    parentWindow->parent()->addChild(mPopup);
+    mPopup->setParentWindow(parentWindow);
+  }
+}
+
+void PopupButton::setPopup(Popup* pp)
+{
+  Window *parentWindow = window();
+  if (parentWindow)
+  {
+    Popup::Side side = Popup::Side::Right;
+    if (mPopup)
+    {
+      side = mPopup->side();
+      mPopup->removeLater();
+      mPopup = nullptr;
+    }
+
+    parentWindow->parent()->addChild(pp);
+    pp->setParentWindow(parentWindow);
+    pp->setSide(side);
+    mPopup = pp;
+  }
+}
+
 void PopupButton::draw(NVGcontext* ctx) 
 {
     if (!mEnabled && mPushed)

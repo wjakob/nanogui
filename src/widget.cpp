@@ -238,17 +238,21 @@ Widget *Widget::findWidgetGlobal(std::function<bool(Widget*)> cond)
   return screen()->findWidget(cond);
 }
 
-void Widget::addChild(int index, Widget * widget) {
-    assert(index <= childCount());
-    Widget* prevparent = widget->parent();
+void Widget::addChild(int index, Widget * widget) 
+{
+  if (!widget)
+    return;
 
-    mChildren.insert(mChildren.begin() + index, widget);
-    widget->incRef();
-    widget->setParent(this);
-    widget->setTheme(mTheme);
+  assert(index <= childCount());
+  Widget* prevparent = widget->parent();
 
-    if (prevparent && prevparent != this)
-      prevparent->removeChild(widget);
+  mChildren.insert(mChildren.begin() + index, widget);
+  widget->incRef();
+  widget->setParent(this);
+  widget->setTheme(mTheme);
+
+  if (prevparent && prevparent != this)
+    prevparent->removeChild(widget);
 }
 
 std::string Widget::wtypename() const { return "widget"; }
@@ -300,6 +304,11 @@ bool Widget::bringChildToFront(Widget* widget)
   return false;
 }
 
+void Widget::setParent(Widget* parent)
+{
+  mParent = parent; 
+  parentChanged();
+}
 
 void Widget::addChild(Widget * widget) {
     addChild(childCount(), widget);
