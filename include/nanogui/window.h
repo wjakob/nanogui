@@ -30,6 +30,7 @@ DECLSETTER(WindowMovable, Theme::WindowDraggable)
 DECLSETTER(WindowCollapsed, bool)
 DECLSETTER(WindowHaveHeader, bool)
 DECLSETTER(HeaderHeight, int)
+DECLSETTER(GlobWindowActive, bool)
 DECLSETTERARGSNEW(WindowGroupLayout, GroupLayout)
 DECLSETTERARGSNEW(WindowBoxLayout, BoxLayout)
 
@@ -169,6 +170,8 @@ public:
     bool canBringToFront() const { return mBringToFront; }
     void setBringToFront(bool v) { mBringToFront = v; }
 
+    void setGlobActiveWindow(bool b);
+
 protected:
     virtual void requestPerformLayout();
     virtual bool isClickInsideCollapseArea(const Vector2i& clkPnt);
@@ -214,9 +217,16 @@ public:
     PROPSETTER(WindowHaveHeader,setDrawHeader)
     PROPSETTER(HeaderHeight, setHeaderHeight)
     PROPSETTER(FontSize, setFontSize)
+    PROPSETTER(GlobWindowActive, setGlobActiveWindow)
 };
 
-namespace elm { using Window = Element<Window>; }
+namespace elm 
+{ 
+  using Window = Element<Window>; 
+  struct BeginWindow { template<typename... Args> BeginWindow(const Args&... args) { new ::nanogui::Window(nullptr, GlobWindowActive{ true }, args...); } };
+  struct NANOGUI_EXPORT EndWindow { EndWindow(); };
+  NANOGUI_EXPORT ::nanogui::Window* get_active_window();
+}
 
 DECLSETTER(PanelHighlightHeader, bool)
 

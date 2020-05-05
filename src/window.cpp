@@ -26,6 +26,15 @@ RTTI_IMPLEMENT_INFO(Window, Widget)
 RTTI_IMPLEMENT_INFO(Panel, Window)
 RTTI_IMPLEMENT_INFO(Frame, Widget)
 
+namespace elm
+{
+  ::nanogui::Window* active_wnd = nullptr;
+  void set_active_window(::nanogui::Window* w) { active_wnd = w; }
+  void reset_active_window() { active_wnd = nullptr; }
+
+  ::nanogui::Window* get_active_window() { return active_wnd; }
+}
+
 void Frame::draw(NVGcontext *ctx)
 {
   float cr = mCornerRadius > 0 ? mCornerRadius : theme()->mWindowCornerRadius;
@@ -540,6 +549,14 @@ bool Window::tabstop(CanTabStop mode) const
   return false;
 }
 
+void Window::setGlobActiveWindow(bool b)
+{
+  if (b)
+    elm::set_active_window(this);
+  else
+    elm::reset_active_window();
+}
+
 Vector4i Window::getWidgetsArea()
 {
   Vector4i area = Widget::getWidgetsArea();
@@ -723,6 +740,11 @@ bool Panel::keyboardEvent(int key, int scancode, int action, int mods)
   }
 
   return Widget::keyboardEvent(key, scancode, action, mods);
+}
+
+elm::EndWindow::EndWindow()
+{
+  elm::reset_active_window();
 }
 
 NAMESPACE_END(nanogui)

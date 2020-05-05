@@ -26,14 +26,14 @@ RTTI_IMPLEMENT_INFO(Screen, Object)
 
 namespace elm 
 { 
-  Screen* active = nullptr;
-  Screen* active_screen() { return active; }
+  Screen* active_scr = nullptr;
+  Screen* active_screen() { return active_scr; }
 
   ::nanogui::Window* last_window()
   {
-    if (active)
+    if (active_scr)
     {
-      auto& c = active->children();
+      auto& c = active_scr->children();
       for (auto it = c.rbegin(); it != c.rend(); ++it)
         if (auto w = ::nanogui::Window::cast(*it))
           return w;
@@ -97,7 +97,7 @@ Screen::Screen()
   mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
   mShutdownOnDestruct(false), mFullscreen(false)
 {
-  elm::active = this;
+  elm::active_scr = this;
   memset(mCursors, 0, (int)Cursor::CursorCount * sizeof(intptr_t));
 }
 

@@ -104,40 +104,47 @@ GPUtimer gpuTimer;
 
 void createButtonDemoWindow(Screen* screen)
 {
-  elm::Window{ Position{ 15, 15 },
-               WindowGroupLayout{},
-               Caption{ "Button demo" },
-               WindowMovable{ Theme::WindowDraggable::dgFixed } };
+  elm::BeginWindow{ Position{ 15, 15 },
+                    WindowGroupLayout{},
+                    Caption{ "Button demo" },
+                    WindowMovable{ Theme::WindowDraggable::dgFixed } };
+
+  elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" } };
+  elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; } }, Caption{ "Plain button" }, TooltipText{ "short tooltip" } };
+  elm::Splitter{ Orientation::Horizontal };
+  /* Alternative construction notation using variadic template */
+  elm::Button{ Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET }, BackgroundColor{ 0, 0, 255, 25 },
+               ButtonCallback{ [] { cout << "pushed!" << endl; } },
+               TooltipText{ "This button has a fairly long tooltip. It is so long, in "
+                            "fact, that the shown text will span several lines." } };
+
+  elm::Label{ Caption{ "Toggle buttons" }, CaptionFont{ "sans-bold" } };
+  elm::Button { 
+      Caption{ "Toggle me" }, ButtonFlags{ Button::ToggleButton },
+      ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; } } 
+  };
+
+  elm::Label{ Caption{ "Radio buttons" }, CaptionFont{ "sans-bold" } };
+  elm::Button{ Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton } };
+  elm::Button{ Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton } };
+
+  elm::Label{ "A tool palette", "sans-bold" };
+  elm::Widget{ 
+    WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+      elm::ToolButton{ Icon{ ENTYPO_ICON_CLOUD } },
+      elm::ToolButton{ Icon{ ENTYPO_ICON_FAST_FORWARD } },
+      elm::ToolButton{ Icon{ ENTYPO_ICON_VOLUME_UP } },
+      elm::ToolButton{ Icon{ ENTYPO_ICON_INSTALL } }
+  };
+
+  elm::Label{ Caption{ "Popup buttons" }, CaptionFont{ "sans-bold" } };
+
+  elm::EndWindow{};
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
   auto& w = *elm::last_window();
-  w.add(elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" }},
-        elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; }}, Caption{ "Plain button" }, TooltipText{ "short tooltip" }},
-        elm::Splitter{ Orientation::Horizontal },
-        /* Alternative construction notation using variadic template */
-        elm::Button{ Caption{ "Styled" }, Icon{ ENTYPO_ICON_ROCKET }, BackgroundColor{ 0, 0, 255, 25 },
-                     ButtonCallback{ [] { cout << "pushed!" << endl; } },
-                     TooltipText{ "This button has a fairly long tooltip. It is so long, in "
-                                  "fact, that the shown text will span several lines." }});
 
-  w.add(elm::Label{ Caption{"Toggle buttons"}, CaptionFont{"sans-bold"}},
-        elm::Button{ Caption{ "Toggle me" }, ButtonFlags{ Button::ToggleButton },
-                     ButtonChangeCallback{ [](Button* b) { cout << "Toggle button state: " << b->pushed() << endl; }}});
-
-  w.add(elm::Label{ Caption{"Radio buttons"}, CaptionFont{"sans-bold"} },
-        elm::Button{ Caption{ "Radio button 1" }, ButtonFlags{ Button::RadioButton }},
-        elm::Button{ Caption{ "Radio button 2" }, ButtonFlags{ Button::RadioButton }} );
-
-  w.add(elm::Label{ "A tool palette", "sans-bold" },
-        elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
-                     elm::ToolButton{ Icon{ ENTYPO_ICON_CLOUD }},
-                     elm::ToolButton{ Icon{ ENTYPO_ICON_FAST_FORWARD }},
-                     elm::ToolButton{ Icon{ ENTYPO_ICON_VOLUME_UP }},
-                     elm::ToolButton{ Icon{ ENTYPO_ICON_INSTALL }}
-        });
-
-  w.label("Popup buttons", "sans-bold");
   auto& popup = w.popupbutton(Caption{ "Popup" }, Icon{ ENTYPO_ICON_EXPORT })
                     .popupset( WidgetGroupLayout{}, 
                                elm::Label{ "Arbitrary widgets can be placed here" },
