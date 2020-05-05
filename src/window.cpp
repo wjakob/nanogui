@@ -53,7 +53,7 @@ bool Frame::inFocusChain() const
 }
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr),
+    : Widget(parent ? parent : elm::active_screen()), mTitle(title), mButtonPanel(nullptr),
       mModal(false), mDrag(dragNone)
 {
   setDrawFlag(DrawBorder, false);

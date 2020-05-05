@@ -216,6 +216,8 @@ public:
     PROPSETTER(FontSize, setFontSize)
 };
 
+namespace elm { using Window = Element<Window>; }
+
 DECLSETTER(PanelHighlightHeader, bool)
 
 class NANOGUI_EXPORT Panel : public Window

@@ -44,44 +44,12 @@ public:
      * \param caption
      *     Window title (in UTF-8 encoding)
      *
-     * \param resizable
-     *     If creating a window, should it be resizable?
-     *
      * \param fullscreen
      *     Specifies whether to create a windowed or full-screen view
-     *
-     * \param colorBits
-     *     Number of bits per pixel dedicated to the R/G/B color components
-     *
-     * \param alphaBits
-     *     Number of bits per pixel dedicated to the alpha channel
      *
      * \param depthBits
      *     Number of bits per pixel dedicated to the Z-buffer
      *
-     * \param stencilBits
-     *     Number of bits per pixel dedicated to the stencil buffer (recommended
-     *     to set this to 8. NanoVG can draw higher-quality strokes using a
-     *     stencil buffer)
-     *
-     * \param nSamples
-     *     Number of MSAA samples (set to 0 to disable)
-     *
-     * \param glMajor
-     *     The requested OpenGL Major version number.  Default is 3, if changed
-     *     the value must correspond to a forward compatible core profile (for
-     *     portability reasons).  For example, set this to 4 and \ref glMinor to 1
-     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *     invalid profile will result in no context (and therefore no GUI)
-     *     being created.
-     *
-     * \param glMinor
-     *     The requested OpenGL Minor version number.  Default is 3, if changed
-     *     the value must correspond to a forward compatible core profile (for
-     *     portability reasons).  For example, set this to 1 and \ref glMajor to 4
-     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *     invalid profile will result in no context (and therefore no GUI)
-     *     being created.
      */
     Screen(const Vector2i &size, const std::string &caption, bool fullscreen);
 
@@ -227,5 +195,10 @@ protected:
     std::function<void(Screen*, Vector2i&, Vector2i&)> mResizeHwHandler;
     std::function<void(intptr_t)> mHwCursorSetter;
 };
+
+namespace elm { 
+  Screen* active_screen(); 
+  NANOGUI_EXPORT ::nanogui::Window* last_window();
+}
 
 NAMESPACE_END(nanogui)

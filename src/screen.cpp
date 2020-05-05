@@ -24,6 +24,25 @@ NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(Screen, Object)
 
+namespace elm 
+{ 
+  Screen* active = nullptr;
+  Screen* active_screen() { return active; }
+
+  ::nanogui::Window* last_window()
+  {
+    if (active)
+    {
+      auto& c = active->children();
+      for (auto it = c.rbegin(); it != c.rend(); ++it)
+        if (auto w = ::nanogui::Window::cast(*it))
+          return w;
+    }
+
+    return nullptr;
+  }
+}
+
 void Screen::addChild(int index, Widget * widget)
 {
   Widget::addChild(index, widget);
@@ -78,6 +97,7 @@ Screen::Screen()
   mCursor(Cursor::Arrow), mBackground(0.3f, 0.3f, 0.32f, 1.f),
   mShutdownOnDestruct(false), mFullscreen(false)
 {
+  elm::active = this;
   memset(mCursors, 0, (int)Cursor::CursorCount * sizeof(intptr_t));
 }
 

@@ -104,13 +104,14 @@ GPUtimer gpuTimer;
 
 void createButtonDemoWindow(Screen* screen)
 {
-  auto& w = screen->window(Position{ 15, 15 },
-    WindowMovable{ Theme::WindowDraggable::dgFixed },
-    Caption{ "Button demo" },
-    WindowGroupLayout{});
+  elm::Window{ Position{ 15, 15 },
+               WindowGroupLayout{},
+               Caption{ "Button demo" },
+               WindowMovable{ Theme::WindowDraggable::dgFixed } };
 
   /* No need to store a pointer, the data structure will be automatically
   freed when the parent window is deleted */
+  auto& w = *elm::last_window();
   w.add(elm::Label{ Caption{ "Push buttons" }, CaptionFont{ "sans-bold" }},
         elm::Button{ ButtonCallback{ [] { cout << "pushed!" << endl; }}, Caption{ "Plain button" }, TooltipText{ "short tooltip" }},
         elm::Splitter{ Orientation::Horizontal },
@@ -914,8 +915,9 @@ void createAllWidgetsDemo(Screen* screen)
   wbasic.hstack(5, 2,
                 elm::Label{Caption{"Hover over me"}, TooltipText{"I am tooltip"}},
                 elm::Label{" - "},
-                elm::Label{Caption{"or me"},
+                elm::Label{Caption{"or me"},                           
                            TooltipWidget<Window>{ 
+                              IsVisible{ false },
                               WidgetStretchLayout{ Orientation::Vertical },
                               Caption{ "And I am tooltip too" },
                               FixedSize{ 100, 60 },
