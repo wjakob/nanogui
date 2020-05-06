@@ -76,6 +76,8 @@ public:
     PROPSETTER(DialogAltButton, setDialogAltButton)
 };
 
+namespace elm { using MessageDialog = Element<MessageDialog>; }
+
 class NANOGUI_EXPORT InAppNotification : public MessageDialog
 {
 public:

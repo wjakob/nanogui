@@ -170,7 +170,7 @@ void createButtonDemoWindow(Screen* screen)
     };
 
     elm::Label{ Caption{ "A led buttons" }, CaptionFont{ "sans-bold" } };
-    elm::Widget{ WidgetLayout{ new GridLayout(Orientation::Horizontal, 4) },
+    elm::Widget{ WidgetGridLayout{ Orientation::Horizontal, 4 },
                  Children{},
                    Element<LedButton>{ LedButton::circleBlack, 30, 30 },
                    Element<LedButton>{ LedButton::circleBlue, 30, 30 },
@@ -888,14 +888,14 @@ void createAllWidgetsDemo(Screen* screen)
   wbasic.hstack(5, 2, 
                 elm::Button{
                       Caption{"Button"}, FixedHeight{17},
-                      ButtonCallback{ [w = &dw] { if (auto l = Label::find(w, "#btn_action")) l->setCaption("Thanks for cliking me!!!"); }}
+                      ButtonCallback{ [w = &dw] { if (auto l = Label::find("#btn_action", w)) l->setCaption("Thanks for cliking me!!!"); }}
                 },
                 elm::Label{ WidgetId{ "#btn_action" }});
   wbasic.checkbox(Caption{ "checkbox" });
   auto radio_action = ButtonChangeCallback{ [w = &dw](Button* b) { 
     if (b && !b->pushed())
       return;
-    if (auto l = Label::find(w, "#radio_action")) 
+    if (auto l = Label::find("#radio_action", w)) 
       l->setCaption("Clicked " + b->caption()); 
   }};
   auto makerbtn = [=](std::string text) { return elm::RadioBtn{ Caption{text}, radio_action, FixedHeight{17} }; };
@@ -912,7 +912,7 @@ void createAllWidgetsDemo(Screen* screen)
                 elm::UpDownButton{UpDownCallback{ [w = &dw] (bool v) {
                     static int value = 0;
                     value += (v ? 1 : -1);
-                    if (auto l = Label::find(w, "#updown_action"))
+                    if (auto l = Label::find("#updown_action", w))
                       l->setCaption(std::to_string(value));
                   }
                 }},
@@ -941,7 +941,7 @@ void createAllWidgetsDemo(Screen* screen)
                     elm::Label{ Caption{"combo (?)"}, TooltipText{ "Combo section fill function example" }},
                elm::Textbox{
                  TextValue{"Input text here!"}, IsEditable{true}, FixedHeight{20},
-                 TextBoxEditCallback{ [screen](const std::string& s, bool) { if (auto l = Label::find(screen, "#inp_txt_smp")) l->setCaption(s); }}
+                 TextBoxEditCallback{ [](const std::string& s, bool) { if (auto l = Label::find("#inp_txt_smp")) l->setCaption(s); }}
                }, 
                     elm::Label{ Caption{"Input text"}, WidgetId{"#inp_txt_smp"}},
                elm::Textbox{ TextPlaceholder{"input text here"}, IsEditable{ true }, FixedHeight{ 20 }}, 
@@ -962,7 +962,7 @@ void makePropEditor(Screen* screen)
 
 void makeCustomThemeWindow(Screen* screen, const std::string &title)
 {
-  auto& cwindow = screen->window(title);
+  auto& cwindow = screen->window(Caption{ title }, WidgetId{ "#dialog_w_theme" });
   cwindow.setPosition(1100, 300);
   cwindow.withTheme<WhiteTheme>(screen->nvgContext());
   cwindow.withLayout<GroupLayout>(15, 6, 6);
@@ -985,30 +985,37 @@ void makeCustomThemeWindow(Screen* screen, const std::string &title)
   {
     cwindow.label("Message Dialogues");
     auto& tools = cwindow.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 });
-    auto& b = tools.button(Caption{ "Info" });
-    Theme* ctheme = cwindow.theme();
-    b.setCallback([screen, ctheme]() {
-      auto& dlg = screen->msgdialog(DialogTitle{ "Title" }, DialogMessage{ "This is an information message" },
-                                    DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
-      dlg.setTheme(ctheme);
-    });
+    auto& b = tools.button(Caption{ "Info" },
+      ButtonCallback{ []() {
+        elm::MessageDialog {
+          DialogTitle{ "Title" }, DialogMessage{ "This is an information message" },
+          DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }},
+          CopyThemeFrom { "#dialog_w_theme" }
+      };
+     }});
+
     tools.button(Caption{ "Warn" },
-      ButtonCallback{ [screen, ctheme]() {
-        auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
-                                      DialogTitle{ "Title" },
-                                      DialogMessage{ "This is a warning message" },
-                                      DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
-        dlg.setTheme(ctheme);
-      }} );
+      ButtonCallback{ []() {
+        auto w = Window::find("#dialog_w_theme");
+        elm::MessageDialog {
+          DialogType{ (int)MessageDialog::Type::Warning },
+          DialogTitle{ "Title" },
+          DialogMessage{ "This is a warning message" },
+          DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }},
+          CopyThemeFrom{ "#dialog_w_theme" }
+        };
+      }});
+
     tools.button(Caption{ "Ask" },
-      ButtonCallback{ [&, ctheme]() {
-        auto& dlg = screen->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
-                                      DialogTitle{ "Title" },
-                                      DialogMessage{ "This is a question message" },
-                                      DialogButton{ "Yes" }, DialogAltButton{ "No" },
-                                      DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }});
-        dlg.setTheme(ctheme);
-      } });
+      ButtonCallback{ []() {
+        elm::MessageDialog{
+          DialogType{ (int)MessageDialog::Type::Question },
+          DialogTitle{ "Title" }, DialogMessage{ "This is a question message" },
+          DialogButton{ "Yes" }, DialogAltButton{ "No" },
+          DialogResult{ [](int result) { std::cout << "Dialog result: " << result << std::endl; }},
+          CopyThemeFrom{ "#dialog_w_theme" }
+        };
+      }});
   }
 
   // TabWidget used to test TabHeader and others while keeping the size manageable

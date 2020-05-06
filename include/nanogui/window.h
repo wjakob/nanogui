@@ -73,6 +73,7 @@ class NANOGUI_EXPORT Window : public Widget
 public:
   RTTI_CLASS_UID(Window)
   RTTI_DECLARE_INFO(Window)
+  WIDGET_COMMON_FUNCTIONS(Window)
 
   enum DrawFlag {
     DrawBody = 1 << 0,

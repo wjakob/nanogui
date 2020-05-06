@@ -196,9 +196,6 @@ protected:
     std::function<void(intptr_t)> mHwCursorSetter;
 };
 
-namespace elm { 
-  Screen* active_screen(); 
-  NANOGUI_EXPORT ::nanogui::Window* last_window();
-}
+namespace elm { NANOGUI_EXPORT ::nanogui::Window* last_window(); }
 
 NAMESPACE_END(nanogui)

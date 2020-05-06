@@ -42,14 +42,24 @@ Widget::~Widget() {
     }
 }
 
-void Widget::setTheme(Theme *theme) {
-    if (mTheme.get() == theme)
-        return;
-    mTheme = theme;
-    for (auto child : mChildren)
-        child->setTheme(theme);
-    if (mTooltipWdiget)
-      mTooltipWdiget->setTheme(theme);
+void Widget::setThemeFrom(const std::string& widgetId)
+{
+  if (auto w = findWidgetGlobal(widgetId))
+    setTheme(w->theme());
+}
+
+void Widget::setTheme(Theme *theme) 
+{
+  if (!theme)
+    return;
+  
+  if (mTheme.get() == theme)
+      return;
+  mTheme = theme;
+  for (auto child : mChildren)
+      child->setTheme(theme);
+  if (mTooltipWdiget)
+    mTooltipWdiget->setTheme(theme);
 }
 
 int Widget::fontSize() const {

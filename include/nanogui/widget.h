@@ -110,6 +110,8 @@ DECLSETTER(CornerRadius, float)
 DECLSETTER(IsSubElement, bool)
 DECLSETTER(WidgetCursor, Cursor)
 DECLSETTER(IsVisible, bool)
+DECLSETTER(WidgetTheme, Theme*)
+DECLSETTER(CopyThemeFrom, std::string)
 DECLSETTER(VisibleObservable, BoolObservable)
 
 struct ElementBase { Widget* w = nullptr; };
@@ -117,9 +119,9 @@ template<class FF> struct Element : public ElementBase { template<typename... Ar
 struct TooltipBase { Widget* w = nullptr; };
 template<class FF> struct TooltipWidget : public TooltipBase { template<typename... Args> TooltipWidget(const Args&... args) { w = new FF(nullptr, args...); } };
 
-
+namespace elm { ::nanogui::Screen* active_screen(); }
 #define WIDGET_COMMON_FUNCTIONS(class_name) \
-static class_name* find(Widget* p, const char* id) { return p->findWidget<class_name>(id); }
+static class_name* find(const char* id, Widget* p = nullptr) { return (p ? p : (Widget*)elm::active_screen())->findWidget<class_name>(id); }
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -164,6 +166,7 @@ public:
     const Theme *theme() const { return mTheme.get(); }
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme);
+    void setThemeFrom(const std::string& widgetId);
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
@@ -626,6 +629,8 @@ public:
     PROPSETTER(IsVisible, setVisible)
     PROPSETTER(TooltipText, setTooltip)
     PROPSETTER(Children, setChildrentOpts )
+    PROPSETTER(WidgetTheme, setTheme)
+    PROPSETTER(CopyThemeFrom, setThemeFrom)
 
 protected:
     /// Free all resources used by the widget and any children
