@@ -94,12 +94,13 @@ int main(int /* argc */, char ** /* argv */) {
 
   nanogui::init();
 
-  auto window = nanogui::sample::create_window(1600, 900, "Example Nanogui", true, false);
+  Vector2i size{ 1600, 900 };
+  auto window = nanogui::sample::create_window(size.x(), size.y(), "Example Nanogui", true, false, true);
   nanogui::sample::create_context();
 
   {
     // Create a nanogui screen and pass the glfw pointer to initialize
-    Screen nscreen({ 1600, 900 }, "NanoGUI Test", false);
+    Screen nscreen(size, "NanoGUI Test", false);
     nanogui::sample::setup_window_params(window, &nscreen);
 
     // Create nanogui gui

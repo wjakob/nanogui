@@ -230,7 +230,8 @@ private:
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    auto window = nanogui::sample::create_window(1600, 900, "NanoGUI test", true, false);
+    Vector2i size{ 1600, 900 };
+    auto window = nanogui::sample::create_window(size.x(), size.y(), "NanoGUI test", true, false, true);
     nanogui::sample::create_context();
 
     /* scoped variables */ {

@@ -345,11 +345,12 @@ public:
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    auto window = nanogui::sample::create_window(1920, 1080, "Nigma: editor", true, false);
+    Vector2i size{ 1920, 1080 };
+    auto window = nanogui::sample::create_window(size.x(), size.y(), "Nigma: editor", true, false, true);
     nanogui::sample::create_context();
 
     /* scoped variables */ {
-      EditorScreen screen({1920, 1080});
+      EditorScreen screen(size);
       nanogui::sample::setup_window_params(window, &screen);
 
       screen.drawAll();

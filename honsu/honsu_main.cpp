@@ -1358,13 +1358,12 @@ int main(int /* argc */, char ** /* argv */)
 {
   nanogui::init();
   Vector2i size{ 400, 600 };
-  auto window = nanogui::sample::create_window(size.x(), size.y(), "Honsu", true, false);
+  auto window = nanogui::sample::create_window(size.x(), size.y(), "Honsu", true, false, false);
   showAppExclusive = [window](bool v, bool always) { sample::set_window_topmost(window, v, always); };
-  nanogui::sample::remove_window_border(window);
   nanogui::sample::create_context();
 
   {
-    HonsuScreen screen(window, size + Vector2i{13, 36}, "");
+    HonsuScreen screen(window, size, "");
     nanogui::sample::setup_window_params(window, &screen);
     screen.setVisible(true);
     screen.performLayout();

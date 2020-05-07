@@ -318,24 +318,6 @@ void destroy_window(WindowHandle wnd)
     glfwDestroyWindow((GLFWwindow*)wnd);
 }
 
-void remove_window_border(WindowHandle wnd)
-{
-#if defined(_WIN32)
-  auto handle = glfwGetWin32Window((GLFWwindow*)wnd);
-  long Style = GetWindowLong(handle, GWL_STYLE);
-  Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
-  Style &= ~WS_CAPTION;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_BORDER;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_THICKFRAME;
-  //Style &= ~WS_GROUP;
-  SetWindowLong(handle, GWL_STYLE, Style);
-#else
-  (void)wnd;
-#endif
-}
-
 Vector2i get_cursor_pos()
 {
 #if WIN32
@@ -385,7 +367,7 @@ void set_window_pos(WindowHandle w, const Vector2i& pos)
   glfwSetWindowPos((GLFWwindow*)w, pos.x(), pos.y());
 }
 
-WindowHandle create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
+WindowHandle create_window(int& w, int& h, const std::string& caption, bool resizable, bool fullscreen, bool header)
 {
   uint32_t glMajor = 3;
   unsigned int glMinor = 3;
@@ -426,6 +408,22 @@ WindowHandle create_window(int w, int h, const std::string& caption, bool resiza
     throw std::runtime_error("Could not create an OpenGL " +
                               std::to_string(glMajor) + "." +
                               std::to_string(glMinor) + " context!");
+
+  if (!header)
+  {
+#if _WIN32
+    auto handle = glfwGetWin32Window((GLFWwindow*)hw_window);
+    long Style = GetWindowLong(handle, GWL_STYLE);
+    Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
+    Style &= ~WS_CAPTION;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_BORDER;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_THICKFRAME;
+    //Style &= ~WS_GROUP;
+    SetWindowLong(handle, GWL_STYLE, Style);
+#endif
+  }
 
   glfwMakeContextCurrent((GLFWwindow*)hw_window);
 
@@ -479,6 +477,17 @@ WindowHandle create_window(int w, int h, const std::string& caption, bool resiza
   glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER,
     GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &nStencilBits);
   glGetIntegerv(GL_SAMPLES, &nSamples);
+
+#if _WIN32
+  if (!header)
+  {
+    auto handle = glfwGetWin32Window((GLFWwindow*)hw_window);
+    RECT crect; GetClientRect(handle, &crect);
+
+    w = (crect.right - crect.left) / pixelRatio;
+    h = (crect.bottom - crect.top) / pixelRatio;
+  }
+#endif
 
   return hw_window;
 }

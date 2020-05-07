@@ -428,23 +428,7 @@ void sample::set_window_pos(WindowHandle w, const Vector2i& pos)
   glfwSetWindowPos((GLFWwindow*)w, pos.x(), pos.y());
 }
 
-void sample::remove_window_border(WindowHandle wnd)
-{
-#if defined(_WIN32)	
-  auto handle = glfwGetWin32Window((GLFWwindow*)wnd);
-  long Style = GetWindowLong(handle, GWL_STYLE);
-  Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
-  Style &= ~WS_CAPTION;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_BORDER;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_THICKFRAME;
-  //Style &= ~WS_GROUP;
-  SetWindowLong(handle, GWL_STYLE, Style);
-#endif
-}
-
-sample::WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
+sample::WindowHandle sample::create_window(int& w, int& h, const std::string& caption, bool resizable, bool fullscreen, bool header)
 {
   WindowHandle hw_window = nullptr;
   glfwSetErrorCallback(errorcb);
@@ -457,6 +441,22 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
   }
   else {
     hw_window = glfwCreateWindow(w, h, (caption + "(Vulkan)").c_str(), nullptr, nullptr);
+  }
+
+  if (!header)
+  {
+#if _WIN32
+    auto handle = glfwGetWin32Window((GLFWwindow*)hw_window);
+    long Style = GetWindowLong(handle, GWL_STYLE);
+    Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
+    Style &= ~WS_CAPTION;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_BORDER;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_THICKFRAME;
+    //Style &= ~WS_GROUP;
+    SetWindowLong(handle, GWL_STYLE, Style);
+#endif
   }
 
 #ifdef NDEBUG
@@ -493,6 +493,17 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
   vkGetDeviceQueue(internal::device->device, internal::device->graphicsQueueFamilyIndex, 0, &internal::queue);
   internal::fb = createFrameBuffers(internal::device, internal::surface, internal::queue, size.x(), size.y(), 0);
   internal::cmd_buffer = createCmdBuffer(internal::device->device, internal::device->commandPool);
+
+  if (!header)
+  {
+#if _WIN32
+    auto handle = glfwGetWin32Window((GLFWwindow*)hw_window);
+    RECT crect; GetClientRect(handle, &crect);
+
+    w = (crect.right - crect.left) / pixelRatio;
+    h = (crect.bottom - crect.top) / pixelRatio;
+#endif
+  }
 
   return hw_window;
 }

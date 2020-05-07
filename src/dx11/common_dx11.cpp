@@ -874,21 +874,7 @@ void sample::create_context() {
     throw std::runtime_error("Could not initialize NanoVG!");
 }
 
-void sample::remove_window_border(WindowHandle wnd)
-{
-  auto handle = (HWND)wnd;
-  long Style = GetWindowLong(handle, GWL_STYLE);
-  Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
-  Style &= ~WS_CAPTION;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_BORDER;
-  Style &= ~WS_SYSMENU;
-  Style &= ~WS_THICKFRAME;
-  //Style &= ~WS_GROUP;
-  SetWindowLong(handle, GWL_STYLE, Style);
-}
-
-sample::WindowHandle sample::create_window(int w, int h, const std::string& caption, bool resizable, bool fullscreen)
+sample::WindowHandle sample::create_window(int& w, int& h, const std::string& caption, bool resizable, bool fullscreen, bool header)
 {
   RECT rcWin;
   sample::WindowHandle hw_window;
@@ -915,6 +901,19 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
   if (!hw_window)
     throw std::runtime_error("Could not create an Window ");
 
+  if (!header)
+  {
+    long Style = GetWindowLong((HWND)hw_window, GWL_STYLE);
+    Style &= ~WS_MAXIMIZEBOX; //this makes it still work when WS_MAXIMIZEBOX is actually already toggled off
+    Style &= ~WS_CAPTION;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_BORDER;
+    Style &= ~WS_SYSMENU;
+    Style &= ~WS_THICKFRAME;
+    //Style &= ~WS_GROUP;
+    SetWindowLong(handle, GWL_STYLE, Style);
+  }
+
   float pixelRatio = get_pixel_ratio((HWND)hw_window);
   int ww = w * pixelRatio;
   int hh = h * pixelRatio;
@@ -925,6 +924,14 @@ sample::WindowHandle sample::create_window(int w, int h, const std::string& capt
 
   if (FAILED(InitializeDX(hw_window, ww, hh)))
     throw std::runtime_error("Could not create an dx11 context ");
+
+  if (!header)
+  {
+    RECT crect; GetClientRect((HWND)hw_window, &crect);
+
+    w = (crect.right - crect.left) / pixelRatio;
+    h = (crect.bottom - crect.top) / pixelRatio;
+  }
 
   return hw_window;
 }

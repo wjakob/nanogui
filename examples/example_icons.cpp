@@ -71,11 +71,11 @@ using namespace nanogui;
 int main(int /* argc */, char ** /* argv */) {
     nanogui::init();
 
-    static constexpr int width = 1600;
-    static constexpr int btn_width = width / 4;
-    static constexpr int height = 900;
+    int width = 1600;
+    int btn_width = width / 4;
+    int height = 900;
 
-    auto hwindow = nanogui::sample::create_window(width, height, "NanoGUI Icons", true, false);
+    auto hwindow = nanogui::sample::create_window(width, height, "NanoGUI Icons", true, false, false);
     nanogui::sample::create_context();
     /* scoped variables */ {
         // create a fixed size screen with one window

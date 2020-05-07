@@ -282,7 +282,7 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     Vector2i p((int) x, (int) y);
 
 #if defined(_WIN32) || defined(__linux__)
-    p = (p.cast<float>() / mPixelRatio).cast<int>();
+    p = (p / mPixelRatio);
 #endif
 
     bool ret = false;
