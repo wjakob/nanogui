@@ -1266,27 +1266,35 @@ struct LoginWindow : public UniqueWindow
   LoginWindow(Widget* scr)
     : UniqueWindow(scr, "#login_window", UniqueWindow::ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
   {
-    label(FixedHeight{ 100 }, Caption{ "Add new account" }, CaptionHAlign{ TextHAlign::hCenter }, FontSize{ 26 });
-
     auto textfield = [&](std::string placeholder, std::string value, std::string id) {
-      textbox(FontSize{ 24 }, IsEditable{ true }, TextAlignment::Left, TextPlaceholder{ placeholder },
-              TextValue{ value }, BorderColor{ Color::dimGrey }, BorderSize{ 2.f }, BackgroundHoverColor{ Color::transparent },
-              BackgroundColor{ Color::transparent }, WidgetId{ id });
+      elm::Textbox{
+        FontSize{ 24 }, IsEditable{ true }, TextAlignment::Left, TextPlaceholder{ placeholder },
+        TextValue{ value }, BorderColor{ Color::dimGrey }, BorderSize{ 2.f }, BackgroundHoverColor{ Color::transparent },
+        BackgroundColor{ Color::transparent }, WidgetId{ id }
+      };
     };
 
-    /* No need to store a pointer, the data structure will be automatically
-    freed when the parent window is deleted */
-    textfield("account name", account.title, "#account_name");
-    textfield("youtrack url", account.url, "#youtrack_url");
-    textfield("youtrack token", account.token, "#youtrack_token");
+    elm::BeginChildren{ this };
+      elm::Label{ FixedHeight{ 100 }, Caption{ "Add new account" }, CaptionHAlign{ TextHAlign::hCenter }, FontSize{ 26 }};
 
-    link(Caption{ "How to obtain a new permament token?" },
-         ButtonCallback{ [] { open_url("https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html", ""); } });
+      /* No need to store a pointer, the data structure will be automatically
+      freed when the parent window is deleted */
+      textfield("account name", account.title, "#account_name");
+      textfield("youtrack url", account.url, "#youtrack_url");
+      textfield("youtrack token", account.token, "#youtrack_token");
+
+      elm::Link {
+         Caption{ "How to obtain a new permament token?" },
+         ButtonCallback{ [] { open_url("https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html", ""); } }
+      };
 
     /* Alternative construction notation using variadic template */
-    button(Caption{ "Login" }, FontSize{ 32 },
-      BackgroundColor{ 0, 0, 255, 25 },
-      ButtonCallback{ [scr] { requestAdminData( scr ); } });
+      elm::Button{
+        Caption{ "Login" }, FontSize{ 32 },
+        BackgroundColor{ 0, 0, 255, 25 },
+        ButtonCallback{ [scr] { requestAdminData(scr); } }
+      };
+    elm::EndChildren{};
     performLayoutLater();
   }
 };

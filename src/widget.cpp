@@ -24,7 +24,7 @@ RTTI_IMPLEMENT_INFO(Widget, Object)
 std::vector<intptr_t> Widget::mFocusChain;
 
 Widget::Widget(Widget *p)
-    : mParent(p ? p : elm::get_active_window()), mTheme(nullptr), mLayout(nullptr),
+    : mParent(p ? p : elm::get_active_widget()), mTheme(nullptr), mLayout(nullptr),
       mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
       mFixedSize(Vector2i::Zero()), mRelSize(Vector2f::Zero()), mEnabled(true),
       mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),

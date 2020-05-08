@@ -246,7 +246,13 @@ namespace elm
   using Window = Element<Window>; 
   struct BeginWindow { template<typename... Args> BeginWindow(const Args&... args) { new ::nanogui::Window(nullptr, GlobWindowActive{ true }, args...); } };
   struct NANOGUI_EXPORT EndWindow { EndWindow(); };
-  NANOGUI_EXPORT ::nanogui::Window* get_active_window();
+  NANOGUI_EXPORT ::nanogui::Widget* get_active_widget();
+
+  struct BeginWidget { template<typename W, typename... Args> BeginWidget(const Args&... args) { new W(args...); } };
+  struct NANOGUI_EXPORT EndWidget { EndWidget(); };
+
+  struct NANOGUI_EXPORT BeginChildren { BeginChildren(::nanogui::Widget* w); };
+  struct NANOGUI_EXPORT EndChildren { EndChildren(); };
 }
 
 DECLSETTER(PanelHighlightHeader, bool)

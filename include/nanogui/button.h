@@ -368,4 +368,6 @@ public:
   Color getTextColor() const override;
 };
 
+namespace elm { using Link = Element<LinkButton>; }
+
 NAMESPACE_END(nanogui)

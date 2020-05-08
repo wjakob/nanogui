@@ -18,6 +18,7 @@
 #include <nanogui/windowmenu.h>
 #include <nanogui/layout.h>
 #include <nanogui/saveload.h>
+#include <stack>
 #include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
@@ -29,11 +30,16 @@ RTTI_IMPLEMENT_INFO(VStack, Widget)
 
 namespace elm
 {
-  ::nanogui::Window* active_wnd = nullptr;
-  void set_active_window(::nanogui::Window* w) { active_wnd = w; }
-  void reset_active_window() { active_wnd = nullptr; }
+  std::stack<::nanogui::Widget*> active_widgets;
+  void set_active_widget(::nanogui::Widget* w) { active_widgets.push(w); }
+  void reset_active_widget() { active_widgets.pop(); }
+  EndWindow::EndWindow() { reset_active_widget(); }
 
-  ::nanogui::Window* get_active_window() { return active_wnd; }
+  ::nanogui::Widget* get_active_widget() { return active_widgets.empty() ? nullptr : active_widgets.top(); }
+  BeginChildren::BeginChildren(::nanogui::Widget* w) { set_active_widget(w); }
+  EndChildren::EndChildren() { reset_active_widget(); }
+
+  EndWidget::EndWidget() { reset_active_widget(); }
 }
 
 void Frame::draw(NVGcontext *ctx)
@@ -553,9 +559,9 @@ bool Window::tabstop(CanTabStop mode) const
 void Window::setGlobActiveWindow(bool b)
 {
   if (b)
-    elm::set_active_window(this);
+    elm::set_active_widget(this);
   else
-    elm::reset_active_window();
+    elm::reset_active_widget();
 }
 
 Vector4i Window::getWidgetsArea()
@@ -741,11 +747,6 @@ bool Panel::keyboardEvent(int key, int scancode, int action, int mods)
   }
 
   return Widget::keyboardEvent(key, scancode, action, mods);
-}
-
-elm::EndWindow::EndWindow()
-{
-  elm::reset_active_window();
 }
 
 NAMESPACE_END(nanogui)
