@@ -113,6 +113,7 @@ DECLSETTER(IsVisible, bool)
 DECLSETTER(WidgetTheme, Theme*)
 DECLSETTER(CopyThemeFrom, std::string)
 DECLSETTER(VisibleObservable, BoolObservable)
+DECLSETTER(FillChildren, std::function<void()>)
 
 struct ElementBase { Widget* w = nullptr; };
 template<class FF> struct Element : public ElementBase { template<typename... Args> Element(const Args&... args) { w = new FF(nullptr, args...); }};
@@ -537,6 +538,8 @@ public:
     virtual void performLayout(NVGcontext *ctx);
     void performLayoutLater();
 
+    void fillChildren(std::function<void()> func);
+
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);
     virtual void afterDraw(NVGcontext *ctx);
@@ -632,6 +635,7 @@ public:
     PROPSETTER(Children, setChildrentOpts )
     PROPSETTER(WidgetTheme, setTheme)
     PROPSETTER(CopyThemeFrom, setThemeFrom)
+    PROPSETTER(FillChildren, fillChildren)
 
 protected:
     /// Free all resources used by the widget and any children

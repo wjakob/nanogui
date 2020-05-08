@@ -1110,35 +1110,47 @@ struct AgilesWindow : public UniqueWindow
   AgilesWindow()
     : UniqueWindow("#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    vstack(2, 2, FixedHeight{ 80 },
-           elm::Label{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
-                           TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
-                           CaptionFont{ "sans-bold" }, FontSize{ 42 } },
-           elm::Label{ Caption{ "You will be able to edit this selection later" },
-                           CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 } }
-    );
+    elm::BeginChildren{ this };
+      elm::VStack{ 2, 2, FixedHeight{ 80 },
+        elm::Label{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
+                    TextColor{ Color::white }, CaptionAlign{ hCenter, vBottom },
+                    CaptionFont{ "sans-bold" }, FontSize{ 42 } },
+        elm::Label{ Caption{ "You will be able to edit this selection later" },
+                    CaptionAlign{ hCenter, vTop }, FixedHeight{ 20 } }
+      };
 
-    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(10, 10);
-    for (auto& i : account.agiles)
-      vstack.button(Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
-                    ButtonFlags{ Button::RadioButton },
-                    FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
-                    BorderColor{ Color::dimGrey }, BorderSize{ 2.f },
-                    BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
-                    ButtonCallback{ [name = i.name]{ account.activeAgile = name; } });
+      elm::VScrollPanel{ RelativeSize{ 1.f, 0.f },
+        elm::VStack{ 10, 10, WidgetId{ "#agiles_board" },
+          FillChildren { [] {
+            for (auto& i : account.agiles)
+            {
+              elm::Button{ Caption{ i.name }, CaptionFont{ "sans" }, FixedHeight{ 50 },
+                           ButtonFlags{ Button::RadioButton },
+                           FontSize{ 24 }, Icon{ ENTYPO_ICON_OK }, IconColor{ Color::dimGrey }, IconPushedColor{ Color::aquamarine },
+                           BorderColor{ Color::dimGrey }, BorderSize{ 2.f },
+                           BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::transparent },
+                           ButtonCallback{ [name = i.name]{ account.activeAgile = name; } }
+              };
+            }
+          }},
+          elm::Button { Caption{ "Save" }, FixedHeight{ 50 },
+              BorderSize{ 0 }, BackgroundColor{ Color::indianRed },
+              BackgroundHoverColor{ Color::caesarRed },
+              ButtonCallback{ [] {
+                WaitingWindow::create();
+                requestTasks(account.activeAgile,
+                  // success
+                  [](std::string body) {
+                    if (parseBoardTasks(body)) elm::create<TasksWindow>();
+                    else elm::create<AgilesWindow>();
+                  },
+                  // failed
+                  [](int) { elm::create<AgilesWindow>(); });
+            } }
+          }
+      }};
 
-    vstack.button(Caption{ "Save" }, FixedHeight{ 50 },
-                  BorderSize{ 0 }, BackgroundColor{ Color::indianRed },
-                  BackgroundHoverColor{ Color::caesarRed },
-                  ButtonCallback{ [] {
-                    WaitingWindow::create();
-                    requestTasks(account.activeAgile, 
-                      [](std::string body) { 
-                        if (parseBoardTasks(body)) elm::create<TasksWindow>(); 
-                        else elm::create<AgilesWindow>();  
-                      },
-                      [](int) { elm::create<AgilesWindow>(); });
-                  } });
+    elm::EndChildren{};
     performLayoutLater();
   }
 };

@@ -87,6 +87,13 @@ void Widget::performLayoutLater()
     scr->needPerformLayout(parent());
 }
 
+void Widget::fillChildren(std::function<void()> func)
+{
+  elm::BeginChildren{ this };
+  func();
+  elm::EndChildren{};
+}
+
 void Widget::performLayout(NVGcontext *ctx)
 {
   if (mLayout)
