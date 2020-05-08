@@ -431,9 +431,9 @@ struct UniqueWindow : public Window
   static WidgetId lastWindowId;
 
   template<typename ... Args>
-  UniqueWindow(Widget* screen, std::string id, bool addheader, const Args&... args)
-    : Window(screen, WidgetId{ id }, Position{ 0, 0 }, WindowHaveHeader{ false },
-             FixedSize{ screen->size() }, WindowMovable{ Theme::WindowDraggable::dgFixed },
+  UniqueWindow(std::string id, bool addheader, const Args&... args)
+    : Window(nullptr, WidgetId{ id }, Position{ 0, 0 }, WindowHaveHeader{ false },
+             FixedSize{ elm::active_screen()->size() }, WindowMovable{ Theme::WindowDraggable::dgFixed },
              args...)
   {
     if (auto rm = Window::find(lastWindowId.value.c_str()))
@@ -459,14 +459,20 @@ struct UniqueWindow : public Window
 
 WidgetId UniqueWindow::lastWindowId = { "" };
 
+namespace nanogui {
+  namespace elm { template<typename W, typename...Args> void create(const Args&... args) { new W(args...); } }
+}
+
 struct WaitingWindow : public UniqueWindow
 {
-  WaitingWindow(Widget* scr)
-    : UniqueWindow(scr, "#waiting_window", NoHeader, WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
+  WaitingWindow()
+    : UniqueWindow("#waiting_window", NoHeader, WindowBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 })
   {
     spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent });
     performLayoutLater();
   }
+
+  static void create() { new WaitingWindow(); }
 };
 
 struct LoginWindow;
@@ -515,7 +521,7 @@ public:
 
 RTTI_IMPLEMENT_INFO(IssuePanel, Frame)
 
-void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue, std::tm date, int duration)
+void updateRecordsIssueDay(std::string wId, IssueInfo::Ptr issue, std::tm date, int duration)
 {
   std::string _idDayWidget = "#day_" + std::to_string(date.tm_mon+1) +
                              "_" + std::to_string(date.tm_mday+1);
@@ -548,7 +554,8 @@ void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue
     if (auto w = IssuePanel::cast(issueWidget))
     {
       w->addTimeSpent(duration * 60);
-      screen->needPerformLayout(screen);
+      Screen* scr = w->screen();
+      scr->needPerformLayout(scr);
     }
 
     vstack->sortChildren([](Widget* w1, Widget* w2) {
@@ -561,16 +568,16 @@ void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue
   }
 }
 
-void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
+void requestIssueWorktime(IssueInfo::Ptr issue, std::string wId)
 {
   SSLGet{ issue->getWorktimeUrl(), sslHeaders }
-    .onResponse([issue, screen, wId](int status, std::string body) {
+    .onResponse([issue, wId](int status, std::string body) {
       if (status != 200)
         return;
       Json::value response(body);
       Json::parse(response, body);
 
-      response.update([screen, issue, wId](auto& i) {
+      response.update([issue, wId](auto& i) {
         int duration = (int)i.get("duration").get_int();
         std::time_t created = (uint64_t)i.get("created").get_int() / 1000;
 
@@ -578,7 +585,7 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
         std::tm tm_date = *tmt, _tm = *tmt;
         makeDayInterval(tm_date, _tm);
 
-        updateRecordsIssueDay(screen, wId, issue, tm_date, duration);
+        updateRecordsIssueDay(wId, issue, tm_date, duration);
         return true;
       });
     })
@@ -588,8 +595,8 @@ void requestIssueWorktime(Screen* screen, IssueInfo::Ptr issue, std::string wId)
 struct TasksWindow;
 struct RecordsWindow : public UniqueWindow
 {
-  RecordsWindow(Widget* scr)
-    : UniqueWindow(scr, "#records_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
+  RecordsWindow()
+    : UniqueWindow("#records_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
     hlayer(5, 2, FixedHeight{ 40 }, WidgetId{"#boards_records_layer"});
     auto hbutton = [](auto caption, auto color, auto hover, auto func) {
@@ -607,7 +614,7 @@ struct RecordsWindow : public UniqueWindow
       };
     };
 
-    hbutton("Boards", Color::grey, Color::red, [=] { scr->add<TasksWindow>(); });
+    hbutton("Boards", Color::grey, Color::red, [=] { elm::create<TasksWindow>(); });
     hbutton("Records", Color::red, Color::grey, [] {});
 
     WidgetId wId{ "#rec_vstack" };
@@ -615,14 +622,14 @@ struct RecordsWindow : public UniqueWindow
              elm::VStack{ 5, 0, wId,
                  elm::Spinner{
                    SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
-                   FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f }
+                   FixedHeight{ width() / 2 }, RemoveAfterSec{ 10.f }
                  }
              }
         });
     std::string body = AllOf{ youytrack.filter_my_issues, 
                               "%20Board%20", Url::encodeQueryData(account.activeAgile), ":%7BCurrent%20sprint%7D" };
     SSLGet{ body, sslHeaders }
-      .onResponse([scr, wId](int status, std::string body) {
+      .onResponse([wId](int status, std::string body) {
         if (status != 200)
           return;
 
@@ -630,14 +637,15 @@ struct RecordsWindow : public UniqueWindow
         Json::parse(response, body);
 
         response.get("issue")
-          .update([scr, wId](auto& js) {
+          .update([wId](auto& js) {
           auto issue = IssueInfo::fromJson(js);
           if (issue->spentTimeMin > 0)
-            requestIssueWorktime(Screen::cast(scr), issue, wId.value);
+            requestIssueWorktime(issue, wId.value);
           return true;
         });
 
-        Screen::cast(scr)->needPerformLayout(scr);
+        auto scr = elm::active_screen();
+        scr->needPerformLayout(scr);
       })
       .execute();
 
@@ -650,7 +658,7 @@ void openAgileUrl(const std::string& agile)
 
 }
 
-void createNewIssue(Screen* screen)
+void createNewIssue()
 {
 
 }
@@ -1053,8 +1061,8 @@ void requestTasks(std::string board, std::function<void(std::string)> onSuccess,
 
 struct TasksWindow : public UniqueWindow
 {
-  TasksWindow(Widget* scr)
-    : UniqueWindow(scr, "#tasks_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
+  TasksWindow()
+    : UniqueWindow("#tasks_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
     auto& buttons = hlayer(5, 2, FixedHeight{ 40 });
     auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
@@ -1064,7 +1072,7 @@ struct TasksWindow : public UniqueWindow
     };
 
     hbutton("Boards", Color::red, Color::grey, [] {});
-    hbutton("Records", Color::grey, Color::red, [=] { scr->add<RecordsWindow>(); });
+    hbutton("Records", Color::grey, Color::red, [=] { elm::create<RecordsWindow>(); });
 
     hlayer(2, 2, FixedHeight{ 40 })
       .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
@@ -1078,14 +1086,14 @@ struct TasksWindow : public UniqueWindow
       DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 }, ButtonCallback{ func });
     };
 
-    action(ENTYPO_ICON_PLUS, [scr] { createNewIssue(Screen::cast(scr)); });
-    action(ENTYPO_ICON_CCW, [scr] { 
-      scr->add<WaitingWindow>();
+    action(ENTYPO_ICON_PLUS, [] { createNewIssue(); });
+    action(ENTYPO_ICON_CCW, [] { 
+      WaitingWindow::create();
       requestTasks(account.activeAgile,
-        [scr](std::string body) { 
-          if (parseBoardTasks(body)) scr->add<TasksWindow>(); 
-          else scr->add<AgilesWindow>();  },
-        [scr](int) { scr->add<AgilesWindow>(); }); 
+        [](std::string body) { 
+          if (parseBoardTasks(body)) elm::create<TasksWindow>(); 
+          else elm::create<AgilesWindow>();  },
+        [](int) { elm::create<AgilesWindow>(); }); 
     });
 
     auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
@@ -1099,8 +1107,8 @@ struct TasksWindow : public UniqueWindow
 
 struct AgilesWindow : public UniqueWindow
 {
-  AgilesWindow(Widget* scr)
-    : UniqueWindow(scr, "#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
+  AgilesWindow()
+    : UniqueWindow("#agiles_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
     vstack(2, 2, FixedHeight{ 80 },
            elm::Label{ FixedHeight{ 60 }, Caption{ "Select agile boards" },
@@ -1122,14 +1130,14 @@ struct AgilesWindow : public UniqueWindow
     vstack.button(Caption{ "Save" }, FixedHeight{ 50 },
                   BorderSize{ 0 }, BackgroundColor{ Color::indianRed },
                   BackgroundHoverColor{ Color::caesarRed },
-                  ButtonCallback{ [scr] {
-                    scr->add<WaitingWindow>();
+                  ButtonCallback{ [] {
+                    WaitingWindow::create();
                     requestTasks(account.activeAgile, 
-                      [scr](std::string body) { 
-                        if (parseBoardTasks(body)) scr->add<TasksWindow>(); 
-                        else scr->add<AgilesWindow>();  
+                      [](std::string body) { 
+                        if (parseBoardTasks(body)) elm::create<TasksWindow>(); 
+                        else elm::create<AgilesWindow>();  
                       },
-                      [scr](int) { scr->add<AgilesWindow>(); });
+                      [](int) { elm::create<AgilesWindow>(); });
                   } });
     performLayoutLater();
   }
@@ -1185,40 +1193,6 @@ bool parseAgilesData(std::string data)
   return !account.agiles.empty();
 }
 
-void requestAdminData(Widget* screen)
-{
-  if (   !checkAccountUrl(screen->findWidget<TextBox>("#youtrack_url"))
-      || !checkAccountToken(screen->findWidget<TextBox>("#youtrack_token"))
-     )
-  {
-    screen->add<LoginWindow>();
-    return;
-  }
-
-  account.save();
-  screen->add<WaitingWindow>();
- 
-  SSLGet{ "/api/admin/users/me?fields=id,login,name,email", sslHeaders }
-    .onResponse([screen](int status, std::string body) {
-      if (status != 200) {
-        screen->add<LoginWindow>();
-        return;
-      }
-      
-      requestAgiles(
-        [screen](std::string body) {  //success
-          if (parseAgilesData(body))
-            screen->add<AgilesWindow>();
-        },
-        [screen](int status) {        //failed
-          account.agiles.clear(); 
-          screen->add<LoginWindow>(); 
-        }
-      );
-    })
-    .execute();
-}
-
 bool update_requests()
 {
   createSSLClient();
@@ -1261,10 +1235,11 @@ bool update_requests()
   return !(SSLGet::requests.empty() || SSLPost::requests.empty());
 }
 
+void requestAdminData();
 struct LoginWindow : public UniqueWindow
 {
-  LoginWindow(Widget* scr)
-    : UniqueWindow(scr, "#login_window", UniqueWindow::ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
+  LoginWindow()
+    : UniqueWindow("#login_window", UniqueWindow::ShowHeader, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 20, 20 })
   {
     auto textfield = [&](std::string placeholder, std::string value, std::string id) {
       elm::Textbox{
@@ -1292,12 +1267,41 @@ struct LoginWindow : public UniqueWindow
       elm::Button{
         Caption{ "Login" }, FontSize{ 32 },
         BackgroundColor{ 0, 0, 255, 25 },
-        ButtonCallback{ [scr] { requestAdminData(scr); } }
+        ButtonCallback{ [] { requestAdminData(); } }
       };
     elm::EndChildren{};
     performLayoutLater();
   }
 };
+
+void requestAdminData()
+{
+  if (   !checkAccountUrl(TextBox::find("#youtrack_url"))
+      || !checkAccountToken(TextBox::find("#youtrack_token")) )
+  {
+    elm::create<LoginWindow>();
+    return;
+  }
+
+  account.save();
+  WaitingWindow::create();
+
+  SSLGet{ "/api/admin/users/me?fields=id,login,name,email", sslHeaders }
+    .onResponse([](int status, std::string body) {
+      if (status != 200) {
+        elm::create<LoginWindow>();
+        return;
+      }
+
+      requestAgiles(
+        //success
+        [](std::string body) { if (parseAgilesData(body)) elm::create<AgilesWindow>(); }, 
+        //failed
+        [](int status) { account.agiles.clear(); elm::create<LoginWindow>(); }
+      );
+  })
+    .execute();
+}
 
 class HonsuScreen : public Screen {
 public:
@@ -1307,7 +1311,7 @@ public:
       initGPUTimer(&gpuTimer);
 
       account.load();
-      add<LoginWindow>();
+      elm::create<LoginWindow>();
 
       //fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(width() - 210, 5));
       cpuGraph = &wdg<PerfGraph>(GRAPH_RENDER_MS, "CPU Time", Vector2i(width() - 205, 10));

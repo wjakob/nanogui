@@ -119,7 +119,7 @@ template<class FF> struct Element : public ElementBase { template<typename... Ar
 struct TooltipBase { Widget* w = nullptr; };
 template<class FF> struct TooltipWidget : public TooltipBase { template<typename... Args> TooltipWidget(const Args&... args) { w = new FF(nullptr, args...); } };
 
-namespace elm { ::nanogui::Screen* active_screen(); }
+namespace elm { NANOGUI_EXPORT ::nanogui::Screen* active_screen(); }
 #define WIDGET_COMMON_FUNCTIONS(class_name) \
 static class_name* find(const char* id, Widget* p = nullptr) { return (p ? p : (Widget*)elm::active_screen())->findWidget<class_name>(id); }
 
