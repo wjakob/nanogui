@@ -85,8 +85,45 @@ public:
     set<VStack, Args...>(args...); 
   }
 };
-
 namespace elm { using VStack = Element<VStack>; }
+
+class NANOGUI_EXPORT HStack : public Widget
+{
+public:
+  RTTI_CLASS_UID(HStack)
+  RTTI_DECLARE_INFO(HStack)
+
+  explicit HStack(Widget* parent) : Widget(parent) {}
+
+  using Widget::set;
+  template<typename... Args>
+  HStack(Widget* parent, int margin, int spacing, const Args&... args)
+    : HStack(parent)
+  {
+    withLayout<BoxLayout>(Orientation::Horizontal, Alignment::Fill, margin, spacing);
+    set<HStack, Args...>(args...);
+  }
+};
+namespace elm { using HStack = Element<HStack>; }
+
+class NANOGUI_EXPORT HLayer : public Widget
+{
+public:
+  RTTI_CLASS_UID(HLayer)
+  RTTI_DECLARE_INFO(HLayer)
+
+  explicit HLayer(Widget* parent) : Widget(parent) {}
+
+  using Widget::set;
+  template<typename... Args>
+  HLayer(Widget* parent, int margin, int spacing, const Args&... args)
+    : HLayer(parent)
+  {
+    withLayout<StretchLayout>(Orientation::Horizontal, margin, spacing);
+    set<HLayer, Args...>(args...);
+  }
+};
+namespace elm { using HLayer = Element<HLayer>; }
 
 class NANOGUI_EXPORT Window : public Widget 
 {

@@ -653,15 +653,8 @@ struct RecordsWindow : public UniqueWindow
   }
 };
 
-void openAgileUrl(const std::string& agile)
-{
-
-}
-
-void createNewIssue()
-{
-
-}
+void openAgileUrl(const std::string& agile) {}
+void createNewIssue() {}
 
 void changeTaskRecordStatus(IssueInfo::Ptr issue, bool rec)
 {
@@ -816,9 +809,9 @@ public:
 struct ActivityWithNoTaskWarning : public Window
 {
   static const std::string Id;
-  ActivityWithNoTaskWarning(Widget* scr)
-    : Window(scr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
-      Position{ 0, 0 }, FixedSize{ scr->size() },
+  ActivityWithNoTaskWarning()
+    : Window(nullptr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
+      Position{ 0, 0 }, FixedSize{ elm::active_screen()->size() },
       WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
       WidgetId{ Id })
   {
@@ -857,12 +850,12 @@ struct ActivityWithNoTaskWarning : public Window
     performLayoutLater();
   }
 
-  static void update(Screen* screen)
+  static void update()
   {
     if (account.lastCheckActivityTimeSec < account.nocheckActivityInteralSec)
       return;
     account.lastCheckActivityTimeSec = 0;
-    if (auto w = screen->findWidget(Id)) {
+    if (auto w = Widget::find(Id.c_str())) {
       w->bringToFront();
       return;
     }
@@ -870,7 +863,7 @@ struct ActivityWithNoTaskWarning : public Window
       return;
     if (account.getActiveIssue())
       return;
-    screen->add<ActivityWithNoTaskWarning>();
+    elm::create<ActivityWithNoTaskWarning>();
   }
 };
 const std::string ActivityWithNoTaskWarning::Id = "#active_notask_warn";
@@ -878,62 +871,62 @@ const std::string ActivityWithNoTaskWarning::Id = "#active_notask_warn";
 struct InactiveWarning : public Window
 {
   static const std::string Id;
-  InactiveWarning(Widget* scr)
-    : Window(scr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
-             Position{ 0, 0 }, FixedSize{ scr->size() },
+  InactiveWarning()
+    : Window(nullptr, WidgetStretchLayout{ Orientation::Vertical, 10, 10 },
+             Position{ 0, 0 }, FixedSize{ elm::active_screen()->size() },
              WindowMovable{ Theme::WindowDraggable::dgFixed }, WindowHaveHeader{ false },
              WidgetId{ Id })
   {
     account.suspendInactiveTime = true;
     showAppExclusive(true, true);
 
-    add(elm::VStack{ 10, 10,
-          Children{},
-            elm::Label{
-              Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter }
-            },
-            elm::Label{
-              Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
-              OnUpdate{ [](Widget* w) {
-              if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
-                return;
-
-              account.inactiveLastTimeSec = account.inactiveTimeSec;
-              Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
-            }
+    elm::BeginChildren{ this };
+      elm::VStack{ 10, 10,
+        elm::Label{ Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter } },
+        elm::Label{ Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
+          OnUpdate{ [](Widget* w) {
+            if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
+              return;
+            account.inactiveLastTimeSec = account.inactiveTimeSec;
+            Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
           }
+        }
+      }};
+      elm::Button{ Caption{ "Add" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+        BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
+        ButtonChangeCallback{ [](Button* b) {
+          account.resetInactiveTime();
+          Window::cast(b->parent())->dispose();
+          showAppExclusive(false, false);
         }}
-    );
-    button(Caption{ "Add" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
-      BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
-      ButtonChangeCallback{ [](Button* b) {
-      account.resetInactiveTime();
-      Window::cast(b->parent())->dispose();
-      showAppExclusive(false, false);
-    } });
-    button(Caption{ "Remove" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
-      BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
-      ButtonChangeCallback{ [](Button* b) {
-      if (auto issue = account.getActiveIssue())
-      {
-        issue->recordTimeSec -= account.inactiveTimeSec;
-        issue->recordTimeTodaySec -= account.inactiveTimeSec;
-        account.resetInactiveTime();
-      }
-      Window::cast(b->parent())->dispose();
-      showAppExclusive(false, false);
-    } });
-    line(LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH });
+      };
+      elm::Button{ Caption{ "Remove" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
+        BackgroundColor{ Color::indianRed }, BackgroundHoverColor{ Color::red },
+        ButtonChangeCallback{ [](Button* b) {
+          if (auto issue = account.getActiveIssue())
+          {
+            issue->recordTimeSec -= account.inactiveTimeSec;
+            issue->recordTimeTodaySec -= account.inactiveTimeSec;
+            account.resetInactiveTime();
+          }
+          Window::cast(b->parent())->dispose();
+          showAppExclusive(false, false);
+        }}
+      };
+      elm::Line{ 
+        LineWidth{ 4 }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::CenterH } 
+      };
+    elm::EndChildren{};
     performLayoutLater();
   }
 
-  static void update(Screen* screen) 
+  static void update() 
   {
     if (account.inactiveTimeSec < (5 * 60))
       return;
-    if (auto w = screen->findWidget(Id))
+    if (auto w = Widget::find(Id.c_str()))
       return;
-    screen->add<InactiveWarning>();
+    elm::create<InactiveWarning>();
   }
 };
 const std::string InactiveWarning::Id = "#inactive_warn";
@@ -943,23 +936,35 @@ class TaskRecordPanel : public Frame
 public:
   Label* time = nullptr;
   Label* dtime = nullptr;
-  TaskRecordPanel(Widget* parent)
-    : Frame(parent, IsSubElement{ true }, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 })
+  TaskRecordPanel()
+    : Frame(nullptr, IsSubElement{ true }, WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10 })
   {
-    line(LineWidth{ 4 }, IsSubElement{ true }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::Left });
+    elm::BeginChildren{ this };
+      elm::Line{ 
+        LineWidth{ 4 }, IsSubElement{ true }, BackgroundColor{ Color::red }, DrawFlags{ Line::Horizontal | Line::Top | Line::Left }
+      };
 
-    auto& header = widget().flexlayout(Orientation::ReverseHorizontal);
-    header.label(WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 });
-    header.wdg<TaskRecordButton>([] { return account.getActiveIssue(); });
+      elm::Widget{ WidgetStretchLayout{ Orientation::ReverseHorizontal },
+        elm::Label{ WidgetId{"#txt"}, Caption{ "No task recording" }, FontSize{ 28 } },
+        Element<TaskRecordButton>{ [] { return account.getActiveIssue(); } }
+      };
   
-    auto& timeline = hlayer(2, 2);
-    timeline.label(WidgetId{ "#time" }, Caption{ "00:00:00" }, TextOffset{ 5, 0 },
-                   CaptionAlign{ TextHAlign::hLeft, TextVAlign::vBottom }, FontSize{ 28 });
-    timeline.label(WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, TextOffset { 5, 0 },
-                   CaptionAlign{ TextHAlign::hRight, TextVAlign::vBottom });
-    label(Caption{ "Records less 1 minute no send" }, CaptionHAlign{ TextHAlign::hCenter },
-          BackgroundColor{ Color::red }, TextColor{ Color::white }, WidgetId{ "#warn" });
+      elm::HLayer{ 2, 2,
+        elm::Label{
+          WidgetId{ "#time" }, Caption{ "00:00:00" }, TextOffset{ 5, 0 },
+          CaptionAlign{ TextHAlign::hLeft, TextVAlign::vBottom }, FontSize{ 28 }
+        },
+        elm::Label{
+          WidgetId{ "#dtime" }, Caption{ "Today 00:00:00" }, TextOffset { 5, 0 },
+          CaptionAlign{ TextHAlign::hRight, TextVAlign::vBottom }
+        }
+      };
 
+      elm::Label{
+        Caption{ "Records less 1 minute no send" }, CaptionHAlign{ TextHAlign::hCenter },
+        BackgroundColor{ Color::red }, TextColor{ Color::white }, WidgetId{ "#warn" }
+      };
+    elm::EndChildren{};
     showRecPanelWait = [this](bool show) { showWaitNotification(show); };
   }
 
@@ -1009,30 +1014,34 @@ class TaskPanel : public Frame
 public:
   IssueInfo::Ptr issue;
 
-  TaskPanel(Widget* parent, IssueInfo::Ptr _issue)
-    : Frame(parent, 
+  TaskPanel(IssueInfo::Ptr _issue)
+    : Frame(nullptr, 
             BorderColor{ Color::ligthDarkGrey }, BorderSize{ 2.f }, CornerRadius{ 6.f }, 
             BackgroundColor{ Color::heavyDarkGrey },
             WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, 10, 10}) 
   {
     issue = _issue;
-    hlayer(2, 2, FixedHeight{ 26 },
-           Element<LinkButton>{
-              Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
-              ButtonCallback{ [this] { issue->openUrl(account.url); } }
-           },
-           Element<LinkButton>{
-              Caption{ issue->state }, TextColor{ Color::grey }, FontSize{ 14 },
-              WidgetCursor{ Cursor::Arrow }
-           },
-           Element<Widget> {},
-           Element<TaskRecordButton>{ [this] { return issue; }, [this] { return inFocusChain(); }
-           });
+    elm::BeginChildren{ this };
+      elm::HLayer{ 2, 2, FixedHeight{ 26 },
+        Children{},
+          elm::Link{
+            Caption{ issue->id }, TextColor{ Color::grey }, FontSize { 14 },
+            ButtonCallback{ [this] { issue->openUrl(account.url); } }
+          },
+          elm::Link{
+            Caption{ issue->state }, TextColor{ Color::grey }, FontSize{ 14 },
+            WidgetCursor{ Cursor::Arrow }
+          },
+          elm::Widget {},
+          Element<TaskRecordButton>{ [this] { return issue; }, [this] { return inFocusChain(); }}
+      };
 
-    label(Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWrapped{ true });
-
-    line(BackgroundColor{ Color::ligthDarkGrey }, LineWidth{ 6 },
-         DrawFlags{ Line::Vertical | Line::CenterV | Line::Left }, IsSubElement{ true });
+      elm::Label{ Caption{ issue->summary }, FontSize{ 22 }, TextColor{ Color::white }, TextWrapped{ true } };
+      elm::Line{
+        BackgroundColor{ Color::ligthDarkGrey }, LineWidth{ 6 },
+        DrawFlags{ Line::Vertical | Line::CenterV | Line::Left }, IsSubElement{ true }
+      };
+    elm::EndChildren{};
   }
 };
 
@@ -1064,43 +1073,68 @@ struct TasksWindow : public UniqueWindow
   TasksWindow()
     : UniqueWindow("#tasks_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    auto& buttons = hlayer(5, 2, FixedHeight{ 40 });
     auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
-      buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
-        .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
-          DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+      elm::Button{
+        Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func },
+        elm::Line{ BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+        DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }
+      }
+      };
     };
 
-    hbutton("Boards", Color::red, Color::grey, [] {});
-    hbutton("Records", Color::grey, Color::red, [=] { elm::create<RecordsWindow>(); });
-
-    hlayer(2, 2, FixedHeight{ 40 })
-      .button(Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
-              DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
-              HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } })
-      .line(BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{ true });
-
-    auto& actions = hstack(5, 2, FixedHeight{ 40 });
-    auto action = [&](int icon, auto func) { actions.toolbutton(Icon{ icon }, FixedWidth{ 40 },
-      BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
-      DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 }, ButtonCallback{ func });
+    auto action = [&](int icon, auto func) {
+      elm::ToolButton{
+        Icon{ icon }, FixedWidth{ 40 },
+        BackgroundColor{ Color::darkGrey }, BackgroundHoverColor{ Color::heavyDarkGrey },
+        DrawFlags{ Button::DrawBody | Button::DrawIcon }, CornerRadius{ 4 }, ButtonCallback{ func }
+      };
     };
 
-    action(ENTYPO_ICON_PLUS, [] { createNewIssue(); });
-    action(ENTYPO_ICON_CCW, [] { 
-      WaitingWindow::create();
-      requestTasks(account.activeAgile,
-        [](std::string body) { 
-          if (parseBoardTasks(body)) elm::create<TasksWindow>(); 
-          else elm::create<AgilesWindow>();  },
-        [](int) { elm::create<AgilesWindow>(); }); 
-    });
+    elm::BeginChildren{ this };
+      elm::HLayer{ 5, 2, FixedHeight{ 40 }, 
+                   FillChildren{ [&] {
+                     hbutton("Boards", Color::red, Color::grey, [] {});
+                     hbutton("Records", Color::grey, Color::red, [=] { elm::create<RecordsWindow>(); });
+                   }}
+      };
 
-    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0);
-    for (auto& issue : account.issues)
-      vstack.wdg<TaskPanel>(issue);
 
-    add<TaskRecordPanel>();
+      elm::HLayer{ 2, 2, FixedHeight{ 40 },
+        elm::Button{
+          Caption{ account.activeAgile }, Icon{ ENTYPO_ICON_FORWARD_OUTLINE }, CaptionHAlign{ TextHAlign::hLeft },
+          DrawFlags{ Button::DrawCaption | Button::DrawIcon }, IconAlignment{ IconAlign::Right },
+          HoveredTextColor{ Color::lightGray }, ButtonCallback{ [] { openAgileUrl(account.activeAgile); } },
+          Children{},
+            elm::Line{ BackgroundColor{ Color::black }, DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }, IsSubElement{ true } }
+        }
+      };
+
+      elm::HStack{ 5, 2, FixedHeight{ 40 },
+                   FillChildren{ [&] {
+                     action(ENTYPO_ICON_PLUS, [] { createNewIssue(); });
+                     action(ENTYPO_ICON_CCW, [] {
+                        WaitingWindow::create();
+                        requestTasks(account.activeAgile,
+                          [](std::string body) {
+                            if (parseBoardTasks(body)) elm::create<TasksWindow>();
+                            else elm::create<AgilesWindow>();  },
+                          [](int) { elm::create<AgilesWindow>(); });
+                      });
+                     }}
+      };
+
+      elm::VScrollPanel{ RelativeSize{ 1.f, 0.f },
+        elm::VStack{ 5, 0,
+          FillChildren{ [] {
+            for (auto& issue : account.issues)
+              elm::create<TaskPanel>(issue);
+          }}
+        }
+      };
+
+      elm::create<TaskRecordPanel>();
+    elm::EndChildren{};
+
     performLayoutLater();
   }
 };
@@ -1381,8 +1415,8 @@ public:
       //if (fpsGraph) fpsGraph->update(dt);
       if (cpuGraph) cpuGraph->update(cpuTime);
 
-      InactiveWarning::update(this);
-      ActivityWithNoTaskWarning::update(this);
+      InactiveWarning::update();
+      ActivityWithNoTaskWarning::update();
     }
 
 private:
