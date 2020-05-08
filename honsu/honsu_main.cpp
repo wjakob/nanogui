@@ -521,9 +521,9 @@ void updateRecordsIssueDay(Screen* screen, std::string wId, IssueInfo::Ptr issue
                              "_" + std::to_string(date.tm_mday+1);
 
   //found records scroll panel by wId
-  if (auto vstack = screen->findWidget(wId))
+  if (auto vstack = Widget::find(wId.c_str()))
   {
-    auto dayWidget = vstack->findWidget(_idDayWidget);
+    auto dayWidget = Widget::find(_idDayWidget.c_str(), vstack);
     if (!dayWidget)
     {
       dayWidget = &vstack->vstack(5, 0, WidgetId{ _idDayWidget });
@@ -879,17 +879,23 @@ struct InactiveWarning : public Window
     account.suspendInactiveTime = true;
     showAppExclusive(true, true);
 
-    auto& title = vstack(10, 10);
-    title.label(Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter });
-    title.label(Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
-      OnUpdate{ [](Widget* w) {
-      if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
-        return;
+    add(elm::VStack{ 10, 10,
+          Children{},
+            elm::Label{
+              Caption{ "You were inactive" }, FontSize{ 48 }, TextColor{ Color::white }, CaptionHAlign{ TextHAlign::hCenter }
+            },
+            elm::Label{
+              Caption{ "What should I do with 00:00:00?" }, FontSize{ 32 }, TextColor{ Color::yellow }, CaptionHAlign{ TextHAlign::hCenter },
+              OnUpdate{ [](Widget* w) {
+              if ((int)account.inactiveTimeSec == (int)account.inactiveLastTimeSec)
+                return;
 
-      account.inactiveLastTimeSec = account.inactiveTimeSec;
-      Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
-    }
-    });
+              account.inactiveLastTimeSec = account.inactiveTimeSec;
+              Label::cast(w)->setCaption("What should I do with " + sec2str(account.inactiveTimeSec) + "?");
+            }
+          }
+        }}
+    );
     button(Caption{ "Add" }, FontSize{ 36 }, DrawFlags{ Button::DrawBody | Button::DrawCaption },
       BackgroundColor{ Color::darkSeaGreen }, BackgroundHoverColor{ Color::darkGreen },
       ButtonChangeCallback{ [](Button* b) {
