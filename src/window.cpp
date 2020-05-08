@@ -25,6 +25,7 @@ NAMESPACE_BEGIN(nanogui)
 RTTI_IMPLEMENT_INFO(Window, Widget)
 RTTI_IMPLEMENT_INFO(Panel, Window)
 RTTI_IMPLEMENT_INFO(Frame, Widget)
+RTTI_IMPLEMENT_INFO(VStack, Widget)
 
 namespace elm
 {

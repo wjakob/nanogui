@@ -70,4 +70,6 @@ public:
   PROPSETTER(RemoveAfterSec, addChild)
 };
 
+namespace elm { using Spinner = Element<Spinner>; }
+
 NAMESPACE_END(nanogui)

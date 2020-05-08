@@ -64,4 +64,6 @@ protected:
     Color mSliderInactiveColor, mSliderActiveColor;
 };
 
+namespace elm { using VScrollPanel = Element<VScrollPanel>; }
+
 NAMESPACE_END(nanogui)

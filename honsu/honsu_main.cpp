@@ -436,27 +436,22 @@ struct UniqueWindow : public Window
              FixedSize{ screen->size() }, WindowMovable{ Theme::WindowDraggable::dgFixed },
              args...)
   {
-    if (!lastWindowId.value.empty())
-    {
-      if (auto rm = screen->findWidget(lastWindowId.value, false))
-        rm->removeLater();
-    }
+    if (auto rm = Window::find(lastWindowId.value.c_str()))
+      rm->removeLater();
     lastWindowId.value = id;
 
     if (addheader)
     {
       widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 },
-             elm::ToolButton{ 
-               Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
-               BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
-               ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
-             },
-             elm::Label{ "H" },
-             elm::ToolButton{ 
-                 Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, 
-                 DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }
-             },
-             elm::Label{ "N S U" }
+             Children{},
+               elm::ToolButton{ 
+                 Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
+                 BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
+                 ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
+               },
+               elm::Label{ "H" },
+               elm::ToolButton{ Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }},
+               elm::Label{ "N S U" }
       );
     }
   }
@@ -489,7 +484,7 @@ public:
   void addTimeSpent(int timeSec)
   {
     timeSpentDaySec += timeSec;
-    if (auto lb = findWidget<Label>("#timelb"))
+    if (auto lb = Label::find("#timelb", this))
     {
       lb->removeChild("#spinner");
       lb->setCaption("[" + sec2str(timeSpentDaySec) + "]");
@@ -596,23 +591,38 @@ struct RecordsWindow : public UniqueWindow
   RecordsWindow(Widget* scr)
     : UniqueWindow(scr, "#records_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    auto& buttons = hlayer(5, 2, FixedHeight{ 40 });
-    auto hbutton = [&](auto caption, auto color, auto hover, auto func) {
-      buttons.button(Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func })
-        .line(BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
-          DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH });
+    hlayer(5, 2, FixedHeight{ 40 }, WidgetId{"#boards_records_layer"});
+    auto hbutton = [](auto caption, auto color, auto hover, auto func) {
+      if (auto layer = Widget::find("#boards_records_layer"))
+      {
+        layer->add(
+          elm::Button{
+            Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func },
+            Children{},
+              elm::Line {
+                         BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+                         DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }
+            }
+        });
+      };
     };
 
     hbutton("Boards", Color::grey, Color::red, [=] { scr->add<TasksWindow>(); });
     hbutton("Records", Color::red, Color::grey, [] {});
 
-    auto& vstack = vscrollpanel(RelativeSize{ 1.f, 0.f }).vstack(5, 0, WidgetId{ "#rec_vstack" });
-    vstack.spinner(SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
-      FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f });
+    WidgetId wId{ "#rec_vstack" };
+    add(elm::VScrollPanel{ RelativeSize{ 1.f, 0.f },
+             elm::VStack{ 5, 0, wId,
+                 elm::Spinner{
+                   SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
+                   FixedHeight{ scr->width() / 2 }, RemoveAfterSec{ 10.f }
+                 }
+             }
+        });
     std::string body = AllOf{ youytrack.filter_my_issues, 
                               "%20Board%20", Url::encodeQueryData(account.activeAgile), ":%7BCurrent%20sprint%7D" };
     SSLGet{ body, sslHeaders }
-      .onResponse([scr, wId = vstack.id()](int status, std::string body) {
+      .onResponse([scr, wId](int status, std::string body) {
         if (status != 200)
           return;
 
@@ -623,7 +633,7 @@ struct RecordsWindow : public UniqueWindow
           .update([scr, wId](auto& js) {
           auto issue = IssueInfo::fromJson(js);
           if (issue->spentTimeMin > 0)
-            requestIssueWorktime(Screen::cast(scr), issue, wId);
+            requestIssueWorktime(Screen::cast(scr), issue, wId.value);
           return true;
         });
 

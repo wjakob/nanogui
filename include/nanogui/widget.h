@@ -136,6 +136,7 @@ class NANOGUI_EXPORT Widget : public Object {
 public:
     RTTI_CLASS_UID(Widget)
     RTTI_DECLARE_INFO(Widget)
+    WIDGET_COMMON_FUNCTIONS(Widget)
 
     /// Construct a new widget with the given parent widget
     explicit Widget(Widget *parent);

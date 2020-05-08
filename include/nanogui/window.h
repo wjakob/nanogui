@@ -68,6 +68,26 @@ public:
   PROPSETTER(BorderColor, setBorderColor)
 };
 
+class NANOGUI_EXPORT VStack : public Widget
+{
+public:
+  RTTI_CLASS_UID(VStack)
+  RTTI_DECLARE_INFO(VStack)
+
+  explicit VStack(Widget* parent) : Widget(parent) {}
+
+  using Widget::set;
+  template<typename... Args>
+  VStack(Widget* parent, int margin, int spacing, const Args&... args)
+    : VStack(parent) 
+  {
+    withLayout<BoxLayout>(Orientation::Vertical, Alignment::Fill, margin, spacing);
+    set<VStack, Args...>(args...); 
+  }
+};
+
+namespace elm { using VStack = Element<VStack>; }
+
 class NANOGUI_EXPORT Window : public Widget 
 {
 public:
