@@ -285,11 +285,12 @@ namespace elm
   struct NANOGUI_EXPORT EndWindow { EndWindow(); };
   NANOGUI_EXPORT ::nanogui::Widget* get_active_widget();
 
-  struct BeginWidget { template<typename W, typename... Args> BeginWidget(const Args&... args) { new W(args...); } };
-  struct NANOGUI_EXPORT EndWidget { EndWidget(); };
-
   struct NANOGUI_EXPORT BeginChildren { BeginChildren(::nanogui::Widget* w); };
   struct NANOGUI_EXPORT EndChildren { EndChildren(); };
+
+  template<typename W>
+  struct BeginWidget { template<typename... Args> BeginWidget(const Args&... args) { BeginChildren{ new W(nullptr, args...) }; } };
+  struct NANOGUI_EXPORT EndWidget { EndWidget(); };
 }
 
 DECLSETTER(PanelHighlightHeader, bool)

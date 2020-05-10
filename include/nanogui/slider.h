@@ -90,4 +90,6 @@ public:
   PROPSETTER(SliderCallback, setCallback)
 };
 
+namespace elm { using Slider = Element<Slider>; }
+
 NAMESPACE_END(nanogui)

@@ -203,17 +203,15 @@ void createBasicWidgets(Screen* parent)
     mImagesData.emplace_back(data, fullpath);
   }
 
-  auto& w = parent->window(Caption{ "Basic widgets" },
-                           Position{ 200, 15 },
-                           WidgetId{ "#basic_widgets_wnd"},
-                           WidgetLayout{ new GroupLayout() });
+  elm::BeginWindow{ Caption{ "Basic widgets" }, Position{ 200, 15 },
+                    WidgetId{ "#basic_widgets_wnd"}, WidgetGroupLayout{} };
 
-  w.label("Searchboxes", "sans-bold");
-  w.wdg<SearchBox>();
+    elm::Label{ "Searchboxes", "sans-bold" };
+    Element<SearchBox>();
 
-  w.label("Message dialog", "sans-bold");
-  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
-           Element<Button>{ 
+    elm::Label{ "Message dialog", "sans-bold" };
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+           Element<Button>{
               Caption{ "Info" },
               ButtonCallback { [=] {
                  parent->msgdialog(DialogTitle{ "Title" },
@@ -221,7 +219,7 @@ void createBasicWidgets(Screen* parent)
                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
                }}
            },
-           Element<Button>{ 
+           Element<Button>{
               Caption{ "Warn" },
               ButtonCallback{ [=] {
                  parent->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
@@ -230,171 +228,152 @@ void createBasicWidgets(Screen* parent)
                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
               }}
            },
-           Element<Button>{ 
+           Element<Button>{
               Caption{ "Ask" },
               ButtonCallback{ [=] {
                  parent->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
-                                   DialogTitle{ "Title" }, 
+                                   DialogTitle{ "Title" },
                                    DialogMessage{ "This is a question message" },
                                    DialogButton{ "Yes" }, DialogAltButton{ "No" },
                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
               }}
-           });
-  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
-           Element<Button>{
-              Caption{ "Notification" },
-              ButtonCallback{ [=]() {
-                parent->add<InAppNotification>(
-                  DialogMessage{ "This is an notification message" },
-                  DialogButton{ "Yes" }, DialogAltButton{ "No" },
-                  DialogResult{ [](int result) { std::cout << "Notification result: " << result << std::endl; } });
-              }}
-            });
+           }
+    };
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+          Element<Button> {
+            Caption{ "Notification" },
+            ButtonCallback{ [=]() {
+              parent->add<InAppNotification>(
+                DialogMessage{ "This is an notification message" },
+                DialogButton{ "Yes" }, DialogAltButton{ "No" },
+                DialogResult{ [](int result) { std::cout << "Notification result: " << result << std::endl; } });
+            }}
+          }
+    };
 
-  w.label("Image panel & scroll panel", "sans-bold");
-  auto& popup = w.popupbutton(Caption{ "Image Panel" }, Icon{ENTYPO_ICON_FOLDER})
-                      .popupset(FixedSize{ 245, 150 });
+    //need for change texture
+    static int currentImage = 0;
 
-  auto& vscroll = popup.vscrollpanel();
+    elm::Label{ Caption{"Image panel & scroll panel"}, CaptionFont{"sans-bold"} };
+    elm::PopupButton{ 
+      Caption{ "Image Panel" }, Icon{ENTYPO_ICON_FOLDER},
+      PopupWidget<>{ FixedSize{ 245, 150 },
+        elm::VScrollPanel{
+          elm::ImagePanel{ ImagePanelIcons{ icons },
+            ImagePamelCallback{ [&](int i) {
+              if (auto imageView = ImageView::find("#image_view"))
+              {
+                imageView->bindImage(mImagesData[i].first);
+                currentImage = i;
+                cout << "Selected item " << i << '\n';
+              }
+            }}
+      }}}
+    };
 
-  //need for change texture
-  static int currentImage = 0;
+    elm::Label{ Caption{ "File dialog" }, CaptionFont{ "sans-bold" } };
 
-  auto& imgPanel = vscroll.wdg<ImagePanel>();
-  imgPanel.setImages(icons);
-  imgPanel.setCallback([=](int i) {
-    if (auto* imageView = parent->findWidget<ImageView>("#image_view"))
-    {
-      imageView->bindImage(mImagesData[i].first);
-      currentImage = i;
-      cout << "Selected item " << i << '\n';
-    }
-  });
+    elm::Widget{
+      WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+      elm::Button{ Caption{ "Open" }, ButtonCallback{ [&] {
+          cout << "File dialog result: "
+            << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, false)
+            << endl;
+        }}
+      },
+      elm::Button{ Caption{ "Save" }, ButtonCallback{ [&] {
+          cout << "File dialog result: "
+            << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, true)
+            << endl;
+        }}
+      }
+    };
 
-  auto& imageWindow = parent->window("Selected image");
-  imageWindow.setPosition(Vector2i(710, 15));
-  imageWindow.withLayout<GroupLayout>();
+    elm::Label{ Caption{ "Combo box" }, CaptionFont{ "sans-bold" } };
+    elm::DropdownBox{ DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{ "1" } };
+    elm::ComboBox{ ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" } };
+    elm::DropdownBox {
+      DropdownBoxFill{ [](string& r) { static char i = '1'; r = std::string(5, i); return i++ < '9';  } },
+      ItemHeight{ 18 }
+    };
+
+    elm::Label{ Caption{ "Check box" }, CaptionFont{ "sans-bold" } };
+    elm::CheckBox{ Caption{ "Flag 1" }, CheckboxState{ true },
+      CheckboxCallback{ [](bool state) { cout << "Check box 1 state: " << state << endl; } },
+      UncheckedColor{ 0xC00000ff }, CheckedColor{ 0x00c000ff }, PushedColor{ 0xc0c000ff } 
+    };
+
+    elm::CheckBox{ Caption{ "Flag 2" }, CheckboxCallback{ [](bool state) { cout << "Check box 2 state: " << state << endl; }} };
+    elm::Label{ Caption{ "Progress bar" }, CaptionFont{ "sans-bold" } };
+
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+      Children{},
+        Element<ProgressBar>{ WidgetId{ "#lineprogressbar" }},
+        Element<CircleProgressBar>{ WidgetId{ "#circleprogressbar" }, FixedSize{ 40, 40 } }
+    };
+
+    elm::Label(Caption{ "Slider and text box" }, CaptionFont{ "sans-bold" });
+
+    FloatObservable sliderValue(0.5f);
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 20 },
+      elm::Textbox{ FixedSize{ 60, 25 }, FontSize{ 20 },
+        TextAlignment::Right,
+        TextBoxUnits{ "%" }, TextValue{ "50" },
+        TextBoxUpdateCallback{ [sliderValue](TextBox* tb) {
+          static int lastValue = 0;
+          if (lastValue != (int)(sliderValue * 100)) {
+            lastValue = (int)(sliderValue * 100);
+            tb->setValue(std::to_string(lastValue));
+          }
+        }}
+      },
+      elm::Slider{ SliderObservable{ sliderValue }, FixedWidth{ 80 } }
+    };
+
+    elm::Label{ Caption{ "Spinners" }, CaptionFont{ "sans-bold" } };
+    elm::Widget{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
+                 elm::Spinner{ FixedSize{ 40, 40 } },
+                 elm::Spinner{ SpinnerSpeed{ 0.5f }, FixedSize{ 40, 40 } },
+                 elm::Spinner{ SpinnerSpeed{ -0.7f }, FixedSize{ 40, 40 } }
+    };
+
+    elm::Label{ Caption{ "Dial and text box" }, CaptionFont{ "sans-bold" } };
+
+    elm::BeginWidget<Widget>{ WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 20 } };
+      elm::Dial{ FloatValue{ 0.01f }, FixedWidth{ 80 }, WidgetId{"#dial"},
+        DialCallback{ [&](float value) {
+          value = 0.01f + 99.99f*powf(value, 5.0f);
+          std::ostringstream sval;
+          sval.precision(2);
+          sval << std::fixed << value;
+          if (auto tb = TextBox::find("#dial_textbox"))
+            tb->setValue(sval.str());
+        }},
+        DialFinalCallback { [&](float value) {
+          if (auto dial = Dial::find("#dial"))
+            dial->setHighlightedRange(std::pair<float, float>(0.0f, value));
+          value = 0.01f + 99.99f*powf(value, 5.0f);
+          cout << "Final dial value: " << value << endl;
+        }}
+      };
+        
+      elm::Textbox{ FixedSize{ 60, 25 }, TextValue{ "0.01" },  WidgetId{ "#dial_textbox" }, TextAlignment::Right };
+
+    elm::EndWidget{};
+  elm::EndWindow{};
+
+
+  elm::BeginWindow{ Caption{ "Selected image" }, Position{ 710, 15 }, WidgetGroupLayout{} };
 
   // Set the first texture
-  auto& imageView = imageWindow.wdg<ImageView>(mImagesData[0].first);
-  imageView.setGridThreshold(20);
-  imageView.setFixedSize({220,220});
-  imageView.setId("#image_view");
-  imageView.setPixelInfoThreshold(20);
-  imageView.setPixelInfoCallback(
-    [&](const Vector2i& index) -> pair<string, Color> {
-      auto& imageData = mImagesData[currentImage].second;
-      if (auto* imageView = parent->findWidget<ImageView>("#image_view"))
-      {
-        auto& textureSize = imageView->imageSize();
-        string stringData;
-        uint16_t channelSum = 0;
-        for (int i = 0; i != 4; ++i) {
-          auto& channelData = imageData[4 * index.y()*textureSize.x() + 4 * index.x() + i];
-          channelSum += channelData;
-          stringData += (to_string(static_cast<int>(channelData)) + "\n");
-        }
-        float intensity = static_cast<float>(255 - (channelSum / 4)) / 255.0f;
-        float colorScale = intensity > 0.5f ? (intensity + 1) / 2 : intensity / 2;
-        Color textColor = Color(colorScale, 1.0f);
-        return { stringData, textColor };
-      }
-      return { "", Color() };
-  });
+  elm::ImageView{ InitiailImage{ (uint32_t)mImagesData[0].first },
+                  ImageViewGridTreshold{ 20 },
+                  FixedSize{ 220,220 },
+                  WidgetId{ "#image_view" },
+                  PixelInfoThreshold{ 20 }
+  };
 
-  w.label("File dialog", "sans-bold");
-  auto& fdtools = w.widget();
-  fdtools.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-  fdtools.button(Caption{ "Open" },
-                 ButtonCallback{ [&] {
-                    cout << "File dialog result: "
-                         << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, false)
-                         << endl;
-                 }});
-  fdtools.button(Caption{ "Save" },
-                 ButtonCallback{ [&] {
-                    cout << "File dialog result: "
-                         << file_dialog({ { "png", "Portable Network Graphics" },{ "txt", "Text file" } }, true)
-                         << endl;
-                 }});
-
-  w.add(elm::Label{ Caption{"Combo box"}, CaptionFont{"sans-bold"}},
-        elm::DropdownBox{ DropdownBoxItems{ "Dropdown item 1", "Dropdown item 2", "Dropdown item 3" }, WidgetId{"1"}},        
-        elm::ComboBox{ ComboBoxItems{ "Combo box item 1", "Combo box item 2", "Combo box item 3" }, WidgetId{ "2" }},
-        elm::DropdownBox{ 
-           DropdownBoxFill{ [](string& r) { static char i = '1'; r = std::string(5, i); return i++ < '9';  }},
-           ItemHeight{ 18 }
-        }
-  );
-
-  w.add(elm::Label{ Caption{"Check box"}, CaptionFont{"sans-bold"}},
-        elm::CheckBox{ Caption{ "Flag 1" }, CheckboxState{ true },
-                       CheckboxCallback { [](bool state) { cout << "Check box 1 state: " << state << endl; }},
-                       UncheckedColor{ 0xC00000ff }, CheckedColor{ 0x00c000ff }, PushedColor{ 0xc0c000ff }} );
-
-  w.checkbox(Caption{ "Flag 2" }, 
-             CheckboxCallback{ [](bool state) { cout << "Check box 2 state: " << state << endl; }});
-
-  w.label("Progress bar", "sans-bold");
-
-  w.widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Middle, 0, 6 },
-           Element<ProgressBar>{ WidgetId{ "#lineprogressbar" }},
-           Element<CircleProgressBar>{ 
-                WidgetId{ "#circleprogressbar" },
-                FixedSize{ 40, 40 }
-           });
-
-  w.label("Slider and text box", "sans-bold");
-
-  auto& panel = w.widget();
-  panel.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
-
-  FloatObservable sliderValue(0.5f);
-  panel.textbox(FixedSize{ 60, 25 }, FontSize{ 20 }, 
-                TextAlignment::Right,
-                TextBoxUnits{ "%" }, TextValue{ "50" },
-                TextBoxUpdateCallback{ [sliderValue] (TextBox* tb) { 
-                  static int lastValue = 0;
-                  if (lastValue != (int)(sliderValue * 100)) {
-                    lastValue = (int)(sliderValue * 100);
-                    tb->setValue(std::to_string(lastValue));
-                  }
-                }});
-  panel.slider(SliderObservable{ sliderValue }, FixedWidth{ 80 });
-
-  w.label(Caption{ "Spinners" }, CaptionFont{ "sans-bold" });
-  auto& spinners = w.widget().boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 6);
-  spinners.spinner(FixedSize{ 40, 40 });
-  spinners.spinner(SpinnerSpeed{ 0.5f }, FixedSize{ 40, 40 });
-  spinners.spinner(SpinnerSpeed{ -0.7f }, FixedSize{ 40, 40 });
-
-  w.label("Dial and text box", "sans-bold");
-
-  auto& dials = w.widget();
-  dials.boxlayout(Orientation::Horizontal, Alignment::Middle, 0, 20);
-
-  auto& dial = dials.wdg<Dial>();
-  dial.setValue(0.01f);
-  dial.setFixedWidth(80);
-
-  auto& dialTextBox = dials.textbox();
-  dialTextBox.setFixedSize({ 60, 25 });
-  dialTextBox.setValue("0.01");
-  dial.setCallback([&](float value) {
-    value = 0.01f + 99.99f*powf(value, 5.0f);
-    std::ostringstream sval;
-    sval.precision(2);
-    sval << std::fixed << value;
-    dialTextBox.setValue(sval.str());
-  });
-  dial.setFinalCallback([&](float value) {
-    dial.setHighlightedRange(std::pair<float, float>(0.0f, value));
-    value = 0.01f + 99.99f*powf(value, 5.0f);
-    cout << "Final dial value: " << value << endl;
-  });
-  dialTextBox.setFixedSize({ 60, 25 });
-  dialTextBox.setFontSize(20);
-  dialTextBox.setAlignment(TextAlignment::Right);
+  elm::EndWindow{};
 }
 
 void createTextAreaWindow(Screen* screen)

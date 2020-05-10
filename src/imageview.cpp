@@ -22,21 +22,26 @@ NAMESPACE_BEGIN(nanogui)
 
 RTTI_IMPLEMENT_INFO(ImageView, Widget)
 
-ImageView::ImageView(Widget* parent, uint32_t imageID)
-    : Widget(parent), mImageID(imageID), mScale(1.0f), mOffset(Vector2f::Zero()),
-    mFixedScale(false), mFixedOffset(false), mPixelInfoCallback(nullptr) {
-    updateImageParameters();
-}
+ImageView::ImageView(Widget* parent)
+    : Widget(parent), 
+      mImageID(-1), 
+      mScale(1.0f), 
+      mOffset(Vector2f::Zero()),
+      mFixedScale(false), 
+      mFixedOffset(false), 
+      mPixelInfoCallback(nullptr) 
+{}
 
 ImageView::~ImageView() {}
 
-void ImageView::bindImage(uint32_t imageId) {
+void ImageView::bindImage(uint32_t imageId)
+{
     mImageID = imageId;
-    updateImageParameters();
-    fit();
+    mNeedUpdate = true;
 }
 
-void ImageView::updateImageParameters() {
+void ImageView::updateImageParameters()
+{
     int32_t w, h;
     nvgImageSize(screen()->nvgContext(), mImageID, &w, &h);
     mImageSize = Vector2i(w, h);
@@ -252,9 +257,16 @@ void ImageView::performLayout(NVGcontext* ctx) {
     center();
 }
 
-void ImageView::draw(NVGcontext* ctx) {
+void ImageView::draw(NVGcontext* ctx) 
+{
     Widget::draw(ctx);
 
+    if (mNeedUpdate)
+    {
+      mNeedUpdate = false;
+      updateImageParameters();
+      fit();
+    }
     drawImageBorder(ctx);
 
     // Calculate several variables that need to be send to OpenGL in order for the image to be

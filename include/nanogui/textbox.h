@@ -115,6 +115,10 @@ public:
     void afterDraw(NVGcontext* ctx) override;
     void save(Json::value &s) const override;
     bool load(Json::value &s) override;
+
+    template<typename FF, typename First, typename... Args>
+    void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
+
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();
@@ -137,9 +141,6 @@ protected:
     void setBorderColor(const Color& color) { mBorderColor = color; }
     void setBackgroundColor(const Color& color) { mBackgrodunColor = color; }
     void setBackgroundHoverColor(const Color& color) { mBackgroundHoverColor = color; }
-
-    template<typename FF, typename First, typename... Args>
-    void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
 
 protected:
     bool mEditable;

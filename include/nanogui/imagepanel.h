@@ -14,22 +14,35 @@
 #pragma once
 
 #include <nanogui/widget.h>
+#include <vector>
 
 NAMESPACE_BEGIN(nanogui)
+
+using IntStringPairs = std::vector<std::pair<int, std::string>>;
+
+DECLSETTER(ImagePanelIcons, IntStringPairs)
+DECLSETTER(ImagePamelCallback, std::function<void(int)>)
 
 /**
  * \class ImagePanel imagepanel.h nanogui/imagepanel.h
  *
  * \brief Image panel widget which shows a number of square-shaped icons.
  */
-class NANOGUI_EXPORT ImagePanel : public Widget {
+class NANOGUI_EXPORT ImagePanel : public Widget 
+{
 public:
-    typedef std::vector<std::pair<int, std::string>> Images;
+   using Images = IntStringPairs;
 public:
     RTTI_CLASS_UID(ImagePanel)
     RTTI_DECLARE_INFO(ImagePanel)
 
-    ImagePanel(Widget *parent);
+    explicit ImagePanel(Widget *parent);
+
+    using Widget::set;
+    template<typename... Args>
+    ImagePanel(Widget* parent, const Args&... args)
+      : ImagePanel(parent) {  set<ImagePanel, Args...>(args...);  }
+
 
     void setImages(const Images &data) { mImages = data; }
     const Images& images() const { return mImages; }
@@ -51,6 +64,12 @@ protected:
     int mSpacing;
     int mMargin;
     int mMouseIndex;
+
+public:
+    PROPSETTER(ImagePanelIcons, setImages)
+    PROPSETTER(ImagePamelCallback, setCallback)
 };
+
+namespace elm { using ImagePanel = Element<ImagePanel>; }
 
 NAMESPACE_END(nanogui)

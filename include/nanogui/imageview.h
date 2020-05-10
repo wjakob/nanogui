@@ -19,6 +19,10 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(InitiailImage, uint32_t)
+DECLSETTER(ImageViewGridTreshold, float)
+DECLSETTER(PixelInfoThreshold, float)
+
 /**
  * \class ImageView imageview.h nanogui/imageview.h
  *
@@ -28,8 +32,15 @@ class NANOGUI_EXPORT ImageView : public Widget {
 public:
     RTTI_CLASS_UID(ImageView)
     RTTI_DECLARE_INFO(ImageView)
+    WIDGET_COMMON_FUNCTIONS(ImageView)
 
-    ImageView(Widget* parent, uint32_t imageID);
+    explicit ImageView(Widget* parent);
+
+    using Widget::set;
+    template<typename... Args>
+    ImageView(Widget* parent, const Args&... args)
+      : ImageView(parent) {  set<ImageView, Args...>(args...);  }
+
     ~ImageView();
 
     void bindImage(uint32_t imageId);
@@ -163,10 +174,17 @@ private:
     // Image info parameters.
     float mGridThreshold = -1;
     float mPixelInfoThreshold = -1;
+    bool mNeedUpdate = false;
 
     // Image pixel data display members.
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
+public:
+  PROPSETTER(InitiailImage, bindImage)
+  PROPSETTER(ImageViewGridTreshold, setGridThreshold)
+  PROPSETTER(PixelInfoThreshold, setPixelInfoThreshold)
 };
+
+namespace elm { using ImageView = Element<ImageView>; }
 
 NAMESPACE_END(nanogui)

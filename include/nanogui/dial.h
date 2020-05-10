@@ -16,6 +16,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(DialCallback, std::function<void(float)>)
+DECLSETTER(DialFinalCallback, std::function<void(float)>)
 /**
  * \class Dial dial.h nanogui/dial.h
  *
@@ -25,8 +27,14 @@ class NANOGUI_EXPORT Dial : public Widget {
 public:
     RTTI_CLASS_UID(Dial)
     RTTI_DECLARE_INFO(Dial)
+    WIDGET_COMMON_FUNCTIONS(Dial)
 
-    Dial(Widget *parent);
+    explicit Dial(Widget *parent);
+
+    using Widget::set;
+    template<typename... Args>
+    Dial(Widget* parent, const Args&... args)
+      : Dial(parent) { set<Dial, Args...>(args...); }
 
     float value() const { return mValue; }
     void setValue(float value) { mValue = value; }
@@ -61,6 +69,11 @@ protected:
     std::pair<float, float> mHighlightedRange;
     Color mHighlightColor;
 public:
+  PROPSETTER(FloatValue, setValue)
+  PROPSETTER(DialCallback, setCallback)
+  PROPSETTER(DialFinalCallback, setFinalCallback)
 };
+
+namespace elm { using Dial = Element<Dial>; }
 
 NAMESPACE_END(nanogui)
