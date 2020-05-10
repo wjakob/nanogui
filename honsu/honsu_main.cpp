@@ -442,17 +442,20 @@ struct UniqueWindow : public Window
 
     if (addheader)
     {
-      widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 },
-             Children{},
-               elm::ToolButton{ 
-                 Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
-                 BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
-                 ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
-               },
-               elm::Label{ "H" },
-               elm::ToolButton{ Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }},
-               elm::Label{ "N S U" }
-      );
+      elm::BeginChildren{ this };
+      elm::Widget{
+        WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, 2, 2 }, FixedHeight{ 40 },
+        Children{},
+          elm::ToolButton{
+            Icon{ ENTYPO_ICON_OFF }, FontSize{ 32 }, DrawFlags{ Button::DrawBody | Button::DrawIcon },
+            BackgroundColor{ Color::transparent }, BackgroundHoverColor{ Color::red },
+            ButtonCallback{ [] { nanogui::sample::stop_frame_loop(); } }
+          },
+          elm::Label{ "H" },
+          elm::ToolButton{ Icon{ ENTYPO_ICON_RECORD }, FixedWidth{ 15 }, DrawFlags{ Button::DrawIcon }, IconColor{ Color::red }},
+          elm::Label{ "N S U" }
+      };
+      elm::EndChildren{};
     }
   }
 };
@@ -503,19 +506,23 @@ public:
             CornerRadius{ 6 }, WidgetId{ "#issue_" + _issue->id }),
       issue(_issue), day(_day)
   {
-    hstack(2, 2,
-           elm::Label { 
-              WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
-              Element<Spinner> {
-                WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, RelativeSize{ 1.f, 1.f },
-                BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true }, 
-              }
-           },
-           elm::Label { 
-             Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true }
-           });
+    elm::BeginChildren{ this };
+      elm::HStack{ 2, 2,
+        Children{},
+        elm::Label {
+          WidgetId{ "#timelb" }, TextColor{ Color::grey }, FontSize{ 18 }, Caption{ "[00:00:00]" },
+          Element<Spinner> {
+            WidgetId{ "#spinner" }, SpinnerRadius{ 0.5f }, RelativeSize{ 1.f, 1.f },
+            BackgroundColor{ Color::ligthDarkGrey }, IsSubElement{ true },
+          }
+        },
+        elm::Label {
+          Caption{ issue->summary }, FontSize{ 18 }, TextColor{ Color::white }, TextWrapped{ true }
+        } 
+      };
 
-    label(Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 });
+      elm::Label{ Caption{ issue->sprints.empty() ? "Not found projects" : issue->sprints.front() }, FontSize{ 14 }};
+    elm::EndChildren{};
   }
 };
 
@@ -598,34 +605,30 @@ struct RecordsWindow : public UniqueWindow
   RecordsWindow()
     : UniqueWindow("#records_window", ShowHeader, WidgetStretchLayout{ Orientation::Vertical, 10, 10 })
   {
-    hlayer(5, 2, FixedHeight{ 40 }, WidgetId{"#boards_records_layer"});
     auto hbutton = [](auto caption, auto color, auto hover, auto func) {
-      if (auto layer = Widget::find("#boards_records_layer"))
-      {
-        layer->add(
-          elm::Button{
-            Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func },
-            Children{},
-              elm::Line {
-                         BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
-                         DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }
-            }
-        });
+      elm::Button{ Caption{ caption }, DrawFlags{ Button::DrawCaption }, HoveredTextColor{ hover }, ButtonCallback{ func },
+        elm::Line{ BackgroundColor{ color }, LineWidth{ 2 }, RelativeSize{ 0.9f, 0.f },
+                   DrawFlags{ Line::Horizontal | Line::Bottom | Line::CenterH }
+        }
       };
     };
 
-    hbutton("Boards", Color::grey, Color::red, [=] { elm::create<TasksWindow>(); });
-    hbutton("Records", Color::red, Color::grey, [] {});
-
-    WidgetId wId{ "#rec_vstack" };
-    add(elm::VScrollPanel{ RelativeSize{ 1.f, 0.f },
-             elm::VStack{ 5, 0, wId,
-                 elm::Spinner{
-                   SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent },
-                   FixedHeight{ width() / 2 }, RemoveAfterSec{ 10.f }
-                 }
-             }
-        });
+    elm::BeginChildren{ this };
+      elm::HLayer{ 5, 2,
+        FixedHeight{ 40 }, WidgetId{"#boards_records_layer"},
+        FillChildren{ [&] {
+          hbutton("Boards", Color::grey, Color::red, [] { elm::create<TasksWindow>(); });
+          hbutton("Records", Color::red, Color::grey, [] {});
+        }}
+      };
+  
+      WidgetId wId{ "#rec_vstack" };
+      elm::VScrollPanel{ RelativeSize{ 1.f, 0.f },
+        elm::VStack{ 5, 0, wId,
+          elm::Spinner{ SpinnerRadius{ 0.5f }, BackgroundColor{ Color::transparent }, FixedHeight{ width() / 2 }, RemoveAfterSec{ 10.f }}
+        }
+      };
+    elm::EndChildren{};
     std::string body = AllOf{ youytrack.filter_my_issues, 
                               "%20Board%20", Url::encodeQueryData(account.activeAgile), ":%7BCurrent%20sprint%7D" };
     SSLGet{ body, sslHeaders }
@@ -638,14 +641,14 @@ struct RecordsWindow : public UniqueWindow
 
         response.get("issue")
           .update([wId](auto& js) {
-          auto issue = IssueInfo::fromJson(js);
-          if (issue->spentTimeMin > 0)
-            requestIssueWorktime(issue, wId.value);
-          return true;
+            auto issue = IssueInfo::fromJson(js);
+            if (issue->spentTimeMin > 0)
+              requestIssueWorktime(issue, wId.value);
+            return true;
         });
 
-        auto scr = elm::active_screen();
-        scr->needPerformLayout(scr);
+        //auto scr = elm::active_screen();
+        //scr->needPerformLayout(scr);
       })
       .execute();
 
