@@ -17,6 +17,9 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTERARGS(PicflowImageSize, Vector2f)
+DECLSETTER(PicflowFill, std::function<void(Widget* w)>)
+
 class NANOGUI_EXPORT PickflowItem
 {
 public:
@@ -54,9 +57,17 @@ class NANOGUI_EXPORT Picflow : public Widget
 {
     Picflow();
 public:
+  RTTI_CLASS_UID(Picflow)
+  RTTI_DECLARE_INFO(Picflow)
+
   enum Mode { Horizon=0, Projectile };
     ~Picflow();
-    Picflow(Widget* parent, const Vector2f& picrect);
+    explicit Picflow(Widget* parent);
+
+    using Widget::set;
+    template<typename... Args>
+    Picflow(Widget* parent, const Args&... args)
+      : Picflow(parent) { set<Picflow, Args...>(args...); }
 
     uint32_t addItem(int texture, const std::string& text = "", void* object = nullptr);
 
@@ -78,6 +89,8 @@ public:
 
     bool keyboardEvent(int key, int /* scancode */, int action, int modifiers) override;
     bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+
+    void fillImages(std::function<void(Widget*)>);
 
     void clear();
     int getSelected() const { return mActiveIndex; }
@@ -117,6 +130,9 @@ protected:
     Vector2f mPictureRect;
     Mode mMode = Mode::Horizon;
     bool mNeedUpdateImages = false;
+public:
+    PROPSETTER(PicflowImageSize, setPictureRect)
+    PROPSETTER(PicflowFill, fillImages)
 };
 
 NAMESPACE_END(nanogui)

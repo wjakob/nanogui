@@ -145,4 +145,6 @@ public:
     PROPSETTER(UnindentWidth, unndent)
 };
 
+namespace elm { using TextArea = Element<TextArea>; }
+
 NAMESPACE_END(nanogui)

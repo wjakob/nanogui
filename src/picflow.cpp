@@ -7,6 +7,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Picflow, Widget)
+
 void PickflowItem::setTextureId( int ptx )
 {
     mTexture = ptx;
@@ -23,11 +25,11 @@ void PickflowItem::updateTextures( NVGcontext* /*ctx*/ )
     mDownTexture = mTexture; 
 }
 
-Picflow::Picflow( Widget* parent, const Vector2f& pictureRect)
+Picflow::Picflow( Widget* parent)
 	: Widget(parent)
 {
 	mActiveIndex = 0;
-  mPictureRect = pictureRect;
+  mPictureRect = { 0.25f, 0.25f } ;
 	mDrawBackground = true;
 }
 
@@ -45,6 +47,12 @@ uint32_t Picflow::addItem( int texture, const std::string& text, void* object )
   mNeedUpdateImages = true;
 
 	return mImages.size() - 1;
+}
+
+void Picflow::fillImages(std::function<void(Widget*)> f)
+{
+  if (f)
+    f(this);
 }
 
 Vector4i Picflow::_correctRect( NVGcontext* ctx, int texture, const Vector4i& rectangle )

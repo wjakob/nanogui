@@ -386,35 +386,38 @@ void createTextAreaWindow()
       "                              Position{ 1015, 405 });\n"
       "    std::string longText = \"\";\n"
       "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }";
-    elm::Textbox{ RelativeSize{ 1.f, 1.f }, LongText{ longText }};
+    elm::TextArea{ RelativeSize{ 1.f, 1.f }, LongText{ longText }};
   elm::EndWindow{};
 }
 
-void createPicflowWindow(Screen* screen)
+void createPicflowWindow()
 {
 #if defined(_WIN32)
   string resourcesFolderPath("../resources/");
 #else
   string resourcesFolderPath("./");
 #endif
-  auto& mw = screen->window(Caption{ "Picflow" },
-                            FixedSize{ 400, 250 },
-                            WidgetStretchLayout{ Orientation::Horizontal },
-                            Position{ 715, 305 });
+  elm::BeginWindow{ Caption{ "Picflow" }, FixedSize{ 400, 250 },
+                    WidgetStretchLayout{ Orientation::Horizontal }, Position{ 715, 305 } };
 
-  static vector<pair<int, string>> icons = loadImageDirectory(screen->nvgContext(), "icons");
-  static ImagesDataType picflowImagesData;
+    static vector<pair<int, string>> icons = loadImageDirectory(elm::active_screen()->nvgContext(), "icons");
+    static ImagesDataType picflowImagesData;
 
-  // Load all of the images by creating a GLTexture object and saving the pixel data.
-  for (auto& icon : icons) {
-    auto fullpath = resourcesFolderPath + icon.second;
-    auto data = nvgCreateImage(screen->nvgContext(), fullpath.c_str(), 0);
-    picflowImagesData.emplace_back(data, fullpath);
-  }
-
-  auto& picflow = mw.wdg<Picflow>(Vector2f(0.35f, 0.35f));
-  for (auto& icon : picflowImagesData)
-    picflow.addItem(icon.first);
+    // Load all of the images by creating a GLTexture object and saving the pixel data.
+     Element<Picflow>{ PicflowImageSize{ 0.35f, 0.35f },
+                       PicflowFill { 
+                        [&] (Widget* w) {
+                          if (auto flow = Picflow::cast(w))
+                            for (auto& icon : icons) {
+                              auto fullpath = resourcesFolderPath + icon.second;
+                              auto data = nvgCreateImage(elm::active_screen()->nvgContext(), fullpath.c_str(), 0);
+                              picflowImagesData.emplace_back(data, fullpath);
+                              flow->addItem(data);
+                            }                              
+                        }
+                      }
+    };
+  elm::EndWindow{};
 }
 
 void createMiscWidgets(Screen* screen)
@@ -1117,8 +1120,8 @@ public:
       createAllWidgetsDemo(this);
       createThemeBuilderWindow(this);
       makeCustomThemeWindow(this, "Custom theme");
-      createPicflowWindow(this);
-      createTextAreaWindow(this);
+      createPicflowWindow();
+      createTextAreaWindow();
       toggleTreeView(this, true);
 
       fpsGraph = &wdg<PerfGraph>(GRAPH_RENDER_FPS, "Frame Time", Vector2i(5, height() - 40));
