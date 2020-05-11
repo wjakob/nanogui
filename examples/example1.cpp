@@ -102,7 +102,7 @@ using namespace nanogui;
 
 GPUtimer gpuTimer;
 
-void createButtonDemoWindow(Screen* screen)
+void createButtonDemoWindow()
 {
   elm::BeginWindow{ Position{ 15, 15 },
                     WindowGroupLayout{},
@@ -186,20 +186,20 @@ void createButtonDemoWindow(Screen* screen)
 
 using ImagesDataType = std::vector<pair<int, std::string>>;
 
-void createBasicWidgets(Screen* parent)
+void createBasicWidgets()
 {
 #if defined(_WIN32)
   string resourcesFolderPath("../resources/");
 #else
   string resourcesFolderPath("./");
 #endif
-  static vector<pair<int, string>> icons = loadImageDirectory(parent->nvgContext(), "icons");
+  static vector<pair<int, string>> icons = loadImageDirectory(elm::active_screen()->nvgContext(), "icons");
   static ImagesDataType mImagesData;
 
   // Load all of the images by creating a GLTexture object and saving the pixel data.
   for (auto& icon : icons) {
     auto fullpath = resourcesFolderPath + icon.second;
-    auto data = nvgCreateImage(parent->nvgContext(), fullpath.c_str(), 0);
+    auto data = nvgCreateImage(elm::active_screen()->nvgContext(), fullpath.c_str(), 0);
     mImagesData.emplace_back(data, fullpath);
   }
 
@@ -214,15 +214,15 @@ void createBasicWidgets(Screen* parent)
            Element<Button>{
               Caption{ "Info" },
               ButtonCallback { [=] {
-                 parent->msgdialog(DialogTitle{ "Title" },
-                                   DialogMessage{ "This is an information message" },
-                                   DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
+                 elm::MessageDialog(DialogTitle{ "Title" },
+                                    DialogMessage{ "This is an information message" },
+                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
                }}
            },
            Element<Button>{
               Caption{ "Warn" },
               ButtonCallback{ [=] {
-                 parent->msgdialog(DialogType{ (int)MessageDialog::Type::Warning },
+                 elm::MessageDialog(DialogType{ (int)MessageDialog::Type::Warning },
                                    DialogTitle{ "Title" },
                                    DialogMessage{ "This is a warning message" },
                                    DialogResult{ [](int result) { cout << "Dialog result: " << result << endl; }});
@@ -231,7 +231,7 @@ void createBasicWidgets(Screen* parent)
            Element<Button>{
               Caption{ "Ask" },
               ButtonCallback{ [=] {
-                 parent->msgdialog(DialogType{ (int)MessageDialog::Type::Question },
+                 elm::MessageDialog(DialogType{ (int)MessageDialog::Type::Question },
                                    DialogTitle{ "Title" },
                                    DialogMessage{ "This is a question message" },
                                    DialogButton{ "Yes" }, DialogAltButton{ "No" },
@@ -243,8 +243,7 @@ void createBasicWidgets(Screen* parent)
           Element<Button> {
             Caption{ "Notification" },
             ButtonCallback{ [=]() {
-              parent->add<InAppNotification>(
-                DialogMessage{ "This is an notification message" },
+              Element<InAppNotification>( DialogMessage{ "This is an notification message" },
                 DialogButton{ "Yes" }, DialogAltButton{ "No" },
                 DialogResult{ [](int result) { std::cout << "Notification result: " << result << std::endl; } });
             }}
@@ -376,20 +375,19 @@ void createBasicWidgets(Screen* parent)
   elm::EndWindow{};
 }
 
-void createTextAreaWindow(Screen* screen)
+void createTextAreaWindow()
 {
-  auto& mw = screen->window(Caption{"TextArea window"},
-                            FixedSize{ 300, 200 },
-                            WidgetStretchLayout{ Orientation::Horizontal },
-                            Position{ 1015, 405 } );
-  std::string longText = "void createTextAreaWindow(Sreen* screen) {\n"
-    "    auto& mw = screen->window(Caption{ \"TextArea window\" }\n"
-    "                              FixedSize{ 300, 200 },\n"
-    "                              WidgetStretchLayout{ Orientation::Horizontal },\n"
-    "                              Position{ 1015, 405 });\n"
-    "    std::string longText = \"\";\n"
-    "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }";
-  /*auto& area = */mw.text(RelativeSize{ 1.f, 1.f }, LongText{ longText });
+  elm::BeginWindow{ Caption{"TextArea window"}, FixedSize{ 300, 200 },
+                    WidgetStretchLayout{ Orientation::Horizontal }, Position{ 1015, 405 } };
+    std::string longText = "void createTextAreaWindow(Sreen* screen) {\n"
+      "    auto& mw = screen->window(Caption{ \"TextArea window\" }\n"
+      "                              FixedSize{ 300, 200 },\n"
+      "                              WidgetStretchLayout{ Orientation::Horizontal },\n"
+      "                              Position{ 1015, 405 });\n"
+      "    std::string longText = \"\";\n"
+      "    auto& area = mw.wdg<TextArea>(RelativeSize{ 1.f, 1.f }, Text{ longText }); }";
+    elm::Textbox{ RelativeSize{ 1.f, 1.f }, LongText{ longText }};
+  elm::EndWindow{};
 }
 
 void createPicflowWindow(Screen* screen)
@@ -1111,8 +1109,8 @@ public:
       initGPUTimer(&gpuTimer);
 
       makePropEditor(this);
-      createButtonDemoWindow(this);
-      createBasicWidgets(this);
+      createButtonDemoWindow();
+      createBasicWidgets();
       createMiscWidgets(this);
       createGridSmallObjects(this);
       createMeter(this);
