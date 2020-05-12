@@ -98,8 +98,9 @@ an existing window `window` and register an event callback.
    
    //or declarative syntax
    
-   auto& b = window.button(Caption{ "Plain button"},
-                           ButtonCallback{[] { cout << "pushed!" << endl; }} );
+   elm::Button{ Caption{ "Plain button"},
+                ButtonCallback{[] { cout << "pushed!" << endl; }} 
+   };
 
 
 The following lines from the example application create the coupled
@@ -129,20 +130,21 @@ slider and text box on the bottom of the second window (see the screenshot).
    
    //or declarative syntax
    /* Create an empty panel with a horizontal layout */
-   auto& panel = window.widget();
-   panel.withLayout<BoxLayout>(BoxLayout::Horizontal, BoxLayout::Middle, 0, 20);
-
-   /* Add a slider and set defaults */
-   auto& slider = panel.slider(InitialValue{0.5f}, 
-                               FixedWidth{80});
-   
-   /* Add a textbox and set defaults */
-   auto& textBox = panel.textbox(FixedSize{60, 25},
-                                 TextValue{"50"},
-                                 UnitsText{"%"});
+   elm::Widget{ 
+     WidgetBoxLayout{ BoxLayout::Horizontal, BoxLayout::Middle, 0, 20 },
+     Children{},
+     elm::Slider{ InitialValue{0.5f}, FixedWidth{80},
+                  SliderCallback{ [&](float value) { 
+                    if (auto t = TextBox::find("#tbx")
+                      t.setValue(std::to_string(value * 100);
+                   }}
+     },
+     elm::TextBox{ FixedSize{60, 25}, TextValue{"50"}, 
+                   UnitsText{"%"}, WidgetId{ "#tbx" }
+     }
+   }
 
    /* Propagate slider changes to the text box */
-   slider.setCallback([&](float value) { textBox.setValue(std::to_string((int) (value * 100)));
 
 
 The Python version of this same piece of code looks like this:
