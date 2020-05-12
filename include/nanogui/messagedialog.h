@@ -16,6 +16,13 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(DialogType, int)
+DECLSETTER(DialogResult, std::function<void(int)>)
+DECLSETTER(DialogTitle, std::string)
+DECLSETTER(DialogButton, std::string)
+DECLSETTER(DialogAltButton, std::string)
+DECLSETTER(DialogMessage, std::string)
+
 /**
  * \class MessageDialog messagedialog.h nanogui/messagedialog.h
  *
@@ -23,6 +30,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT MessageDialog : public Window {
 public:
+    RTTI_CLASS_UID(MessageDialog)
+    RTTI_DECLARE_INFO(MessageDialog)
+
     /// Classification of the type of message this MessageDialog represents.
     enum class Type {
         Information,
@@ -30,21 +40,63 @@ public:
         Warning
     };
 
-    MessageDialog(Widget *parent, Type type, const std::string &title = "Untitled",
-                  const std::string &message = "Message",
-                  const std::string &buttonText = "OK",
-                  const std::string &altButtonText = "Cancel", bool altButton = false);
+    explicit MessageDialog(Widget* parent, Orientation orient);
 
-    Label *messageLabel() { return mMessageLabel; }
-    const Label *messageLabel() const { return mMessageLabel; }
+    using Window::set;
+    template<typename... Args>
+    MessageDialog(Widget* parent, const Args&... args) 
+      : MessageDialog(parent, Orientation::Vertical)
+    { set<MessageDialog, Args...>(args...); }
+
+    Label *messageLabel();
+    const Label *messageLabel() const;
+
+    void setMessage(const std::string& message);
 
     std::function<void(int)> callback() const { return mCallback; }
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
+
+    void setDialogType(int type);
+    void setIcon(int icon);
+
+    void setDialogButton(const std::string& text);
+    void setDialogAltButton(const std::string& text);
+
+    void draw(NVGcontext* ctx);
 protected:
     std::function<void(int)> mCallback;
-    Label *mMessageLabel;
+    bool inited = false;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(DialogType, setDialogType)
+    PROPSETTER(Icon, setIcon)
+    PROPSETTER(DialogTitle, setTitle)
+    PROPSETTER(DialogResult, setCallback)
+    PROPSETTER(DialogMessage, setMessage)
+    PROPSETTER(DialogButton, setDialogButton)
+    PROPSETTER(DialogAltButton, setDialogAltButton)
+};
+
+namespace elm { using MessageDialog = Element<MessageDialog>; }
+
+class NANOGUI_EXPORT InAppNotification : public MessageDialog
+{
+public:
+  RTTI_CLASS_UID(InAppNotification)
+  RTTI_DECLARE_INFO(InAppNotification)
+
+  explicit InAppNotification(Widget *parent);
+
+  using MessageDialog::set;
+  template<typename... Args>
+  InAppNotification(Widget* parent, const Args&... args)
+    : InAppNotification(parent)
+  { set<InAppNotification, Args...>(args...); }
+
+  void draw(NVGcontext* ctx);
+protected:
+  enum { Expand, Collapse, Idle };
+
+  int mState = Idle;
 };
 
 NAMESPACE_END(nanogui)

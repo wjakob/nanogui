@@ -12,9 +12,8 @@ DECLARE_WIDGET(Slider);
 
 void register_basics(py::module &m) {
     py::class_<Label, Widget, ref<Label>, PyLabel>(m, "Label", D(Label))
-        .def(py::init<Widget *, const std::string &, const std::string &, int>(),
-             py::arg("parent"), py::arg("caption"), py::arg("font") = std::string("sans"),
-             py::arg("fontSize") = -1,
+        .def(py::init<Widget *, const char*, const char*>(),
+             py::arg("parent"), py::arg("caption"), py::arg("font"),
              D(Label, Label))
         .def("caption", &Label::caption, D(Label, caption))
         .def("setCaption", &Label::setCaption, D(Label, setCaption))
@@ -42,11 +41,8 @@ void register_basics(py::module &m) {
 
     py::class_<MessageDialog, Window, ref<MessageDialog>, PyMessageDialog> mdlg(m, "MessageDialog", D(MessageDialog));
     mdlg
-        .def(py::init<Widget *, MessageDialog::Type, const std::string&,
-                      const std::string&, const std::string&, const std::string&, bool>(),
-            py::arg("parent"), py::arg("type"), py::arg("title") = std::string("Untitled"),
-            py::arg("message") = std::string("Message"), py::arg("buttonText") = std::string("OK"),
-            py::arg("altButtonText") = std::string("Cancel"), py::arg("altButton") = false,
+        .def(py::init<Widget *>(),
+            py::arg("parent"),
             D(MessageDialog, MessageDialog))
         .def("messageLabel", (Label * (MessageDialog::*)()) &MessageDialog::messageLabel, D(MessageDialog, messageLabel))
         .def("callback", &MessageDialog::callback, D(MessageDialog, callback))
@@ -70,7 +66,7 @@ void register_basics(py::module &m) {
                       const std::vector<std::string> &>(),
              py::arg("parent"), py::arg("items"), py::arg("itemsShort")/* ,D(ComboBox, ComboBox, 3)*/)
         .def("callback", &ComboBox::callback, D(ComboBox, callback))
-        .def("setCallback", &ComboBox::setCallback, D(ComboBox, setCallback))
+        .def("setCallback", (void (ComboBox::*)(const std::function<void (std::string)>&))&ComboBox::setCallback, D(ComboBox, setCallback))
         .def("selectedIndex", &ComboBox::selectedIndex, D(ComboBox, selectedIndex))
         .def("setSelectedIndex", &ComboBox::setSelectedIndex, D(ComboBox, setSelectedIndex))
         .def("setItems", (void(ComboBox::*)(const std::vector<std::string>&)) &ComboBox::setItems, D(ComboBox, setItems))

@@ -1,4 +1,5 @@
 #include "python.h"
+#include <nanovg.h>
 
 using namespace pybind11::literals;
 
@@ -113,7 +114,7 @@ void register_nanovg(py::module &m) {
         .def("ResetTransform", &nvgResetTransform)
         .def("Transform", &nvgTransform, "a"_a, "b"_a, "c"_a, "d"_a, "e"_a,
              "f"_a)
-        .def("Translate", &nvgTranslate, "x"_a, "y"_a)
+        .def("Translate", (void(*)(NVGcontext*, float, float))&nvgTranslate, "x"_a, "y"_a)
         .def("Rotate", &nvgRotate, "angle"_a)
         .def("SkewX", &nvgSkewX, "angle"_a)
         .def("SkewY", &nvgSkewY, "angle"_a)
@@ -133,22 +134,22 @@ void register_nanovg(py::module &m) {
              "h"_a)
         .def("ResetScissor", &nvgResetScissor)
         .def("BeginPath", &nvgBeginPath)
-        .def("MoveTo", &nvgMoveTo, "x"_a, "y"_a)
-        .def("LineTo", &nvgLineTo, "x"_a, "y"_a)
+        .def("MoveTo", (void(*)(NVGcontext*, float, float))&nvgMoveTo, "x"_a, "y"_a)
+        .def("LineTo", (void(*)(NVGcontext*, float, float))&nvgLineTo, "x"_a, "y"_a)
         .def("BezierTo", &nvgBezierTo, "c1x"_a, "c1y"_a, "c2x"_a, "c2y"_a,
              "x"_a, "y"_a)
         .def("QuadTo", &nvgQuadTo, "cx"_a, "cy"_a, "x"_a, "y"_a)
         .def("ArcTo", &nvgArcTo, "x1"_a, "y1"_a, "x2"_a, "y2"_a, "radius"_a)
         .def("ClosePath", &nvgClosePath)
         .def("PathWinding", &nvgPathWinding, "dir"_a)
-        .def("Arc", &nvgArc, "cx"_a, "cy"_a, "r"_a, "a0"_a, "a1"_a, "dir"_a)
-        .def("Rect", &nvgRect, "x"_a, "y"_a, "w"_a, "h"_a)
-        .def("RoundedRect", &nvgRoundedRect, "x"_a, "y"_a, "w"_a, "h"_a, "r"_a)
+        .def("Arc", (void(*)(NVGcontext*, float, float, float, float, float, int))&nvgArc, "cx"_a, "cy"_a, "r"_a, "a0"_a, "a1"_a, "dir"_a)
+        .def("Rect", (void(*)(NVGcontext*,float,float,float,float))&nvgRect, "x"_a, "y"_a, "w"_a, "h"_a)
+        .def("RoundedRect", (void(*)(NVGcontext*, float, float, float, float, float))&nvgRoundedRect, "x"_a, "y"_a, "w"_a, "h"_a, "r"_a)
         .def("RoundedRectVarying", &nvgRoundedRectVarying, "x"_a, "y"_a, "w"_a,
              "h"_a, "radTopLeft"_a, "radTopRight"_a, "radBottomRight"_a,
              "radBottomLeft"_a)
         .def("Ellipse", &nvgEllipse, "cx"_a, "cy"_a, "rx"_a, "ry"_a)
-        .def("Circle", &nvgCircle, "cx"_a, "cy"_a, "r"_a)
+        .def("Circle", (void(*)(NVGcontext*, float, float, float))&nvgCircle, "cx"_a, "cy"_a, "r"_a)
         .def("Fill", &nvgFill)
         .def("Stroke", &nvgStroke)
         .def("CreateFont", &nvgCreateFont, "name"_a, "filename"_a)

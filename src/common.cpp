@@ -15,10 +15,11 @@
 #  include <windows.h>
 #endif
 
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <map>
 #include <thread>
 #include <chrono>
+#include <algorithm>
 #include <iostream>
 
 #if !defined(_WIN32)
@@ -27,110 +28,113 @@
 #  include <dirent.h>
 #endif
 
-NAMESPACE_BEGIN(nanogui)
-
-extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
-
-#if defined(__APPLE__)
-  extern void disable_saved_application_state_osx();
+#if !NANOGUI_CUSTOM_FONT_FUNCTION
+#include "nanogui_resources.h"
 #endif
 
-void init() {
-    #if !defined(_WIN32)
-        /* Avoid locale-related number parsing issues */
-        setlocale(LC_NUMERIC, "C");
-    #endif
+extern int nvgCreateImageMem(NVGcontext*, int, unsigned char*, int);
+extern int nvgCreateImage(NVGcontext*, const char*, int);
 
-    #if defined(__APPLE__)
-        disable_saved_application_state_osx();
-    #endif
+NAMESPACE_BEGIN(nanogui)
 
-    glfwSetErrorCallback(
-        [](int error, const char *descr) {
-            if (error == GLFW_NOT_INITIALIZED)
-                return; /* Ignore */
-            std::cerr << "GLFW error " << error << ": " << descr << std::endl;
-        }
-    );
+const struct RttiClass Object::rttiInfoObject = { "Object", sizeof(Object), nullptr, 0 };
+RttiClass* Object::rttiClass() const { return RTTI_CLASS_INFO(Object); }
 
-    if (!glfwInit())
-        throw std::runtime_error("Could not initialize GLFW!");
+NVGcontext* __nanogui_context = nullptr;
 
-    glfwSetTime(0);
+#if !NANOGUI_CUSTOM_FONT_FUNCTION
+void __nanogui_get_fontdata(const char* name, void*& data, uint32_t &datasize)
+{
+  if (!strcmp(name, "sans"))
+  {
+    data = roboto_regular_ttf;
+    datasize = roboto_regular_ttf_size;
+  }
+  else if (!strcmp(name, "sans-bold"))
+  {
+    data = roboto_bold_ttf;
+    datasize = roboto_bold_ttf_size;
+  }
+  else if (!strcmp(name, "icons"))
+  {
+    data = entypo_ttf;
+    datasize = entypo_ttf_size;
+  }
+}
+#endif
+
+bool isPointInsideRect(const Vector2i& p, const Vector4i& r)
+{
+  return (p.x() >= r.x() && p.y() >= r.y() && p.x() <= r.z() && p.y() <= r.w());
 }
 
-static bool mainloop_active = false;
+void nvgRect(NVGcontext* ctx, const Vector2i& pos, const Vector2i& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
+Vector2f nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const char* end)
+{
+  float bounds[4];
+  nvgTextBounds(ctx, x, y, string, end, bounds);
+  return {bounds[2]-bounds[0], bounds[3] - bounds[1]};
+}
 
-void mainloop(int refresh) {
+Vector2f nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float s, const char* string, const char* end)
+{
+  float bounds[4];
+  nvgTextBoxBounds(ctx, x, y, s, string, end, bounds);
+  return{ bounds[2] - bounds[0], bounds[3] - bounds[1] };
+}
+
+void nvgRect(NVGcontext* ctx, const Vector2f& pos, const Vector2f& size) { nvgRect(ctx, pos.x(), pos.y(), size.x(), size.y()); }
+void nvgTranslate(NVGcontext* ctx, const Vector2i& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
+void nvgTranslate(NVGcontext* ctx, const Vector2f& pos) { nvgTranslate(ctx, pos.x(), pos.y() ); }
+void nvgRect(NVGcontext* ctx, const Vector4i& r) { nvgRect(ctx, r.x(), r.y(), r.width(), r.height()); }
+void nvgRoundedRect(NVGcontext* ctx, const Vector2i& p, const Vector2i& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
+void nvgRoundedRect(NVGcontext* ctx, const Vector2f& p, const Vector2f& s, float r) { nvgRoundedRect(ctx, p.x(), p.y(), s.x(), s.y(), r); }
+void nvgText(NVGcontext* ctx, const Vector2i& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
+void nvgText(NVGcontext* ctx, const Vector2f& p, const std::string& text) { nvgText(ctx, p.x(), p.y(), text.c_str(), nullptr); }
+void nvgArc(NVGcontext* ctx, const Vector2f& c, float r, float a0, float a1, int dir) { nvgArc(ctx, c.x(), c.y(), r, a0, a1, dir); }
+void nvgCircle(NVGcontext* ctx, const Vector2f& c, float r) { nvgCircle(ctx, c.x(), c.y(), r); }
+void nvgFontFaceSize(NVGcontext* ctx, const char* font, float size) { nvgFontFace(ctx, font); nvgFontSize(ctx, size); }
+
+std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
+  auto result = file_dialog(filetypes, save, false);
+  return result.empty() ? std::string() : result.front();
+}
+
+namespace sample
+{
+  bool mainloop_active = false;
+  void stop_frame_loop() { mainloop_active = false; }
+  bool is_main_loop_active() { return mainloop_active; }
+
+  void run(std::function<void()> frame_func, int refresh)
+  {
     if (mainloop_active)
-        throw std::runtime_error("Main loop is already running!");
+      throw std::runtime_error("Main loop is already running!");
 
     mainloop_active = true;
 
     std::thread refresh_thread;
     if (refresh > 0) {
-        /* If there are no mouse/keyboard events, try to refresh the
-           view roughly every 50 ms (default); this is to support animations
-           such as progress bars while keeping the system load
-           reasonably low */
-        refresh_thread = std::thread(
-            [refresh]() {
-                std::chrono::milliseconds time(refresh);
-                while (mainloop_active) {
-                    std::this_thread::sleep_for(time);
-                    glfwPostEmptyEvent();
-                }
-            }
-        );
-    }
-
-    try {
-        while (mainloop_active) {
-            int numScreens = 0;
-            for (auto kv : __nanogui_screens) {
-                Screen *screen = kv.second;
-                if (!screen->visible()) {
-                    continue;
-                } else if (glfwWindowShouldClose(screen->glfwWindow())) {
-                    screen->setVisible(false);
-                    continue;
-                }
-                screen->drawAll();
-                numScreens++;
-            }
-
-            if (numScreens == 0) {
-                /* Give up if there was nothing to draw */
-                mainloop_active = false;
-                break;
-            }
-
-            /* Wait for mouse/keyboard or empty refresh events */
-            glfwWaitEvents();
+      /* If there are no mouse/keyboard events, try to refresh the
+          view roughly every 50 ms (default); this is to support animations
+          such as progress bars while keeping the system load
+          reasonably low */
+      refresh_thread = std::thread([refresh]() {
+        std::chrono::milliseconds time(refresh);
+        while (is_main_loop_active()) {
+          std::this_thread::sleep_for(time);
+          post_empty_event();
         }
-
-        /* Process events once more */
-        glfwPollEvents();
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-        leave();
+      });
     }
+
+    frame_loop(frame_func);
 
     if (refresh > 0)
-        refresh_thread.join();
-}
+      refresh_thread.join();
+  }
 
-void leave() {
-    mainloop_active = false;
-}
-
-bool active() {
-    return mainloop_active;
-}
-
-void shutdown() {
-    glfwTerminate();
-}
+} //end namespace sample
 
 std::array<char, 8> utf8(int c) {
     std::array<char, 8> seq;
@@ -148,7 +152,7 @@ std::array<char, 8> utf8(int c) {
         case 4: seq[3] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x10000;
         case 3: seq[2] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0x800;
         case 2: seq[1] = 0x80 | (c & 0x3f); c = c >> 6; c |= 0xc0;
-        case 1: seq[0] = c;
+        case 1: seq[0] = (char)c ;
     }
     return seq;
 }
@@ -166,7 +170,9 @@ int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data,
 }
 
 std::vector<std::pair<int, std::string>>
-loadImageDirectory(NVGcontext *ctx, const std::string &path) {
+loadImageDirectory(NVGcontext *ctx, const std::string &path,
+                   std::function<bool (const std::string&)> filter)
+{
     std::vector<std::pair<int, std::string> > result;
 #if !defined(_WIN32)
     DIR *dp = opendir(path.c_str());
@@ -181,17 +187,22 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     HANDLE handle = FindFirstFileA(searchPath.c_str(), &ffd);
     if (handle == INVALID_HANDLE_VALUE)
         throw std::runtime_error("Could not open image directory!");
-    do {
+    do
+    {
         const char *fname = ffd.cFileName;
 #endif
-        if (strstr(fname, "png") == nullptr)
+        if (filter != nullptr)
+        {
+          if (!filter(fname))
+            continue;
+        }
+        if (strstr(fname, "png") == nullptr && strstr(fname, "jpg") == nullptr)
             continue;
         std::string fullName = path + "/" + std::string(fname);
         int img = nvgCreateImage(ctx, fullName.c_str(), 0);
         if (img == 0)
             throw std::runtime_error("Could not open image data!");
-        result.push_back(
-            std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
+        result.push_back(std::make_pair(img, fullName));
 #if !defined(_WIN32)
     }
     closedir(dp);
@@ -202,16 +213,17 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
     return result;
 }
 
-std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save) {
-    auto result = file_dialog(filetypes, save, false);
-    return result.empty() ? "" : result.front();
+void logic_error(const char* err, const char* file, int line)
+{
+  std::cout << err << " FILE:" << file << "  LINE:" << line;
 }
 
 #if !defined(__APPLE__)
 std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, std::string>> &filetypes, bool save, bool multiple) {
     static const int FILE_DIALOG_MAX_BUFFER = 16384;
     if (save && multiple) {
-        throw std::invalid_argument("save and multiple must not both be true.");
+      logic_error("save and multiple must not both be true.", __FILE__, __LINE__);
+      return{};
     }
 
 #if defined(_WIN32)
@@ -315,7 +327,10 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
     cmd += "\"";
     FILE *output = popen(cmd.c_str(), "r");
     if (output == nullptr)
-        throw std::runtime_error("popen() failed -- could not launch zenity!");
+    {
+      logic_error("popen() failed -- could not launch zenity!", __FILE__, __LINE__);
+      return {};
+    }
     while (fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
         ;
     pclose(output);
@@ -339,7 +354,7 @@ std::vector<std::string> file_dialog(const std::vector<std::pair<std::string, st
 }
 #endif
 
-void Object::decRef(bool dealloc) const noexcept {
+void Object::decRef(bool dealloc) const {
     --m_refCount;
     if (m_refCount == 0 && dealloc) {
         delete this;
@@ -350,6 +365,17 @@ void Object::decRef(bool dealloc) const noexcept {
 }
 
 Object::~Object() { }
+
+float nvgTextHeight(NVGcontext* ctx, float x, float y, const char* string, const char* end, float* bounds)
+{
+  float _bounds[4];
+  if (!bounds)
+    bounds = _bounds;
+
+  nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
+  nvgTextBounds(ctx, x, y, string, end, bounds);
+  return bounds[3] - bounds[1];
+}
 
 NAMESPACE_END(nanogui)
 

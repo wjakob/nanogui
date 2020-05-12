@@ -12,14 +12,20 @@
 
 #include <nanogui/popup.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Popup, Window)
+
 Popup::Popup(Widget *parent, Window *parentWindow)
-    : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30), mSide(Side::Right) {
+    : Window(parent, ""),
+      mParentWindow(parentWindow),
+      mAnchorPos(Vector2i::Zero()), 
+      mAnchorHeight(30), 
+      mSide(Side::Right) 
+{
 }
 
 void Popup::performLayout(NVGcontext *ctx) {
@@ -34,13 +40,25 @@ void Popup::performLayout(NVGcontext *ctx) {
         mAnchorPos[0] -= size()[0];
 }
 
-void Popup::refreshRelativePlacement() {
+void Popup::refreshRelativePlacement() 
+{
+  if (mParentWindow)
+  {
     mParentWindow->refreshRelativePlacement();
     mVisible &= mParentWindow->visibleRecursive();
     mPos = mParentWindow->position() + mAnchorPos - Vector2i(0, mAnchorHeight);
+  }
 }
 
-void Popup::draw(NVGcontext* ctx) {
+int Popup::getHeaderHeight() const 
+{
+  if (auto layt = GroupLayout::cast(layout()))
+    return layt->margin();
+  return 0;
+}
+
+void Popup::draw(NVGcontext* ctx) 
+{
     refreshRelativePlacement();
 
     if (!mVisible)
@@ -57,7 +75,7 @@ void Popup::draw(NVGcontext* ctx) {
         mTheme->mDropShadow, mTheme->mTransparent);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
+    nvgRect(ctx, mPos - Vector2i(ds), mSize + Vector2i(2 * ds));
     nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);
@@ -85,18 +103,26 @@ void Popup::draw(NVGcontext* ctx) {
     Widget::draw(ctx);
 }
 
-void Popup::save(Serializer &s) const {
+void Popup::save(Json::value &s) const 
+{
     Window::save(s);
-    s.set("anchorPos", mAnchorPos);
-    s.set("anchorHeight", mAnchorHeight);
-    s.set("side", mSide);
+    auto obj = s.get_obj();
+
+    obj["anchorPos"] = json().set(mAnchorPos).name("Anchor pos");
+    obj["anchorHeight"] = json().set(mAnchorHeight).name("Anchor height");
+    obj["side"] = json().set<int>(mSide).name("Side");
+
+    s = Json::value(obj);
 }
 
-bool Popup::load(Serializer &s) {
-    if (!Window::load(s)) return false;
-    if (!s.get("anchorPos", mAnchorPos)) return false;
-    if (!s.get("anchorHeight", mAnchorHeight)) return false;
-    if (!s.get("side", mSide)) return false;
+bool Popup::load(Json::value &save) 
+{
+    Window::load(save);
+    json s{ save.get_obj() };
+
+    mAnchorPos = s.get<Vector2i>("anchorPos");
+    mAnchorHeight = s.get<int>("anchorHeight");
+    mSide = (Side)s.get<int>("side");
     return true;
 }
 

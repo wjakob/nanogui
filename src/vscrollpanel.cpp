@@ -12,13 +12,17 @@
 
 #include <nanogui/vscrollpanel.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(VScrollPanel, Widget)
+
 VScrollPanel::VScrollPanel(Widget *parent)
-    : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f), mUpdateLayout(false) { }
+    : Widget(parent), mChildPreferredHeight(0), mScroll(0.0f),
+      mUpdateLayout(false), mSliderWidth(8), mSliderMargin(2)
+{ }
 
 void VScrollPanel::performLayout(NVGcontext *ctx) {
     Widget::performLayout(ctx);
@@ -42,6 +46,14 @@ void VScrollPanel::performLayout(NVGcontext *ctx) {
     child->performLayout(ctx);
 }
 
+bool VScrollPanel::mouseEnterEvent(const Vector2i &p, bool enter)
+{
+  if (!enter)
+    mLastMousePos = { -1, -1 };
+
+  return Widget::mouseEnterEvent(p, enter);
+}
+
 Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
     if (mChildren.empty())
         return Vector2i::Zero();
@@ -49,10 +61,11 @@ Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) const {
 }
 
 bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
-                            int button, int modifiers) {
+                            int button, int modifiers)
+{
+    mLastMousePos = p - mPos;
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
-        float scrollh = height() *
-            std::min(1.0f, height() / (float)mChildPreferredHeight);
+        float scrollh = height() * std::min(1.0f, height() / (float)mChildPreferredHeight);
 
         mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
                      mScroll + rel.y() / (float)(mSize.y() - 8 - scrollh)));
@@ -63,11 +76,21 @@ bool VScrollPanel::mouseDragEvent(const Vector2i &p, const Vector2i &rel,
     }
 }
 
+bool VScrollPanel::mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers)
+{
+  mLastMousePos = p - mPos;
+  return Widget::mouseMotionEvent(p, rel, button, modifiers);
+}
+
+bool VScrollPanel::isSliderVisible() const
+{
+  return mChildPreferredHeight > height();
+}
+
 bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
     if (!mChildren.empty() && mChildPreferredHeight > mSize.y()) {
         float scrollAmount = rel.y() * (mSize.y() / 20.0f);
-        float scrollh = height() *
-            std::min(1.0f, height() / (float)mChildPreferredHeight);
+        float scrollh = height() * std::min(1.0f, height() / (float)mChildPreferredHeight);
 
         mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
                 mScroll - scrollAmount / (float)(mSize.y() - 8 - scrollh)));
@@ -81,14 +104,22 @@ bool VScrollPanel::scrollEvent(const Vector2i &p, const Vector2f &rel) {
 void VScrollPanel::draw(NVGcontext *ctx) {
     if (mChildren.empty())
         return;
+
     Widget *child = mChildren[0];
     child->setPosition(Vector2i(0, -mScroll*(mChildPreferredHeight - mSize.y())));
-    mChildPreferredHeight = child->preferredSize(ctx).y();
-    float scrollh = height() *
-        std::min(1.0f, height() / (float) mChildPreferredHeight);
 
-    if (mUpdateLayout)
-        child->performLayout(ctx);
+    if (mChildren.size() != mLastChildCount)
+    {
+      mLastChildCount = (int)mChildren.size();
+      mChildPreferredHeight = child->preferredSize(ctx).y();
+    }
+
+    float scrollh = height() * std::min(1.0f, height() / (float) mChildPreferredHeight);
+
+    if (mUpdateLayout) {
+      child->performLayout(ctx);
+      mUpdateLayout = false;
+    }
 
     nvgSave(ctx);
     nvgTranslate(ctx, mPos.x(), mPos.y());
@@ -104,35 +135,56 @@ void VScrollPanel::draw(NVGcontext *ctx) {
         ctx, mPos.x() + mSize.x() - 12 + 1, mPos.y() + 4 + 1, 8,
         mSize.y() - 8, 3, 4, Color(0, 32), Color(0, 92));
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12, mPos.y() + 4, 8,
-                   mSize.y() - 8, 3);
+    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12, mPos.y() + 4, 
+                   8, mSize.y() - 8, 3);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
 
-    paint = nvgBoxGradient(
-        ctx, mPos.x() + mSize.x() - 12 - 1,
-        mPos.y() + 4 + (mSize.y() - 8 - scrollh) * mScroll - 1, 8, scrollh,
-        3, 4, Color(220, 100), Color(128, 100));
+    Vector4i rectSlider(mPos.x() + mSize.x() - getSliderAreaWidth() + 1,   //x:x
+                        mPos.y() + mSliderMargin * 2 + 1 + (mSize.y() - getSliderWidth() - scrollh) * mScroll, //y:y
+                        getSliderWidth() - mSliderMargin,   //z:width
+                        scrollh - 2); //w:height
+    bool isSliderSelected = (mLastMousePos.x() >= rectSlider.x()
+                             && mLastMousePos.y() >= rectSlider.y()
+                             && mLastMousePos.x() < rectSlider.x() + rectSlider.z()
+                             && mLastMousePos.y() < rectSlider.y() + rectSlider.w());
+    Color sliderColor = isSliderSelected
+                              ? (mSliderActiveColor.w() > 0 ? mSliderActiveColor : mTheme->mScrollBarActiveColor)
+                              : (mSliderInactiveColor.w() > 0 ? mSliderInactiveColor : mTheme->mScrollBarInactiveColor);
+    Color sliderSupColor = sliderColor;
+    sliderSupColor /= 2;
+    sliderSupColor.w() = sliderColor.w();
+
+    paint = nvgBoxGradient( ctx,
+                            mPos.x() + mSize.x() - getSliderAreaWidth() - 1, mPos.y() + mSliderMargin * 2 + (mSize.y() - getSliderWidth() - scrollh) * mScroll - 1,
+                            getSliderWidth(), scrollh,
+                            3, 4, sliderColor, sliderSupColor);
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + mSize.x() - 12 + 1,
-                   mPos.y() + 4 + 1 + (mSize.y() - 8 - scrollh) * mScroll, 8 - 2,
-                   scrollh - 2, 2);
+    nvgRoundedRect(ctx, rectSlider.x(), rectSlider.y(), rectSlider.z(), rectSlider.w(), 2);
     nvgFillPaint(ctx, paint);
     nvgFill(ctx);
+
+    Widget::draw(ctx);
 }
 
-void VScrollPanel::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("childPreferredHeight", mChildPreferredHeight);
-    s.set("scroll", mScroll);
+void VScrollPanel::save(Json::value &s) const 
+{
+  Widget::save(s);
+  auto obj = s.get_obj();
+  obj["childPreferredHeight"] = json().set(mChildPreferredHeight).name("Child height");
+  obj["scroll"] = json().set(mScroll).name("Scroll");
+
+  s = Json::value(obj);
 }
 
-bool VScrollPanel::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("childPreferredHeight", mChildPreferredHeight)) return false;
-    if (!s.get("scroll", mScroll)) return false;
-    return true;
+bool VScrollPanel::load(Json::value &save) 
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+  mChildPreferredHeight = s.get<int>("childPreferredHeight");
+  mScroll = s.get<float>("scroll");
+  return true;
 }
 
 NAMESPACE_END(nanogui)

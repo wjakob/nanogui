@@ -16,12 +16,14 @@
 #include <nanogui/tabheader.h>
 #include <nanogui/stackedwidget.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
 #include <algorithm>
 
 NAMESPACE_BEGIN(nanogui)
+
+RTTI_IMPLEMENT_INFO(TabWidget, Object)
 
 TabWidget::TabWidget(Widget* parent)
     : Widget(parent)
@@ -38,6 +40,13 @@ TabWidget::TabWidget(Widget* parent)
         if (mCallback)
             mCallback(i);
     });
+}
+
+TabWidget::TabWidget(Widget *parent, const TabNames &tabs)
+  : TabWidget(parent)
+{
+  for (auto& t : tabs)
+    createTab(t);
 }
 
 void TabWidget::addChild(int /*index*/, Widget * /*widget*/) {

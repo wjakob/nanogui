@@ -28,8 +28,18 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
+
+DECLSETTER(CheckboxState, bool)
+DECLSETTERARGS(UncheckedColor, Color)
+DECLSETTERARGS(CheckedColor, Color)
+DECLSETTERARGS(PushedColor, Color)
+DECLSETTER(CheckboxCallback, std::function<void(bool)>)
+
 class NANOGUI_EXPORT CheckBox : public Widget {
 public:
+    RTTI_CLASS_UID(CheckBox)
+    RTTI_DECLARE_INFO(CheckBox)
+
     /**
      * Adds a CheckBox to the specified ``parent``.
      *
@@ -45,8 +55,14 @@ public:
      *     \ref nanogui::CheckBox::mPushed for the difference between "pushed"
      *     and "checked".
      */
-    CheckBox(Widget *parent, const std::string &caption = "Untitled",
-             const std::function<void(bool)> &callback = std::function<void(bool)>());
+    CheckBox(Widget *parent, const std::string &caption,
+             std::function<void(bool)> callback = nullptr,
+             bool checked = false);
+
+    using Widget::set;
+    template<typename... Args>
+    CheckBox(Widget* parent, const Args&... args)
+      : CheckBox(parent, std::string("")) { set<CheckBox, Args...>(args...); }
 
     /// The caption of this CheckBox.
     const std::string &caption() const { return mCaption; }
@@ -55,16 +71,29 @@ public:
     void setCaption(const std::string &caption) { mCaption = caption; }
 
     /// Whether or not this CheckBox is currently checked.
-    const bool &checked() const { return mChecked; }
+    bool checked() const { return (bool)mChecked; }
 
     /// Sets whether or not this CheckBox is currently checked.
-    void setChecked(const bool &checked) { mChecked = checked; }
+    void setChecked(bool checked) { mChecked = checked; }
 
     /// Whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
-    const bool &pushed() const { return mPushed; }
+    bool pushed() const { return mPushed; }
+
+    BoolObservable observable() { return mChecked; }
+    void setObservable(BoolObservable value) { mChecked = value; }
 
     /// Sets whether or not this CheckBox is currently pushed.  See \ref nanogui::CheckBox::mPushed.
-    void setPushed(const bool &pushed) { mPushed = pushed; }
+    void setPushed(bool pushed) { mPushed = pushed; }
+
+    bool keyboardEvent(int key, int scancode, int action, int mods) override;
+
+    void setPushedColor(const Color& c) { mPushedColor = c; }
+    void setCheckedColor(const Color& c) { mCheckedColor = c; }
+    void setUncheckedColor(const Color& c) { mUncheckedColor = c; }
+    bool tabstop(CanTabStop) const override { return true; }
+
+    void setStateColor(const Color& checked, const Color& unchecked = {}, const Color& pushed = {})
+    { mPushedColor = pushed; mCheckedColor = checked; mUncheckedColor = unchecked; }
 
     /// Returns the current callback of this CheckBox.
     std::function<void(bool)> callback() const { return mCallback; }
@@ -99,12 +128,14 @@ public:
     virtual void draw(NVGcontext *ctx) override;
 
     /// Saves this CheckBox to the specified Serializer.
-    virtual void save(Serializer &s) const override;
+    virtual void save(Json::value &save) const override;
 
     /// Loads the state of the specified Serializer to this CheckBox.
-    virtual bool load(Serializer &s) override;
+    virtual bool load(Json::value &load) override;
 
 protected:
+    void toggleCheck();
+
     /// The caption text of this CheckBox.
     std::string mCaption;
 
@@ -116,13 +147,24 @@ protected:
     bool mPushed;
 
     /// Whether or not this CheckBox is currently checked or unchecked.
-    bool mChecked;
+    BoolObservable mChecked;
+    Color mPushedColor, mUncheckedColor, mCheckedColor;
 
     /// The function to execute when \ref nanogui::CheckBox::mChecked is changed.
     std::function<void(bool)> mCallback;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PROPSETTER(CheckboxState, setChecked)
+  PROPSETTER(Caption, setCaption)
+  PROPSETTER(CheckboxCallback, setCallback)
+  PROPSETTERVAL(BoolObservableRef, setObservable)
+  PROPSETTERVAL(BoolObservable, setObservable)
+  PROPSETTER(FontSize,setFontSize)
+  PROPSETTER(UncheckedColor, setUncheckedColor)
+  PROPSETTER(CheckedColor, setCheckedColor)
+  PROPSETTER(PushedColor, setPushedColor)
 };
+
+namespace elm { using CheckBox = Element<CheckBox>; }
 
 NAMESPACE_END(nanogui)

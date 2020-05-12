@@ -10,10 +10,13 @@
 */
 
 #include <nanogui/progressbar.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
+
+RTTI_IMPLEMENT_INFO(ProgressBar, Widget)
+RTTI_IMPLEMENT_INFO(CircleProgressBar, Widget)
 
 ProgressBar::ProgressBar(Widget *parent)
     : Widget(parent), mValue(0.0f) {}
@@ -49,17 +52,75 @@ void ProgressBar::draw(NVGcontext* ctx) {
     nvgFill(ctx);
 }
 
-void ProgressBar::save(Serializer &s) const {
+void ProgressBar::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("value", mValue);
+    auto obj = s.get_obj();
+
+    obj["value"] = json().set(mValue).name("Value");
+
+    s = Json::value(obj);
 }
 
-bool ProgressBar::load(Serializer &s) {
-    if (!Widget::load(s))
-        return false;
-    if (!s.get("value", mValue))
-        return false;
-    return true;
+bool ProgressBar::load(Json::value &save)
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mValue = s.get<float>("value");
+  return true;
 }
+
+Vector2i CircleProgressBar::preferredSize(NVGcontext *) const {
+  return Vector2i(70, 70);
+}
+
+void CircleProgressBar::draw(NVGcontext* ctx) {
+  Widget::draw(ctx);
+
+  float a0 = 0.0f;
+  float a1 = nvgDegToRad(360.f * mValue);
+  float r = (std::min(width(), height()) / 2) * mRadius;
+  float r0 = r;
+  float r1 = r * mLineWidth;
+  float ax, ay, bx, by;
+
+  Vector2i center = mPos + (mSize / 2);
+  NVGpaint paint;
+
+  nvgSave(ctx);
+
+  Color gradTop = mTheme->mButtonGradientTopUnfocused;
+  Color gradBot = mTheme->mButtonGradientBotUnfocused;
+
+  nvgBeginPath(ctx);
+  nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1.0f, mSize.x() - 2,
+                      mSize.y() - 2, mTheme->mButtonCornerRadius - 1);
+
+  NVGpaint bg = nvgLinearGradient(ctx, mPos.x(), mPos.y(), mPos.x(),
+                                       mPos.y() + mSize.y(),
+                                       gradTop.mul_a(0.3f), gradBot.mul_a(0.3f));
+
+  nvgFillPaint(ctx, bg);
+  nvgFill(ctx);
+
+  nvgBeginPath(ctx);
+  nvgArc(ctx, center.x(), center.y(), r0, a0, a1, NVG_CW);
+  nvgArc(ctx, center.x(), center.y(), r1, a1, a0, NVG_CCW);
+  nvgClosePath(ctx);
+  ax = center.x() + cosf(a0) * (r0 + r1)*0.5f;
+  ay = center.y() + sinf(a0) * (r0 + r1)*0.5f;
+  bx = center.x() + cosf(a1) * (r0 + r1)*0.5f;
+  by = center.y() + sinf(a1) * (r0 + r1)*0.5f;
+
+  paint = nvgLinearGradient(ctx, ax, ay, bx, by, mColorStart, mColorEnd);
+  nvgFillPaint(ctx, paint);
+  nvgFill(ctx);
+
+  nvgRestore(ctx);
+}
+
+CircleProgressBar::CircleProgressBar(Widget *parent)
+  : ProgressBar(parent) {}
 
 NAMESPACE_END(nanogui)

@@ -14,11 +14,115 @@
 
 #include <nanogui/object.h>
 #include <nanogui/theme.h>
+#include <nanogui/layout.h>
+
 #include <vector>
 
 NAMESPACE_BEGIN(nanogui)
 
+class Window;
+class Frame;
+class Label;
+class ToolButton;
+class LinkButton;
+class MessageDialog;
+class PopupButton;
+class Button;
+class ComboBox;
+class Line;
+class CheckBox;
+class TabWidget;
+class VScrollPanel;
+class ProgressBar;
+class Slider;
+class ImagePanel;
+class TextBox;
+class SwitchBox;
+class Listbox;
+class Spinner;
+class Graph;
+class TreeView;
+class ToleranceBar;
+class TextArea;
+class Panel;
+class ColorPicker;
+class UpdateHandler;
+class RemoveTimer;
+
+template<class X> class IntBox;
+template<class X> class FloatBox;
+template<class X> class NumberPicker;
+
 enum class Cursor;// do not put a docstring, this is already documented
+namespace Json { class value; }
+
+enum TextHAlign { hLeft = 0, hCenter, hRight };
+enum TextVAlign { vTop = 3, vMiddle, vBottom };
+enum class IconAlign {
+  Left = 0,         ///< Button icon on the far left.
+  LeftCentered = 1, ///< Button icon on the left, centered (depends on caption text length).
+  RightCentered = 2,///< Button icon on the right, centered (depends on caption text length).
+  Right = 3         ///< Button icon on the far right.
+};
+
+struct TextAlign { TextHAlign h; TextVAlign v; };
+
+enum Corner { cLeftTop = 0, cLeftBottom, cRigthTop, cRightBottom };
+
+DECLSETTER(MaxHeight, int)
+DECLSETTER(FixedHeight, int)
+DECLSETTER(FixedWidth, int)
+DECLSETTER(WidgetLayout, Layout*)
+DECLSETTERDEF(Children, int, 0)
+DECLSETTERARGSNEW(WidgetStretchLayout, StretchLayout)
+DECLSETTERARGSNEW(WidgetGridLayout, GridLayout)
+DECLSETTERARGSNEW(WidgetBoxLayout, BoxLayout)
+DECLSETTERARGSNEW(WidgetGroupLayout, GroupLayout)
+DECLSETTERARGS(FixedSize, Vector2i)
+DECLSETTER(WidgetId, std::string)
+DECLSETTER(FloatValue, float)
+DECLSETTER(Icon, int)
+DECLSETTER(IconColor, Color)
+DECLSETTER(IconHoveredColor, Color)
+DECLSETTER(IconPushedColor, Color)
+DECLSETTER(BorderSize, float)
+DECLSETTER(BorderColor, Color)
+DECLSETTER(Caption, std::string)
+DECLSETTERARGS(Position, Vector2i)
+DECLSETTERARGS(WidgetSize, Vector2i)
+DECLSETTERARGS(MinimumSize, Vector2i)
+DECLSETTERARGS(RelativeSize, Vector2f)
+DECLSETTERARGS(BackgroundColor, Color)
+DECLSETTERARGS(BackgroundHoverColor, Color)
+DECLSETTER(TooltipText, std::string)
+DECLSETTER(CaptionFont, std::string)
+DECLSETTER(FontSize, int)
+DECLSETTER(DrawFlags, int)
+DECLSETTER(IconAlignment, IconAlign)
+DECLSETTER(TextStyle, int)
+DECLSETTER(TextColor, Color)
+DECLSETTER(CaptionHAlign, TextHAlign)
+DECLSETTER(CaptionAlign, TextAlign)
+DECLSETTER(InitialValue, float)
+DECLSETTER(MinValue, float)
+DECLSETTER(MaxValue, float)
+DECLSETTER(CornerRadius, float)
+DECLSETTER(IsSubElement, bool)
+DECLSETTER(WidgetCursor, Cursor)
+DECLSETTER(IsVisible, bool)
+DECLSETTER(WidgetTheme, Theme*)
+DECLSETTER(CopyThemeFrom, std::string)
+DECLSETTER(VisibleObservable, BoolObservable)
+DECLSETTER(FillChildren, std::function<void()>)
+
+struct ElementBase { Widget* w = nullptr; };
+template<class FF> struct Element : public ElementBase { template<typename... Args> Element(const Args&... args) { w = new FF(nullptr, args...); }};
+struct TooltipBase { Widget* w = nullptr; };
+template<class FF> struct TooltipWidget : public TooltipBase { template<typename... Args> TooltipWidget(const Args&... args) { w = new FF(nullptr, args...); } };
+
+namespace elm { NANOGUI_EXPORT ::nanogui::Screen* active_screen(); }
+#define WIDGET_COMMON_FUNCTIONS(class_name) \
+static class_name* find(const char* id, Widget* p = nullptr) { return (p ? p : (Widget*)elm::active_screen())->findWidget<class_name>(id); }
 
 /**
  * \class Widget widget.h nanogui/widget.h
@@ -31,15 +135,25 @@ enum class Cursor;// do not put a docstring, this is already documented
  */
 class NANOGUI_EXPORT Widget : public Object {
 public:
+    RTTI_CLASS_UID(Widget)
+    RTTI_DECLARE_INFO(Widget)
+    WIDGET_COMMON_FUNCTIONS(Widget)
+
     /// Construct a new widget with the given parent widget
-    Widget(Widget *parent);
+    explicit Widget(Widget *parent);
+    Widget(Widget&) = delete;
+    Widget& operator =(Widget&) = delete;
+
+    template<typename... Args>
+    Widget(Widget* parent, const Args&... args)
+      : Widget(parent) { set<Widget, Args...>(args...);  }
 
     /// Return the parent widget
     Widget *parent() { return mParent; }
     /// Return the parent widget
     const Widget *parent() const { return mParent; }
     /// Set the parent widget
-    void setParent(Widget *parent) { mParent = parent; }
+    void setParent(Widget *parent);
 
     /// Return the used \ref Layout generator
     Layout *layout() { return mLayout; }
@@ -54,11 +168,33 @@ public:
     const Theme *theme() const { return mTheme.get(); }
     /// Set the \ref Theme used to draw this widget
     virtual void setTheme(Theme *theme);
+    void setThemeFrom(const std::string& widgetId);
 
     /// Return the position relative to the parent widget
     const Vector2i &position() const { return mPos; }
+
+    Vector2i corner(Corner c) {
+      switch (c) {
+      case Corner::cLeftTop: return position();
+      case Corner::cLeftBottom: return{ left(), position().y() + size().y() };
+      case Corner::cRigthTop: return{ left() + size().x(), position().y() };
+      case Corner::cRightBottom: return Vector2i( position() + size() );
+      }
+      return { 0, 0 };
+    }
+    int right() const { return mPos.x() + mSize.x(); }
+    int left() const { return mPos.x(); }
     /// Set the position relative to the parent widget
     void setPosition(const Vector2i &pos) { mPos = pos; }
+    void setPosition(int x, int y) { setPosition(Vector2i(x, y)); }
+
+    void setGeometry(const Vector4i &vec) {
+      setPosition(vec.x(), vec.y());
+      setSize(vec.z() - vec.x(), vec.w() - vec.y());
+    }
+
+    bool sendChildToBack(Widget* child);
+    bool sendToBack();
 
     /// Return the absolute position on screen
     Vector2i absolutePosition() const {
@@ -66,10 +202,89 @@ public:
             (parent()->absolutePosition() + mPos) : mPos;
     }
 
+    Vector4i absoluteRect() const {
+      Vector2i ap = absolutePosition();
+      return Vector4i(ap.x(), ap.y(), ap.x() + width(), ap.y() + height());
+    }
+
+    Vector4i rect() const {
+      Vector2i p = position();
+      return Vector4i(p.x(), p.y(), p.x() + width(), p.y() + height());
+    }
+
+    Widget *findWidget(const std::string& id, bool inchildren = true);
+    Widget *findWidget(std::function<bool(Widget*)> cond, bool inchildren = true);
+
+    Widget *findWidgetGlobal(const std::string& id);
+    Widget *findWidgetGlobal(std::function<bool(Widget*)> cond);
+
+    virtual std::string wtypename() const;
+
+    template<typename RetClass>
+    RetClass *findWidget(const std::string& id, bool inchildren = true)
+    {
+      Widget* f = findWidget(id, inchildren);
+      return f ? RetClass::cast(f) : nullptr;
+    }
+
+    template<typename RetClass>
+    RetClass *findWidget(WidgetId id, bool inchildren = true)
+    { return findWidget<RetClass>(std::string(id.value), inchildren); }
+
+    void sortChildren(std::function<bool(Widget*, Widget*)> f);
+
+    template<typename RetClass>
+    RetClass *findWidgetGlobal(const std::string& id)
+    {
+      Widget* f = findWidgetGlobal(id);
+      return f ? RetClass::cast(f) : nullptr;
+    }
+
+    template<typename WidgetClass>
+    WidgetClass* findFirst() const
+    {
+      for (auto& w : mChildren)
+        if (auto cw = WidgetClass::cast(w))
+          return cw;
+
+      return nullptr;
+    }
+
+    template<typename WidgetClass>
+    std::vector<WidgetClass*> findAll() const
+    {
+      std::vector<WidgetClass*> ret;
+      for (auto& w : mChildren)
+      {
+        if (auto cw = WidgetClass::cast(w))
+          ret.push_back(cw);
+      }
+
+      return ret;
+    }
+
+    template<typename WidgetClass>
+    void forEachChild(std::function<void (WidgetClass*)> f)
+    {
+      auto widgets = findAll<WidgetClass>();
+      for (WidgetClass* w : widgets) f(w);
+    }
+
+    void forEachChild(const std::function<void(Widget*)>& f, bool deep = false)
+    { for (Widget* w : mChildren) { f(w); if (deep) w->forEachChild(f, deep); }}
+
+
     /// Return the size of the widget
-    const Vector2i &size() const { return mSize; }
+    virtual const Vector2i &size() const { return mSize; }
+    enum CanTabStop { TabStopSelf=0, TabStopChildren };
+    virtual bool tabstop(CanTabStop mode) const;
     /// set the size of the widget
     void setSize(const Vector2i &size) { mSize = size; }
+    void setSize(int w, int h) { setSize(Vector2i( w, h )); }
+
+    const Vector2f &relsize() const { return mRelSize; }
+    void setRelativeSize(const Vector2f &size) { mRelSize = size; }
+    void setRelativeSize(float w, float h) { setRelativeSize(Vector2f(w, h)); }
 
     /// Return the width of the widget
     int width() const { return mSize.x(); }
@@ -91,6 +306,15 @@ public:
      * in the parent widget.
      */
     void setFixedSize(const Vector2i &fixedSize) { mFixedSize = fixedSize; }
+    void setFixedSize(int w, int h) { setFixedSize(Vector2i(w, h)); }
+
+    void setMinSize(const Vector2i &minSize) { mMinSize = minSize; }
+    void setMinWidth(int ww) { mMinSize.x() = ww; }
+
+    int minWidth() const { return minSize().x(); }
+    int minHeight() const { return minSize().y(); }
+    virtual Vector2i minSize() const { return mMinSize; }
+    virtual Vector4i getWidgetsArea();
 
     /// Return the fixed size (see \ref setFixedSize())
     const Vector2i &fixedSize() const { return mFixedSize; }
@@ -107,7 +331,8 @@ public:
     /// Return whether or not the widget is currently visible (assuming all parents are visible)
     bool visible() const { return mVisible; }
     /// Set whether or not the widget is currently visible (assuming all parents are visible)
-    void setVisible(bool visible) { mVisible = visible; }
+    void setVisible(bool visible);
+    void setVisible(BoolObservable observable) { mVisible = observable; }
 
     /// Check if this widget is currently visible, taking parent widgets into account
     bool visibleRecursive() const {
@@ -122,6 +347,9 @@ public:
 
     /// Return the number of child widgets
     int childCount() const { return (int) mChildren.size(); }
+
+    bool bringToFront();
+    bool bringChildToFront(Widget* element);
 
     /// Return the list of child widgets of the current widget
     const std::vector<Widget *> &children() const { return mChildren; }
@@ -138,12 +366,17 @@ public:
 
     /// Convenience function which appends a widget at the end
     void addChild(Widget *widget);
+    void addChild(Widget& widget) { addChild(&widget); }
+
+    void remove(); // this function should be used in screen::drawWidgets call
+    void removeLater(); // push widget to removes array
 
     /// Remove a child widget by index
-    void removeChild(int index);
+    virtual void removeChild(int index);
 
-    /// Remove a child widget by value
-    void removeChild(const Widget *widget);
+    /// Remove a child widget by value or id
+    virtual void removeChild(const Widget *widget);
+    virtual void removeChild(const std::string& id);
 
     /// Retrieves the child at the specific position
     const Widget* childAt(int index) const { return mChildren[index]; }
@@ -156,14 +389,37 @@ public:
 
     /// Variadic shorthand notation to construct and add a child widget
     template<typename WidgetClass, typename... Args>
-    WidgetClass* add(const Args&... args) {
-        return new WidgetClass(this, args...);
+    WidgetClass* add(const Args&... args) { return new WidgetClass(this, args...); }
+
+    template<typename... Args>
+    Widget& add(const Args&... args) { set<Widget, Args...>(args...); return *this; }
+
+    bool areParentsContain(Widget* w)
+    {
+      Widget* parentw = mParent;
+      while (parentw) {
+        if (parentw == w)
+          return true;
+        parentw = parentw->parent();
+      }
+
+      return false;
     }
 
-    /// Walk up the hierarchy and return the parent window
-    Window *window();
+    template<typename WidgetClass>
+    WidgetClass *findParent() {
+      Widget *widget = this;
+      while (widget) {
+        WidgetClass *parentw = WidgetClass::cast(widget);
+        if (parentw)
+          return parentw;
+        widget = widget->parent();
+      }
+      return nullptr;
+    }
 
-    /// Walk up the hierarchy and return the parent screen
+
+    Window *window();
     Screen *screen();
 
     /// Associate this widget with an ID value (optional)
@@ -174,20 +430,27 @@ public:
     /// Return whether or not this widget is currently enabled
     bool enabled() const { return mEnabled; }
     /// Set whether or not this widget is currently enabled
-    void setEnabled(bool enabled) { mEnabled = enabled; }
+    virtual void setEnabled(bool enabled) { mEnabled = enabled; }
 
     /// Return whether or not this widget is currently focused
     bool focused() const { return mFocused; }
     /// Set whether or not this widget is currently focused
     void setFocused(bool focused) { mFocused = focused; }
+
+    bool underMouse() const { return mMouseFocus; }
     /// Request the focus to be moved to this widget
     void requestFocus();
 
     const std::string &tooltip() const { return mTooltip; }
     void setTooltip(const std::string &tooltip) { mTooltip = tooltip; }
 
+    void setTooltip(Widget* w);
+    Widget* tooltipWidget() const { return mTooltipWdiget; }
+
+    virtual Widget* getCurrentSelection() const { return nullptr; }
+
     /// Return current font size. If not set the default of the current theme will be returned
-    int fontSize() const;
+    virtual int fontSize() const;
     /// Set the font size of this widget
     void setFontSize(int fontSize) { mFontSize = fontSize; }
     /// Return whether the font size is explicitly specified for this widget
@@ -212,8 +475,32 @@ public:
 
     /// Check if the widget contains a certain position
     bool contains(const Vector2i &p) const {
-        auto d = (p-mPos).array();
-        return (d >= 0).all() && (d < mSize.array()).all();
+        auto d = (p-mPos);
+        return (d >= Vector2i::Zero()) && (d < mSize);
+    }
+
+    virtual bool prefferContains(const Vector2i&) const { return false; }
+
+    bool isMyChildRecursive(Widget* w)
+    {
+      if (!w)
+        return false;
+      do
+      {
+        if (w->parent())
+          w = w->parent();
+
+      } while (w->parent() && w != this);
+
+      return w == this;
+    }
+
+    bool isMyChild(Widget* w) const
+    {
+      for (auto& c : mChildren)
+        if (c == w) return true;
+
+      return false;
     }
 
     /// Determine the widget located at the given position value (recursive)
@@ -245,22 +532,115 @@ public:
 
     /// Compute the preferred size of the widget
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
+    Vector2i preferredSize();
 
     /// Invoke the associated layout generator to properly place child widgets, if any
     virtual void performLayout(NVGcontext *ctx);
+    void performLayoutLater();
+
+    void fillChildren(std::function<void()> func);
 
     /// Draw the widget (and all child widgets)
     virtual void draw(NVGcontext *ctx);
+    virtual void afterDraw(NVGcontext *ctx);
 
     /// Save the state of the widget into the given \ref Serializer instance
-    virtual void save(Serializer &s) const;
+    virtual void save(Json::value &s) const;
 
     /// Restore the state of the widget from the given \ref Serializer instance
-    virtual bool load(Serializer &s);
+    virtual bool load(Json::value &s);
+
+    virtual void setChildrentOpts(int) {};
+
+    inline void setSubElement(bool v) { mSubElement = v; }
+    inline bool isSubElement() const { return mSubElement; }
+
+    inline void show() { setVisible(true); }
+    inline void hide() { setVisible(false); }
+
+    void setDebugDraw(bool en) { mDebugDraw = en; }
+    template<typename FF, typename none = void> void set() {}
+
+    template<typename FF, typename First, typename... Args> void set(const ElementBase& h, const Args&... args) 
+    { this->addChild(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
+
+    template<typename FF, typename First, typename... Args> void set(const TooltipBase& h, const Args&... args) 
+    { this->setTooltip(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
+    
+    template<typename WidgetClass, typename... Args>
+    WidgetClass& wdg(const Args&... args) { auto widget = new WidgetClass(this, args...); return *widget; }
+    template<typename LayoutClass, typename... Args>
+    Widget& withLayout(const Args&... args) { setLayout(new LayoutClass(args...)); return *this; }
+    template<typename ThemeClass, typename... Args>
+    Widget& withTheme(const Args&... args) { setTheme(new ThemeClass(args...)); return *this; }
+
+    template<typename... Args>Widget& boxlayout(const Args&... args) { return withLayout<BoxLayout>(args...); }
+    template<typename... Args>Widget& flexlayout(const Args&... args) { return withLayout<StretchLayout>(args...); }
+    template<typename... Args>Widget& hlayer(int spacing, int margin, const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Horizontal, margin, spacing }, args...); }
+    template<typename... Args>Widget& vlayer(int spacing, int margin, const Args&... args) { return widget(WidgetStretchLayout{ Orientation::Vertical, margin, spacing }, args...); }
+    template<typename... Args>Widget& hstack(int spacing, int margin, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Horizontal, Alignment::Fill, margin, spacing }, args...); }
+    template<typename... Args>Widget& vstack(int spacing, int margin, const Args&... args) { return widget(WidgetBoxLayout{ Orientation::Vertical, Alignment::Fill, margin, spacing }, args...); }
+    template<typename... Args>ToolButton& toolbutton(const Args&... args) { return wdg<ToolButton>(args...); }
+    template<typename... Args>PopupButton& popupbutton(const Args&... args) { return wdg<PopupButton>(args...); }
+    template<typename... Args>Label& label(const Args&... args) { return wdg<Label>(args...); }
+    template<typename... Args>ProgressBar& progressbar(const Args&... args) { return wdg<ProgressBar>(args...); }
+    template<typename... Args>ComboBox& combobox(const Args&... args) { return wdg<ComboBox>(args...); }
+    template<typename... Args>Button& button(const Args&... args) { return wdg<Button>(args...); }
+    template<typename... Args>Widget& widget(const Args&... args) { return wdg<Widget>(args...); }
+    template<typename... Args>CheckBox& checkbox(const Args&... args) { return wdg<CheckBox>(args...); }
+    template<typename... Args>MessageDialog& msgdialog(const Args&... args) { return wdg<MessageDialog>(args...); }
+    template<typename... Args>VScrollPanel& vscrollpanel(const Args&... args) { return wdg<VScrollPanel>(args...); }
+    template<typename... Args>ImagePanel& imgpanel(const Args&... args) { return wdg<ImagePanel>(args...); }
+    template<typename... Args>Slider& slider(const Args&... args) { return wdg<Slider>(args...); }
+    template<typename... Args>TextBox& textbox(const Args&... args) { return wdg<TextBox>(args...); }
+    template<typename... Args>SwitchBox& switchbox(const Args&... args) { return wdg<SwitchBox>(args...); }
+    template<typename... Args>Listbox& listbox(const Args&... args) { return wdg<Listbox>(args...); }
+    template<typename... Args>TabWidget& tabs(const Args&... args) { return wdg<TabWidget>(args...); }
+    template<typename... Args>Spinner& spinner(const Args&... args) { return wdg<Spinner>(args...); }
+    template<typename Scalar, typename... Args>IntBox<Scalar>& intbox(const Args&... args) { return wdg<IntBox<Scalar>>(args...); }
+    template<typename Scalar, typename... Args>FloatBox<Scalar>& floatbox(const Args&... args) { return wdg<FloatBox<Scalar>>(args...); }
+    template<typename... Args>ColorPicker& colorpicker(const Args&... args) { return wdg<ColorPicker>(args...); }
+    template<typename... Args>Graph& graph(const Args&... args) { return wdg<Graph>(args...); }
+    template<typename... Args>TreeView& treeview(const Args&... args) { return wdg<TreeView>(args...); }
+    template<typename... Args>ToleranceBar& tolerancebar(const Args&... args) { return wdg<ToleranceBar>(args...); }
+    template<typename... Args>LinkButton& link(const Args&... args) { return wdg<LinkButton>(args...); }
+    template<typename... Args>TextArea& text(const Args&... args) { return wdg<TextArea>(args...); }
+    template<typename... Args>Panel& panel(const Args&... args) { return wdg<Panel>(args...); }
+    template<typename... Args>Panel& hgrid2(float split, const Args&... args) { auto& w=wdg<Panel>(args...); w.template withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{Alignment::Fill}); return w; }
+    template<typename... Args>Widget& linegrid2(float split, const Args&... args) { return widget(args...).template withLayout<GridLayout>(GridLayoutSplit{ split, 1.f - split }, GridLayoutColAlignment{ Alignment::Fill }); }
+    template<typename Scalar, typename... Args>NumberPicker<Scalar>& numpicker(const Args&... args) { return wdg<NumberPicker<Scalar>>(args...); }
+    template<typename... Args>Frame& frame(const Args&... args) { return wdg<Frame>(args...); }
+    template<typename... Args>Line& line(const Args&... args) { return wdg<Line>(args...); }
+    
+public:
+    PROPSETTER(FixedHeight, setFixedHeight)
+    PROPSETTER(FixedWidth, setFixedWidth)
+    PROPSETTER(WidgetId, setId)
+    PROPSETTER(Position, setPosition)
+    PROPSETTER(WidgetSize, setSize)
+    PROPSETTER(MinimumSize, setMinSize)
+    PROPSETTER(RelativeSize, setRelativeSize)
+    PROPSETTER(FixedSize, setFixedSize)
+    PROPSETTER(WidgetLayout, setLayout)
+    PROPSETTER(WidgetStretchLayout, setLayout)
+    PROPSETTER(WidgetGridLayout, setLayout)
+    PROPSETTER(WidgetBoxLayout, setLayout)
+    PROPSETTER(WidgetGroupLayout, setLayout)
+    PROPSETTER(IsSubElement, setSubElement)
+    PROPSETTER(FontSize, setFontSize)
+    PROPSETTER(WidgetCursor, setCursor)
+    PROPSETTER(VisibleObservable, setVisible)
+    PROPSETTER(IsVisible, setVisible)
+    PROPSETTER(TooltipText, setTooltip)
+    PROPSETTER(Children, setChildrentOpts )
+    PROPSETTER(WidgetTheme, setTheme)
+    PROPSETTER(CopyThemeFrom, setThemeFrom)
+    PROPSETTER(FillChildren, fillChildren)
 
 protected:
     /// Free all resources used by the widget and any children
     virtual ~Widget();
+    virtual void drawTabstop(NVGcontext *ctx);
 
     /**
      * Convenience definition for subclasses to get the full icon scale for this
@@ -273,20 +653,24 @@ protected:
      *     strategy may not be appropriate with fonts other than ``entypo.ttf``.
      */
     inline float icon_scale() const { return mTheme->mIconScale * mIconExtraScale; }
+    virtual void parentChanged() {}
 
 protected:
     Widget *mParent;
     ref<Theme> mTheme;
     ref<Layout> mLayout;
     std::string mId;
-    Vector2i mPos, mSize, mFixedSize;
+    Vector2i mPos, mSize, mFixedSize, mMinSize;
+    Vector2f mRelSize;
     std::vector<Widget *> mChildren;
 
     /**
      * Whether or not this Widget is currently visible.  When a Widget is not
      * currently visible, no time is wasted executing its drawing method.
      */
-    bool mVisible;
+    BoolObservable mVisible;
+    bool mSubElement = false;
+    bool mDebugDraw = false;
 
     /**
      * Whether or not this Widget is currently enabled.  Various different kinds
@@ -297,6 +681,7 @@ protected:
     bool mEnabled;
     bool mFocused, mMouseFocus;
     std::string mTooltip;
+    Widget* mTooltipWdiget = nullptr;
     int mFontSize;
 
     /**
@@ -335,8 +720,10 @@ protected:
      */
     float mIconExtraScale;
     Cursor mCursor;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    static std::vector<intptr_t> mFocusChain;
 };
+
+namespace elm { using Widget = Element<Widget>; }
 
 NAMESPACE_END(nanogui)

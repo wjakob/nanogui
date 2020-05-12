@@ -12,8 +12,10 @@
 
 #pragma once
 
+#if NANOGUI_OPENGL_BACKEND
+
 #include <nanogui/opengl.h>
-#include <Eigen/Geometry>
+#include <string>
 #include <map>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -46,7 +48,7 @@ NAMESPACE_END(detail)
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-using Eigen::Quaternionf;
+//using Eigen::Quaternionf;
 
 class GLUniformBuffer;
 
@@ -221,7 +223,7 @@ public:
     void drawIndexed(int type, uint32_t offset, uint32_t count);
 
     /// Initialize a uniform parameter with a 4x4 matrix (float)
-    template <typename T>
+    /*template <typename T>
     void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 4> &mat, bool warn = true) {
         glUniformMatrix4fv(uniform(name, warn), 1, GL_FALSE, mat.template cast<float>().data());
     }
@@ -242,7 +244,7 @@ public:
     template <typename T>
     void setUniform(const std::string &name, const Eigen::Transform<T, 2, 2> &affine, bool warn = true) {
         glUniformMatrix3fv(uniform(name, warn), 1, GL_FALSE, affine.template cast<float>().data());
-    }
+    }*/
 
     /// Initialize a uniform parameter with a boolean value
     void setUniform(const std::string &name, bool value, bool warn = true) {
@@ -262,7 +264,7 @@ public:
     }
 
     /// Initialize a uniform parameter with a 2D vector (int)
-    template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
+    /*template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 1, int>::type = 0>
     void setUniform(const std::string &name, const Eigen::Matrix<T, 2, 1>  &v, bool warn = true) {
         glUniform2i(uniform(name, warn), (int) v.x(), (int) v.y());
     }
@@ -295,7 +297,7 @@ public:
     template <typename T, typename std::enable_if<detail::type_traits<T>::integral == 0, int>::type = 0>
     void setUniform(const std::string &name, const Eigen::Matrix<T, 4, 1>  &v, bool warn = true) {
         glUniform4f(uniform(name, warn), (float) v.x(), (float) v.y(), (float) v.z(), (float) v.w());
-    }
+    }*/
 
     /// Initialize a uniform buffer with a uniform buffer object
     void setUniform(const std::string &name, const GLUniformBuffer &buf, bool warn = true);
@@ -433,7 +435,7 @@ private:
  * \brief Helper class for accumulating uniform buffer data following the
  *        'std140' packing format.
  */
-class UniformBufferStd140 : public std::vector<uint8_t> {
+/*class UniformBufferStd140 : public std::vector<uint8_t> {
 public:
     using Parent = std::vector<uint8_t>;
 
@@ -471,7 +473,7 @@ public:
                 push_back((typename Derived::Scalar) 0);
         }
     }
-};
+};*/
 
 //  ----------------------------------------------------
 
@@ -512,8 +514,6 @@ protected:
     GLuint mFramebuffer, mDepth, mColor;
     Vector2i mSize;
     int mSamples;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 //  ----------------------------------------------------
@@ -606,49 +606,19 @@ public:
  *     call ``mArcball.motion(adjusted_click)``.
  * \endrst
  */
-struct Arcball {
-    /**
-     * \brief The default constructor.
-     *
-     * \rst
-     * .. note::
-     *
-     *    Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
-     *    after construction.
-     * \endrst
-     *
-     * \param speedFactor
-     *     The speed at which the Arcball rotates (default: ``2.0``).  See also
-     *     \ref mSpeedFactor.
-     */
+/*struct Arcball {
     Arcball(float speedFactor = 2.0f)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
           mQuat(Quaternionf::Identity()),
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(speedFactor) { }
 
-    /**
-     * Constructs an Arcball based off of the specified rotation.
-     *
-     * \rst
-     * .. note::
-     *
-     *    Make sure to call :func:`Arcball::setSize <nanogui::Arcball::setSize>`
-     *    after construction.
-     * \endrst
-     */
     Arcball(const Quaternionf &quat)
         : mActive(false), mLastPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
           mQuat(quat),
           mIncr(Quaternionf::Identity()),
           mSpeedFactor(2.0f) { }
 
-    /**
-     * \brief The internal rotation of the Arcball.
-     *
-     * Call \ref Arcball::matrix for drawing loops, this method will not return
-     * any updates while \ref mActive is ``true``.
-     */
     Quaternionf &state() { return mQuat; }
 
     /// ``const`` version of \ref Arcball::state.
@@ -662,12 +632,6 @@ struct Arcball {
         mIncr = Quaternionf::Identity();
     }
 
-    /**
-     * \brief Sets the size of this Arcball.
-     *
-     * The size of the Arcball and the positions being provided in
-     * \ref Arcball::button and \ref Arcball::motion are directly related.
-     */
     void setSize(Vector2i size) { mSize = size; }
 
     /// Returns the current size of this Arcball.
@@ -682,18 +646,6 @@ struct Arcball {
     /// Returns whether or not this Arcball is currently active.
     bool active() const { return mActive; }
 
-    /**
-     * \brief Signals a state change from active to non-active, or vice-versa.
-     *
-     * \param pos
-     *     The click location, should be in the same coordinate system as
-     *     specified by \ref mSize.
-     *
-     * \param pressed
-     *     When ``true``, this Arcball becomes active.  When ``false``, this
-     *     Arcball becomes non-active, and its internal \ref mQuat is updated
-     *     with the final rotation.
-     */
     void button(Vector2i pos, bool pressed) {
         mActive = pressed;
         mLastPos = pos;
@@ -702,18 +654,10 @@ struct Arcball {
         mIncr = Quaternionf::Identity();
     }
 
-    /**
-     * \brief When active, updates \ref mIncr corresponding to the specified
-     *        position.
-     *
-     * \param pos
-     *     Where the mouse has been dragged to.
-     */
     bool motion(Vector2i pos) {
         if (!mActive)
             return false;
 
-        /* Based on the rotation controller from AntTweakBar */
         float invMinDim = 1.0f / mSize.minCoeff();
         float w = (float) mSize.x(), h = (float) mSize.y();
 
@@ -741,12 +685,6 @@ struct Arcball {
         return true;
     }
 
-    /**
-     * Returns the current rotation *including* the active motion, suitable for
-     * use with typical homogeneous matrix transformations.  The upper left 3x3
-     * block is the rotation matrix, with 0-0-0-1 as the right-most column /
-     * bottom row.
-     */
     Matrix4f matrix() const {
         Matrix4f result2 = Matrix4f::Identity();
         result2.block<3,3>(0, 0) = (mIncr * mQuat).toRotationMatrix();
@@ -756,17 +694,6 @@ struct Arcball {
     /// Returns the current rotation *including* the active motion.
     Quaternionf activeState() const { return mIncr * mQuat; }
 
-    /**
-     * \brief Interrupts the current Arcball motion by calling
-     *        \ref Arcball::button with ``(0, 0)`` and ``false``.
-     *
-     * Use this method to "close" the state of the Arcball when a mouse release
-     * event is not available.  You would use this method if you need to stop
-     * the Arcball from updating its internal rotation, but the event stopping
-     * the rotation does **not** come from a mouse release.  For example, you
-     * have a callback that created a \ref nanogui::MessageDialog which will now
-     * be in focus.
-     */
     void interrupt() { button(Vector2i::Zero(), false); }
 
 protected:
@@ -779,25 +706,16 @@ protected:
     /// The size of this Arcball.
     Vector2i mSize;
 
-    /**
-     * The current stable state.  When this Arcball is active, represents the
-     * state of this Arcball when \ref Arcball::button was called with
-     * ``down = true``.
-     */
     Quaternionf mQuat;
 
     /// When active, tracks the overall update to the state.  Identity when non-active.
     Quaternionf mIncr;
 
-    /**
-     * The speed at which this Arcball rotates.  Smaller values mean it rotates
-     * more slowly, higher values mean it rotates more quickly.
-     */
     float mSpeedFactor;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-};
+};*/
 
 //  ----------------------------------------------------
 
@@ -820,11 +738,11 @@ public:
  * \param viewportSize
  *     The dimensions of the viewport to project into.
  */
-extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
+/*extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
                                        const Matrix4f &model,
                                        const Matrix4f &proj,
                                        const Vector2i &viewportSize);
-
+*/
 /**
  * \brief Unprojects the vector ``win`` out of the specified viewport.
  *
@@ -843,11 +761,11 @@ extern NANOGUI_EXPORT Vector3f project(const Vector3f &obj,
  * \param viewportSize
  *     The dimensions of the viewport to project out of.
  */
-extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
+/*extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
                                          const Matrix4f &model,
                                          const Matrix4f &proj,
                                          const Vector2i &viewportSize);
-
+                                         */
 /**
  * \brief Creates a "look at" matrix that describes the position and
  * orientation of e.g. a camera
@@ -867,10 +785,10 @@ extern NANOGUI_EXPORT Vector3f unproject(const Vector3f &win,
  *    defined as ``f = (target - origin).normalized()``.
  * \endrst
  */
-extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &origin,
+/*extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &origin,
                                       const Vector3f &target,
                                       const Vector3f &up);
-
+*/
 /**
  * Creates an orthographic projection matrix.
  *
@@ -892,10 +810,10 @@ extern NANOGUI_EXPORT Matrix4f lookAt(const Vector3f &origin,
  * \param farVal
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f ortho(float left, float right,
+/*extern NANOGUI_EXPORT Matrix4f ortho(float left, float right,
                                      float bottom, float top,
                                      float nearVal, float farVal);
-
+*/
 /**
  * Creates a perspective projection matrix.
  *
@@ -917,9 +835,10 @@ extern NANOGUI_EXPORT Matrix4f ortho(float left, float right,
  * \param farVal
  *     The far plane.
  */
-extern NANOGUI_EXPORT Matrix4f frustum(float left, float right,
+/*extern NANOGUI_EXPORT Matrix4f frustum(float left, float right,
                                        float bottom, float top,
                                        float nearVal, float farVal);
+                                       */
 /**
  * \brief Construct homogeneous coordinate scaling matrix
  *
@@ -930,7 +849,7 @@ extern NANOGUI_EXPORT Matrix4f frustum(float left, float right,
  * \param v
  *     The vector representing the scaling for each axis.
  */
-extern NANOGUI_EXPORT Matrix4f scale(const Vector3f &v);
+//extern NANOGUI_EXPORT Matrix4f scale(const Vector3f &v);
 
 /**
  * \brief Construct homogeneous coordinate translation matrix
@@ -942,6 +861,8 @@ extern NANOGUI_EXPORT Matrix4f scale(const Vector3f &v);
  * \param v
  *     The vector representing the translation for each axis.
  */
-extern NANOGUI_EXPORT Matrix4f translate(const Vector3f &v);
+//extern NANOGUI_EXPORT Matrix4f translate(const Vector3f &v);
 
 NAMESPACE_END(nanogui)
+
+#endif //NANOGUI_OPENGL_BACKEND

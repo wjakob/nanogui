@@ -1,23 +1,27 @@
 NanoGUI
 ========================================================================================
-|docs| |travis| |appveyor|
+|docs| |travis| |appveyor| |discord|
 
 .. |docs| image:: https://readthedocs.org/projects/nanogui/badge/?version=latest
     :target: http://nanogui.readthedocs.org/en/latest/?badge=latest
     :alt: Docs
 
-.. |travis| image:: https://travis-ci.org/wjakob/nanogui.svg?branch=master
-   :target: https://travis-ci.org/wjakob/nanogui
+.. |travis| image:: https://travis-ci.org/dalerank/nanogui.svg?branch=master
+   :target: https://travis-ci.org/dalerank/nanogui
    :alt: Travis Build Status
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/m8h3uyvdb4ej2i02/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/wjakob/nanogui/branch/master
+   :target: https://ci.appveyor.com/project/dalerank/nanogui/branch/master
    :alt: Appveyor Build Status
+   
+.. |discord| image:: https://img.shields.io/discord/645931749360009216.svg?color=7389D8&label=%20&logo=discord&logoColor=ffffff
+   :target: https://discordapp.com/channels/645931749360009216/645931749360009219
+   :alt: Discord channel
 
 .. begin_brief_description
 
-NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x or higher. It
-supports automatic layout generation, stateful C++11 lambdas callbacks, a variety of
+NanoGUI is a minimalistic cross-platform widget library for OpenGL 3.x/DirectX11[12]/Vulkan. 
+It supports automatic layout generation, stateful C++11 lambdas callbacks, a variety of
 useful widget types and Retina-capable rendering on Apple devices thanks to NanoVG_ by
 Mikko Mononen. Python bindings of all functionality are provided using pybind11_.
 
@@ -37,21 +41,38 @@ Metal/GLES/WebAssembly support is available `here
    :local:
    :backlinks: none
 
-Example screenshot
+Example screenshots (Dx11, Dx12, Vulkan, OpenGL)
 ----------------------------------------------------------------------------------------
 
-.. image:: https://github.com/wjakob/nanogui/raw/master/resources/screenshot.png
-   :alt: Screenshot of Example 1.
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/nanogui_dx11.png
+   :alt: Screenshot of Dx11 backend.
    :align: center
+   
+Honsu timetracker
+----------------------------------------------------------------------------------------
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/honsu_preview.jpg
+   :alt: Screenshot of OpenGL backend.
+   :align: center  
+
+Extensions
+----------------------------------------------------------------------------------------
+Editor
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/editor.jpg
+
+DropdownBox
+
+.. image:: https://github.com/dalerank/nanogui/raw/master/resources/dropdownbox.gif
+
 
 Description
 ----------------------------------------------------------------------------------------
 
 .. begin_long_description
 
-NanoGUI builds on GLFW_ for cross-platform OpenGL context creation and event handling,
-GLAD_ to use OpenGL 3.x or higher Windows, Eigen_ for basic vector types, and NanoVG_ to
-draw 2D primitives.
+NanoGUI builds on GLFW_/Win32 native (dx11/12) for cross-platform context creation and event handling,
+and NanoVG_ to draw 2D primitives.
 
 Note that the dependency library NanoVG already includes some basic example code to draw
 good-looking static widgets; what NanoGUI does is to flesh it out into a complete GUI
@@ -63,7 +84,7 @@ jointly built using a CMake-based build system.
 
 .. _GLFW: http://www.glfw.org/
 .. _GLAD: https://github.com/Dav1dde/glad
-.. _Eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
+
 
 .. end_long_description
 
@@ -79,6 +100,12 @@ an existing window `window` and register an event callback.
 
    Button *b = new Button(window, "Plain button");
    b->setCallback([] { cout << "pushed!" << endl; });
+   
+   //or declarative syntax
+   
+   elm::Button{ Caption{ "Plain button"},
+                ButtonCallback{[] { cout << "pushed!" << endl; }} 
+   };
 
 
 The following lines from the example application create the coupled
@@ -105,6 +132,24 @@ slider and text box on the bottom of the second window (see the screenshot).
    slider->setCallback([textBox](float value) {
        textBox->setValue(std::to_string((int) (value * 100)));
    });
+   
+   //or declarative syntax
+   /* Create an empty panel with a horizontal layout */
+   elm::Widget{ 
+     WidgetBoxLayout{ BoxLayout::Horizontal, BoxLayout::Middle, 0, 20 },
+     Children{},
+     elm::Slider{ InitialValue{0.5f}, FixedWidth{80},
+                  SliderCallback{ [&](float value) { 
+                    if (auto t = TextBox::find("#tbx")
+                      t.setValue(std::to_string(value * 100);
+                   }}
+     },
+     elm::TextBox{ FixedSize{60, 25}, TextValue{"50"}, 
+                   UnitsText{"%"}, WidgetId{ "#tbx" }
+     }
+   }
+
+   /* Propagate slider changes to the text box */
 
 
 The Python version of this same piece of code looks like this:
@@ -201,6 +246,12 @@ To also get the Python bindings, you'll need to run
 .. code-block:: bash
 
    $ sudo dnf install python3-devel
+
+To build editor, you will need to run
+
+.. code-block:: bash
+
+   $ mkdir build && cd build && cmake -DNANOGUI_USE_GLAD=ON .. && make editor
 
 License
 ----------------------------------------------------------------------------------------

@@ -30,6 +30,9 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT TabHeader : public Widget {
 public:
+    RTTI_CLASS_UID(TabHeader)
+    RTTI_DECLARE_INFO(TabHeader)
+
     TabHeader(Widget *parent, const std::string &font = "sans-bold");
 
     void setFont(const std::string& font) { mFont = font; }
@@ -174,8 +177,6 @@ private:
     bool mOverflowing = false;
 
     std::string mFont;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

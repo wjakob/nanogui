@@ -18,6 +18,7 @@
 #include <nanogui/widget.h>
 #include <cstdio>
 #include <sstream>
+#include <limits>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -31,16 +32,29 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT TextBox : public Widget {
-public:
-    /// How to align the text in the text box.
-    enum class Alignment {
-        Left,
-        Center,
-        Right
-    };
+DECLSETTER(IsSpinnable,bool)
+DECLSETTER(IsEditable,bool)
+DECLSETTER(TextValue,std::string)
+DECLSETTER(TextDefaultValue,std::string)
+DECLSETTER(TextBoxUnits,std::string)
+DECLSETTER(TextPlaceholder,std::string)
+DECLSETTER(TextBoxEditCallback, std::function<void(const std::string&, bool)>)
+DECLSETTER(TextBoxUpdateCallback, std::function<void(TextBox*)>)
 
-    TextBox(Widget *parent, const std::string &value = "Untitled");
+class NANOGUI_EXPORT TextBox : public Widget
+{
+public:
+    RTTI_CLASS_UID(TextBox)
+    RTTI_DECLARE_INFO(TextBox)
+    WIDGET_COMMON_FUNCTIONS(TextBox)
+
+    /// How to align the text in the text box.
+    explicit TextBox(Widget   *parent, const std::string &value = "Untitled");
+
+    using Widget::set;
+    template<typename... Args>
+    TextBox(Widget* parent, const Args&... args)
+      : TextBox(parent, std::string("")) { set<TextBox, Args...>(args...); }
 
     bool editable() const { return mEditable; }
     void setEditable(bool editable);
@@ -54,14 +68,16 @@ public:
     const std::string &defaultValue() const { return mDefaultValue; }
     void setDefaultValue(const std::string &defaultValue) { mDefaultValue = defaultValue; }
 
-    Alignment alignment() const { return mAlignment; }
-    void setAlignment(Alignment align) { mAlignment = align; }
+    TextAlignment alignment() const { return mAlignment; }
+    void setAlignment(TextAlignment align) { mAlignment = align; }
 
     const std::string &units() const { return mUnits; }
     void setUnits(const std::string &units) { mUnits = units; }
 
     int unitsImage() const { return mUnitsImage; }
     void setUnitsImage(int image) { mUnitsImage = image; }
+
+    int fontSize() const override;
 
     /// Return the underlying regular expression specifying valid formats
     const std::string &format() const { return mFormat; }
@@ -74,30 +90,41 @@ public:
     void setPlaceholder(const std::string &placeholder) { mPlaceholder = placeholder; }
 
     /// Set the \ref Theme used to draw this widget
-    virtual void setTheme(Theme *theme) override;
+    void setTheme(Theme *theme) override;
 
     /// The callback to execute when the value of this TextBox has changed.
     std::function<bool(const std::string& str)> callback() const { return mCallback; }
 
     /// Sets the callback to execute when the value of this TextBox has changed.
-    void setCallback(const std::function<bool(const std::string& str)> &callback) { mCallback = callback; }
+    void setCallback(const std::function<bool(const std::string&)> &callback) { mCallback = callback; }
+    void setEditCallback(const std::function<void(const std::string&, bool)> &callback) { mEditCallback = callback; }
+    void setComitCallback(const std::function<void(Widget*)> &callback) { mComitCallback = callback; }
+    void setUpdateCallback(const std::function<void(TextBox*)> &callback) { mUpdateCallback = callback; }
 
-    virtual bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
-    virtual bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
-    virtual bool focusEvent(bool focused) override;
-    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
-    virtual bool keyboardCharacterEvent(unsigned int codepoint) override;
+    virtual int getCornerRadius() const;
 
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
-    virtual void draw(NVGcontext* ctx) override;
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    bool mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) override;
+    bool mouseMotionEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool mouseDragEvent(const Vector2i &p, const Vector2i &rel, int button, int modifiers) override;
+    bool focusEvent(bool focused) override;
+    bool keyboardEvent(int key, int scancode, int action, int modifiers) override;
+    bool keyboardCharacterEvent(unsigned int codepoint) override;
+
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+    void draw(NVGcontext* ctx) override;
+    void afterDraw(NVGcontext* ctx) override;
+    void save(Json::value &s) const override;
+    bool load(Json::value &s) override;
+
+    template<typename FF, typename First, typename... Args>
+    void set(const TextAlignment& h, const Args&... args) { setAlignment(h);  this->set<FF, Args...>(args...); }
+
 protected:
     bool checkFormat(const std::string& input,const std::string& format);
     bool copySelection();
     void pasteFromClipboard();
     bool deleteSelection();
+    void createBoxGradient(NVGcontext* ctx, NVGpaint& fg, const Color& c1, const Color& c2, int cr);
 
     void updateCursor(NVGcontext *ctx, float lastx,
                       const NVGglyphPosition *glyphs, int size);
@@ -110,17 +137,27 @@ protected:
     enum class SpinArea { None, Top, Bottom };
     SpinArea spinArea(const Vector2i & pos);
 
+    void setBorderSize(float v) { mBorderSize = v; }
+    void setBorderColor(const Color& color) { mBorderColor = color; }
+    void setBackgroundColor(const Color& color) { mBackgrodunColor = color; }
+    void setBackgroundHoverColor(const Color& color) { mBackgroundHoverColor = color; }
+
 protected:
     bool mEditable;
     bool mSpinnable;
     bool mCommitted;
     std::string mValue;
     std::string mDefaultValue;
-    Alignment mAlignment;
+    TextAlignment mAlignment;
     std::string mUnits;
     std::string mFormat;
     int mUnitsImage;
-    std::function<bool(const std::string& str)> mCallback;
+    float mBorderSize;
+    Color mBorderColor, mBackgrodunColor, mBackgroundHoverColor;
+    std::function<bool(const std::string&)> mCallback;
+    std::function<void(const std::string&, bool)> mEditCallback;
+    std::function<void(Widget*)> mComitCallback;
+    std::function<void(TextBox*)> mUpdateCallback;
     bool mValidFormat;
     std::string mValueTemp;
     std::string mPlaceholder;
@@ -133,8 +170,22 @@ protected:
     float mTextOffset;
     double mLastClick;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(BorderSize, setBorderSize)
+    PROPSETTER(IsSpinnable,setSpinnable)
+    PROPSETTER(IsEditable,setEditable)
+    PROPSETTER(TextValue,setValue)
+    PROPSETTER(TextPlaceholder,setPlaceholder)
+    PROPSETTER(TextDefaultValue,setDefaultValue)
+    PROPSETTER(TextBoxUnits,setUnits)
+    PROPSETTER(TextBoxUpdateCallback,setUpdateCallback)
+    PROPSETTER(FontSize,setFontSize)
+    PROPSETTER(BackgroundHoverColor,setBackgroundHoverColor)
+    PROPSETTER(BackgroundColor,setBackgroundColor)
+    PROPSETTER(BorderColor,setBorderColor)
+    PROPSETTER(TextBoxEditCallback, setEditCallback)
 };
+
+namespace elm { using Textbox = Element<TextBox>; }
 
 /**
  * \class IntBox textbox.h nanogui/textbox.h
@@ -144,10 +195,36 @@ public:
  * Template parameters should be integral types, e.g. ``int``, ``long``,
  * ``uint32_t``, etc.
  */
+
+#define GET_CLASS_UID(s)  (uint32_t) (((s[3])<<24) | ((s[2])<<16) | ((s[1])<<8) | (s[0]))
 template <typename Scalar>
 class IntBox : public TextBox {
 public:
-    IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent) {
+  // Rtti info
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "TextBox", sizeof(class IntBox<Scalar>),
+                                  RTTI_CLASS(TextBox),
+                                  GET_CLASS_UID("INB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                  + (sizeof(Scalar) == sizeof(int32_t) ? 0x0 : 0x2) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return IntBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const override { return IntBox<Scalar>::staticRttiClass(); }
+  inline IntBox<Scalar>* cast(Object*v) 
+  { 
+    if (v && v->isKindOf(IntBox<Scalar>::staticRttiClass()))  
+      return static_cast<IntBox<Scalar>*>(v);  
+    return nullptr; 
+  }
+  inline const IntBox<Scalar>* cast(const Object*v) 
+  {
+    if (v && v->isKindOf(IntBox<Scalar>::staticRttiClass_const()))  
+      return static_cast<const IntBox<Scalar>*>(v);  
+    return nullptr; 
+  }
+
+    explicit IntBox(Widget *parent, Scalar value = (Scalar) 0) : TextBox(parent, std::string("")) {
         setDefaultValue("0");
         setFormat(std::is_signed<Scalar>::value ? "[-]?[0-9]*" : "[0-9]*");
         setValueIncrement(1);
@@ -155,6 +232,11 @@ public:
         setValue(value);
         setSpinnable(false);
     }
+
+    using TextBox::set;
+    template<typename... Args>
+    IntBox(Widget* parent, const Args&... args)
+      : IntBox(parent, 0) { set<IntBox<Scalar>, Args...>(args...); }
 
     Scalar value() const {
         std::istringstream iss(TextBox::value());
@@ -179,6 +261,18 @@ public:
                 return true;
             }
         );
+    }
+
+    void setEditCallback(const std::function<void(Scalar,bool)> &cb) {
+      TextBox::setEditCallback(
+        [cb, this](const std::string &str, bool v) {
+          std::istringstream iss(str);
+          Scalar value = 0;
+          iss >> value;
+          setValue(value);
+          cb(value, v);
+        }
+      );
     }
 
     void setValueIncrement(Scalar incr) {
@@ -246,7 +340,9 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(InitialValue,setValue)
+    PROPSETTER(MinValue,setMinValue)
+    PROPSETTER(MaxValue,setMaxValue)
 };
 
 /**
@@ -260,7 +356,30 @@ public:
 template <typename Scalar>
 class FloatBox : public TextBox {
 public:
-    FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "FloatBox", sizeof(class FloatBox<Scalar>),
+                                   RTTI_CLASS(TextBox),
+                                   GET_CLASS_UID("FLB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                    + (sizeof(Scalar) == sizeof(float) ? 0x0 : 0x2) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return FloatBox<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const override { return FloatBox<Scalar>::staticRttiClass(); }
+  inline FloatBox<Scalar>* cast(Object*v)
+  {
+    if (v && v->isKindOf(FloatBox<Scalar>::staticRttiClass()))
+      return static_cast<FloatBox<Scalar>*>(v);
+    return nullptr;
+  }
+  inline const FloatBox<Scalar>* cast(const Object*v)
+  {
+    if (v && v->isKindOf(FloatBox<Scalar>::staticRttiClass_const()))
+      return static_cast<const FloatBox<Scalar>*>(v);
+    return nullptr;
+  }
+
+    explicit FloatBox(Widget *parent, Scalar value = (Scalar) 0.f) : TextBox(parent) {
         mNumberFormat = sizeof(Scalar) == sizeof(float) ? "%.4g" : "%.7g";
         setDefaultValue("0");
         setFormat("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
@@ -269,6 +388,11 @@ public:
         setValue(value);
         setSpinnable(false);
     }
+
+    using TextBox::set;
+    template<typename... Args>
+    FloatBox(Widget* parent, const Args&... args)
+      : FloatBox(parent, 0.f) { set<FloatBox<Scalar>, Args...>(args...); }
 
     std::string numberFormat() const { return mNumberFormat; }
     void numberFormat(const std::string &format) { mNumberFormat = format; }
@@ -360,7 +484,83 @@ private:
     Scalar mValueIncrement;
     Scalar mMinValue, mMaxValue;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(InitialValue, setValue)
+    PROPSETTER(MinValue, setMinValue)
+    PROPSETTER(MaxValue, setMaxValue)
+};
+
+DECLSETTER(NumberPickerSplit, float)
+
+template<typename Scalar>
+class NumberPicker : public Widget
+{
+  auto& editor(Widget& /*parent*/, float v) { return floatbox<float>(v); }
+  auto& editor(Widget& /*parent*/, int v) { return intbox<int>(v); }
+  template<typename B> auto* find() { return nullptr; }
+  template<typename B = float> FloatBox<float>* find() {
+    auto widgets = findAll<FloatBox<float>>();
+    return widgets.empty() ? nullptr : widgets.front();
+  }
+  template<typename B = int> IntBox<int>* find(int) {
+    auto widgets = findAll<IntBox<int>>();
+    return widgets.empty() ? nullptr : widgets.front();
+  }
+
+public:
+  inline static RttiClass* staticRttiClass()
+  {
+    static RttiClass rttiInfo = { "NumberPicker", sizeof(class NumberPicker<Scalar>),
+                                  RTTI_CLASS(Widget),
+                                  GET_CLASS_UID("FLB0") + (std::is_signed<Scalar>::value ? 0x1 : 0x0)
+                                  + (sizeof(Scalar) == sizeof(float) ? 0x0 : 0x2)
+                                  + (std::is_floating_point<Scalar>::value ? 0x0 : 0x4) };
+    return &rttiInfo;
+  }
+  inline static const RttiClass* staticRttiClass_const() { return NumberPicker<Scalar>::staticRttiClass(); }
+  inline RttiClass* rttiClass() const { return NumberPicker<Scalar>::staticRttiClass(); }
+  inline NumberPicker<Scalar>* cast(Object*v)
+  {
+    if (v && v->isKindOf(NumberPicker<Scalar>::staticRttiClass()))
+      return static_cast<NumberPicker<Scalar>*>(v);
+    return nullptr;
+  }
+  inline const NumberPicker<Scalar>* cast(const Object*v)
+  {
+    if (v && v->isKindOf(NumberPicker<Scalar>::staticRttiClass_const()))
+      return static_cast<const NumberPicker<Scalar>*>(v);
+    return nullptr;
+  }
+
+
+  using Widget::set;
+  template<typename... Args>
+  NumberPicker(Widget* parent, const Args&... args)
+    : NumberPicker(parent, Scalar(0)) { set<NumberPicker<Scalar>, Args...>(args...); }
+
+  NumberPicker(Widget* parent, Scalar val)
+    : Widget(parent)
+  {
+    auto& wrapper = widget();
+    wrapper.flexlayout(Orientation::Horizontal);
+    wrapper.label(CaptionFont{ "sans" }, RelativeSize{ 0.5, 0 });
+
+    auto& box = editor(wrapper, val);
+    box.setValue(val);
+    box.setSpinnable(false);
+    box.setEditable(true);
+    box.setDefaultValue(std::to_string(val));
+    box.setRelativeSize(0.5f, 0);
+  }
+
+  void setSplit(float split) 
+  {
+    if (auto w = find<Label>())
+      w->setRelativeSize({ split, 0 });
+    if (auto w = find<Scalar>())
+      w->setRelativeSize({ 1 - split, 0 });
+  }
+public:
+  PROPSETTER(NumberPickerSplit, setSplit)
 };
 
 NAMESPACE_END(nanogui)

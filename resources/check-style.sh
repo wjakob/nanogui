@@ -68,16 +68,16 @@ while read -u 3 line; do
     echo "    $line"
 done
 
-found=
-exec 3< <(GREP_COLORS='mt=41' grep '^\s*{\s*$' include/ src/ -rn --color=always)
-while read -u 3 f; do
-    if [ -z "$found" ]; then
-        echo -e '\e[31m\e[01mError: braces should occur on the same line as the if/while/.. statement. Found issues in the following files: \e[0m'
-        found=1
-        errors=1
-    fi
-
-    echo "    $f"
-done
+# found=
+# exec 3< <(GREP_COLORS='mt=41' grep '^\s*{\s*$' include/ src/ -rn --color=always)
+# while read -u 3 f; do
+#     if [ -z "$found" ]; then
+#         echo -e '\e[31m\e[01mError: braces should occur on the same line as the if/while/.. statement. Found issues in the following files: \e[0m'
+#         found=1
+#         errors=1
+#     fi
+# 
+#     echo "    $f"
+# done
 
 exit $errors

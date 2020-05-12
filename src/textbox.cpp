@@ -15,13 +15,15 @@
 #include <nanogui/window.h>
 #include <nanogui/screen.h>
 #include <nanogui/textbox.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 #include <nanogui/theme.h>
-#include <nanogui/serializer/core.h>
+#include <nanogui/saveload.h>
 #include <regex>
 #include <iostream>
 
 NAMESPACE_BEGIN(nanogui)
+
+RTTI_IMPLEMENT_INFO(TextBox, Widget)
 
 TextBox::TextBox(Widget *parent,const std::string &value)
     : Widget(parent),
@@ -30,7 +32,7 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mCommitted(true),
       mValue(value),
       mDefaultValue(""),
-      mAlignment(Alignment::Center),
+      mAlignment(TextAlignment::Center),
       mUnits(""),
       mFormat(""),
       mUnitsImage(-1),
@@ -43,9 +45,10 @@ TextBox::TextBox(Widget *parent,const std::string &value)
       mMouseDragPos(Vector2i(-1,-1)),
       mMouseDownModifier(0),
       mTextOffset(0),
-      mLastClick(0) {
-    if (mTheme) mFontSize = mTheme->mTextBoxFontSize;
+      mLastClick(0)
+{
     mIconExtraScale = 0.8f;// widget override
+    mBorderSize = 0;
 }
 
 void TextBox::setEditable(bool editable) {
@@ -53,20 +56,22 @@ void TextBox::setEditable(bool editable) {
     setCursor(editable ? Cursor::IBeam : Cursor::Arrow);
 }
 
-void TextBox::setTheme(Theme *theme) {
-    Widget::setTheme(theme);
-    if (mTheme)
-        mFontSize = mTheme->mTextBoxFontSize;
+void TextBox::setTheme(Theme *theme) {  Widget::setTheme(theme); }
+
+int TextBox::fontSize() const
+{
+  return mFontSize > 0 ? mFontSize : mTheme->mTextBoxFontSize;
 }
 
-Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
+Vector2i TextBox::preferredSize(NVGcontext *ctx) const 
+{
     Vector2i size(0, fontSize() * 1.4f);
 
     float uw = 0;
     if (mUnitsImage > 0) {
         int w, h;
         nvgImageSize(ctx, mUnitsImage, &w, &h);
-        float uh = size(1) * 0.4f;
+        float uh = size.y() * 0.4f;
         uw = w * uh / h;
     } else if (!mUnits.empty()) {
         uw = nvgTextBounds(ctx, 0, 0, mUnits.c_str(), nullptr, nullptr);
@@ -77,44 +82,80 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
     }
 
     float ts = nvgTextBounds(ctx, 0, 0, mValue.c_str(), nullptr, nullptr);
-    size(0) = size(1) + ts + uw + sw;
+    size.x() = size.y() + ts + uw + sw;
+    if (mFixedSize.x() > 0)
+      size.x() = mFixedSize.x();
+    if (mFixedSize.y() > 0)
+      size.y() = mFixedSize.y();
     return size;
 }
 
-void TextBox::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
+int TextBox::getCornerRadius() const { return mTheme->mTextBoxCornerRadius; }
 
-    NVGpaint bg = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(255, 32), Color(32, 32));
-    NVGpaint fg1 = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, Color(150, 32), Color(32, 32));
-    NVGpaint fg2 = nvgBoxGradient(ctx,
-        mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,
-        3, 4, nvgRGBA(255, 0, 0, 100), nvgRGBA(255, 0, 0, 50));
+void TextBox::afterDraw(NVGcontext* ctx)
+{
+  Widget::afterDraw(ctx);
+  if (mUpdateCallback)
+    mUpdateCallback(this);
+}
 
+void TextBox::createBoxGradient(NVGcontext* ctx, NVGpaint& fg, const Color& c1, const Color& c2, int cr)
+{
+  fg = nvgBoxGradient(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f,
+                           mSize.x() - 2, mSize.y() - 2,
+                           cr, 4, c1, c2);
+}
+
+void TextBox::draw(NVGcontext* ctx) 
+{
+    int cornerRadius = getCornerRadius();
+    NVGpaint fg1;
+    createBoxGradient(ctx, fg1,
+                      mBackgroundHoverColor.notW(theme()->textBoxFocusedColorIn), 
+                      mBackgroundHoverColor.notW(theme()->textBoxFocusedColorOut), 
+                      cornerRadius);
+
+    //background fill
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2,
-                   mSize.y() - 2, 3);
+    nvgRoundedRect(ctx, mPos.x() + 1, mPos.y() + 1 + 1.0f,
+                        mSize.x() - 2, mSize.y() - 2, cornerRadius);
 
     if (mEditable && focused())
-        mValidFormat ? nvgFillPaint(ctx, fg1) : nvgFillPaint(ctx, fg2);
+    {
+      if (!mValidFormat)
+        createBoxGradient(ctx, fg1, 
+                          theme()->textBoxInvalidFormatColorIn, theme()->textBoxInvalidFormatColorOut,
+                          cornerRadius);
+    }
     else if (mSpinnable && mMouseDownPos.x() != -1)
-        nvgFillPaint(ctx, fg1);
+    {
+      ;
+    }
     else
-        nvgFillPaint(ctx, bg);
+    {
+      createBoxGradient(ctx, fg1, 
+                        mBackgrodunColor.notW(theme()->textBoxUnfocusedColorIn), 
+                        mBackgrodunColor.notW(theme()->textBoxUnfocusedColorOut), 
+                        cornerRadius);
+    }
 
+    nvgFillPaint(ctx, fg1);
     nvgFill(ctx);
 
+    //background line
+    nvgSave(ctx);
+    nvgResetScissor(ctx);
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x() + 0.5f, mPos.y() + 0.5f, mSize.x() - 1,
-                   mSize.y() - 1, 2.5f);
-    nvgStrokeColor(ctx, Color(0, 48));
+    float bs = mBorderSize > 0 ? mBorderSize : theme()->textBoxBorderSize;
+    nvgStrokeWidth(ctx, bs );
+    nvgRoundedRect(ctx, mPos.x() + (-bs/2+0.5f), mPos.y() + (-bs/2+0.5f), 
+                        mSize.x() + (bs/2+0.5f), mSize.y() + (bs/2+0.5f), 
+                        cornerRadius - 0.5f);
+    nvgStrokeColor(ctx, mBorderColor.notW(theme()->textBoxBorderColor));
     nvgStroke(ctx);
+    nvgRestore(ctx);
 
-    nvgFontSize(ctx, fontSize());
-    nvgFontFace(ctx, "sans");
+    nvgFontFaceSize(ctx, "sans", fontSize());
     Vector2i drawPos(mPos.x(), mPos.y() + mSize.y() * 0.5f + 1);
 
     float xSpacing = mSize.y() * 0.3f;
@@ -151,7 +192,7 @@ void TextBox::draw(NVGcontext* ctx) {
         spinArrowsWidth = 14.f;
 
         nvgFontFace(ctx, "icons");
-        nvgFontSize(ctx, ((mFontSize < 0) ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
+        nvgFontSize(ctx, (mFontSize > 0 ? mFontSize : mTheme->mButtonFontSize) * icon_scale());
 
         bool spinning = mMouseDownPos.x() != -1;
 
@@ -180,18 +221,19 @@ void TextBox::draw(NVGcontext* ctx) {
     }
 
     switch (mAlignment) {
-        case Alignment::Left:
+        case TextAlignment::Left:
             nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
             drawPos.x() += xSpacing + spinArrowsWidth;
             break;
-        case Alignment::Right:
+        case TextAlignment::Right:
             nvgTextAlign(ctx, NVG_ALIGN_RIGHT | NVG_ALIGN_MIDDLE);
             drawPos.x() += mSize.x() - unitWidth - xSpacing;
             break;
-        case Alignment::Center:
+        case TextAlignment::Center:
             nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
             drawPos.x() += mSize.x() * 0.5f;
             break;
+        default: break;
     }
 
     nvgFontSize(ctx, fontSize());
@@ -280,12 +322,13 @@ void TextBox::draw(NVGcontext* ctx) {
         }
     }
     nvgRestore(ctx);
+
+    Widget::draw(ctx);
 }
 
-bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
-                               int modifiers) {
-
-    if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused) {
+bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) 
+{
+    if (isMouseButtonLeft(button) && down && !mFocused) {
         if (!mSpinnable || spinArea(p) == SpinArea::None) /* not on scrolling arrows */
             requestFocus();
     }
@@ -295,7 +338,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             mMouseDownPos = p;
             mMouseDownModifier = modifiers;
 
-            double time = glfwGetTime();
+            double time = getTimeFromStart();
             if (time - mLastClick < 0.25) {
                 /* Double-click: select all text */
                 mSelectionPos = 0;
@@ -314,7 +357,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                 mMouseDownPos = p;
                 mMouseDownModifier = modifiers;
 
-                double time = glfwGetTime();
+                double time = getTimeFromStart();
                 if (time - mLastClick < 0.25) {
                     /* Double-click: reset to default value */
                     mValue = mDefaultValue;
@@ -400,83 +443,120 @@ bool TextBox::focusEvent(bool focused) {
     return true;
 }
 
-bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
-    if (mEditable && focused()) {
-        if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-            if (key == GLFW_KEY_LEFT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
+bool TextBox::keyboardEvent(int key, int scancode, int action, int modifiers) 
+{
+  if (!focused())
+    return false;
 
-                if (mCursorPos > 0)
-                    mCursorPos--;
-            } else if (key == GLFW_KEY_RIGHT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                if (mCursorPos < (int) mValueTemp.length())
-                    mCursorPos++;
-            } else if (key == GLFW_KEY_HOME) {
-                if (modifiers == GLFW_MOD_SHIFT) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                mCursorPos = 0;
-            } else if (key == GLFW_KEY_END) {
-                if (modifiers == GLFW_MOD_SHIFT) {
-                    if (mSelectionPos == -1)
-                        mSelectionPos = mCursorPos;
-                } else {
-                    mSelectionPos = -1;
-                }
-
-                mCursorPos = (int) mValueTemp.size();
-            } else if (key == GLFW_KEY_BACKSPACE) {
-                if (!deleteSelection()) {
-                    if (mCursorPos > 0) {
-                        mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
-                        mCursorPos--;
-                    }
-                }
-            } else if (key == GLFW_KEY_DELETE) {
-                if (!deleteSelection()) {
-                    if (mCursorPos < (int) mValueTemp.length())
-                        mValueTemp.erase(mValueTemp.begin() + mCursorPos);
-                }
-            } else if (key == GLFW_KEY_ENTER) {
-                if (!mCommitted)
-                    focusEvent(false);
-            } else if (key == GLFW_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
-                mCursorPos = (int) mValueTemp.length();
-                mSelectionPos = 0;
-            } else if (key == GLFW_KEY_X && modifiers == SYSTEM_COMMAND_MOD) {
-                copySelection();
-                deleteSelection();
-            } else if (key == GLFW_KEY_C && modifiers == SYSTEM_COMMAND_MOD) {
-                copySelection();
-            } else if (key == GLFW_KEY_V && modifiers == SYSTEM_COMMAND_MOD) {
-                deleteSelection();
-                pasteFromClipboard();
+  if (mEditable) 
+  {
+    if (isKeyboardActionPress(action) || isKeyboardActionRepeat(action)) {
+        if (isKeyboardKey(key, "LEFT")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
             }
 
-            mValidFormat =
-                (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
+            if (mCursorPos > 0)
+                mCursorPos--;
+        }
+        else if (isKeyboardKey(key, "RGHT")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            if (mCursorPos < (int) mValueTemp.length())
+                mCursorPos++;
+        } 
+        else if (isKeyboardKey(key, "HOME")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            mCursorPos = 0;
+        } 
+        else if (isKeyboardKey(key, "KEND")) 
+        {
+            if (isKeyboardModifierShift(modifiers)) {
+                if (mSelectionPos == -1)
+                    mSelectionPos = mCursorPos;
+            } else {
+                mSelectionPos = -1;
+            }
+
+            mCursorPos = (int) mValueTemp.size();
+        } 
+        else if (isKeyboardKey(key, "BACK")) 
+        {
+            if (!deleteSelection()) {
+                if (mCursorPos > 0) {
+                    mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
+                    mCursorPos--;
+
+                    if (mEditCallback)
+                      mEditCallback(mValueTemp, true);
+                }
+            }
+        } 
+        else if (isKeyboardKey(key, "KDEL")) 
+        {
+            if (!deleteSelection()) {
+              if (mCursorPos < (int)mValueTemp.length())
+              {
+                mValueTemp.erase(mValueTemp.begin() + mCursorPos);
+                if (mEditCallback)
+                  mEditCallback(mValueTemp, true);
+              }
+            }
+        } 
+        else if (isKeyboardKey(key, "ENTR")) 
+        {
+            if (!mCommitted)
+                focusEvent(false);
+            if (mComitCallback)
+            {
+              mComitCallback(this);
+              return true;
+            }
+        } 
+        else if (isKeyboardKey(key, "KEYA") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            mCursorPos = (int) mValueTemp.length();
+            mSelectionPos = 0;
+        } 
+        else if (isKeyboardKey(key, "KEYX") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            copySelection();
+            deleteSelection();
+        } 
+        else if (isKeyboardKey(key, "KEYC") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            copySelection();
+        } 
+        else if (isKeyboardKey(key, "KEYV") && isKeyboardModifierCtrl(modifiers)) 
+        {
+            deleteSelection();
+            pasteFromClipboard();
         }
 
-        return true;
+        mValidFormat = (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
     }
 
-    return false;
+    return true;
+  }
+
+  return Widget::keyboardEvent(key, scancode, action, modifiers);
 }
 
 bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
@@ -489,6 +569,9 @@ bool TextBox::keyboardCharacterEvent(unsigned int codepoint) {
         mCursorPos++;
 
         mValidFormat = (mValueTemp == "") || checkFormat(mValueTemp, mFormat);
+
+        if (mEditCallback)
+          mEditCallback(mValueTemp, mValidFormat);
 
         return true;
     }
@@ -514,7 +597,7 @@ bool TextBox::checkFormat(const std::string &input, const std::string &format) {
 
 bool TextBox::copySelection() {
     if (mSelectionPos > -1) {
-        Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
+        Screen *sc = Screen::cast(window()->parent());
         if (!sc)
             return false;
 
@@ -524,8 +607,7 @@ bool TextBox::copySelection() {
         if (begin > end)
             std::swap(begin, end);
 
-        glfwSetClipboardString(sc->glfwWindow(),
-                               mValueTemp.substr(begin, end).c_str());
+        sc->setClipboardString(mValueTemp.substr(begin, end));
         return true;
     }
 
@@ -533,12 +615,16 @@ bool TextBox::copySelection() {
 }
 
 void TextBox::pasteFromClipboard() {
-    Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
+    Screen *sc = Screen::cast(window()->parent());
     if (!sc)
         return;
-    const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
-    if (cbstr)
-        mValueTemp.insert(mCursorPos, std::string(cbstr));
+    std::string cbstr = sc->getClipboardString();
+    if (!cbstr.empty())
+    {
+      mValueTemp.insert(mCursorPos, cbstr);
+      if (mEditCallback)
+        mEditCallback(mValueTemp, true);
+    }
 }
 
 bool TextBox::deleteSelection() {
@@ -555,6 +641,9 @@ bool TextBox::deleteSelection() {
             mValueTemp.erase(mValueTemp.begin() + begin,
                              mValueTemp.begin() + end);
 
+        if (mEditCallback)
+          mEditCallback(mValueTemp, true);
+
         mCursorPos = begin;
         mSelectionPos = -1;
         return true;
@@ -567,22 +656,19 @@ void TextBox::updateCursor(NVGcontext *, float lastx,
                            const NVGglyphPosition *glyphs, int size) {
     // handle mouse cursor events
     if (mMouseDownPos.x() != -1) {
-        if (mMouseDownModifier == GLFW_MOD_SHIFT) {
+        if (isKeyboardModifierShift(mMouseDownModifier)) {
             if (mSelectionPos == -1)
                 mSelectionPos = mCursorPos;
         } else
             mSelectionPos = -1;
 
-        mCursorPos =
-            position2CursorIndex(mMouseDownPos.x(), lastx, glyphs, size);
-
+        mCursorPos =  position2CursorIndex(mMouseDownPos.x(), lastx, glyphs, size);
         mMouseDownPos = Vector2i(-1, -1);
     } else if (mMouseDragPos.x() != -1) {
         if (mSelectionPos == -1)
             mSelectionPos = mCursorPos;
 
-        mCursorPos =
-            position2CursorIndex(mMouseDragPos.x(), lastx, glyphs, size);
+        mCursorPos = position2CursorIndex(mMouseDragPos.x(), lastx, glyphs, size);
     } else {
         // set cursor to last character
         if (mCursorPos == -2)
@@ -631,41 +717,42 @@ TextBox::SpinArea TextBox::spinArea(const Vector2i & pos) {
     return SpinArea::None;
 }
 
-void TextBox::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("editable", mEditable);
-    s.set("spinnable", mSpinnable);
-    s.set("committed", mCommitted);
-    s.set("value", mValue);
-    s.set("defaultValue", mDefaultValue);
-    s.set("alignment", (int) mAlignment);
-    s.set("units", mUnits);
-    s.set("format", mFormat);
-    s.set("unitsImage", mUnitsImage);
-    s.set("validFormat", mValidFormat);
-    s.set("valueTemp", mValueTemp);
-    s.set("cursorPos", mCursorPos);
-    s.set("selectionPos", mSelectionPos);
+void TextBox::save(Json::value &s) const
+{
+  Widget::save(s);
+  auto obj = s.get_obj();
+
+  obj["editable"] = json().set(mEditable).name("Editable");
+  obj["spinnable"] = json().set(mSpinnable).name("Spinnable");
+  obj["value"] = json().set(mValue).name("Value");
+  obj["defaultValue"] = json().set(mDefaultValue).name("Default value");
+  obj["alignment"] = json().set((int)mAlignment).name("Alignment");
+  obj["units"] = json().set(mUnits).name("Units");
+  obj["format"] = json().set(mFormat).name("Format");
+  obj["unitsImage"] = json().set(mUnitsImage).name("Units image");
+  obj["validFormat"] = json().set(mValidFormat).name("Valid format");
+  obj["valueTemp"] = json().set(mValueTemp).name("Value temp");
+
+  s = Json::value(obj);
 }
 
-bool TextBox::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("editable", mEditable)) return false;
-    if (!s.get("spinnable", mSpinnable)) return false;
-    if (!s.get("committed", mCommitted)) return false;
-    if (!s.get("value", mValue)) return false;
-    if (!s.get("defaultValue", mDefaultValue)) return false;
-    if (!s.get("alignment", mAlignment)) return false;
-    if (!s.get("units", mUnits)) return false;
-    if (!s.get("format", mFormat)) return false;
-    if (!s.get("unitsImage", mUnitsImage)) return false;
-    if (!s.get("validFormat", mValidFormat)) return false;
-    if (!s.get("valueTemp", mValueTemp)) return false;
-    if (!s.get("cursorPos", mCursorPos)) return false;
-    if (!s.get("selectionPos", mSelectionPos)) return false;
-    mMousePos = mMouseDownPos = mMouseDragPos = Vector2i::Constant(-1);
-    mMouseDownModifier = mTextOffset = 0;
-    return true;
+bool TextBox::load(Json::value &save) 
+{
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mEditable = s.get<bool>("editable");
+  mSpinnable = s.get<bool>("spinnable");
+  mValue = s.get<float>("value");
+  mDefaultValue = s.get<float>("defaultValue");
+  mAlignment = (TextAlignment)s.get<int>("alignment");
+  mUnits = s.get<std::string>("units");
+  mFormat = s.get<std::string>("format");
+  mUnitsImage = s.get<int>("unitsImage");
+  mValidFormat = s.get<bool>("validFormat");
+  mMousePos = mMouseDownPos = mMouseDragPos = Vector2i::Constant(-1);
+  mMouseDownModifier = mTextOffset = 0;
+  return true;
 }
 
 NAMESPACE_END(nanogui)

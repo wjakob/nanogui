@@ -29,10 +29,20 @@ enum class Alignment : uint8_t {
     Fill         ///< Fill according to preferred sizes.
 };
 
+/// !
+enum class TextAlignment { 
+  Auto = 0, ///<
+  Left,     ///<
+  Center,   ///<
+  Right     ///<
+};
+
 /// The direction of data flow for a layout.
 enum class Orientation {
     Horizontal = 0, ///< Layout expands on horizontal axis.
-    Vertical        ///< Layout expands on vertical axis.
+    Vertical,       ///< Layout expands on vertical axis.
+    ReverseHorizontal,
+    ReverseVertical
 };
 
 /**
@@ -40,8 +50,11 @@ enum class Orientation {
  *
  * \brief Basic interface of a layout engine.
  */
+class Widget;
 class NANOGUI_EXPORT Layout : public Object {
 public:
+    RTTI_CLASS_UID(Layout)
+    RTTI_DECLARE_INFO(Layout)
     /**
      * Performs any and all resizing applicable.
      *
@@ -68,9 +81,15 @@ public:
      */
     virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const = 0;
 
+    template<typename FF, typename none = void> void set() {}
+    void setId(int id) { mId = id; }
+
+    int getId() const { return mId; }
+       
 protected:
     /// Default destructor (exists for inheritance).
     virtual ~Layout() { }
+    int mId = -1;
 };
 
 /**
@@ -84,6 +103,9 @@ protected:
  */
 class NANOGUI_EXPORT BoxLayout : public Layout {
 public:
+    RTTI_CLASS_UID(BoxLayout)
+    RTTI_DECLARE_INFO(BoxLayout)
+
     /**
      * \brief Construct a box layout which packs widgets in the given \c Orientation
      *
@@ -147,6 +169,20 @@ protected:
     int mSpacing;
 };
 
+class NANOGUI_EXPORT StretchLayout : public BoxLayout
+{
+public:
+  RTTI_CLASS_UID(StretchLayout)
+  RTTI_DECLARE_INFO(StretchLayout)
+
+  StretchLayout(Orientation orientation) : BoxLayout(orientation) {}
+  StretchLayout(Orientation orientation, int margin, int spacing)
+    : BoxLayout(orientation, Alignment::Middle, margin, spacing) {}
+
+  void performLayout(NVGcontext* ctx, Widget* widget) const override;
+  Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+};
+
 /**
  * \class GroupLayout layout.h nanogui/layout.h
  *
@@ -161,6 +197,9 @@ protected:
  */
 class NANOGUI_EXPORT GroupLayout : public Layout {
 public:
+  RTTI_CLASS_UID(GroupLayout)
+  RTTI_DECLARE_INFO(GroupLayout)
+
     /**
      * Creates a GroupLayout.
      *
@@ -207,10 +246,10 @@ public:
 
     /* Implementation of the layout interface */
     /// See \ref Layout::preferredSize.
-    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
 
     /// See \ref Layout::performLayout.
-    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
+    void performLayout(NVGcontext *ctx, Widget *widget) const override;
 
 protected:
     /// The margin of this GroupLayout.
@@ -237,8 +276,23 @@ protected:
  * specified per axis. The horizontal/vertical alignment can be specified per
  * row and column.
  */
+struct NANOGUI_EXPORT ColumnsAligment {
+  std::vector<Alignment> value;
+  ColumnsAligment(std::initializer_list<Alignment> l)
+  { for (auto& a: l) value.push_back(a); };
+};
+
+DECLSETTER(GridLayoutColAlignment, Alignment)
+DECLSETTERILIST(GridLayoutSplit,std::vector<float>)
+DECLSETTER(LayoutMargin, int)
+DECLSETTER(LayoutSpacing, int)
+DECLSETTER(LayoutHorSpacing, int)
+
 class NANOGUI_EXPORT GridLayout : public Layout {
 public:
+  RTTI_CLASS_UID(GridLayout)
+  RTTI_DECLARE_INFO(GridLayout)
+
     /**
      * Create a 2-column grid layout by default.
      *
@@ -257,21 +311,24 @@ public:
      * \param spacing
      *     The amount of spacing between widgets added to the grid.
      */
-    GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
-               Alignment alignment = Alignment::Middle,
-               int margin = 0, int spacing = 0)
+    explicit GridLayout(Orientation orientation = Orientation::Horizontal, int resolution = 2,
+                        Alignment alignment = Alignment::Middle,
+                        int margin = 0, int spacing = 0)
         : mOrientation(orientation), mResolution(resolution), mMargin(margin) {
         mDefaultAlignment[0] = mDefaultAlignment[1] = alignment;
         mSpacing = Vector2i::Constant(spacing);
     }
 
+    using Layout::set;
+    template<typename... Args>
+    GridLayout(const Args&... args)
+      : GridLayout(Orientation::Horizontal,2,Alignment::Middle,0,0) { set<GridLayout, Args...>(args...); }
+
     /// The Orientation of this GridLayout.
     Orientation orientation() const { return mOrientation; }
 
     /// Sets the Orientation of this GridLayout.
-    void setOrientation(Orientation orientation) {
-        mOrientation = orientation;
-    }
+    void setOrientation(Orientation orientation) { mOrientation = orientation; }
 
     /// The number of rows or columns (depending on the Orientation) of this GridLayout.
     int resolution() const { return mResolution; }
@@ -284,9 +341,10 @@ public:
 
     /// Sets the spacing for a specific axis.
     void setSpacing(int axis, int spacing) { mSpacing[axis] = spacing; }
+    void setHorSpacing(int spacing) { mSpacing.x() = spacing; }
 
     /// Sets the spacing for all axes.
-    void setSpacing(int spacing) { mSpacing[0] = mSpacing[1] = spacing; }
+    void setSpacing(int spacing) { mSpacing.x() = mSpacing.y() = spacing; }
 
     /// The margin around this GridLayout.
     int margin() const { return mMargin; }
@@ -319,10 +377,12 @@ public:
 
     /* Implementation of the layout interface */
     /// See \ref Layout::preferredSize.
-    virtual Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
+    Vector2i preferredSize(NVGcontext *ctx, const Widget *widget) const override;
 
     /// See \ref Layout::performLayout.
-    virtual void performLayout(NVGcontext *ctx, Widget *widget) const override;
+    void performLayout(NVGcontext *ctx, Widget *widget) const override;
+
+    void setRelWidth(std::vector<float> w) { mRelWidth = w; }
 
 protected:
     /// Compute the maximum row and column sizes
@@ -345,10 +405,17 @@ protected:
     /// The spacing used for each dimension.
     Vector2i mSpacing;
 
+    std::vector<float> mRelWidth;
+
     /// The margin around this GridLayout.
     int mMargin;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(ColumnsAligment,setColAlignment)
+    PROPSETTER(GridLayoutSplit,setRelWidth)
+    PROPSETTER(GridLayoutColAlignment,setColAlignment)
+    PROPSETTER(LayoutMargin,setMargin)
+    PROPSETTER(LayoutSpacing,setSpacing)
+    PROPSETTER(LayoutHorSpacing,setHorSpacing)
 };
 
 /**
@@ -387,6 +454,8 @@ public:
  */
 class NANOGUI_EXPORT AdvancedGridLayout : public Layout {
 public:
+    RTTI_CLASS_UID(AdvancedGridLayout)
+    RTTI_DECLARE_INFO(AdvancedGridLayout)
     /**
      * \struct Anchor layout.h nanogui/layout.h
      *

@@ -11,15 +11,19 @@
 
 #include <nanogui/slider.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
+RTTI_IMPLEMENT_INFO(Slider, Widget)
+
 Slider::Slider(Widget *parent)
-    : Widget(parent), mValue(0.0f), mRange(0.f, 1.f),
-      mHighlightedRange(0.f, 0.f) {
-    mHighlightColor = Color(255, 80, 80, 70);
+    : Widget(parent), mRange(0.f, 1.f),
+      mHighlightedRange(0.f, 0.f) 
+{
+  mValue = 0.f;
+  mHighlightColor = Color(255, 80, 80, 70);
 }
 
 Vector2i Slider::preferredSize(NVGcontext *) const {
@@ -61,7 +65,8 @@ bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, in
     return true;
 }
 
-void Slider::draw(NVGcontext* ctx) {
+void Slider::draw(NVGcontext* ctx) 
+{
     Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
     float kr = (int) (mSize.y() * 0.4f), kshadow = 3;
 
@@ -81,7 +86,8 @@ void Slider::draw(NVGcontext* ctx) {
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 
-    if (mHighlightedRange.second != mHighlightedRange.first) {
+    if (mHighlightedRange.second != mHighlightedRange.first) 
+    {
         nvgBeginPath(ctx);
         nvgRoundedRect(ctx, startX + mHighlightedRange.first * mSize.x(),
                        center.y() - kshadow + 1,
@@ -90,6 +96,15 @@ void Slider::draw(NVGcontext* ctx) {
                        kshadow * 2, 2);
         nvgFillColor(ctx, mHighlightColor);
         nvgFill(ctx);
+    }
+
+    if (mShowValueWithColor)
+    {
+      nvgBeginPath(ctx);
+      nvgRoundedRect(ctx, startX, center.y() - kshadow + 1,
+                          knobPos.x() - startX, kshadow * 2, 2);
+      nvgFillColor(ctx, mValueColor.notW(mTheme->mSliderValueColor));
+      nvgFill(ctx);
     }
 
     NVGpaint knobShadow =
@@ -124,23 +139,34 @@ void Slider::draw(NVGcontext* ctx) {
     nvgStrokePaint(ctx, knobReverse);
     nvgStroke(ctx);
     nvgFill(ctx);
+
+    Widget::draw(ctx);
 }
 
-void Slider::save(Serializer &s) const {
-    Widget::save(s);
-    s.set("value", mValue);
-    s.set("range", mRange);
-    s.set("highlightedRange", mHighlightedRange);
-    s.set("highlightColor", mHighlightColor);
+void Slider::save(Json::value &save) const
+{
+  Widget::save(save);
+  Json::object obj = save.get_obj();
+  obj["value"] = json().set(mValue).name("Value");
+  obj["range"] = json().$("min", mRange.first).$("max", mRange.second).type("range").name("Range");
+  obj["highlightedRange"] = json().$("min", mHighlightedRange.first).$("max", mHighlightedRange.second).type("range").name("Highligh range color");
+  obj["highlightColor"] = json().set(mHighlightColor).name("Highlight color");
+
+  save = Json::value(obj);
 }
 
-bool Slider::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("value", mValue)) return false;
-    if (!s.get("range", mRange)) return false;
-    if (!s.get("highlightedRange", mHighlightedRange)) return false;
-    if (!s.get("highlightColor", mHighlightColor)) return false;
-    return true;
+bool Slider::load(Json::value &save) {
+  Widget::load(save);
+  json s{ save.get_obj() };
+
+  mValue = s.get<float>("value"); 
+  auto r = save.get("range");
+  mRange = { r.get_float("min"), r.get_float("max") };
+  auto hr = save.get("highlightedRange");
+  mHighlightedRange = { hr.get_float("min"), hr.get_float("max") };
+  mHighlightColor = s.get<Color>("highlightColor");
+
+  return true;
 }
 
 NAMESPACE_END(nanogui)

@@ -21,16 +21,49 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \brief Simple radio+toggle button with an icon.
  */
-class ToolButton : public Button {
+class NANOGUI_EXPORT ToolButton : public Button {
 public:
-    ToolButton(Widget *parent, int icon,
-           const std::string &caption = "")
-        : Button(parent, caption, icon) {
-        setFlags(Flags::RadioButton | Flags::ToggleButton);
-        setFixedSize(Vector2i(25, 25));
+    RTTI_CLASS_UID(ToolButton)
+    RTTI_DECLARE_INFO(ToolButton)
+
+    explicit ToolButton(Widget *parent, int icon, const std::string &caption = "")
+        : Button(parent)
+    {
+      setCaption(caption);
+      setIcon(icon);
+      setFlags(Flag::RadioButton | Flag::ToggleButton);
     }
+
+    std::string wtypename() const override { return "toolbutton"; }
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+
+    using Button::set;
+    template<typename... Args>
+    ToolButton(Widget* parent, const Args&... args)
+      : ToolButton(parent, -1, std::string("")) { set<ToolButton, Args...>(args...); }
+};
+
+namespace elm { using ToolButton = Element<ToolButton>; }
+
+class NANOGUI_EXPORT ToggleButton : public Button {
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  RTTI_CLASS_UID(ToggleButton)
+  RTTI_DECLARE_INFO(ToggleButton)
+
+  explicit ToggleButton(Widget *parent, int icon);
+  std::string wtypename() const override { return "togglebutton"; }
+
+  using Button::set;
+  template<typename... Args>
+  ToggleButton(Widget* parent, const Args&... args)
+    : ToggleButton(parent, -1) { set<ToggleButton, Args...>(args...); }
+
+  Color getIconColor() const override;
+  void draw(NVGcontext* ctx) override;
+  Vector2i preferredSize(NVGcontext *ctx) const override;
+
+private:
+  Color mActiveColor, mInactiveColor;
 };
 
 NAMESPACE_END(nanogui)

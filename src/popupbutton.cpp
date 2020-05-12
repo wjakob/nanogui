@@ -11,35 +11,75 @@
 
 #include <nanogui/popupbutton.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
 
-PopupButton::PopupButton(Widget *parent, const std::string &caption, int buttonIcon)
-    : Button(parent, caption, buttonIcon) {
+RTTI_IMPLEMENT_INFO(PopupButton, Button)
 
-    mChevronIcon = mTheme->mPopupChevronRightIcon;
+PopupButton::PopupButton(Widget *parent)
+    : Button(parent) 
+{
+  mChevronIcon = mTheme ? mTheme->mPopupChevronRightIcon : -1;
 
-    setFlags(Flags::ToggleButton | Flags::PopupButton);
+  setFlags(Flag::ToggleButton | Flag::PopupButton);
 
-    Window *parentWindow = window();
-    mPopup = new Popup(parentWindow->parent(), window());
-    mPopup->setSize(Vector2i(320, 250));
-    mPopup->setVisible(false);
+  updatePopup();
 
-    mIconExtraScale = 0.8f;// widget override
+  mIconExtraScale = 0.8f;// widget override
 }
 
-PopupButton::~PopupButton() {
-    mPopup->setVisible(false);
-}
+PopupButton::~PopupButton() { if (mPopup) mPopup->setVisible(false); }
+void PopupButton::setPopupSide(int side) { if(mPopup) mPopup->setSide(Popup::Side(side)); }
 
 Vector2i PopupButton::preferredSize(NVGcontext *ctx) const {
     return Button::preferredSize(ctx) + Vector2i(15, 0);
 }
 
-void PopupButton::draw(NVGcontext* ctx) {
+void PopupButton::updatePopup()
+{
+  Window *parentWindow = window();
+  if (parentWindow && !mPopup)
+  {
+    mPopup = parentWindow->parent()->add<Popup>(window());
+    mPopup->setSize(320, 250);
+    mPopup->setVisible(false);
+  }
+}
+
+void PopupButton::parentChanged()
+{
+  Window *parentWindow = window();
+  if (parentWindow && mPopup)
+  {
+    parentWindow->parent()->addChild(mPopup);
+    mPopup->setParentWindow(parentWindow);
+  }
+}
+
+void PopupButton::setPopup(Popup* pp)
+{
+  Window *parentWindow = window();
+  if (parentWindow)
+  {
+    Popup::Side side = Popup::Side::Right;
+    if (mPopup)
+    {
+      side = mPopup->side();
+      mPopup->removeLater();
+      mPopup = nullptr;
+    }
+
+    parentWindow->parent()->addChild(pp);
+    pp->setParentWindow(parentWindow);
+    pp->setSide(side);
+    mPopup = pp;
+  }
+}
+
+void PopupButton::draw(NVGcontext* ctx) 
+{
     if (!mEnabled && mPushed)
         mPushed = false;
 
@@ -48,8 +88,7 @@ void PopupButton::draw(NVGcontext* ctx) {
 
     if (mChevronIcon) {
         auto icon = utf8(mChevronIcon);
-        NVGcolor textColor =
-            mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+        NVGcolor textColor = mTextColor.notW(mTheme->mTextColor);
 
         nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize) * icon_scale());
         nvgFontFace(ctx, "icons");
@@ -71,6 +110,11 @@ void PopupButton::draw(NVGcontext* ctx) {
 void PopupButton::performLayout(NVGcontext *ctx) {
     Widget::performLayout(ctx);
 
+    if (mChevronIcon < 0)
+      mChevronIcon = mTheme ? mTheme->mPopupChevronRightIcon : -1;
+
+    updatePopup();
+
     const Window *parentWindow = window();
 
     int posY = absolutePosition().y() - parentWindow->position().y() + mSize.y() /2;
@@ -90,17 +134,22 @@ void PopupButton::setSide(Popup::Side side) {
     mPopup->setSide(side);
 }
 
-void PopupButton::save(Serializer &s) const {
-    Button::save(s);
-    s.set("chevronIcon", mChevronIcon);
+void PopupButton::save(Json::value &save) const 
+{
+  Button::save(save);
+  Json::object obj = save.get_obj();
+  obj["chevronIcon"] = json().set(mChevronIcon).name("Chevron");
+
+  save = Json::value(obj);
 }
 
-bool PopupButton::load(Serializer &s) {
-    if (!Button::load(s))
-        return false;
-    if (!s.get("chevronIcon", mChevronIcon))
-        return false;
-    return true;
+bool PopupButton::load(Json::value &save) 
+{
+  Button::load(save);
+  json s{ save.get_obj() };
+
+  mChevronIcon = s.get<int>("chevronIcon");
+  return true;
 }
 
 NAMESPACE_END(nanogui)

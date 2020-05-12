@@ -20,6 +20,8 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+class TabHeader;
+class StackedWidget;
 /**
  * \class TabWidget tabwidget.h nanogui/tabwidget.h
  *
@@ -60,9 +62,15 @@ NAMESPACE_BEGIN(nanogui)
  *
  * \endrst
  */
+using TabNames = std::vector<std::string>;
+
 class NANOGUI_EXPORT TabWidget : public Widget {
 public:
+    RTTI_CLASS_UID(TabWidget)
+    RTTI_DECLARE_INFO(TabWidget)
+
     TabWidget(Widget *parent);
+    TabWidget(Widget *parent, const TabNames& tabs);
 
     /**
      * \brief Forcibly prevent mis-use of the class by throwing an exception.
@@ -185,8 +193,6 @@ private:
     TabHeader* mHeader;
     StackedWidget* mContent;
     std::function<void(int)> mCallback;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

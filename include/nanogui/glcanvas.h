@@ -18,8 +18,7 @@
 #include <iostream>
 
 #include <nanogui/widget.h>
-#include <nanogui/opengl.h>
-#include <nanogui/glutil.h>
+#include <nanogui/common.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -69,12 +68,6 @@ public:
     /// Draw the GL scene. Override this method to draw the actual GL content.
     virtual void drawGL() {}
 
-    /// Save the state of this GLCanvas to the specified Serializer.
-    virtual void save(Serializer &s) const override;
-
-    /// Set the state of this GLCanvas from the specified Serializer.
-    virtual bool load(Serializer &s) override;
-
 protected:
     /// Internal helper function for drawing the widget border
     void drawWidgetBorder(NVGcontext* ctx) const;
@@ -85,9 +78,6 @@ protected:
 
     /// Whether to draw the widget border or not.
     bool mDrawBorder;
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(nanogui)

@@ -1,6 +1,8 @@
 #ifdef NANOGUI_PYTHON
 
 #include "python.h"
+#include <nanogui/tabheader.h>
+#include <nanogui/stackedwidget.h>
 
 DECLARE_WIDGET(StackedWidget);
 DECLARE_WIDGET(TabHeader);

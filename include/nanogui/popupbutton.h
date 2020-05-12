@@ -18,6 +18,11 @@
 
 NAMESPACE_BEGIN(nanogui)
 
+DECLSETTER(PopupSide, int)
+
+struct PopupBase { Popup* w = nullptr; };
+template<class FF=Popup> struct PopupWidget : public PopupBase { template<typename... Args> PopupWidget(const Args&... args) { w = new FF(nullptr, nullptr, args...); } };
+
 /**
  * \class PopupButton popupbutton.h nanogui/popupbutton.h
  *
@@ -28,10 +33,19 @@ NAMESPACE_BEGIN(nanogui)
  *     which affects all subclasses of this Widget.  Subclasses must explicitly
  *     set a different value if needed (e.g., in their constructor).
  */
-class NANOGUI_EXPORT PopupButton : public Button {
+class NANOGUI_EXPORT PopupButton : public Button 
+{
 public:
-    PopupButton(Widget *parent, const std::string &caption = "Untitled",
-                int buttonIcon = 0);
+    RTTI_CLASS_UID(PopupButton)
+    RTTI_DECLARE_INFO(PopupButton)
+
+    explicit PopupButton(Widget *parent);
+
+    using Button::set;
+    template<typename... Args>
+    PopupButton(Widget* parent, const Args&... args)
+      : PopupButton(parent) {  set<PopupButton, Args...>(args...);  }
+
     virtual ~PopupButton();
 
     void setChevronIcon(int icon) { mChevronIcon = icon; }
@@ -43,17 +57,36 @@ public:
     Popup *popup() { return mPopup; }
     const Popup *popup() const { return mPopup; }
 
-    virtual void draw(NVGcontext* ctx) override;
-    virtual Vector2i preferredSize(NVGcontext *ctx) const override;
-    virtual void performLayout(NVGcontext *ctx) override;
+    void setPopup(Popup* pp);
 
-    virtual void save(Serializer &s) const override;
-    virtual bool load(Serializer &s) override;
+    Popup& popupref() { return *popup(); }
+    void setPopupSide(int side);
+
+    template<typename... Args>
+    Popup& popupset(const Args&... args)
+    { popupref().add(args...); return *popup(); }
+
+    void draw(NVGcontext* ctx) override;
+    Vector2i preferredSize(NVGcontext *ctx) const override;
+    void performLayout(NVGcontext *ctx) override;
+
+    void save(Json::value &save) const override;
+    bool load(Json::value &save) override;
+
+    template<typename FF, typename First, typename... Args> void set(const PopupBase& h, const Args&... args)
+    { this->setPopup(h.w);  ((FF*)this)->template set<FF, Args...>(args...); }
+
 protected:
-    Popup *mPopup;
-    int mChevronIcon;
+    Popup *mPopup = nullptr;
+    int mChevronIcon = -1;
+
+    virtual void updatePopup();
+    void parentChanged() override;
+
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    PROPSETTER(PopupSide, setPopupSide)
 };
+
+namespace elm { using PopupButton = Element<PopupButton>; }
 
 NAMESPACE_END(nanogui)

@@ -18,6 +18,9 @@
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
+#include <nanogui/color.h>
+#include <memory>
+#include <string.h>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -28,7 +31,29 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT Theme : public Object {
 public:
+    RTTI_CLASS_UID(Theme)
+    RTTI_DECLARE_INFO(Theme)
+
+    enum WindowDraggable { dgAuto = -1, dgFixed = 0, dgDraggable = 1 };
+    enum WindowCollapse { clAuto = -1, clNonCollapse=0, clMayCollapse = 1 };
+
     Theme(NVGcontext *ctx);
+    Theme(const Theme& o) = default;
+
+    template<typename Type>
+    Type get(const std::string& name) { return get(name, Type()); }
+
+    template<typename Type>
+    void set(const std::string& name, const Type& v) { return set(name, v); }
+
+    Color get(const std::string& name, const Color&);
+    void set(const std::string& name, const Color& v);
+
+    int get(const std::string& name, const int&);
+    void set(const std::string& name, const int& v);
+
+    bool get(const std::string& name, const bool&);
+    void set(const std::string& name, const bool& v);
 
     /* Fonts */
     /// The standard font face (default: ``"sans"`` from ``resources/roboto_regular.ttf``).
@@ -37,6 +62,7 @@ public:
     int mFontBold;
     /// The icon font face (default: ``"icons"`` from ``resources/entypo.ttf``).
     int mFontIcons;
+
     /**
      * The amount of scaling that is applied to each icon to fit the size of
      * NanoGUI widgets.  The default value is ``0.77f``, setting to e.g. higher
@@ -49,14 +75,12 @@ public:
     int mStandardFontSize;
     /// The font size for buttons (default: ``20``).
     int mButtonFontSize;
-    /// The font size for text boxes (default: ``20``).
-    int mTextBoxFontSize;
-    /// Rounding radius for Window widget corners (default: ``2``).
-    int mWindowCornerRadius;
-    /// Default size of Window widget titles (default: ``30``).
-    int mWindowHeaderHeight;
-    /// Size of drop shadow rendered behind the Window widgets (default: ``10``).
-    int mWindowDropShadowSize;
+    int buttonBorderSize;
+    std::string buttonFont;
+
+    int separatorWidth;
+    Color separatorColor;
+    
     /// Rounding radius for Button (and derived types) widgets (default: ``2``).
     int mButtonCornerRadius;
     /// The border width for TabHeader widgets (default: ``0.75f``).
@@ -73,6 +97,57 @@ public:
     int mTabButtonHorizontalPadding;
     /// The amount of vertical padding for a TabHeader widget (default: ``2``).
     int mTabButtonVerticalPadding;
+
+    int textBoxBorderSize;
+    Color textBoxBorderColor;
+    Color textBoxInvalidFormatColorIn;
+    Color textBoxInvalidFormatColorOut;
+    Color textBoxFocusedColorIn;
+    Color textBoxFocusedColorOut;
+    Color textBoxUnfocusedColorIn;
+    Color textBoxUnfocusedColorOut;
+    int mTextBoxCornerRadius;
+    int mTextBoxUpIcon;      /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
+    int mTextBoxDownIcon;    /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).                            
+    int mTextBoxFontSize;    /// The font size for text boxes (default: ``20``).
+
+    int mPanelCornerRadius;
+    int mPanelHeaderHeight;
+
+    Color mPanelHeaderGradientTopFocus;
+    Color mPanelHeaderGradientTopNormal;
+    Color mPanelHeaderGradientBotFocus;
+    Color mPanelHeaderGradientBotNormal;
+    Color mPanelDropShadow;
+    Color mPanelTitleFocused;
+    Color mPanelTitleUnfocused;
+    int mPanelCollapsedIcon;
+    int mPanelExpandedIcon;
+    int mPanelFontSize;
+
+    int toolButtonSide = 25;
+
+    int mContextMenuShortcutOffset;
+    Color mContextMenuShortcutTextColor;
+    int mContextMenuMinWidth;
+
+    Color mSliderValueColor;
+
+    Color mCheckboxUncheckedColor;
+    Color mCheckboxCheckedColor;
+    Color mCheckboxPushedColor;
+
+    Color mSwitchboxBackgroundColor;
+    Color mSwitchboxCheckedColor;
+    Color mSwitchboxUncheckedColor;
+
+    Color mScrollBarActiveColor;
+    Color mScrollBarInactiveColor;
+
+    Color mToleranceBarBorderColor; ///< Color of border
+    Color mToleranceBarBgColor; ///< Color of background
+    Color mToleranceBarLowColor; ///< Color of minimum value
+    Color mToleranceBarHighColor; ///< Color of maximum value
 
     /* Generic colors */
     /**
@@ -105,6 +180,20 @@ public:
      * (default: intensity=``255``, alpha=``160``; see \ref nanogui::Color::Color(int,int)).
      */
     Color mTextColor;
+
+    Color mButtonHoverTextColor;
+
+    Color mButtonPressedTextColor;
+
+    Color mToggleButtonPressedTextColor;
+
+    Color mLinkPressedTextColor;
+
+    Color mLinkTextColor;
+
+    Color mLinkHoverTextColor;
+
+    Color mLabelTextDisabledColor;
     /**
      * The disable dtext color
      * (default: intensity=``255``, alpha=``80``; see \ref nanogui::Color::Color(int,int)).
@@ -150,6 +239,9 @@ public:
      */
     Color mButtonGradientBotPushed;
 
+    Color mToggleButtonActiveColor;
+    Color mToggleButtonInactiveColor;
+
     /* Window colors */
     /**
      * The fill color for a Window that is not in focus
@@ -186,6 +278,37 @@ public:
     Color mWindowHeaderSepTop;
     /// The Window header bottom separation color (default: \ref nanogui::Theme::mBorderDark).
     Color mWindowHeaderSepBot;
+    Color windowBorderColorFocused;
+    Color windowBorderColorUnfocused;
+    FloatObservable windowBorderSize;
+
+    /// Rounding radius for Window widget corners (default: ``2``).
+    int mWindowCornerRadius;
+    /// Default size of Window widget titles (default: ``30``).
+    int mWindowHeaderHeight;
+    /// Size of drop shadow rendered behind the Window widgets (default: ``10``).
+    int mWindowDropShadowSize;
+    int mWindowFontSize;
+    int mWindowMenuHeaderOffset;
+    int mWindowDragLine;
+    bool windowResizeFromEdge = false;
+    bool windowMoveFromTitlebarOnly = true;
+    bool windowMoveInParent = true;
+    shared_bool windowDrawBorder;
+    shared_float windowPaddingLeft;
+    shared_float windowPaddingTop;
+    shared_float framePaddingLeft;
+    shared_float framePaddingTop;
+
+    shared_float innerSpacingCommon;
+
+    bool frameDrawBorder = false;
+    bool debugHighlightMouseover = false;
+    bool keyboardNavigation = true;
+    Color frameBorderColor;
+
+    WindowDraggable mWindowDraggable = WindowDraggable::dgDraggable;
+    WindowCollapse mWindowCollapse = WindowCollapse::clMayCollapse;
 
     /**
      * The popup window color
@@ -200,6 +323,8 @@ public:
 
     /// Icon to use for CheckBox widgets (default: ``ENTYPO_ICON_CHECK``).
     int mCheckBoxIcon;
+
+    int mContextSubmenu;
     /// Icon to use for informational MessageDialog widgets (default: ``ENTYPO_ICON_INFO_WITH_CIRCLE``).
     int mMessageInformationIcon;
     /// Icon to use for interrogative MessageDialog widgets (default: ``ENTYPO_ICON_HELP_WITH_CIRCLE``).
@@ -218,17 +343,43 @@ public:
     int mTabHeaderLeftIcon;
     /// Icon to indicate hidden tabs to the right on a TabHeader (default: ``ENTYPO_ICON_ARROW_BOLD_RIGHT``).
     int mTabHeaderRightIcon;
-    /// Icon to use when a TextBox has an up toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_UP``).
-    int mTextBoxUpIcon;
-    /// Icon to use when a TextBox has a down toggle (e.g. IntBox) (default: ``ENTYPO_ICON_CHEVRON_DOWN``).
-    int mTextBoxDownIcon;
+
+    int mWindowExpandedIcon;
+    int mWindowCollapsedIcon;
+
+    int mWindowMenuHeight;
+
+    int mTooltipOpacity;
+    Color mTooltipBackgroundColor;
+    Color mTooltipTextColor;
+
+    struct {
+      struct {
+        bool enable = true;
+        bool drawCursor = true;
+      } mouse;
+    } nav;
+
+    bool textAreaBlinkCursor = true;
+
+    //void update(const Theme& newtheme);
 
 protected:
     /// Default destructor does nothing; allows for inheritance.
-    virtual ~Theme() { };
+    virtual ~Theme() { }
+    Theme() {}
+};
 
+class NANOGUI_EXPORT DefaultTheme : public Theme
+{
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  DefaultTheme(NVGcontext* ctx);
+};
+
+class NANOGUI_EXPORT WhiteTheme : public Theme
+{
+public:
+  WhiteTheme(NVGcontext* ctx);
 };
 
 NAMESPACE_END(nanogui)

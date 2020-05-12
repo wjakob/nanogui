@@ -142,7 +142,7 @@ public:
 
     /// Add a new group that may contain several sub-widgets
     Label *addGroup(const std::string &caption) {
-        Label* label = new Label(mWindow, caption, mGroupFontName, mGroupFontSize);
+      Label* label = new Label(mWindow, Caption{ caption }, CaptionFont{ mGroupFontName }, FontSize{ mGroupFontSize });
         if (mLayout->rowCount() > 0)
             mLayout->appendRow(mPreGroupSpacing); /* Spacing */
         mLayout->appendRow(0);
@@ -155,7 +155,7 @@ public:
     template <typename Type> detail::FormWidget<Type> *
     addVariable(const std::string &label, const std::function<void(const Type &)> &setter,
                 const std::function<Type()> &getter, bool editable = true) {
-        Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
+      Label *labelW = new Label(mWindow, Caption{ label }, CaptionFont{ mLabelFontName }, FontSize{ mLabelFontSize });
         auto widget = new detail::FormWidget<Type>(mWindow);
         auto refresh = [widget, getter] {
             Type value = getter(), current = widget->value();
@@ -190,14 +190,12 @@ public:
 
     /// Add a button with a custom callback
     Button *addButton(const std::string &label, const std::function<void()> &cb) {
-        Button *button = new Button(mWindow, label);
-        button->setCallback(cb);
-        button->setFixedHeight(25);
-        if (mLayout->rowCount() > 0)
-            mLayout->appendRow(mVariableSpacing);
-        mLayout->appendRow(0);
-        mLayout->setAnchor(button, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
-        return button;
+      auto button = mWindow->add<Button>(Caption{ label }, ButtonCallback{ cb }, FixedHeight{ 25 });
+      if (mLayout->rowCount() > 0)
+        mLayout->appendRow(mVariableSpacing);
+      mLayout->appendRow(0);
+      mLayout->setAnchor(button, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
+      return button;
     }
 
     /// Add an arbitrary (optionally labeled) widget to the layout
@@ -206,7 +204,7 @@ public:
         if (label == "") {
             mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1, 3, 1));
         } else {
-            Label *labelW = new Label(mWindow, label, mLabelFontName, mLabelFontSize);
+          Label *labelW = new Label(mWindow, Caption{ label }, CaptionFont{ mLabelFontName }, FontSize{ mLabelFontSize });
             mLayout->setAnchor(labelW, AdvancedGridLayout::Anchor(1, mLayout->rowCount()-1));
             mLayout->setAnchor(widget, AdvancedGridLayout::Anchor(3, mLayout->rowCount()-1));
         }
@@ -224,10 +222,11 @@ public:
     /// Set the active \ref Window instance.
     void setWindow(Window *window) {
         mWindow = window;
-        mLayout = dynamic_cast<AdvancedGridLayout *>(window->layout());
-        if (mLayout == nullptr)
-            throw std::runtime_error(
-                "Internal error: window has an incompatible layout!");
+        auto newLayout = AdvancedGridLayout::cast(window->layout());
+        if (newLayout)
+          mLayout = newLayout;
+        else
+          logic_error("Internal error: window has an incompatible layout!", __FILE__, __LINE__);
     }
 
     /// Specify a fixed size for newly added widgets.
@@ -307,7 +306,6 @@ protected:
     int mVariableSpacing = 5;
 
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_BEGIN(detail)
@@ -318,7 +316,7 @@ NAMESPACE_BEGIN(detail)
 template <> class FormWidget<bool, std::true_type> : public CheckBox {
 public:
     /// Creates a new FormWidget with underlying type CheckBox.
-    FormWidget(Widget *p) : CheckBox(p, "") { setFixedWidth(20); }
+    FormWidget(Widget *p) : CheckBox(p, std::string("")) { setFixedWidth(20); }
 
     /// Pass-through function for \ref nanogui::CheckBox::setChecked.
     void setValue(bool v) { setChecked(v); }
@@ -328,9 +326,6 @@ public:
 
     /// Returns the value of \ref nanogui::CheckBox::checked.
     bool value() const { return checked(); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -357,9 +352,6 @@ public:
 
     /// Pass-through function for \ref nanogui::Widget::setEnabled.
     void setEditable(bool e) { setEnabled(e); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -371,10 +363,7 @@ public:
 template <typename T> class FormWidget<T, typename std::is_integral<T>::type> : public IntBox<T> {
 public:
     /// Creates a new FormWidget with underlying type IntBox.
-    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    FormWidget(Widget *p) : IntBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 };
 
 /**
@@ -386,10 +375,7 @@ public:
 template <typename T> class FormWidget<T, typename std::is_floating_point<T>::type> : public FloatBox<T> {
 public:
     /// Creates a new FormWidget with underlying type FloatBox.
-    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextBox::Alignment::Right); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    FormWidget(Widget *p) : FloatBox<T>(p) { this->setAlignment(TextAlignment::Right); }
 };
 
 /**
@@ -398,15 +384,12 @@ public:
 template <> class FormWidget<std::string, std::true_type> : public TextBox {
 public:
     /// Creates a new FormWidget with underlying type TextBox.
-    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextBox::Alignment::Left); }
+    FormWidget(Widget *p) : TextBox(p) { setAlignment(TextAlignment::Left); }
 
     /// Pass-through function for \ref nanogui::TextBox::setCallback.
     void setCallback(const std::function<void(const std::string&)> &cb) {
         TextBox::setCallback([cb](const std::string &str) { cb(str); return true; });
     }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /**
@@ -425,9 +408,6 @@ public:
 
     /// Returns the value of \ref nanogui::ColorPicker::color.
     Color value() const { return color(); }
-
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 NAMESPACE_END(detail)

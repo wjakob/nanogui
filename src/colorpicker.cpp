@@ -17,10 +17,14 @@
 
 NAMESPACE_BEGIN(nanogui)
 
-ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(parent, "") {
+RTTI_IMPLEMENT_INFO(ColorPicker, PopupButton)
+
+ColorPicker::ColorPicker(Widget *parent, const Color& color) 
+  : PopupButton(parent) 
+{
     setBackgroundColor(color);
     Popup *popup = this->popup();
-    popup->setLayout(new GroupLayout());
+    popup->withLayout<GroupLayout>();
 
     // initialize callback to do nothing; this is for users to hook into
     // receiving a new color value
@@ -28,22 +32,22 @@ ColorPicker::ColorPicker(Widget *parent, const Color& color) : PopupButton(paren
     mFinalCallback = [](const Color &) {};
 
     // set the color wheel to the specified color
-    mColorWheel = new ColorWheel(popup, color);
+    mColorWheel = popup->add<ColorWheel>(color);
 
     // set the pick button to the specified color
-    mPickButton = new Button(popup, "Pick");
-    mPickButton->setBackgroundColor(color);
-    mPickButton->setTextColor(color.contrastingColor());
-    mPickButton->setFixedSize(Vector2i(100, 20));
+    mPickButton = popup->add<Button>(Caption{ "Pick" },
+                                     BackgroundColor{ color},
+                                     TextColor{ color.contrastingColor()},
+                                     FixedSize{ 100, 20 });
 
     // set the reset button to the specified color
-    mResetButton = new Button(popup, "Reset");
-    mResetButton->setBackgroundColor(color);
-    mResetButton->setTextColor(color.contrastingColor());
-    mResetButton->setFixedSize(Vector2i(100, 20));
+    mResetButton = popup->add<Button>(Caption{ "Reset" },
+                                      BackgroundColor{ color },
+                                      TextColor{ color.contrastingColor() },
+                                      FixedSize{ 100, 20 });
 
-    PopupButton::setChangeCallback([&](bool) {
-        if (this->mPickButton->pushed()) {
+    PopupButton::setChangeCallback([this](Button*) {
+        if (mPickButton->pushed()) {
             setColor(backgroundColor());
             mFinalCallback(backgroundColor());
         }

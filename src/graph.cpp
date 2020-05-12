@@ -11,10 +11,12 @@
 
 #include <nanogui/graph.h>
 #include <nanogui/theme.h>
-#include <nanogui/opengl.h>
-#include <nanogui/serializer/core.h>
+#include <nanovg.h>
+#include <nanogui/saveload.h>
 
 NAMESPACE_BEGIN(nanogui)
+
+RTTI_IMPLEMENT_INFO(Graph, Widget)
 
 Graph::Graph(Widget *parent, const std::string &caption)
     : Widget(parent), mCaption(caption) {
@@ -31,7 +33,7 @@ void Graph::draw(NVGcontext *ctx) {
     Widget::draw(ctx);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+    nvgRect(ctx, mPos, mSize);
     nvgFillColor(ctx, mBackgroundColor);
     nvgFill(ctx);
 
@@ -77,31 +79,40 @@ void Graph::draw(NVGcontext *ctx) {
     }
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+    nvgRect(ctx, mPos, mSize);
     nvgStrokeColor(ctx, Color(100, 255));
     nvgStroke(ctx);
 }
 
-void Graph::save(Serializer &s) const {
+void Graph::save(Json::value &s) const 
+{
     Widget::save(s);
-    s.set("caption", mCaption);
-    s.set("header", mHeader);
-    s.set("footer", mFooter);
-    s.set("backgroundColor", mBackgroundColor);
-    s.set("foregroundColor", mForegroundColor);
-    s.set("textColor", mTextColor);
-    s.set("values", mValues);
+    auto obj = s.get_obj();
+
+    obj["caption"] = json().set(mCaption).name("Caption");
+    obj["header"] = json().set(mHeader).name("Header");
+    obj["footer"] = json().set(mFooter).name("Footer");
+    obj["backgroundColor"] = json().set(mBackgroundColor).name("Backgrodun color");
+    obj["foregroundColor"] = json().set(mForegroundColor).name("Foreground color");
+    obj["textColor"] = json().set(mTextColor).name("Text color");
+    obj["values"] = json().set(mValues).name("Values");
+
+    s = Json::value(obj);
 }
 
-bool Graph::load(Serializer &s) {
-    if (!Widget::load(s)) return false;
-    if (!s.get("caption", mCaption)) return false;
-    if (!s.get("header", mHeader)) return false;
-    if (!s.get("footer", mFooter)) return false;
-    if (!s.get("backgroundColor", mBackgroundColor)) return false;
-    if (!s.get("foregroundColor", mForegroundColor)) return false;
-    if (!s.get("textColor", mTextColor)) return false;
-    if (!s.get("values", mValues)) return false;
+bool Graph::load(Json::value &save) 
+{
+    Widget::load(save);
+    json s{ save.get_obj() };
+    
+    mCaption = s.get<std::string>("caption");
+    mHeader = s.get<std::string>("header");
+    mFooter = s.get<std::string>("footer");
+    mBackgroundColor = s.get<Color>("backgroundColor");
+    mForegroundColor = s.get<Color>("foregroundColor");
+    mTextColor = s.get<Color>("textColor");
+    mValues = s.get<decltype(mValues)>("values");
+    
     return true;
 }
 

@@ -11,9 +11,11 @@
 */
 
 #include <nanogui/imagepanel.h>
-#include <nanogui/opengl.h>
+#include <nanovg.h>
 
 NAMESPACE_BEGIN(nanogui)
+
+RTTI_IMPLEMENT_INFO(ImagePanel, Widget)
 
 ImagePanel::ImagePanel(Widget *parent)
     : Widget(parent), mThumbSize(64), mSpacing(10), mMargin(10),
@@ -34,8 +36,7 @@ int ImagePanel::indexForPosition(const Vector2i &p) const {
     bool overImage = pp.x() - std::floor(pp.x()) < iconRegion &&
                     pp.y() - std::floor(pp.y()) < iconRegion;
     Vector2i gridPos = pp.cast<int>(), grid = gridSize();
-    overImage &= ((gridPos.array() >= 0).all() &&
-                 (gridPos.array() < grid.array()).all());
+    overImage &= (gridPos.positive() && gridPos < grid);
     return overImage ? (gridPos.x() + gridPos.y() * grid.x()) : -1;
 }
 
@@ -92,11 +93,10 @@ void ImagePanel::draw(NVGcontext* ctx) {
         nvgFillPaint(ctx, imgPaint);
         nvgFill(ctx);
 
-        NVGpaint shadowPaint =
-            nvgBoxGradient(ctx, p.x() - 1, p.y(), mThumbSize + 2, mThumbSize + 2, 5, 3,
-                           nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
+        NVGpaint shadowPaint = nvgBoxGradient(ctx, p.x() - 1, p.y(), mThumbSize + 2, mThumbSize + 2, 5, 3,
+                                              nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
         nvgBeginPath(ctx);
-        nvgRect(ctx, p.x()-5,p.y()-5, mThumbSize+10,mThumbSize+10);
+        nvgRect(ctx, p - Vector2i{5, 5}, Vector2i(mThumbSize + 10, mThumbSize + 10));
         nvgRoundedRect(ctx, p.x(),p.y(), mThumbSize,mThumbSize, 6);
         nvgPathWinding(ctx, NVG_HOLE);
         nvgFillPaint(ctx, shadowPaint);

@@ -1,4 +1,4 @@
-#include <nanogui/nanogui.h>
+#include <nanogui/object.h>
 #import <Cocoa/Cocoa.h>
 
 NAMESPACE_BEGIN(nanogui)

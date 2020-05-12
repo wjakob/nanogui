@@ -15,10 +15,13 @@
 #pragma once
 
 #include <nanogui/widget.h>
-#include <nanogui/glutil.h>
 #include <functional>
 
 NAMESPACE_BEGIN(nanogui)
+
+DECLSETTER(InitiailImage, uint32_t)
+DECLSETTER(ImageViewGridTreshold, float)
+DECLSETTER(PixelInfoThreshold, float)
 
 /**
  * \class ImageView imageview.h nanogui/imageview.h
@@ -27,12 +30,20 @@ NAMESPACE_BEGIN(nanogui)
  */
 class NANOGUI_EXPORT ImageView : public Widget {
 public:
-    ImageView(Widget* parent, GLuint imageID);
+    RTTI_CLASS_UID(ImageView)
+    RTTI_DECLARE_INFO(ImageView)
+    WIDGET_COMMON_FUNCTIONS(ImageView)
+
+    explicit ImageView(Widget* parent);
+
+    using Widget::set;
+    template<typename... Args>
+    ImageView(Widget* parent, const Args&... args)
+      : ImageView(parent) {  set<ImageView, Args...>(args...);  }
+
     ~ImageView();
 
-    void bindImage(GLuint imageId);
-
-    GLShader& imageShader() { return mShader; }
+    void bindImage(uint32_t imageId);
 
     Vector2f positionF() const { return mPos.cast<float>(); }
     Vector2f sizeF() const { return mSize.cast<float>(); }
@@ -135,6 +146,7 @@ public:
 private:
     // Helper image methods.
     void updateImageParameters();
+    void _internalDraw(NVGcontext* ctx);
 
     // Helper drawing methods.
     void drawWidgetBorder(NVGcontext* ctx) const;
@@ -147,8 +159,7 @@ private:
                         const Vector2i& pixel, float stride, float fontSize) const;
 
     // Image parameters.
-    GLShader mShader;
-    GLuint mImageID;
+    uint32_t mImageID;
     Vector2i mImageSize;
 
     // Image display parameters.
@@ -163,12 +174,17 @@ private:
     // Image info parameters.
     float mGridThreshold = -1;
     float mPixelInfoThreshold = -1;
+    bool mNeedUpdate = false;
 
     // Image pixel data display members.
     std::function<std::pair<std::string, Color>(const Vector2i&)> mPixelInfoCallback;
     float mFontScaleFactor = 0.2f;
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  PROPSETTER(InitiailImage, bindImage)
+  PROPSETTER(ImageViewGridTreshold, setGridThreshold)
+  PROPSETTER(PixelInfoThreshold, setPixelInfoThreshold)
 };
+
+namespace elm { using ImageView = Element<ImageView>; }
 
 NAMESPACE_END(nanogui)
