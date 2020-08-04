@@ -135,7 +135,7 @@ bool TabWidget::removeTab(const std::string &tabName) {
 }
 
 void TabWidget::removeTab(int index) {
-    assert(mContent->childCount() < index);
+    assert(index < mContent->childCount());
     mHeader->removeTab(index);
     mContent->removeChild(index);
     if (activeTab() == index)
