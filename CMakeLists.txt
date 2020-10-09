@@ -372,6 +372,8 @@ else()
   )
 endif()
 
+target_include_directories(nanogui PUBLIC ${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+
 if (NANOGUI_BUILD_SHARED)
   set_property(TARGET nanogui-obj PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
