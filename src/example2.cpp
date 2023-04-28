@@ -40,12 +40,12 @@ int main(int /* argc */, char ** /* argv */) {
         if (use_gl_4_1) {
             // NanoGUI presents many options for you to utilize at your discretion.
             // See include/nanogui/screen.h for what all of these represent.
-            screen = new Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]",
+            screen = new Screen(Vector2i(500, 700), "NanoGUI test [GL 4.1]",true,
                                 /*resizable*/true, /*fullscreen*/false, /*colorBits*/8,
                                 /*alphaBits*/8, /*depthBits*/24, /*stencilBits*/8,
                                 /*nSamples*/0, /*glMajor*/4, /*glMinor*/1);
         } else {
-            screen = new Screen(Vector2i(500, 700), "NanoGUI test");
+            screen = new Screen(Vector2i(500, 700), "NanoGUI test", true);
         }
 
         bool enabled = true;

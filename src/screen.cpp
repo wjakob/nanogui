@@ -127,7 +127,7 @@ Screen::Screen()
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
-Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
+Screen::Screen(const Vector2i &size, const std::string &caption, bool titlebarVisible, bool resizable, 
                bool fullscreen, int colorBits, int alphaBits, int depthBits,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
@@ -152,6 +152,9 @@ Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
     glfwWindowHint(GLFW_DEPTH_BITS, depthBits);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
+    
+    setTitlebarVisible(titlebarVisible);
+    mDragWindow = false;
 
     if (fullscreen) {
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -485,6 +488,15 @@ void Screen::drawWidgets() {
     nvgEndFrame(mNVGContext);
 }
 
+void Screen::setTitlebarVisible(bool visible)
+{
+    if (visible != mTitlebarVisible)
+    {
+        mTitlebarVisible = visible;
+        glfwWindowHint(GLFW_DECORATED, visible);
+    }
+}
+
 bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
     if (mFocusPath.size() > 0) {
         for (auto it = mFocusPath.rbegin() + 1; it != mFocusPath.rend(); ++it)
@@ -523,6 +535,11 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
     mLastInteraction = glfwGetTime();
     try {
         p -= Vector2i(1, 2);
+
+        if (mDragWindow)
+        {
+            glfwSetWindowPos(mGLFWWindow, p.x(), p.y());
+        }
 
         if (!mDragActive) {
             Widget *widget = findWidget(p);
@@ -572,6 +589,10 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
             mDragWidget->mouseButtonEvent(
                 mMousePos - mDragWidget->parent()->absolutePosition(), button,
                 false, mModifiers);
+        else if(mDragWindow && action == GLFW_RELEASE)
+        {
+            mDragWindow = false;
+        }
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
@@ -580,8 +601,11 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (action == GLFW_PRESS && (button == GLFW_MOUSE_BUTTON_1 || button == GLFW_MOUSE_BUTTON_2)) {
             mDragWidget = findWidget(mMousePos);
-            if (mDragWidget == this)
+            if (mDragWidget == this) {
                 mDragWidget = nullptr;
+                if (!mTitlebarVisible)
+                    mDragWindow = true;
+            } 
             mDragActive = mDragWidget != nullptr;
             if (!mDragActive)
                 updateFocus(nullptr);
