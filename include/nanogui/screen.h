@@ -208,9 +208,6 @@ protected:
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
     std::function<void(Vector2i)> mResizeCallback;
-    bool mTitlebarVisible;
-    bool mDragWindow;
-
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
