@@ -350,7 +350,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/serializer/opengl.h
   include/nanogui/serializer/sparse.h
   src/serializer.cpp
-)
+  )
 
 # XCode has a serious bug where the XCode project produces an invalid target
 # that will not get linked if it consists only of objects from object libraries,
@@ -422,11 +422,11 @@ endif()
 
 # Build example application if desired
 if(NANOGUI_BUILD_EXAMPLE)
-  add_executable(example1      src/example1.cpp)
-  add_executable(example2      src/example2.cpp)
-  add_executable(example3      src/example3.cpp)
-  add_executable(example4      src/example4.cpp)
-  add_executable(example_icons src/example_icons.cpp)
+  add_executable(example1      src/example1.cpp  )
+  add_executable(example2      src/example2.cpp  )
+  add_executable(example3      src/example3.cpp  )
+  add_executable(example4      src/example4.cpp  )
+  add_executable(example_icons src/example_icons.cpp  )
   target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})

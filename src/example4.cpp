@@ -179,7 +179,7 @@ private:
 
 class ExampleApplication : public nanogui::Screen {
 public:
-    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", false) {
+    ExampleApplication() : nanogui::Screen(Eigen::Vector2i(800, 600), "NanoGUI Test", true, false) {
         using namespace nanogui;
 
         Window *window = new Window(this, "GLCanvas Demo");
