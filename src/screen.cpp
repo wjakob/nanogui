@@ -127,7 +127,7 @@ Screen::Screen()
     memset(mCursors, 0, sizeof(GLFWcursor *) * (int) Cursor::CursorCount);
 }
 
-Screen::Screen(const Vector2i &size, const std::string &caption, bool resizable,
+Screen::Screen(const Vector2i &size, const std::string &caption, bool titlebarVisible, bool resizable, 
                bool fullscreen, int colorBits, int alphaBits, int depthBits,
                int stencilBits, int nSamples,
                unsigned int glMajor, unsigned int glMinor)
@@ -483,6 +483,15 @@ void Screen::drawWidgets() {
     }
 
     nvgEndFrame(mNVGContext);
+}
+
+void Screen::setTitlebarVisible(bool visible)
+{
+    if (visible != mTitlebarVisible)
+    {
+        mTitlebarVisible = visible;
+        glfwWindowHint(GLFW_DECORATED, visible);
+    }
 }
 
 bool Screen::keyboardEvent(int key, int scancode, int action, int modifiers) {
