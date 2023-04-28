@@ -36,7 +36,7 @@ int main(int /* argc */, char ** /* argv */) {
         static constexpr int height     = 800;
 
         // create a fixed size screen with one window
-        Screen *screen = new Screen({width, height}, "NanoGUI Icons", false);
+        Screen *screen = new Screen({width, height}, "NanoGUI Icons",  true, false);
         Window *window = new Window(screen, "All Icons");
         window->setPosition({0, 0});
         window->setFixedSize({width, height});

@@ -82,7 +82,7 @@ Vector2i TextBox::preferredSize(NVGcontext *ctx) const {
 }
 
 void TextBox::draw(NVGcontext* ctx) {
-    Widget::draw(ctx);
+     Widget::draw(ctx);
 
     NVGpaint bg = nvgBoxGradient(ctx,
         mPos.x() + 1, mPos.y() + 1 + 1.0f, mSize.x() - 2, mSize.y() - 2,

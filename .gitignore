@@ -23,6 +23,7 @@ nanogui*.pyd
 libnanogui.so
 libnanogui.dylib
 .vscode/
+.vs/
 # html documentation specific
 *.pyc
 docs/_build
@@ -34,3 +35,4 @@ docs/api
 # should not ever be needed again unless there are new
 # icons added :)
 resources/nanogui-entypo
+/CMakeSettings.json

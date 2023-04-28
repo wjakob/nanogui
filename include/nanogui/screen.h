@@ -77,7 +77,7 @@ public:
      *     invalid profile will result in no context (and therefore no GUI)
      *     being created.
      */
-    Screen(const Vector2i &size, const std::string &caption,
+    Screen(const Vector2i &size, const std::string &caption, bool titlebarVisible,
            bool resizable = true, bool fullscreen = false, int colorBits = 8,
            int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
            int nSamples = 0,
@@ -183,6 +183,7 @@ public:
     void centerWindow(Window *window);
     void moveWindowToFront(Window *window);
     void drawWidgets();
+    void setTitlebarVisible(bool visible);
 
 protected:
     GLFWwindow *mGLFWWindow;
@@ -203,6 +204,8 @@ protected:
     bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
     std::function<void(Vector2i)> mResizeCallback;
+    bool mTitlebarVisible;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
