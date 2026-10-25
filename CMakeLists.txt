@@ -1,20 +1,51 @@
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 4.3.4)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+include(FetchContent)
+project("NanoGUI")
+
+#set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/ext CACHE PATH "" FORCE)
+FetchContent_Declare(
+  GLFW
+  GIT_REPOSITORY https://github.com/glfw/glfw.git
+  GIT_TAG        3.5.1
+  FIND_PACKAGE_ARGS NAMES glfw3   # ← appelle find_package(GLW) d'abord
+)
+FetchContent_MakeAvailable(GLFW)
+
+# ─── NanoVG ───────────────────────────────────────────────────────────────
+# No CMake standard package → FIND_PACKAGE_ARGS won't work
+# (À moins d'avoir un FindNanoVG.cmake custom dans CMAKE_MODULE_PATH)
+FetchContent_Declare(
+  NanoVG
+  GIT_REPOSITORY https://github.com/memononen/nanovg.git
+  GIT_TAG        master          # pas de release/tag, le projet n'est plus maintenu
+  SOURCE_DIR     ${CMAKE_SOURCE_DIR}/ext/nanovg   # where sources land
+  BINARY_DIR     ${CMAKE_BINARY_DIR}/fmt-build
+)
+FetchContent_MakeAvailable(NanoVG)
+
+# ─── Eigen ────────────────────────────────────────────────────────────────
+# find_package(Eigen3) est standard → FIND_PACKAGE_ARGS pertinent
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        3.4.0
+  FIND_PACKAGE_ARGS NAMES Eigen3
+)
+FetchContent_MakeAvailable(Eigen)
+get_target_property(EIGEN_INC Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+message(STATUS "Eigen includes: ${EIGEN_INC}")
+
+
 
 if (POLICY CMP0048)
   # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-project("NanoGUI")
 
 if (POLICY CMP0058)
   cmake_policy(SET CMP0058 NEW)
-endif()
-
-if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/src")
-  message(FATAL_ERROR "The NanoGUI dependency repositories (GLFW, etc.) are missing! "
-    "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
 endif()
 
 if (WIN32)
@@ -77,17 +108,19 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # Quench annoying deprecation warnings when compiling GLFW on OSX
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
 endif()
-
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
-# Two targets have now been defined: `glfw_objects`, which will be merged into
-# NanoGUI at the end, and `glfw`.  The `glfw` target is the library itself
-# (e.g., libglfw.so), but can be skipped as we do not need to link against it
-# (because we merge `glfw_objects` into NanoGUI).  Skipping is required for
-# XCode, but preferable for all build systems (reduces build artifacts).
-set_target_properties(glfw PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
-
 # Python support: add NANOGUI_PYTHON flag to all targets
+
 if (NANOGUI_BUILD_PYTHON)
+  # ─── pybind11 ─────────────────────────────────────────────────────────────
+  # find_package(pybind11) est standard → FIND_PACKAGE_ARGS pertinent
+  FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG        v3.1.0
+    FIND_PACKAGE_ARGS NAMES pybind11
+  )
+  FetchContent_MakeAvailable(pybind11)   
+
   list(APPEND NANOGUI_EXTRA_DEFS -DNANOGUI_PYTHON)
 endif()
 
@@ -222,11 +255,6 @@ list(APPEND NANOGUI_EXTRA_INCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ext/nanovg/src"
 )
 
-if (NOT NANOGUI_EIGEN_INCLUDE_DIR)
-  set(NANOGUI_EIGEN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen")
-  list(APPEND NANOGUI_EXTRA_INCS "${NANOGUI_EIGEN_INCLUDE_DIR}")
-endif()
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "BSD")
   include_directories(/usr/local/include)
   link_directories(/usr/local/lib)
@@ -237,6 +265,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "BSD")
 endif()
 
 # Required core libraries on various platforms
+list(APPEND NANOGUI_EXTRA_LIBS glfw)
 if (WIN32)
   list(APPEND NANOGUI_EXTRA_LIBS opengl32)
 elseif (APPLE)
@@ -244,7 +273,12 @@ elseif (APPLE)
   find_library(opengl_library OpenGL)
   find_library(corevideo_library CoreVideo)
   find_library(iokit_library IOKit)
-  list(APPEND NANOGUI_EXTRA_LIBS ${cocoa_library} ${opengl_library} ${corevideo_library} ${iokit_library})
+  list(APPEND NANOGUI_EXTRA_LIBS 
+    ${cocoa_library} 
+    ${opengl_library} 
+    ${corevideo_library} 
+    ${iokit_library}
+  )
   list(APPEND LIBNANOGUI_EXTRA_SOURCE src/darwin.mm)
 elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
   list(APPEND NANOGUI_EXTRA_LIBS GL Xxf86vm Xrandr Xinerama Xcursor Xi X11 pthread )
@@ -256,7 +290,7 @@ elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
   endif()
 endif()
 
-include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${EIGEN_INC} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Run simple cmake converter to put font files into the data segment
@@ -281,7 +315,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} ARGS ${bin2c_cmdline}
   DEPENDS ${resources}
   COMMENT "Running bin2c"
-  PRE_BUILD VERBATIM)
+  VERBATIM)
 
 # Needed to generated files
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -363,12 +397,10 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
   add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
     ${XCODE_DUMMY}
     $<TARGET_OBJECTS:nanogui-obj>
-    $<TARGET_OBJECTS:glfw_objects>
   )
 else()
   add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
     $<TARGET_OBJECTS:nanogui-obj>
-    $<TARGET_OBJECTS:glfw_objects>
   )
 endif()
 
@@ -415,9 +447,9 @@ endif()
 
 # Quench warnings while compiling NanoVG
 if (CMAKE_COMPILER_IS_GNUCC)
-  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+  set_source_files_properties(ext/nanovg-src/src/nanovg.c PROPERTIES COMPILE_FLAGS -Wno-unused-result)
 elseif(MSVC)
-  set_source_files_properties(ext/nanovg/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
+  set_source_files_properties(ext/nanovg-src/src/nanovg.c PROPERTIES COMPILE_FLAGS "/wd4005 /wd4456 /wd4457")
 endif()
 
 # Build example application if desired
@@ -439,11 +471,15 @@ endif()
 
 if (NANOGUI_BUILD_PYTHON)
   # Detect Python
+  FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG        v2.12.0
+    GIT_SHALLOW    TRUE
+    FIND_PACKAGE_ARGS NAMES pybind11 CONFIG
+  )
+  FetchContent_MakeAvailable(pybind11)
 
-  # Try to autodetect Python (can be overridden manually if needed)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
-  set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
-  find_package(PythonLibsNew ${NANOGUI_PYTHON_VERSION})
   if (NOT PYTHONLIBS_FOUND)
     # Python not found -- disable the plugin
     set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL "Build a Python plugin for NanoGUI?" FORCE)

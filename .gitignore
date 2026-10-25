@@ -1,4 +1,4 @@
-ext/pybind11*.a
+ext/
 *.exe
 *.lib
 *.cmake
@@ -6,25 +6,12 @@ ext/pybind11*.a
 ext_build
 nanogui_resources.*
 build
-CMakeCache.txt
-CMakeFiles
-.ninja_deps
-.ninja_log
-build.ninja
-rules.ninja
-Makefile
 bin2c
 example[1-9]
 example_icons
 icons
 *~
-nanogui*.so
-nanogui*.pyd
-libnanogui.so
-libnanogui.dylib
-.vscode/
 # html documentation specific
-*.pyc
 docs/_build
 docs/_doxygen
 docs/api
